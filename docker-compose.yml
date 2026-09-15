@@ -1,0 +1,174 @@
+# Ядро тренажёра оператора ДДС-112.
+# Запуск: docker compose up -d --build
+# Профили telephony, ai, live, monitoring объявлены и заполняются в следующих волнах.
+
+x-backend-env: &backend-env
+  APP_ENV: ${APP_ENV:-development}
+  DEMO_MODE: ${DEMO_MODE:-true}
+  ALLOW_EXTERNAL_AI: ${ALLOW_EXTERNAL_AI:-false}
+  TZ: ${TZ:-Europe/Moscow}
+  SECRET_KEY: ${SECRET_KEY:?SECRET_KEY не задан, см. .env.example}
+  ACCESS_TOKEN_MINUTES: ${ACCESS_TOKEN_MINUTES:-15}
+  REFRESH_TOKEN_DAYS: ${REFRESH_TOKEN_DAYS:-7}
+  LOGIN_MAX_ATTEMPTS: ${LOGIN_MAX_ATTEMPTS:-5}
+  LOGIN_LOCK_MINUTES: ${LOGIN_LOCK_MINUTES:-15}
+  COOKIE_SECURE: ${COOKIE_SECURE:-true}
+  DATABASE_URL: ${DATABASE_URL:?DATABASE_URL не задан, см. .env.example}
+  DATABASE_ADMIN_URL: ${DATABASE_ADMIN_URL:?DATABASE_ADMIN_URL не задан, см. .env.example}
+  APP_DB_USER: ${APP_DB_USER:-trainer_app}
+  REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+  SEED_PASSWORD: ${SEED_PASSWORD:-Demo12345}
+  LANGUAGETOOL_URL: ${LANGUAGETOOL_URL:-http://languagetool:8010}
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: deploy/nginx/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    environment:
+      TLS_HOSTS: ${TLS_HOSTS:-localhost,127.0.0.1}
+    volumes:
+      - certs:/etc/nginx/certs
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--no-check-certificate", "-O", "/dev/null", "https://127.0.0.1/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      <<: *backend-env
+    volumes:
+      - storage:/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-m", "app.healthcheck"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  worker:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    command: ["arq", "app.worker.WorkerSettings"]
+    environment:
+      <<: *backend-env
+    volumes:
+      - storage:/storage
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "arq", "--check", "app.worker.WorkerSettings"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-trainer}
+      POSTGRES_USER: ${POSTGRES_USER:-trainer}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD не задан, см. .env.example}
+      APP_DB_USER: ${APP_DB_USER:-trainer_app}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?APP_DB_PASSWORD не задан, см. .env.example}
+      TZ: ${TZ:-Europe/Moscow}
+    ports:
+      # Exposed for local tests and tools; not needed by the containers themselves.
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./deploy/postgres/init-app-role.sh:/docker-entrypoint-initdb.d/10-init-app-role.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "60", "1", "--appendonly", "yes"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  languagetool:
+    image: erikvl87/languagetool:6.5
+    restart: unless-stopped
+    environment:
+      Java_Xms: 512m
+      Java_Xmx: 1g
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:8010/v2/languages || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  backup:
+    build:
+      context: ./deploy/backup
+    restart: unless-stopped
+    environment:
+      PGHOST: postgres
+      PGDATABASE: ${POSTGRES_DB:-trainer}
+      PGUSER: ${POSTGRES_USER:-trainer}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD не задан, см. .env.example}
+      BACKUP_TIME: ${BACKUP_TIME:-03:00}
+      BACKUP_KEEP: ${BACKUP_KEEP:-14}
+      TZ: ${TZ:-Europe/Moscow}
+    volumes:
+      - backups:/backups
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /tmp/backup-alive && find /tmp/backup-alive -mmin -5 | grep -q ."]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # ---------- Профили следующих волн (объявлены, пока пустые) ----------
+  # telephony: Asterisk (PJSIP, WebRTC, ARI) — волна 6.
+  # ai: llama.cpp (диалог, генерация), faster-whisper — волна 5.
+  # live: vLLM, потоковые STT/TTS, VAD — трек G.
+  # monitoring: Prometheus, Grafana — фаза E.
+  profiles-placeholder:
+    image: alpine:3.20
+    command: ["sh", "-c", "echo 'Профили telephony, ai, live, monitoring будут заполнены в следующих волнах'"]
+    profiles: ["telephony", "ai", "live", "monitoring"]
+
+volumes:
+  pgdata:
+  redisdata:
+  storage:
+  backups:
+  certs:

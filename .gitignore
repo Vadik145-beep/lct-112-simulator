@@ -30,3 +30,17 @@ storage/
 
 # keep the example env
 !.env.example
+
+# generated TLS material and backups
+deploy/certs/*.crt
+deploy/certs/*.srl
+deploy/certs/*.cnf
+storage/
+
+# test artefacts
+.pytest_cache/
+.ruff_cache/
+coverage/
+backend/htmlcov/
+frontend/playwright-report/
+frontend/test-results/
