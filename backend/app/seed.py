@@ -16,7 +16,8 @@ from app.security import hash_password
 log = get_logger(__name__)
 
 # Service profiles are assigned to students so wave 3 can route cards by service.
-_STUDENT_SERVICES = ["uprava", "zhilischnik", "gormost", "mosvodostok", "mosgaz", "moslift"]
+# Codes are those of the ``services`` table (see app.importers.classifier.SERVICE_COLUMNS).
+_STUDENT_SERVICES = ["territorial_oiv", "gkh", "gormost", "mosvodostok", "mosgaz", "moslift"]
 
 
 def demo_users() -> list[dict]:
