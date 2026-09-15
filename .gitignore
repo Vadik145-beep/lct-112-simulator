@@ -23,3 +23,10 @@ Thumbs.db
 
 # claude
 .claude/settings.local.json
+
+# dataset and runtime data
+data/organizers/
+storage/
+
+# keep the example env
+!.env.example
