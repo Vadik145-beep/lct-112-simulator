@@ -1,0 +1,254 @@
+[
+  {
+    "ticket_no": 1,
+    "item_no": 2,
+    "field": "situation",
+    "from": "пострадавиих",
+    "to": "пострадавших",
+    "note": "и/ш"
+  },
+  {
+    "ticket_no": 1,
+    "item_no": 2,
+    "field": "address",
+    "from": "стр.Г)",
+    "to": "стр.1)",
+    "note": "1 распознана как Г"
+  },
+  {
+    "ticket_no": 3,
+    "item_no": 1,
+    "field": "address",
+    "from": "(ири уточнении",
+    "to": "(при уточнении",
+    "note": "курсив"
+  },
+  {
+    "ticket_no": 6,
+    "item_no": 1,
+    "field": "situation",
+    "from": "(очевидец) ‚ 916-",
+    "to": "(очевидец), 916-",
+    "note": "запятая"
+  },
+  {
+    "ticket_no": 7,
+    "item_no": 1,
+    "field": "address",
+    "from": "(ири ‘уточнении",
+    "to": "(при уточнении",
+    "note": "курсив"
+  },
+  {
+    "ticket_no": 8,
+    "item_no": 2,
+    "field": "address",
+    "from": "Киевского ш. (МЗ)",
+    "to": "Киевского ш. (М3)",
+    "note": "цифра 3"
+  },
+  {
+    "ticket_no": 8,
+    "item_no": 2,
+    "field": "address",
+    "from": "Минского ш. (МТ)",
+    "to": "Минского ш. (М1)",
+    "note": "цифра 1"
+  },
+  {
+    "ticket_no": 8,
+    "item_no": 3,
+    "field": "address",
+    "from": "дом 75 кори. 2",
+    "to": "дом 75 корп. 2",
+    "note": "корп."
+  },
+  {
+    "ticket_no": 10,
+    "item_no": 3,
+    "field": "address",
+    "from": "дом 20 кори. 2",
+    "to": "дом 20 корп. 2",
+    "note": "корп."
+  },
+  {
+    "ticket_no": 13,
+    "item_no": 1,
+    "field": "address",
+    "from": "(ири уточнении",
+    "to": "(при уточнении",
+    "note": "курсив"
+  },
+  {
+    "ticket_no": 18,
+    "item_no": 1,
+    "field": "situation",
+    "from": "не знает, ‚Слобода",
+    "to": "не знает, Слобода",
+    "note": "точка на скане"
+  },
+  {
+    "ticket_no": 18,
+    "item_no": 1,
+    "field": "address",
+    "from": "Киевского ит. (МЗ)",
+    "to": "Киевского ш. (М3)",
+    "note": "цифра 3"
+  },
+  {
+    "ticket_no": 18,
+    "item_no": 1,
+    "field": "address",
+    "from": "Минского ш. (МТ)",
+    "to": "Минского ш. (М1)",
+    "note": "цифра 1"
+  },
+  {
+    "ticket_no": 18,
+    "item_no": 3,
+    "field": "address",
+    "from": "2 Москва, Огородный проезд, дом 45719, во дворе",
+    "to": "Москва, Огородный проезд, дом 12, во дворе",
+    "note": "в скане «15/19» зачёркнуто, от руки написано «12»"
+  },
+  {
+    "ticket_no": 21,
+    "item_no": 3,
+    "field": "address",
+    "from": "ресторана \\ЗМНЕГТЕ,",
+    "to": "ресторана WHEITE,",
+    "note": "латиница"
+  },
+  {
+    "ticket_no": 24,
+    "item_no": 2,
+    "field": "address",
+    "from": "дом 1, кори. 4",
+    "to": "дом 1, корп. 4",
+    "note": "корп."
+  },
+  {
+    "ticket_no": 25,
+    "item_no": 2,
+    "field": "situation",
+    "from": "ДТП, БТ Б/Р,",
+    "to": "ДТП, Б/П, Б/Р,",
+    "note": "сокращения"
+  },
+  {
+    "ticket_no": 25,
+    "item_no": 2,
+    "field": "address",
+    "from": "Москваа МКАД",
+    "to": "Москва, МКАД",
+    "note": "запятая"
+  },
+  {
+    "ticket_no": 25,
+    "item_no": 3,
+    "field": "address",
+    "from": "КВ. 5, ПОД .[, эт. 1",
+    "to": "кв. 5, под. 1, эт. 1",
+    "note": "регистр и 1"
+  },
+  {
+    "ticket_no": 26,
+    "item_no": 2,
+    "field": "situation",
+    "from": "ДТП, БЛЬ БР,",
+    "to": "ДТП, Б/П, Б/Р,",
+    "note": "сокращения"
+  },
+  {
+    "ticket_no": 27,
+    "item_no": 2,
+    "field": "situation",
+    "from": "ДТП, БП, БР,",
+    "to": "ДТП, Б/П, Б/Р,",
+    "note": "сокращения"
+  },
+  {
+    "ticket_no": 27,
+    "item_no": 3,
+    "field": "situation",
+    "from": "трещина около м в длину",
+    "to": "трещина около 1 м в длину",
+    "note": "пропущена 1"
+  },
+  {
+    "ticket_no": 27,
+    "item_no": 3,
+    "field": "address",
+    "from": "под. [, эт. 5",
+    "to": "под. 1, эт. 5",
+    "note": "1"
+  },
+  {
+    "ticket_no": 28,
+    "item_no": 2,
+    "field": "situation",
+    "from": "ДТИ, БЛЬ БР,",
+    "to": "ДТП, Б/П, Б/Р,",
+    "note": "сокращения"
+  },
+  {
+    "ticket_no": 29,
+    "item_no": 1,
+    "field": "situation",
+    "from": "болышая коробка",
+    "to": "большая коробка",
+    "note": "ь/ы"
+  },
+  {
+    "ticket_no": 29,
+    "item_no": 2,
+    "field": "situation",
+    "from": "ДТП, БАТ, Б/Р,",
+    "to": "ДТП, Б/П, Б/Р,",
+    "note": "сокращения"
+  },
+  {
+    "ticket_no": 29,
+    "item_no": 3,
+    "field": "address",
+    "from": "дом 67, кори. 1",
+    "to": "дом 67, корп. 1",
+    "note": "корп."
+  },
+  {
+    "ticket_no": 30,
+    "item_no": 3,
+    "field": "address",
+    "from": "НМ, с/и Вороновское",
+    "to": "НМ, с/п Вороновское",
+    "note": "с/п"
+  },
+  {
+    "ticket_no": 31,
+    "item_no": 1,
+    "field": "situation",
+    "from": "Соколов Иван ‚916",
+    "to": "Соколов Иван, 916",
+    "note": "запятая"
+  },
+  {
+    "ticket_no": 26,
+    "item_no": 1,
+    "field": "address",
+    "from": "дом 3}",
+    "to": "дом 3)",
+    "note": "скобка"
+  },
+  {
+    "ticket_no": 1,
+    "item_no": 1,
+    "confirmed": true,
+    "note": "низкая уверенность из-за курсива в адресе, текст сверен со сканом"
+  },
+  {
+    "ticket_no": 21,
+    "item_no": 3,
+    "confirmed": true,
+    "note": "латиница WHEITE есть в оригинале"
+  }
+]
