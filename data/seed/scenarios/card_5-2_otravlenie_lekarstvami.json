@@ -1,0 +1,69 @@
+{
+  "kind": "card_response",
+  "title": "Женщина без сознания после приёма лекарств",
+  "ticket_ref": "5-2",
+  "service": "103",
+  "difficulty": 2,
+  "norm_seconds": 30,
+  "card": {
+    "number": "38262390",
+    "incident_type": "22.34.0.0",
+    "signs": [
+      "Отравление"
+    ],
+    "flags": {
+      "injured": true
+    },
+    "address": {
+      "street": "Коломенская набережная",
+      "house": "18",
+      "apartment": "142",
+      "entrance": "3",
+      "floor": "4",
+      "code": "142",
+      "okrug": "ЮАО",
+      "district": "район Нагатинский Затон"
+    },
+    "caller": {
+      "name": "Иванов Пётр Сергеевич",
+      "role": "муж",
+      "phone": "+7 916 897-56-23"
+    },
+    "description": "Женщина случайно выпила не те лекарственные препараты, потеряла сознание. Иванова Ирина Петровна, 10.03.1985. Дышит.",
+    "notified": [
+      {
+        "service": "103",
+        "status": "Добавлена"
+      }
+    ]
+  },
+  "reference": {
+    "decision": "accept",
+    "reject_reason": null,
+    "status_chain": [
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "response_started",
+        "order_number": true,
+        "comment_example": "Направлена бригада 12-04"
+      },
+      {
+        "status": "arrived"
+      },
+      {
+        "status": "works_started",
+        "comment_example": "Осмотр, промывание, транспортировка"
+      },
+      {
+        "status": "works_done",
+        "comment_example": "Пациентка госпитализирована в ГКБ № 7"
+      }
+    ],
+    "critical_errors": [
+      "late_primary",
+      "no_status"
+    ]
+  }
+}

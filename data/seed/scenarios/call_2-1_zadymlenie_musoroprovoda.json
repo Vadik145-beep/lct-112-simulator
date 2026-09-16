@@ -1,0 +1,142 @@
+{
+  "kind": "call_intake",
+  "title": "Задымление мусоропровода в жилом доме",
+  "ticket_ref": "2-1",
+  "difficulty": 2,
+  "norm_seconds": 90,
+  "caller": {
+    "persona": "worried_resident",
+    "voice": "ru_male_1",
+    "noise": "indoor",
+    "opening": "Алло, 112? У нас в доме мусоропровод дымит, весь этаж в дыму!",
+    "facts": {
+      "what_happened": "задымление мусоропровода, дым на лестничной площадке",
+      "address": "улица Берзарина, дом 21, корпус 1, подъезд 3, домофон 68",
+      "floor": "7, дом 17-этажный",
+      "injured": "нет",
+      "danger": "открытого пламени не видит",
+      "caller_name": "Ким Олег Юрьевич",
+      "callback_phone": "916-126-34-71"
+    },
+    "behaviour": "спокоен, но торопится; корпус называет только если спросить",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Мусоропровод дымит, на площадке дым стоит, пламени не вижу.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "address",
+      "text": "Берзарина, дом двадцать один... корпус один, третий подъезд.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "entrance_floor_code",
+      "text": "Я на седьмом, дом семнадцатиэтажный. Домофон шестьдесят восемь.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "injured",
+      "text": "Нет, пострадавших нет, просто дышать тяжело.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "danger",
+      "text": "Огня не видно, только дым из мусоропровода.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "caller_name",
+      "text": "Ким Олег Юрьевич.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "callback_phone",
+      "text": "Девятьсот шестнадцать, сто двадцать шесть, тридцать четыре, семьдесят один.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "repeat",
+      "text": "Что? Повторите, плохо слышно!",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "unknown",
+      "text": "Не знаю, приезжайте скорее!",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "entrance_floor_code",
+    "injured",
+    "danger",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "жилой дом",
+      "мусоропровод",
+      "дым"
+    ],
+    "incident_type": "1.5.6.2",
+    "flags": {
+      "injured": false,
+      "no_access": false,
+      "threat": false
+    },
+    "address": {
+      "street": "улица Берзарина",
+      "house": "21",
+      "building": "1",
+      "entrance": "3",
+      "floor": "7",
+      "code": "68",
+      "okrug": "СЗАО",
+      "district": "район Хорошёво-Мнёвники"
+    },
+    "caller": {
+      "name": "Ким Олег Юрьевич",
+      "role": "очевидец",
+      "phone": "916-126-34-71"
+    },
+    "description_keywords": [
+      "задымление",
+      "мусоропровод",
+      "7 этаж",
+      "открытого пламени",
+      "пострадавших нет"
+    ],
+    "description": "Задымление мусоропровода в жилом доме, в доме 17 этажей, заявитель на 7 этаже. Открытого пламени не видит, пострадавших нет.",
+    "expected_services": [
+      "101",
+      "102",
+      "mosoblgaz",
+      "gkh",
+      "codd",
+      "duty_arm112",
+      "mkp_analytics",
+      "mayor_office",
+      "territorial_oiv",
+      "territorial_oiv_tinao",
+      "moszhilinspection",
+      "ntu",
+      "dgp_integration",
+      "dgp_arm112",
+      "cukb_mo"
+    ]
+  }
+}

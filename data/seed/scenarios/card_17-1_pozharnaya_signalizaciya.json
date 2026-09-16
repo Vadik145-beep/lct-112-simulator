@@ -1,0 +1,62 @@
+{
+  "kind": "card_response",
+  "title": "Сработала пожарная сигнализация в жилом доме",
+  "ticket_ref": "17-1",
+  "service": "territorial_oiv",
+  "difficulty": 2,
+  "norm_seconds": 30,
+  "card": {
+    "number": "38261102",
+    "incident_type": "1.5.16.0",
+    "signs": [
+      "жилой дом",
+      "сигнализация"
+    ],
+    "flags": {
+      "injured": false,
+      "threat": false
+    },
+    "address": {
+      "street": "Большой Сухаревский переулок",
+      "house": "19",
+      "structure": "2",
+      "entrance": "1",
+      "code": "2215",
+      "okrug": "ЦАО",
+      "district": "Мещанский район"
+    },
+    "caller": {
+      "name": "Сухов Леонид Сергеевич",
+      "role": "жилец",
+      "phone": "+7 916 123-98-78"
+    },
+    "description": "В жилом доме сработала пожарная сигнализация, дыма и возгорания нет. Дом обслуживает УК «ПИК».",
+    "notified": [
+      {
+        "service": "101",
+        "status": "Получена службой"
+      },
+      {
+        "service": "gkh",
+        "status": "Добавлена"
+      },
+      {
+        "service": "territorial_oiv",
+        "status": "Добавлена"
+      }
+    ]
+  },
+  "reference": {
+    "decision": "reject",
+    "reject_reason": "transferred",
+    "status_chain": [
+      {
+        "status": "rejected",
+        "comment_example": "Дом обслуживает УК «ПИК», информация передана в диспетчерскую УК, телефон 8-495-000-00-00"
+      }
+    ],
+    "critical_errors": [
+      "empty_reject_comment"
+    ]
+  }
+}

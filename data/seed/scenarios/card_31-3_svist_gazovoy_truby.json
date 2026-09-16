@@ -1,0 +1,76 @@
+{
+  "kind": "card_response",
+  "title": "Свист газовой трубы в квартире",
+  "ticket_ref": "31-3",
+  "service": "mosgaz",
+  "difficulty": 1,
+  "norm_seconds": 30,
+  "card": {
+    "number": "38262215",
+    "incident_type": "13.2.4.0",
+    "signs": [
+      "Запах газа в помещении",
+      "От газововго оборудования"
+    ],
+    "flags": {
+      "injured": false,
+      "no_access": false,
+      "threat": false
+    },
+    "address": {
+      "street": "улица Вавилова",
+      "house": "81",
+      "building": "1",
+      "apartment": "5",
+      "entrance": "1",
+      "floor": "2",
+      "code": "5В",
+      "okrug": "ЮЗАО",
+      "district": "Ломоносовский район"
+    },
+    "caller": {
+      "name": "Трунов Олег Егорович",
+      "role": "жилец",
+      "phone": "+7 916 320-12-83"
+    },
+    "description": "Свист от газовой трубы в квартире на кухне, запаха газа нет, скорая не требуется.",
+    "notified": [
+      {
+        "service": "101",
+        "status": "Получена службой"
+      },
+      {
+        "service": "mosgaz",
+        "status": "Добавлена"
+      }
+    ]
+  },
+  "reference": {
+    "decision": "accept",
+    "reject_reason": null,
+    "status_chain": [
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "response_started",
+        "order_number": true,
+        "comment_example": "Направлена аварийная бригада, наряд 07-1153"
+      },
+      {
+        "status": "arrived"
+      },
+      {
+        "status": "works_started",
+        "comment_example": "Перекрыт кран на вводе, проверка соединений"
+      },
+      {
+        "status": "works_done",
+        "comment_example": "Устранена утечка на резьбовом соединении, газоснабжение восстановлено"
+      }
+    ],
+    "critical_errors": [
+      "late_primary"
+    ]
+  }
+}
