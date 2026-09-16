@@ -60,7 +60,9 @@ async def test_languagetool_down_falls_back_and_waits_before_retry(monkeypatch) 
     assert second.method == "unavailable"
     assert calls == 1
     # After the window a restarted LanguageTool is picked up.
-    monkeypatch.setattr(grammar_module.time, "monotonic", lambda: 10_000.0)
+    # monotonic() counts from boot, so jump relative to the deadline, not to an absolute value.
+    retry_at = provider._unavailable_until
+    monkeypatch.setattr(grammar_module.time, "monotonic", lambda: retry_at + 1.0)
     provider._transport = _mock_transport()
     third = await provider.check("Прибыл наряд")
     assert third.method == "languagetool"
