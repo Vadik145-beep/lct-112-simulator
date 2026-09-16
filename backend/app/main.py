@@ -14,7 +14,9 @@ from app.config import get_settings
 from app.errors import install_error_handlers
 from app.logging import configure_logging, get_logger
 from app.routers.cabinets import router as cabinets_router
+from app.routers.grammar import router as grammar_router
 from app.routers.me import router as me_router
+from app.routers.reference import router as reference_router
 from app.routers.system import router as system_router
 
 API_PREFIX = "/api"
@@ -79,6 +81,8 @@ def create_app() -> FastAPI:
     app.include_router(auth_router, prefix=API_PREFIX)
     app.include_router(me_router, prefix=API_PREFIX)
     app.include_router(cabinets_router, prefix=API_PREFIX)
+    app.include_router(reference_router, prefix=API_PREFIX)
+    app.include_router(grammar_router, prefix=API_PREFIX)
     return app
 
 

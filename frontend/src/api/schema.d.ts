@@ -191,6 +191,213 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/classifier/tree": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Classifier Tree */
+        get: operations["classifier_tree_api_classifier_tree_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/classifier/{code}/services": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Classifier Services */
+        get: operations["classifier_services_api_classifier__code__services_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/incident-flags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Incident Flags */
+        get: operations["incident_flags_api_incident_flags_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/services": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Services */
+        get: operations["services_api_services_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/response-statuses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Response Statuses */
+        get: operations["response_statuses_api_response_statuses_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/card-statuses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Card Statuses */
+        get: operations["card_statuses_api_card_statuses_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/reject-reasons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Reject Reasons */
+        get: operations["reject_reasons_api_reject_reasons_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/caller-topics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Caller Topics */
+        get: operations["caller_topics_api_caller_topics_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/typical-errors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Typical Errors */
+        get: operations["typical_errors_api_typical_errors_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/tickets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Tickets */
+        get: operations["tickets_api_tickets_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/streets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Streets
+         * @description Prefix search by any word of the street name, «ё» and case insensitive.
+         */
+        get: operations["streets_api_streets_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/grammar/check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Grammar Check */
+        post: operations["grammar_check_api_grammar_check_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -203,12 +410,101 @@ export interface components {
             /** Sections */
             sections: string[];
         };
+        /** CallerTopicOut */
+        CallerTopicOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Keywords */
+            keywords: string[];
+        };
+        /** CardStatusOut */
+        CardStatusOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Is Alert */
+            is_alert: boolean;
+        };
         /** ChangePasswordRequest */
         ChangePasswordRequest: {
             /** Old Password */
             old_password: string;
             /** New Password */
             new_password: string;
+        };
+        /** ClassifierGroupOut */
+        ClassifierGroupOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Children */
+            children: components["schemas"]["ClassifierNode"][];
+        };
+        /** ClassifierNode */
+        ClassifierNode: {
+            /** Title */
+            title: string;
+            /** Type Code */
+            type_code?: string | null;
+            /** Final Title */
+            final_title?: string | null;
+            /**
+             * Flags
+             * @default []
+             */
+            flags: string[];
+            /**
+             * Children
+             * @default []
+             */
+            children: components["schemas"]["ClassifierNode"][];
+        };
+        /** ClassifierTreeOut */
+        ClassifierTreeOut: {
+            /** Groups */
+            groups: components["schemas"]["ClassifierGroupOut"][];
+            /** Types Total */
+            types_total: number;
+        };
+        /** GrammarCheckIn */
+        GrammarCheckIn: {
+            /** Text */
+            text: string;
+            /**
+             * Language
+             * @default ru-RU
+             */
+            language: string;
+        };
+        /** GrammarCheckOut */
+        GrammarCheckOut: {
+            /** Method */
+            method: string;
+            /** Available */
+            available: boolean;
+            /** Error Count */
+            error_count: number;
+            /** Matches */
+            matches: components["schemas"]["GrammarMatchOut"][];
+        };
+        /** GrammarMatchOut */
+        GrammarMatchOut: {
+            /** Offset */
+            offset: number;
+            /** Length */
+            length: number;
+            /** Message */
+            message: string;
+            /** Rule Id */
+            rule_id: string;
+            /** Category */
+            category: string;
+            /** Replacements */
+            replacements: string[];
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -225,6 +521,15 @@ export interface components {
             redis: string;
             /** Version */
             version: string;
+        };
+        /** IncidentFlagOut */
+        IncidentFlagOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Column Hint */
+            column_hint: string | null;
         };
         /** LoginRequest */
         LoginRequest: {
@@ -247,11 +552,80 @@ export interface components {
             /** App Env */
             app_env: string;
         };
+        /** RejectReasonOut */
+        RejectReasonOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+        };
+        /** ResponseStatusOut */
+        ResponseStatusOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Order */
+            order: number;
+            /** Is System */
+            is_system: boolean;
+            /** Is Primary */
+            is_primary: boolean;
+            /** Is Final */
+            is_final: boolean;
+            /** Requires Comment */
+            requires_comment: boolean;
+            /** Requires Order Number */
+            requires_order_number: boolean;
+            /** Allowed Next */
+            allowed_next: string[];
+            /** Description */
+            description: string | null;
+        };
         /**
          * Role
          * @enum {string}
          */
         Role: "student" | "teacher" | "admin";
+        /** ServiceOut */
+        ServiceOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Short Title */
+            short_title: string;
+            /** No Reject */
+            no_reject: boolean;
+            /** Via Arm112 */
+            via_arm112: boolean;
+        };
+        /** StreetOut */
+        StreetOut: {
+            /** Name */
+            name: string;
+            /** Okrug */
+            okrug: string;
+            /** District */
+            district: string;
+        };
+        /** TicketOut */
+        TicketOut: {
+            /** Id */
+            id: string;
+            /** Ticket No */
+            ticket_no: number;
+            /** Item No */
+            item_no: number;
+            /** Situation */
+            situation: string;
+            /** Address */
+            address: string;
+            /** Ocr Confident */
+            ocr_confident: boolean;
+            /** Traps */
+            traps: string[];
+        };
         /** TokenResponse */
         TokenResponse: {
             /** Access Token */
@@ -264,6 +638,38 @@ export interface components {
             /** Expires In */
             expires_in: number;
             user: components["schemas"]["UserOut"];
+        };
+        /** TypeServicesOut */
+        TypeServicesOut: {
+            /** Type Code */
+            type_code: string;
+            /** Final Title */
+            final_title: string;
+            /** Main Service */
+            main_service: string | null;
+            /** Flags */
+            flags: string[];
+            /** Available Flags */
+            available_flags: string[];
+            /** Services */
+            services: components["schemas"]["ServiceOut"][];
+        };
+        /** TypicalErrorOut */
+        TypicalErrorOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string;
+            /** Mode */
+            mode: string;
+            /** Penalty */
+            penalty: number;
+            /** Memo Ref */
+            memo_ref: string | null;
+            /** Example */
+            example: string | null;
         };
         /** UserOut */
         UserOut: {
@@ -568,6 +974,296 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CabinetOut"];
+                };
+            };
+        };
+    };
+    classifier_tree_api_classifier_tree_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClassifierTreeOut"];
+                };
+            };
+        };
+    };
+    classifier_services_api_classifier__code__services_get: {
+        parameters: {
+            query?: {
+                /** @description Признаки через запятую, например injured,no_access */
+                flags?: string;
+            };
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TypeServicesOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    incident_flags_api_incident_flags_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentFlagOut"][];
+                };
+            };
+        };
+    };
+    services_api_services_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceOut"][];
+                };
+            };
+        };
+    };
+    response_statuses_api_response_statuses_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResponseStatusOut"][];
+                };
+            };
+        };
+    };
+    card_statuses_api_card_statuses_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CardStatusOut"][];
+                };
+            };
+        };
+    };
+    reject_reasons_api_reject_reasons_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RejectReasonOut"][];
+                };
+            };
+        };
+    };
+    caller_topics_api_caller_topics_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CallerTopicOut"][];
+                };
+            };
+        };
+    };
+    typical_errors_api_typical_errors_get: {
+        parameters: {
+            query?: {
+                /** @description card_response или call_intake */
+                mode?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TypicalErrorOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    tickets_api_tickets_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TicketOut"][];
+                };
+            };
+        };
+    };
+    streets_api_streets_get: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StreetOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    grammar_check_api_grammar_check_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GrammarCheckIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GrammarCheckOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

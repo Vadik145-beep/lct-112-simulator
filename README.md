@@ -48,7 +48,7 @@ docker compose up -d --build
 | Сервис | Назначение |
 |---|---|
 | `nginx` | TLS, статика фронтенда, прокси `/api` и `/ws` |
-| `backend` | FastAPI: API, вход, роли, аудит (`/api/docs` в режиме разработки) |
+| `backend` | FastAPI: API, вход, роли, аудит, справочники датасета (`/api/docs` в режиме разработки) |
 | `worker` | фоновые задачи (ARQ) |
 | `postgres` | PostgreSQL 16 + pgvector |
 | `redis` | очередь и события |
@@ -57,6 +57,24 @@ docker compose up -d --build
 
 Профили `telephony`, `ai`, `live`, `monitoring` объявлены и заполняются по плану.
 
+## Данные организаторов
+
+Справочники (классификатор происшествий, статусы, типичные ошибки, 96 ситуаций из билетов,
+улицы Москвы) лежат в `data/seed/` и загружаются в базу при старте бэкенда; повторная загрузка
+безопасна: `docker compose exec backend python -m app.importers.organizers`. Исходные файлы
+организаторов кладутся в `data/organizers/` (в git не попадают); если они на месте, импорт
+пересобирает `data/seed/classifier.json` из xlsx. Разбор датасета: [docs/DATASET.md](docs/DATASET.md).
+
+Пересборка производных файлов на машине разработчика (нужны интернет для улиц и Tesseract с
+языком `rus` для билетов):
+
+```bash
+cd backend
+uv run --group dataset python -m app.importers.tickets_ocr    # data/seed/tickets.json
+uv run --group dataset python -m app.importers.memo_extract   # data/seed/memo.txt
+uv run --group dataset python -m app.importers.streets_osm    # data/seed/streets.json
+```
+
 ## Разработка
 
 Нужны Node.js 22, Python 3.12 и [`uv`](https://docs.astral.sh/uv/).
@@ -64,7 +82,7 @@ docker compose up -d --build
 ```bash
 docker compose up -d postgres redis      # база и очередь
 cd backend && uv sync && cp ../.env.example ../.env
-uv run alembic upgrade head && uv run python -m app.seed
+uv run alembic upgrade head && uv run python -m app.importers.organizers && uv run python -m app.seed
 uv run uvicorn app.main:app --reload     # API на http://localhost:8000
 cd ../frontend && npm ci && npm run dev  # интерфейс на http://localhost:5173
 ```
@@ -80,5 +98,6 @@ cd ../frontend && npm ci && npm run dev  # интерфейс на http://localh
 - [PRD.md](PRD.md) — продукт, архитектура, требования.
 - [plan/README.md](plan/README.md) — план по волнам.
 - [docs/PROGRESS.md](docs/PROGRESS.md) — что сделано и что дальше.
+- [docs/DATASET.md](docs/DATASET.md) — разбор датасета организаторов.
 - [docs/DECISIONS.md](docs/DECISIONS.md), [docs/BLOCKERS.md](docs/BLOCKERS.md),
   [docs/LIBRARIES.md](docs/LIBRARIES.md).

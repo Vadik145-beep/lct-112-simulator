@@ -20,6 +20,8 @@ x-backend-env: &backend-env
   SEED_PASSWORD: ${SEED_PASSWORD:-Demo12345}
   LANGUAGETOOL_URL: ${LANGUAGETOOL_URL:-http://languagetool:8010}
   LOG_LEVEL: ${LOG_LEVEL:-INFO}
+  DATA_DIR: /data
+  EMBEDDING_MODEL_DIR: ${EMBEDDING_MODEL_DIR:-}
 
 services:
   nginx:
@@ -52,6 +54,7 @@ services:
       <<: *backend-env
     volumes:
       - storage:/storage
+      - ./data:/data:ro
     depends_on:
       postgres:
         condition: service_healthy
@@ -73,6 +76,7 @@ services:
       <<: *backend-env
     volumes:
       - storage:/storage
+      - ./data:/data:ro
     depends_on:
       backend:
         condition: service_healthy

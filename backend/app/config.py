@@ -34,6 +34,11 @@ class Settings(BaseSettings):
 
     seed_password: str = "Demo12345"  # noqa: S105 - demo default, see .env.example
     languagetool_url: str = "http://languagetool:8010"
+    # Dataset folder: data/organizers (source files, not committed) and data/seed (derived,
+    # committed). Mounted read-only into the containers; ../data when running from backend/.
+    data_dir: str = "../data"
+    # Local sentence-transformers model for embeddings; TF-IDF is used when it is absent.
+    embedding_model_dir: str | None = None
 
     # Optional OpenAI-compatible endpoint for local models (used from wave 5).
     llm_base_url: str | None = None
