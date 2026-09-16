@@ -1,0 +1,304 @@
+{
+  "scenario": {
+    "title": "Ребёнок упал с велосипеда (другой регион)",
+    "ticket_ref": "1-3",
+    "kind": "call_intake"
+  },
+  "attempt": {
+    "answered_at": "2026-09-16T10:00:00Z",
+    "submitted_at": "2026-09-16T10:01:50Z",
+    "card": {
+      "signs_path": [
+        "Травма"
+      ],
+      "incident_type": "22.2.0.0",
+      "flags": {
+        "injured": true
+      },
+      "services": [
+        "103",
+        "ntu",
+        "fso"
+      ],
+      "address": {
+        "region": null,
+        "city": null,
+        "street": "улица Карла Маркса",
+        "house": null,
+        "building": null,
+        "structure": null,
+        "entrance": null,
+        "floor": null,
+        "code": null,
+        "apartment": null,
+        "okrug": null,
+        "district": null,
+        "descriptive": "около Волжского молсыркомбината"
+      },
+      "caller": {
+        "name": "Смирнова Анна",
+        "role": "мать",
+        "phone": "916-320-12-83"
+      },
+      "description": "Ребенок 11 лет упал с велосипеда, отек руки и ноги, вызывает мама"
+    },
+    "dialog": [
+      {
+        "role": "caller",
+        "text": "Помогите, сын упал с велосипеда, рука опухла, нога тоже!",
+        "topics": [
+          "what_happened"
+        ],
+        "at": null
+      },
+      {
+        "role": "operator",
+        "text": "Вопрос по теме what_happened",
+        "topics": [
+          "what_happened"
+        ],
+        "at": null
+      },
+      {
+        "role": "caller",
+        "text": "Сын с велосипеда упал, сам, никто не сбивал. Рука распухла и нога.",
+        "topics": [
+          "what_happened"
+        ],
+        "at": null
+      },
+      {
+        "role": "operator",
+        "text": "Вопрос по теме address",
+        "topics": [
+          "address"
+        ],
+        "at": null
+      },
+      {
+        "role": "caller",
+        "text": "Мы на Карла Маркса, около молсыркомбината.",
+        "topics": [
+          "address"
+        ],
+        "at": null
+      },
+      {
+        "role": "operator",
+        "text": "Вопрос по теме injured",
+        "topics": [
+          "injured"
+        ],
+        "at": null
+      },
+      {
+        "role": "caller",
+        "text": "Илья, одиннадцать лет, в сознании, плачет.",
+        "topics": [
+          "injured"
+        ],
+        "at": null
+      },
+      {
+        "role": "operator",
+        "text": "Вопрос по теме caller_name",
+        "topics": [
+          "caller_name"
+        ],
+        "at": null
+      },
+      {
+        "role": "caller",
+        "text": "Смирнова Анна, я мама.",
+        "topics": [
+          "caller_name"
+        ],
+        "at": null
+      }
+    ],
+    "call_dropped_marked": false,
+    "no_contact_marked": false
+  },
+  "evaluation": {
+    "mode": "call_intake",
+    "total": 65,
+    "passed": false,
+    "components": {
+      "survey_card": {
+        "key": "survey_card",
+        "title": "Опросная карта",
+        "score": 5.0,
+        "max": 25,
+        "status": "checked",
+        "items": [
+          {
+            "expected_type": "22.53.0.0",
+            "actual_type": "22.2.0.0",
+            "matched_levels": 1,
+            "levels": 2,
+            "note": "верна только группа"
+          }
+        ]
+      },
+      "flags_services": {
+        "key": "flags_services",
+        "title": "Признаки и службы",
+        "score": 10.0,
+        "max": 10,
+        "status": "checked",
+        "items": [
+          {
+            "flags_wrong": [],
+            "flags_fraction": 1.0
+          },
+          {
+            "expected_services": [
+              "103",
+              "fso",
+              "ntu"
+            ],
+            "actual_services": [
+              "103",
+              "fso",
+              "ntu"
+            ],
+            "missing": [],
+            "extra": [],
+            "jaccard": 1.0
+          }
+        ]
+      },
+      "address": {
+        "key": "address",
+        "title": "Адрес",
+        "score": 9.0,
+        "max": 15,
+        "status": "checked",
+        "items": [
+          {
+            "part": "street",
+            "weight": 3,
+            "match": 1.0,
+            "note": "совпадение 100%"
+          },
+          {
+            "part": "region",
+            "weight": 1,
+            "match": 0.0,
+            "note": "ожидалось «Волгоградская область»"
+          },
+          {
+            "part": "city",
+            "weight": 1,
+            "match": 0.0,
+            "note": "ожидалось «Волжский»"
+          }
+        ]
+      },
+      "required_topics": {
+        "key": "required_topics",
+        "title": "Обязательные вопросы",
+        "score": 10.0,
+        "max": 15,
+        "status": "checked",
+        "items": [
+          {
+            "required": [
+              "what_happened",
+              "address",
+              "region",
+              "injured",
+              "caller_name",
+              "callback_phone"
+            ],
+            "covered": [
+              "what_happened",
+              "address",
+              "injured",
+              "caller_name"
+            ],
+            "missing": [
+              "region",
+              "callback_phone"
+            ]
+          }
+        ]
+      },
+      "description": {
+        "key": "description",
+        "title": "Описание",
+        "score": 10.0,
+        "max": 10,
+        "status": "checked",
+        "items": [
+          {
+            "keywords_found": [
+              "11 лет",
+              "упал с велосипеда",
+              "отек руки",
+              "вызывает мама"
+            ],
+            "keywords_missing": []
+          },
+          {
+            "similarity": 0.8809,
+            "thresholds": [
+              0.3,
+              0.7
+            ],
+            "method": "tfidf"
+          }
+        ]
+      },
+      "time": {
+        "key": "time",
+        "title": "Время",
+        "score": 7.8,
+        "max": 10,
+        "status": "checked",
+        "items": [
+          {
+            "seconds": 110.0,
+            "norm_seconds": 90,
+            "note": null
+          }
+        ]
+      },
+      "typical_errors": {
+        "key": "typical_errors",
+        "title": "Типичные ошибки",
+        "score": 3.0,
+        "max": 5,
+        "status": "checked",
+        "items": [
+          {
+            "code": "region_not_clarified",
+            "penalty": 2
+          }
+        ]
+      },
+      "grammar": {
+        "key": "grammar",
+        "title": "Грамотность",
+        "score": 10.0,
+        "max": 10,
+        "status": "checked",
+        "items": []
+      }
+    },
+    "errors": [
+      {
+        "code": "region_not_clarified",
+        "title": "Не уточнён регион происшествия",
+        "penalty": 2,
+        "explanation": "Происшествие в регионе «Волгоградская область», а карточка оформлена как московская: регион не уточнён.",
+        "memo_ref": "билеты, ситуации 1-3, 4-2, 7-2",
+        "critical": false
+      }
+    ],
+    "methods": {
+      "grammar": "languagetool",
+      "similarity": "tfidf"
+    }
+  }
+}

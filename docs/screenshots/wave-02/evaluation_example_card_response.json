@@ -1,0 +1,201 @@
+{
+  "scenario": {
+    "title": "Задымление мусоропровода в жилом доме",
+    "ticket_ref": "2-1",
+    "kind": "card_response"
+  },
+  "attempt": {
+    "issued_at": "2026-09-16T10:00:00Z",
+    "received_at": "2026-09-16T10:00:05Z",
+    "status_log": [
+      {
+        "status": "received",
+        "at": "2026-09-16T10:00:05Z",
+        "order_number": null,
+        "comment": null,
+        "reject_reason": null
+      },
+      {
+        "status": "accepted",
+        "at": "2026-09-16T10:00:42Z",
+        "order_number": null,
+        "comment": null,
+        "reject_reason": null
+      },
+      {
+        "status": "response_started",
+        "at": "2026-09-16T10:02:30Z",
+        "order_number": "14-217",
+        "comment": "Направлен слесарь, наряд 14-217",
+        "reject_reason": null
+      },
+      {
+        "status": "works_started",
+        "at": "2026-09-16T10:11:40Z",
+        "order_number": null,
+        "comment": null,
+        "reject_reason": null
+      },
+      {
+        "status": "works_done",
+        "at": "2026-09-16T10:25:00Z",
+        "order_number": null,
+        "comment": "Задымление устранино, пострадавших нет",
+        "reject_reason": null
+      }
+    ]
+  },
+  "evaluation": {
+    "mode": "card_response",
+    "total": 74,
+    "passed": false,
+    "components": {
+      "decision": {
+        "key": "decision",
+        "title": "Решение",
+        "score": 30.0,
+        "max": 30,
+        "status": "checked",
+        "items": [
+          {
+            "expected": "accept",
+            "actual": "accept",
+            "note": "решение верно"
+          }
+        ]
+      },
+      "time": {
+        "key": "time",
+        "title": "Время принятия",
+        "score": 12.0,
+        "max": 20,
+        "status": "checked",
+        "items": [
+          {
+            "seconds": 42.0,
+            "norm_seconds": 30,
+            "note": null
+          }
+        ]
+      },
+      "status_chain": {
+        "key": "status_chain",
+        "title": "Цепочка статусов",
+        "score": 16.0,
+        "max": 20,
+        "status": "checked",
+        "items": [
+          {
+            "expected": [
+              "accepted",
+              "response_started",
+              "arrived",
+              "works_started",
+              "works_done"
+            ],
+            "actual": [
+              "accepted",
+              "response_started",
+              "works_started",
+              "works_done"
+            ],
+            "matched": [
+              "accepted",
+              "response_started",
+              "works_started",
+              "works_done"
+            ],
+            "missing": [
+              "arrived"
+            ],
+            "extra": []
+          }
+        ]
+      },
+      "comments": {
+        "key": "comments",
+        "title": "Комментарии и наряд",
+        "score": 10.0,
+        "max": 15,
+        "status": "checked",
+        "items": [
+          {
+            "status": "response_started",
+            "title": "Начало реагирования",
+            "comment": "Направлен слесарь, наряд 14-217",
+            "similarity": 0.8783,
+            "order_number": "14-217",
+            "fraction": 1.0
+          },
+          {
+            "status": "works_started",
+            "title": "Проведение работ",
+            "comment": "нет",
+            "fraction": 0.0
+          },
+          {
+            "status": "works_done",
+            "title": "Работы завершены",
+            "comment": "Задымление устранино, пострадавших нет",
+            "similarity": 0.7831,
+            "fraction": 1.0
+          }
+        ]
+      },
+      "typical_errors": {
+        "key": "typical_errors",
+        "title": "Типичные ошибки",
+        "score": 2.0,
+        "max": 10,
+        "status": "checked",
+        "items": [
+          {
+            "code": "late_primary",
+            "penalty": 4
+          },
+          {
+            "code": "progress_missing",
+            "penalty": 4
+          }
+        ]
+      },
+      "grammar": {
+        "key": "grammar",
+        "title": "Грамотность",
+        "score": 4.0,
+        "max": 5,
+        "status": "checked",
+        "items": [
+          {
+            "offset": 0,
+            "length": 1,
+            "message": "ошибка",
+            "replacements": []
+          }
+        ]
+      }
+    },
+    "errors": [
+      {
+        "code": "late_primary",
+        "title": "Первичный статус проставлен позже норматива",
+        "penalty": 4,
+        "explanation": "«Принята» проставлена через 42 с после направления карточки при нормативе 30 с.",
+        "memo_ref": "стр. 21, 26 (своевременность)",
+        "critical": true
+      },
+      {
+        "code": "progress_missing",
+        "title": "Нет статусов хода работ или комментариев к ним",
+        "penalty": 4,
+        "explanation": "Ход работ не отражён в карточке: не проставлены «Прибытие»; без комментария «Проведение работ».",
+        "memo_ref": "стр. 31, пример 6",
+        "critical": true
+      }
+    ],
+    "methods": {
+      "grammar": "languagetool",
+      "similarity": "tfidf"
+    }
+  }
+}
