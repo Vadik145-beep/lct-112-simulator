@@ -1,0 +1,1023 @@
+{
+  "description": "Тестовый набор для режима select: 100 вопросов оператора по 5 сценариям приёма вызова (data/seed/scenarios/call_*.json) с допустимыми темами ответа заявителя. Ответ верный, если выбранная реплика имеет одну из expected_topics; пустой expected_reply_ids означает, что подходящей реплики нет и ожидается null (заявитель переспрашивает).",
+  "items": [
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Что у вас случилось?",
+      "expected_topics": [
+        "what_happened"
+      ],
+      "expected_reply_ids": [
+        1
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Расскажите подробнее, что именно происходит с трубой?",
+      "expected_topics": [
+        "what_happened"
+      ],
+      "expected_reply_ids": [
+        1
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Газом пахнет?",
+      "expected_topics": [
+        "what_happened",
+        "danger"
+      ],
+      "expected_reply_ids": [
+        1,
+        5
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Назовите адрес, пожалуйста.",
+      "expected_topics": [
+        "address"
+      ],
+      "expected_reply_ids": [
+        2
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Какая улица, какой дом?",
+      "expected_topics": [
+        "address"
+      ],
+      "expected_reply_ids": [
+        2
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Где это происходит?",
+      "expected_topics": [
+        "address"
+      ],
+      "expected_reply_ids": [
+        2
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Корпус есть?",
+      "expected_topics": [
+        "address"
+      ],
+      "expected_reply_ids": [
+        2
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Какой подъезд и этаж?",
+      "expected_topics": [
+        "entrance_floor_code"
+      ],
+      "expected_reply_ids": [
+        3
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Номер квартиры и код домофона?",
+      "expected_topics": [
+        "entrance_floor_code"
+      ],
+      "expected_reply_ids": [
+        3
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Кому-нибудь плохо? Скорая нужна?",
+      "expected_topics": [
+        "injured"
+      ],
+      "expected_reply_ids": [
+        4
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Есть пострадавшие?",
+      "expected_topics": [
+        "injured"
+      ],
+      "expected_reply_ids": [
+        4
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Вы кран перекрыли? Окна открыли?",
+      "expected_topics": [
+        "danger"
+      ],
+      "expected_reply_ids": [
+        5
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Что вы уже сделали?",
+      "expected_topics": [
+        "danger"
+      ],
+      "expected_reply_ids": [
+        5
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Представьтесь, пожалуйста.",
+      "expected_topics": [
+        "caller_name"
+      ],
+      "expected_reply_ids": [
+        6
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Как вас зовут, фамилия, имя, отчество?",
+      "expected_topics": [
+        "caller_name"
+      ],
+      "expected_reply_ids": [
+        6
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Оставьте номер телефона для связи.",
+      "expected_topics": [
+        "callback_phone"
+      ],
+      "expected_reply_ids": [
+        7
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "По какому номеру вам перезвонить?",
+      "expected_topics": [
+        "callback_phone"
+      ],
+      "expected_reply_ids": [
+        7
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Повторите, я не расслышал.",
+      "expected_topics": [
+        "repeat"
+      ],
+      "expected_reply_ids": [
+        8
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Алло, вы меня слышите? Ещё раз, пожалуйста.",
+      "expected_topics": [
+        "repeat"
+      ],
+      "expected_reply_ids": [
+        8
+      ]
+    },
+    {
+      "scenario": "call_31-3_svist_gazovoy_truby",
+      "question": "Сколько вам лет?",
+      "expected_topics": [
+        "repeat",
+        "unknown"
+      ],
+      "expected_reply_ids": [
+        8
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "Слушаю вас, что случилось?",
+      "expected_topics": [
+        "what_happened"
+      ],
+      "expected_reply_ids": [
+        1
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "Откуда идёт дым?",
+      "expected_topics": [
+        "what_happened",
+        "danger"
+      ],
+      "expected_reply_ids": [
+        1,
+        5
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "Что горит?",
+      "expected_topics": [
+        "what_happened",
+        "danger"
+      ],
+      "expected_reply_ids": [
+        1,
+        5
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "Диктуйте адрес.",
+      "expected_topics": [
+        "address"
+      ],
+      "expected_reply_ids": [
+        2
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "Улица и номер дома?",
+      "expected_topics": [
+        "address"
+      ],
+      "expected_reply_ids": [
+        2
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "Какой корпус, какой подъезд?",
+      "expected_topics": [
+        "address",
+        "entrance_floor_code"
+      ],
+      "expected_reply_ids": [
+        2,
+        3
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "На каком вы этаже? Сколько этажей в доме?",
+      "expected_topics": [
+        "entrance_floor_code"
+      ],
+      "expected_reply_ids": [
+        3
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "Код домофона скажите.",
+      "expected_topics": [
+        "entrance_floor_code"
+      ],
+      "expected_reply_ids": [
+        3
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "Пострадавшие есть? Кому-то плохо?",
+      "expected_topics": [
+        "injured"
+      ],
+      "expected_reply_ids": [
+        4
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "Люди не пострадали?",
+      "expected_topics": [
+        "injured"
+      ],
+      "expected_reply_ids": [
+        4
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "Открытый огонь видите?",
+      "expected_topics": [
+        "danger"
+      ],
+      "expected_reply_ids": [
+        5
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "Есть угроза распространения? Пламя есть?",
+      "expected_topics": [
+        "danger"
+      ],
+      "expected_reply_ids": [
+        5
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "Ваша фамилия, имя, отчество?",
+      "expected_topics": [
+        "caller_name"
+      ],
+      "expected_reply_ids": [
+        6
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "Кто звонит?",
+      "expected_topics": [
+        "caller_name"
+      ],
+      "expected_reply_ids": [
+        6
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "Номер телефона для связи?",
+      "expected_topics": [
+        "callback_phone"
+      ],
+      "expected_reply_ids": [
+        7
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "С какого номера вы звоните, чтобы перезвонить?",
+      "expected_topics": [
+        "callback_phone"
+      ],
+      "expected_reply_ids": [
+        7
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "Не понял, повторите ещё раз.",
+      "expected_topics": [
+        "repeat"
+      ],
+      "expected_reply_ids": [
+        8
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "Говорите громче, плохо слышно.",
+      "expected_topics": [
+        "repeat"
+      ],
+      "expected_reply_ids": [
+        8
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "Вы уже вызывали управляющую компанию?",
+      "expected_topics": [
+        "unknown"
+      ],
+      "expected_reply_ids": [
+        9
+      ]
+    },
+    {
+      "scenario": "call_2-1_zadymlenie_musoroprovoda",
+      "question": "Какой марки ваш автомобиль?",
+      "expected_topics": [
+        "unknown"
+      ],
+      "expected_reply_ids": [
+        9
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Что произошло?",
+      "expected_topics": [
+        "what_happened"
+      ],
+      "expected_reply_ids": [
+        1
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Объясните, в чём проблема?",
+      "expected_topics": [
+        "what_happened"
+      ],
+      "expected_reply_ids": [
+        1
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Что случилось, чем помочь?",
+      "expected_topics": [
+        "what_happened"
+      ],
+      "expected_reply_ids": [
+        1
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Что вы хотите, чтобы мы сделали?",
+      "expected_topics": [
+        "what_happened"
+      ],
+      "expected_reply_ids": [
+        1
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Назовите адрес салона.",
+      "expected_topics": [
+        "address"
+      ],
+      "expected_reply_ids": [
+        2
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Где вы находитесь?",
+      "expected_topics": [
+        "address"
+      ],
+      "expected_reply_ids": [
+        2
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Улица, дом?",
+      "expected_topics": [
+        "address"
+      ],
+      "expected_reply_ids": [
+        2
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Это Сущёвский Вал, дом какой?",
+      "expected_topics": [
+        "address"
+      ],
+      "expected_reply_ids": [
+        2
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Кто-нибудь пострадал?",
+      "expected_topics": [
+        "injured"
+      ],
+      "expected_reply_ids": [
+        3
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Есть пострадавшие, драка была?",
+      "expected_topics": [
+        "injured"
+      ],
+      "expected_reply_ids": [
+        3
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Кому-то нужна медицинская помощь?",
+      "expected_topics": [
+        "injured"
+      ],
+      "expected_reply_ids": [
+        3
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Вам угрожали, применяли силу?",
+      "expected_topics": [
+        "injured",
+        "unknown"
+      ],
+      "expected_reply_ids": [
+        3,
+        4
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Как вас зовут?",
+      "expected_topics": [
+        "unknown"
+      ],
+      "expected_reply_ids": [
+        4
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Представьтесь, пожалуйста.",
+      "expected_topics": [
+        "unknown"
+      ],
+      "expected_reply_ids": [
+        4
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Оставьте телефон для связи.",
+      "expected_topics": [
+        "unknown"
+      ],
+      "expected_reply_ids": [
+        4
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Повторите, пожалуйста.",
+      "expected_topics": [
+        "unknown",
+        "repeat"
+      ],
+      "expected_reply_ids": [
+        4
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Спокойнее, пожалуйста, я вас слушаю.",
+      "expected_topics": [
+        "what_happened",
+        "unknown"
+      ],
+      "expected_reply_ids": [
+        1,
+        4
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Вы очевидец или участник?",
+      "expected_topics": [
+        "unknown",
+        "what_happened"
+      ],
+      "expected_reply_ids": [
+        1,
+        4
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Сколько человек в салоне?",
+      "expected_topics": [
+        "unknown"
+      ],
+      "expected_reply_ids": [
+        4
+      ]
+    },
+    {
+      "scenario": "call_2-2_skandal_sryv_zvonka",
+      "question": "Вы вызывали полицию сами?",
+      "expected_topics": [
+        "unknown"
+      ],
+      "expected_reply_ids": [
+        4
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Что случилось?",
+      "expected_topics": [
+        "what_happened"
+      ],
+      "expected_reply_ids": [
+        1
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Кого сбили? Что произошло?",
+      "expected_topics": [
+        "what_happened"
+      ],
+      "expected_reply_ids": [
+        1
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Где это произошло?",
+      "expected_topics": [
+        "address"
+      ],
+      "expected_reply_ids": [
+        2
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Назовите адрес или перекрёсток.",
+      "expected_topics": [
+        "address"
+      ],
+      "expected_reply_ids": [
+        2
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Какая улица?",
+      "expected_topics": [
+        "address"
+      ],
+      "expected_reply_ids": [
+        2
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Сколько пострадавших?",
+      "expected_topics": [
+        "injured"
+      ],
+      "expected_reply_ids": [
+        3
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Пострадавший в сознании? Дышит?",
+      "expected_topics": [
+        "injured"
+      ],
+      "expected_reply_ids": [
+        3
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Что с человеком, он жив?",
+      "expected_topics": [
+        "injured"
+      ],
+      "expected_reply_ids": [
+        3
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Какая машина, марка, цвет, номер?",
+      "expected_topics": [
+        "vehicle"
+      ],
+      "expected_reply_ids": [
+        4
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Госномер автомобиля видите?",
+      "expected_topics": [
+        "vehicle"
+      ],
+      "expected_reply_ids": [
+        4
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Водитель на месте?",
+      "expected_topics": [
+        "vehicle"
+      ],
+      "expected_reply_ids": [
+        4
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Он лежит на дороге? Ему угрожает опасность?",
+      "expected_topics": [
+        "danger"
+      ],
+      "expected_reply_ids": [
+        5
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Движение вокруг него есть?",
+      "expected_topics": [
+        "danger"
+      ],
+      "expected_reply_ids": [
+        5
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Как вас зовут?",
+      "expected_topics": [
+        "caller_name"
+      ],
+      "expected_reply_ids": [
+        6
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Представьтесь: фамилия, имя, отчество.",
+      "expected_topics": [
+        "caller_name"
+      ],
+      "expected_reply_ids": [
+        6
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Ваш телефон для связи?",
+      "expected_topics": [
+        "callback_phone"
+      ],
+      "expected_reply_ids": [
+        7
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Номер, по которому можно перезвонить?",
+      "expected_topics": [
+        "callback_phone"
+      ],
+      "expected_reply_ids": [
+        7
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Не слышу, повторите.",
+      "expected_topics": [
+        "repeat"
+      ],
+      "expected_reply_ids": [
+        8
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Ещё раз, пожалуйста, громче.",
+      "expected_topics": [
+        "repeat"
+      ],
+      "expected_reply_ids": [
+        8
+      ]
+    },
+    {
+      "scenario": "call_30-2_naezd_na_peshehoda",
+      "question": "Вы сами не пострадали, вы сами видели?",
+      "expected_topics": [
+        "injured",
+        "repeat"
+      ],
+      "expected_reply_ids": [
+        3,
+        8
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Что случилось?",
+      "expected_topics": [
+        "what_happened"
+      ],
+      "expected_reply_ids": [
+        1
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Его сбила машина или сам упал?",
+      "expected_topics": [
+        "what_happened"
+      ],
+      "expected_reply_ids": [
+        1
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Как это произошло?",
+      "expected_topics": [
+        "what_happened"
+      ],
+      "expected_reply_ids": [
+        1
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Где вы находитесь?",
+      "expected_topics": [
+        "address"
+      ],
+      "expected_reply_ids": [
+        2
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Назовите адрес.",
+      "expected_topics": [
+        "address"
+      ],
+      "expected_reply_ids": [
+        2
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Какая улица, есть ориентир?",
+      "expected_topics": [
+        "address"
+      ],
+      "expected_reply_ids": [
+        2
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Это Москва? Какой город?",
+      "expected_topics": [
+        "region"
+      ],
+      "expected_reply_ids": [
+        3
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "В каком регионе вы находитесь?",
+      "expected_topics": [
+        "region"
+      ],
+      "expected_reply_ids": [
+        3
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Какая область?",
+      "expected_topics": [
+        "region"
+      ],
+      "expected_reply_ids": [
+        3
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Сколько лет ребёнку, он в сознании?",
+      "expected_topics": [
+        "injured"
+      ],
+      "expected_reply_ids": [
+        4
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Кто пострадал?",
+      "expected_topics": [
+        "injured"
+      ],
+      "expected_reply_ids": [
+        4
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Как зовут ребёнка, сколько ему лет?",
+      "expected_topics": [
+        "injured"
+      ],
+      "expected_reply_ids": [
+        4
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Как вас зовут?",
+      "expected_topics": [
+        "caller_name"
+      ],
+      "expected_reply_ids": [
+        5
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Представьтесь, кем вы приходитесь ребёнку?",
+      "expected_topics": [
+        "caller_name"
+      ],
+      "expected_reply_ids": [
+        5
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Ваш номер телефона?",
+      "expected_topics": [
+        "callback_phone"
+      ],
+      "expected_reply_ids": [
+        6
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Куда перезвонить?",
+      "expected_topics": [
+        "callback_phone"
+      ],
+      "expected_reply_ids": [
+        6
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Повторите, пожалуйста, не расслышала.",
+      "expected_topics": [
+        "repeat"
+      ],
+      "expected_reply_ids": [
+        7
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Громче, пожалуйста!",
+      "expected_topics": [
+        "repeat"
+      ],
+      "expected_reply_ids": [
+        7
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Вы вызывали участкового врача?",
+      "expected_topics": [
+        "unknown"
+      ],
+      "expected_reply_ids": [
+        8
+      ]
+    },
+    {
+      "scenario": "call_1-3_rebenok_velosiped_volzhskiy",
+      "question": "Есть ли у вас полис ОМС?",
+      "expected_topics": [
+        "unknown"
+      ],
+      "expected_reply_ids": [
+        8
+      ]
+    }
+  ]
+}
