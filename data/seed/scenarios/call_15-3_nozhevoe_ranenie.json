@@ -1,0 +1,134 @@
+{
+  "kind": "call_intake",
+  "title": "Ножевое ранение в квартире, кровотечение",
+  "ticket_ref": "15-3",
+  "difficulty": 3,
+  "norm_seconds": 90,
+  "caller": {
+    "persona": "victim_panicked",
+    "voice": "ru_female_2",
+    "noise": "indoor",
+    "opening": "Помогите! Он меня ножом ударил, кровь идёт, нога вся в крови!",
+    "facts": {
+      "what_happened": "сожитель ударил ножом в ногу, сильное кровотечение",
+      "address": "улица Зверинецкая, дом 22, квартира 7, подъезд 1, этаж 2, код домофона 7В",
+      "injured": "одна пострадавшая — сама заявительница, в сознании",
+      "danger": "нападавший ещё в квартире, нож у него",
+      "caller_name": "Иванова Елена Сергеевна",
+      "callback_phone": "916-896-32-54"
+    },
+    "behaviour": "плачет, сбивается, повторяет «кровь»; улицу называет как «Зверенецкая»; про нападавшего говорит только если спросить, где он",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Сожитель ножом в ногу ударил, кровь льёт, не останавливается!",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "address",
+      "text": "Зверенецкая двадцать два, квартира семь... первый подъезд.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "entrance_floor_code",
+      "text": "Второй этаж, код семь вэ. Семь и буква вэ.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "injured",
+      "text": "Я одна ранена, в ногу, кровь сильно идёт, голова кружится.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "danger",
+      "text": "Он тут, в комнате! С ножом! Я в ванной закрылась.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "caller_name",
+      "text": "Иванова... Елена Сергеевна.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "callback_phone",
+      "text": "Девять шестнадцать, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "repeat",
+      "text": "Что?! Я не понимаю, что вы говорите!",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "unknown",
+      "text": "Не знаю! Пришлите скорую!",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "entrance_floor_code",
+    "injured",
+    "danger",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "Человек ранен",
+      "Ранение ножевое"
+    ],
+    "incident_type": "17.11.2.0",
+    "flags": {
+      "injured": true,
+      "no_access": false
+    },
+    "address": {
+      "street": "Зверинецкая улица",
+      "house": "22",
+      "apartment": "7",
+      "entrance": "1",
+      "floor": "2",
+      "code": "7В",
+      "okrug": "ВАО",
+      "district": "район Соколиная Гора"
+    },
+    "caller": {
+      "name": "Иванова Елена Сергеевна",
+      "role": "пострадавший",
+      "phone": "916-896-32-54"
+    },
+    "description_keywords": [
+      "ножом",
+      "ногу",
+      "кровотечение",
+      "сожитель",
+      "в квартире"
+    ],
+    "description": "Сожитель ударил заявительницу ножом в ногу, сильное кровотечение, пострадавшая в сознании. Нападавший с ножом остаётся в квартире.",
+    "expected_services": [
+      "102",
+      "103",
+      "cemp",
+      "duty_arm112",
+      "mkp_analytics",
+      "mayor_office",
+      "rosgvardia",
+      "ntu",
+      "fso",
+      "cukb_mo"
+    ]
+  }
+}

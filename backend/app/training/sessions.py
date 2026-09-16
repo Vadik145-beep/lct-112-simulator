@@ -13,7 +13,8 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.evaluation import apply_weights
-from app.domain.evaluation.card_response import DEFAULT_WEIGHTS
+from app.domain.evaluation import call_intake as call_intake_engine
+from app.domain.evaluation import card_response as card_response_engine
 from app.errors import ApiError
 from app.events import append_event
 from app.models import (
@@ -152,11 +153,7 @@ class SessionSettings:
 
 async def validate_settings(session: AsyncSession, spec: SessionSettings, teacher: User) -> None:
     """Rejects settings the trainer cannot run; messages say what to change."""
-    if spec.mode == MODE_CALL_INTAKE:
-        raise ApiError(
-            422, "mode_unavailable", "Режим «Приём вызова» пока недоступен: выберите карточки."
-        )
-    if spec.mode != MODE_CARD_RESPONSE:
+    if spec.mode not in (MODE_CARD_RESPONSE, MODE_CALL_INTAKE):
         raise ApiError(422, "bad_mode", "Неизвестный режим занятия.")
     if spec.dialog_mode not in DIALOG_MODES:
         raise ApiError(422, "bad_dialog_mode", f"Режим диалога: один из {', '.join(DIALOG_MODES)}.")
@@ -206,8 +203,9 @@ async def validate_settings(session: AsyncSession, spec: SessionSettings, teache
         unknown = [s for s in spec.service_profile if s not in known]
         if unknown:
             raise ApiError(422, "unknown_service", f"Нет таких служб: {unknown}.")
+    engine = call_intake_engine if spec.mode == MODE_CALL_INTAKE else card_response_engine
     try:
-        apply_weights(DEFAULT_WEIGHTS, spec.weights or None)
+        apply_weights(engine.DEFAULT_WEIGHTS, spec.weights or None)
     except ValueError as exc:
         raise ApiError(422, "bad_weights", f"Веса оценки: {exc}.") from exc
     if spec.scenario_ids:
@@ -254,7 +252,7 @@ async def pick_scenarios(session: AsyncSession, ts: TrainingSession) -> list[Sce
     if ts.scenario_ids:
         return await training.scenario_queue(session, ts)
     query = select(Scenario).where(Scenario.kind == ts.mode, Scenario.status == SCENARIO_APPROVED)
-    if ts.service_profile:
+    if ts.service_profile and ts.mode != MODE_CALL_INTAKE:
         query = query.where(Scenario.service_code.in_(ts.service_profile))
     rows = list(await session.scalars(query))
     if ts.incident_groups:

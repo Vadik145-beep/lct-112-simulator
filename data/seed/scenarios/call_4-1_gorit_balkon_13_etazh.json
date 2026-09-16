@@ -1,0 +1,144 @@
+{
+  "kind": "call_intake",
+  "title": "Горит балкон на 13-м этаже, номер дома неизвестен",
+  "ticket_ref": "4-1",
+  "difficulty": 2,
+  "norm_seconds": 90,
+  "caller": {
+    "persona": "witness_shaken",
+    "voice": "ru_female_1",
+    "noise": "street",
+    "opening": "Алло! Тут дом горит, балкон весь в огне, высоко, этаж тринадцатый где-то!",
+    "facts": {
+      "what_happened": "горит балкон и два окна рядом на 13-м этаже, открытое пламя",
+      "address": "улица Грина, номер дома не знает; в этом доме библиотека № 193 (улица Грина, дом 11)",
+      "floor": "13-й этаж, в доме 14 этажей",
+      "injured": "пострадавших не видят, наблюдают с улицы",
+      "danger": "дом газифицирован",
+      "caller_name": "Сидорова Анна Викторовна",
+      "callback_phone": "916-126-34-71"
+    },
+    "behaviour": "взволнована; номер дома не знает, ориентир (библиотека) называет только если спросить, где именно",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Балкон горит и два окна рядом, пламя прямо наружу, на тринадцатом!",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "address",
+      "text": "Улица Грина, а номер... не знаю я номер! Тут библиотека внизу, сто девяносто третья.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "entrance_floor_code",
+      "text": "Этаж тринадцатый, а всего в доме четырнадцать. Подъезд не скажу, я с улицы.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "injured",
+      "text": "Людей не видно, никто не кричит. Мы на улице стоим, смотрим.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "danger",
+      "text": "Дом с газом, у нас плиты газовые. Быстрее приезжайте!",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "caller_name",
+      "text": "Сидорова Анна Викторовна.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "callback_phone",
+      "text": "Девять шестнадцать, сто двадцать шесть, тридцать четыре, семьдесят один.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "repeat",
+      "text": "Что? Я не расслышала, повторите!",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "unknown",
+      "text": "Не знаю, я же говорю, горит!",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "entrance_floor_code",
+    "injured",
+    "danger",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "жилой дом",
+      "балкон",
+      "открытое пламя"
+    ],
+    "incident_type": "1.5.2.1",
+    "flags": {
+      "injured": false,
+      "no_access": false,
+      "threat": false,
+      "gasification": true
+    },
+    "address": {
+      "street": "улица Грина",
+      "house": "11",
+      "floor": "13",
+      "okrug": "ЮЗАО",
+      "district": "район Северное Бутово",
+      "descriptive": "дом с библиотекой № 193"
+    },
+    "caller": {
+      "name": "Сидорова Анна Викторовна",
+      "role": "очевидец",
+      "phone": "916-126-34-71"
+    },
+    "description_keywords": [
+      "балкон",
+      "13 этаж",
+      "открытое пламя",
+      "газифицирован",
+      "пострадавших нет"
+    ],
+    "description": "Горит балкон и два окна на 13 этаже, открытое пламя, дом 14-этажный, газифицирован. Пострадавших не видят, заявитель наблюдает с улицы.",
+    "expected_services": [
+      "101",
+      "102",
+      "mosgaz",
+      "mosoblgaz",
+      "gkh",
+      "moslift",
+      "codd",
+      "duty_arm112",
+      "mkp_analytics",
+      "mayor_office",
+      "territorial_oiv",
+      "territorial_oiv_tinao",
+      "moszhilinspection",
+      "ntu",
+      "fso",
+      "dgp_integration",
+      "dgp_arm112",
+      "cukb_mo"
+    ]
+  }
+}

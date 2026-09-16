@@ -12,12 +12,14 @@ from sqlalchemy import delete, func, select
 from app.audit import write_audit
 from app.auth.deps import ActiveUser, DbSession, client_ip
 from app.config import get_settings
+from app.domain.evaluation.call_intake import description_text
 from app.domain.evaluation.card_response import comment_texts
-from app.domain.evaluation.schemas import CardResponseAttempt
+from app.domain.evaluation.schemas import CallIntakeAttempt, CardResponseAttempt
 from app.errors import ApiError
 from app.events import append_event, publish_events
 from app.models import (
     ACTIVE_ATTEMPT_STATES,
+    MODE_CALL_INTAKE,
     Attempt,
     Evaluation,
     Role,
@@ -155,9 +157,7 @@ async def _attempt_out(session: DbSession, attempt: Attempt, ts: TrainingSession
                 "ai_comment": row.ai_comment,
                 "methods": row.methods,
                 # Text the grammar component was checked on; its items carry offsets into it.
-                "checked_text": comment_texts(
-                    CardResponseAttempt.model_validate(training.evaluation_input(attempt))
-                ),
+                "checked_text": _checked_text(attempt),
             }
     return present.attempt_out(
         attempt,
@@ -168,6 +168,13 @@ async def _attempt_out(session: DbSession, attempt: Attempt, ts: TrainingSession
         seq=await present.last_seq(session, ts.id),
         evaluation=evaluation,
     )
+
+
+def _checked_text(attempt: Attempt) -> str:
+    data = training.evaluation_input(attempt)
+    if attempt.mode == MODE_CALL_INTAKE:
+        return description_text(CallIntakeAttempt.model_validate(data))
+    return comment_texts(CardResponseAttempt.model_validate(data))
 
 
 @router.get("/attempts/{attempt_id}", response_model=AttemptOut)

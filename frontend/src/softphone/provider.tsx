@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { errorMessage } from "@/api/client";
+import { getAccessToken } from "@/api/token";
 import { telephonyApi, useCurrentCall, useSipAccount, type DialogOut, type TurnResponse } from "@/api/telephony";
 import { useAuth } from "@/app/use-auth";
 import { newActionId } from "@/emulator/draft";
@@ -77,11 +78,20 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
     patch({ devices: all.filter((d) => d.kind === "audioinput") });
   }, [patch]);
 
+  // Media files need the bearer token, which an Audio src cannot carry: fetch → blob.
   const playReply = useCallback((audioUrl: string | null) => {
     if (!audioUrl) return;
     if (!replyAudio.current) replyAudio.current = new Audio();
-    replyAudio.current.src = audioUrl;
-    void replyAudio.current.play().catch(() => {});
+    const el = replyAudio.current;
+    void fetch(audioUrl, { headers: { Authorization: `Bearer ${getAccessToken() ?? ""}` } })
+      .then((res) => (res.ok ? res.blob() : null))
+      .then((blob) => {
+        if (!blob) return;
+        if (el.src.startsWith("blob:")) URL.revokeObjectURL(el.src);
+        el.src = URL.createObjectURL(blob);
+        return el.play();
+      })
+      .catch(() => {});
   }, []);
 
   // ---------- SIP mode: register once the credentials are known.
@@ -228,9 +238,10 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
         ...(turn.call_ended ? { status: "ended" as CallStatus, endReason: turn.dialog.call.end_reason ?? null } : {}),
       }));
       playReply(turn.caller.audio_url ?? null);
+      void client.invalidateQueries({ queryKey: ["dialog", turn.dialog.attempt_id] });
       if (turn.call_ended) stopLocalStream();
     },
-    [playReply, stopLocalStream],
+    [client, playReply, stopLocalStream],
   );
 
   const answer = useCallback(
@@ -251,9 +262,10 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
           sttAvailable: result.dialog.stt_available,
         }));
         playReply(result.opening.audio_url ?? null);
+        void client.invalidateQueries({ queryKey: ["dialog", attemptId] });
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [withBusy, state.mode, state.attemptId, playReply],
+    [withBusy, state.mode, state.attemptId, playReply, client],
   );
 
   const finish = useCallback(

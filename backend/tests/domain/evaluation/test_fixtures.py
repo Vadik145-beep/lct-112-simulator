@@ -37,7 +37,7 @@ REASONS = {r["code"] for r in REJECT_REASONS}
 def test_five_scenarios_of_each_kind() -> None:
     kinds = [parse_scenario(json.loads(f.read_text(encoding="utf-8"))).kind for f in FILES]
     assert kinds.count("card_response") == 5
-    assert kinds.count("call_intake") == 5
+    assert kinds.count("call_intake") == 10
 
 
 @pytest.mark.parametrize("path", FILES, ids=[f.stem for f in FILES])

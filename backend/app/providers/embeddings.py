@@ -123,8 +123,11 @@ class E5Embedding:
         self._tokenizer.enable_padding()
         options = ort.SessionOptions()
         options.intra_op_num_threads = 2
+        # Read the file in Python first: on a slow bind mount the read takes minutes, and
+        # unlike the session constructor it releases the GIL, so the API keeps answering.
+        model_bytes = (model_dir / "onnx" / "model.onnx").read_bytes()
         self._session = ort.InferenceSession(
-            str(model_dir / "onnx" / "model.onnx"), options, providers=["CPUExecutionProvider"]
+            model_bytes, options, providers=["CPUExecutionProvider"]
         )
         self._input_names = [i.name for i in self._session.get_inputs()]
 

@@ -1,0 +1,139 @@
+{
+  "kind": "call_intake",
+  "title": "Задымление на платформе метро «Арбатская»",
+  "ticket_ref": "9-1",
+  "difficulty": 2,
+  "norm_seconds": 90,
+  "caller": {
+    "persona": "calm_commuter",
+    "voice": "ru_male_3",
+    "noise": "crowd",
+    "opening": "Здравствуйте, в метро на платформе дым, на Арбатской. Людей выводят.",
+    "facts": {
+      "what_happened": "задымление на платформе станции метро, огня не видно",
+      "address": "станция метро «Арбатская», Филёвская линия (в Москве две «Арбатские»)",
+      "injured": "пострадавших нет",
+      "danger": "пассажиров выводят, дым усиливается",
+      "caller_name": "Тихий Олег Юрьевич",
+      "callback_phone": "916-123-98-78"
+    },
+    "behaviour": "спокоен; линию (Филёвская) называет только если уточнить, какая из двух «Арбатских»",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "На платформе дым, откуда — не понятно, огня не видно.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "address",
+      "text": "Станция Арбатская, на платформе.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "region",
+      "text": "Это Филёвская линия, голубая. Не та, что глубокая.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "injured",
+      "text": "Пострадавших нет, люди просто выходят наверх.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "danger",
+      "text": "Дым погуще становится, дежурные людей на выход направляют.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "caller_name",
+      "text": "Тихий Олег Юрьевич.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "callback_phone",
+      "text": "Девять шестнадцать, сто двадцать три, девяносто восемь, семьдесят восемь.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "repeat",
+      "text": "Плохо слышно, повторите.",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "unknown",
+      "text": "Не знаю, я пассажир.",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "injured",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "метро",
+      "станция/вестибюль, тоннель / перегон, переход, платформа, эскалатор, прочее",
+      "дым"
+    ],
+    "incident_type": "1.3.2.2",
+    "flags": {
+      "injured": false,
+      "threat": false
+    },
+    "address": {
+      "descriptive": "станция метро «Арбатская», Филёвская линия, платформа",
+      "okrug": "ЦАО",
+      "district": "район Арбат"
+    },
+    "caller": {
+      "name": "Тихий Олег Юрьевич",
+      "role": "очевидец",
+      "phone": "916-123-98-78"
+    },
+    "description_keywords": [
+      "задымление",
+      "платформе",
+      "Арбатская",
+      "Филёвск",
+      "пострадавших нет"
+    ],
+    "description": "Задымление на платформе станции метро «Арбатская» Филёвской линии, огня не видно, пассажиров выводят. Пострадавших нет.",
+    "expected_services": [
+      "101",
+      "102",
+      "mosgaz",
+      "cemp",
+      "fsb",
+      "mosgortrans",
+      "gkh",
+      "metro",
+      "oek",
+      "codd",
+      "duty_arm112",
+      "mkp_analytics",
+      "mayor_office",
+      "rosgvardia",
+      "territorial_oiv",
+      "territorial_oiv_tinao",
+      "ntu",
+      "fso",
+      "msr_fires",
+      "cukb_mo",
+      "transport_organizer"
+    ]
+  }
+}

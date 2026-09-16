@@ -159,6 +159,19 @@ class RejectReasonOut(BaseModel):
     title: str
 
 
+class IntakeOut(BaseModel):
+    """The call-intake side of an attempt (PRD 13.5): what the operator-112 card needs
+    besides the transcript (``GET /attempts/{id}/dialog``)."""
+
+    # Number the softphone shows as АОН: the scenario's phone or a stable stand-in.
+    caller_phone: str
+    # The card as the trainee is filling it (``PUT /attempts/{id}/draft``) or saved it.
+    draft: dict | None
+    # Scenario title and the reference card, after the card is saved (PRD 11).
+    title: str | None
+    required_topics: list[str]
+
+
 class AttemptOut(BaseModel):
     id: uuid.UUID
     session: SessionInfo
@@ -183,6 +196,8 @@ class AttemptOut(BaseModel):
     reference: dict | None
     # Filled by the evaluation engine once the card is closed; null until then.
     evaluation: dict | None
+    # Present for call-intake attempts only.
+    intake: IntakeOut | None = None
     last_seq: int
 
 

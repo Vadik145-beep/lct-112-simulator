@@ -86,10 +86,13 @@ export function TrainerPanel({
   connection,
   children,
   footer,
+  width = "default",
 }: {
   connection: ConnectionState;
   children: ReactNode;
   footer?: ReactNode;
+  /** «wide» holds the conversation panel of the operator card. */
+  width?: "default" | "wide";
 }) {
   const [collapsed, setCollapsed] = useState(false);
   if (collapsed) {
@@ -105,7 +108,7 @@ export function TrainerPanel({
   }
   return (
     <aside
-      className="flex w-64 shrink-0 flex-col gap-3 border-l border-[#a9adb2] bg-[var(--arm-panel)] p-3 text-sm"
+      className={cn("flex shrink-0 flex-col gap-3 border-l border-[#a9adb2] bg-[var(--arm-panel)] p-3 text-sm", width === "wide" ? "w-80" : "w-64")}
       aria-label="Тренажёр"
     >
       <div className="flex items-center justify-between gap-2">

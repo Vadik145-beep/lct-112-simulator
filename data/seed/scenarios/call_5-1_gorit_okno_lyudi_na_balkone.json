@@ -1,0 +1,146 @@
+{
+  "kind": "call_intake",
+  "title": "Пожар в квартире на 9-м этаже, люди на балконе зовут на помощь",
+  "ticket_ref": "5-1",
+  "difficulty": 2,
+  "norm_seconds": 90,
+  "caller": {
+    "persona": "witness_urgent",
+    "voice": "ru_male_2",
+    "noise": "street",
+    "opening": "Срочно! На Цюрупы квартира горит, на балконе двое кричат, помогите!",
+    "facts": {
+      "what_happened": "горит одно окно на 9-м этаже, открытое пламя, на соседнем балконе двое людей кричат о помощи",
+      "address": "улица Цюрупы, дом 12, корпус 6, подъезд единственный, балкон со стороны подъезда",
+      "floor": "9-й этаж, в доме 17 этажей",
+      "injured": "пока никто не пострадал, но двое отрезаны огнём на балконе",
+      "danger": "люди на балконе рядом с огнём; дом не газифицирован",
+      "caller_name": "Яшин Игорь Вадимович",
+      "callback_phone": "916-126-34-71"
+    },
+    "behaviour": "торопит, говорит быстро; корпус и сторону балкона называет, если спросить",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Окно на девятом горит, пламя открытое, а на балконе рядом двое машут, кричат!",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "address",
+      "text": "Цюрупы, двенадцать, корпус шесть. Подъезд один всего.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "entrance_floor_code",
+      "text": "Девятый этаж, дом семнадцатиэтажный. Балкон со стороны подъезда.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "injured",
+      "text": "Пока целы, но они на балконе, к ним огонь идёт!",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "danger",
+      "text": "Люди на балконе, вот опасность! Газа в доме нет, электрический.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "caller_name",
+      "text": "Яшин Игорь Вадимович.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "callback_phone",
+      "text": "Девять один шесть, сто двадцать шесть, тридцать четыре, семьдесят один.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "repeat",
+      "text": "Не слышу, повторите!",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "unknown",
+      "text": "Да не знаю я! Приезжайте!",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "entrance_floor_code",
+    "injured",
+    "danger",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "жилой дом",
+      "квартира",
+      "открытое пламя"
+    ],
+    "incident_type": "1.5.1.1",
+    "flags": {
+      "injured": false,
+      "no_access": false,
+      "threat": true
+    },
+    "address": {
+      "street": "улица Цюрупы",
+      "house": "12",
+      "building": "6",
+      "entrance": "1",
+      "floor": "9",
+      "okrug": "ЮЗАО",
+      "district": "район Черёмушки"
+    },
+    "caller": {
+      "name": "Яшин Игорь Вадимович",
+      "role": "очевидец",
+      "phone": "916-126-34-71"
+    },
+    "description_keywords": [
+      "9 этаж",
+      "открытое пламя",
+      "балконе",
+      "двое",
+      "не газифицирован"
+    ],
+    "description": "Горит окно на 9 этаже, открытое пламя, на соседнем балконе двое людей зовут на помощь. Дом 17 этажей, не газифицирован. Заявитель наблюдает с улицы.",
+    "expected_services": [
+      "101",
+      "102",
+      "cemp",
+      "mosoblgaz",
+      "gkh",
+      "moslift",
+      "codd",
+      "duty_arm112",
+      "mkp_analytics",
+      "mayor_office",
+      "oati",
+      "evazhd",
+      "territorial_oiv",
+      "territorial_oiv_tinao",
+      "moszhilinspection",
+      "ntu",
+      "fso",
+      "dgp_integration",
+      "dgp_arm112",
+      "cukb_mo"
+    ]
+  }
+}

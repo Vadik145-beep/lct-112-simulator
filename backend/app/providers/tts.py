@@ -121,6 +121,15 @@ class PiperTTS:
     def available_voices(self) -> list[str]:
         return [vid for vid, spec in VOICES.items() if (self._dir / f"{spec.model}.onnx").exists()]
 
+    def warm(self) -> int:
+        """Loads every voice found on disk (slow on a bind mount) so the first reply of a
+        call does not wait for it; returns how many voices are ready. Blocking: call it
+        from a worker thread."""
+        models = {VOICES[vid].model for vid in self.available_voices()}
+        for model in sorted(models):
+            self._load(model)
+        return len(models)
+
     def _load(self, model: str):  # PiperVoice, imported lazily
         from piper import PiperVoice
 

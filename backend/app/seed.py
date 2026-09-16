@@ -19,6 +19,7 @@ from app.config import get_settings
 from app.db import SessionLocal
 from app.logging import configure_logging, get_logger
 from app.models import (
+    MODE_CALL_INTAKE,
     MODE_CARD_RESPONSE,
     SCENARIO_APPROVED,
     SESSION_RUNNING,
@@ -48,6 +49,7 @@ _GROUPS = [
 
 SCENARIOS_DIR = "seed/scenarios"
 DEMO_SESSION_KEY = "demo-card-response-1"
+DEMO_CALL_SESSION_KEY = "demo-call-intake-1"
 # student1 works as a district administration dispatcher (see _STUDENT_SERVICES).
 DEMO_SERVICE_PROFILE = ["territorial_oiv"]
 
@@ -154,7 +156,9 @@ async def seed_scenarios(session: AsyncSession, data_dir: Path) -> tuple[int, in
             "title": body.get("title", key),
             "ticket_ref": body.get("ticket_ref"),
             "ticket_id": await _ticket_id(session, body.get("ticket_ref")),
-            "incident_type_code": (body.get("card") or {}).get("incident_type"),
+            "incident_type_code": (body.get("card") or body.get("reference_card") or {}).get(
+                "incident_type"
+            ),
             "service_code": body.get("service"),
             "difficulty": int(body.get("difficulty", 1)),
             # Seed files are the reviewed reference scenarios (PRD 15) unless they say otherwise.
@@ -239,6 +243,51 @@ async def seed_demo_session(session: AsyncSession, keys: list[str]) -> bool:
     return True
 
 
+async def seed_demo_call_session(session: AsyncSession, keys: list[str]) -> bool:
+    """One running call-intake session for «Учебная-1»: the 112 operator takes the seeded
+    calls one by one, easy ones first (PRD 9.3; the other-region and dropped-call calls
+    come last)."""
+    teacher = await session.scalar(select(User).where(User.login == "teacher1"))
+    group = await session.scalar(select(Group).where(Group.title == "Учебная-1"))
+    scenarios = sorted(
+        await session.scalars(
+            select(Scenario).where(Scenario.kind == MODE_CALL_INTAKE, Scenario.seed_key.in_(keys))
+        ),
+        key=lambda s: (s.difficulty, s.seed_key or ""),
+    )
+    if teacher is None or group is None or not scenarios:
+        return False
+    demo = await session.scalar(
+        select(TrainingSession).where(TrainingSession.seed_key == DEMO_CALL_SESSION_KEY)
+    )
+    scenario_ids = [s.id for s in scenarios]
+    if demo is not None:
+        demo.scenario_ids = scenario_ids
+        await session.flush()
+        return False
+    session.add(
+        TrainingSession(
+            seed_key=DEMO_CALL_SESSION_KEY,
+            title="Приём вызова: тренировка операторов 112",
+            teacher_id=teacher.id,
+            group_id=group.id,
+            mode=MODE_CALL_INTAKE,
+            card_source="scenarios",
+            scenario_ids=scenario_ids,
+            difficulty=3,
+            norm_seconds=90,
+            pass_threshold=70,
+            hints_enabled=True,
+            voice_enabled=True,
+            dialog_mode="select",
+            status=SESSION_RUNNING,
+            started_at=utcnow(),
+        )
+    )
+    await session.flush()
+    return True
+
+
 async def seed(data_dir: Path | None = None) -> int:
     data_dir = data_dir or Path(get_settings().data_dir)
     async with SessionLocal() as session:
@@ -246,6 +295,7 @@ async def seed(data_dir: Path | None = None) -> int:
         groups_created = await seed_groups(session)
         scenarios_created, scenarios_updated, keys = await seed_scenarios(session, data_dir)
         session_created = await seed_demo_session(session, keys)
+        call_session_created = await seed_demo_call_session(session, keys)
         await session.commit()
     log.info(
         "seed finished",
@@ -254,6 +304,7 @@ async def seed(data_dir: Path | None = None) -> int:
         scenarios_created=scenarios_created,
         scenarios_updated=scenarios_updated,
         demo_session_created=session_created,
+        demo_call_session_created=call_session_created,
     )
     return users_created
 
