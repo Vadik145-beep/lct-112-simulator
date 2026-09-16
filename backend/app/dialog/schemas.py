@@ -40,12 +40,26 @@ class TopicOut(BaseModel):
     covered: bool
 
 
+class CallOut(BaseModel):
+    """The call of the attempt (PRD 9.5): idle | ringing | answered | ended."""
+
+    state: str
+    end_reason: str | None = None
+    ended_at: datetime | None = None
+    call_dropped_marked: bool = False
+    no_contact_marked: bool = False
+    # True when the call goes through Asterisk; False = browser microphone and /utterance.
+    telephony: bool = False
+    recording_available: bool = False
+
+
 class DialogOut(BaseModel):
     attempt_id: str
     mode: str  # dialog mode actually in effect (buttons when no model is reachable)
     stt_available: bool
     tts_available: bool
     answered_at: datetime | None
+    call: CallOut
     turns: list[DialogTurnOut]
     topics: list[TopicOut]
     required_topics: list[str]
@@ -59,4 +73,5 @@ class TurnResponse(BaseModel):
     pending_reply: bool  # hybrid: the caller's text is new and waits for the teacher
     latency_ms: int
     heard_text: str | None = None  # what speech recognition understood (utterance only)
+    call_ended: bool = False  # the caller hung up right after this reply
     dialog: DialogOut

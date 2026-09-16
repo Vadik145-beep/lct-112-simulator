@@ -50,6 +50,19 @@ ATTEMPT_FINISHED = "finished"  # final status or «Завершить работ
 ATTEMPT_EVALUATED = "evaluated"  # evaluation stored (wave 2 engine)
 ACTIVE_ATTEMPT_STATES = (ATTEMPT_ISSUED, ATTEMPT_RECEIVED, ATTEMPT_IN_PROGRESS)
 
+# Call of a call-intake attempt (PRD 9.5).
+CALL_IDLE = "idle"  # nothing dialled yet
+CALL_RINGING = "ringing"  # the softphone rings
+CALL_ANSWERED = "answered"  # conversation in progress
+CALL_ENDED = "ended"  # see call_end_reason
+# call_end_reason values.
+CALL_END_HANGUP = "hangup"  # the operator hung up
+CALL_END_CALLER_HANGUP = "caller_hangup"  # the caller dropped the call (scenario)
+CALL_END_NO_ANSWER = "no_answer"  # the softphone did not answer in time
+CALL_END_NO_CONTACT = "no_contact"  # «нет контакта» pressed
+CALL_END_CALL_DROPPED = "call_dropped"  # «срыв звонка» pressed
+CALL_END_FAILED = "failed"  # telephony error
+
 
 class Group(Base):
     __tablename__ = "groups"
@@ -195,12 +208,31 @@ class Attempt(Base):
     status_log: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
     dialog: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
     recording_path: Mapped[str | None] = mapped_column(String(500))
+    call_state: Mapped[str] = mapped_column(String(16), nullable=False, default=CALL_IDLE)
+    call_ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    call_end_reason: Mapped[str | None] = mapped_column(String(16))
+    call_dropped_marked: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    no_contact_marked: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     client_submission_id: Mapped[str | None] = mapped_column(String(64), unique=True)
     state: Mapped[str] = mapped_column(String(16), nullable=False, default=ATTEMPT_ISSUED)
     # Current status of the service (last entry of status_log) and of the card as a whole.
     response_status: Mapped[str] = mapped_column(String(32), nullable=False, default="added")
     card_status: Mapped[str] = mapped_column(String(32), nullable=False, default="registered")
     created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+
+class Setting(Base):
+    """Operational settings edited by the administrator, one JSON document per section
+    (``telephony``, later ``logging``…). Defaults come from the environment."""
+
+    __tablename__ = "settings"
+
+    key: Mapped[str] = mapped_column(String(64), primary_key=True)
+    value: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
+    updated_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
 

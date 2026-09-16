@@ -34,3 +34,6 @@ class User(Base):
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # SIP password of the trainee's softphone, encrypted (app.telephony.sip); None until the
+    # account is first requested.
+    sip_password_enc: Mapped[str | None] = mapped_column(String(255))

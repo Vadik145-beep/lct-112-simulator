@@ -1,6 +1,6 @@
 # Ядро тренажёра оператора ДДС-112.
 # Запуск: docker compose up -d --build
-# Профили: ai (локальные модели, см. ниже), telephony, live, monitoring — в следующих волнах.
+# Профили: ai (локальные модели), telephony (Asterisk); live, monitoring — в следующих волнах.
 
 x-backend-env: &backend-env
   APP_ENV: ${APP_ENV:-development}
@@ -28,6 +28,15 @@ x-backend-env: &backend-env
   LLM_DIALOG_URL: ${LLM_DIALOG_URL:-http://llm-dialog:8080}
   LLM_GEN_URL: ${LLM_GEN_URL:-http://llm-gen:8080}
   STT_URL: ${STT_URL:-http://stt:9000}
+  VAD_MODEL_PATH: /models/vad/silero_vad.onnx
+  # Telephony (profile telephony): ARI of Asterisk, the folder of generated endpoints and
+  # where Asterisk sends the operator's audio (the backend by its service name).
+  TELEPHONY_ENABLED: ${TELEPHONY_ENABLED:-false}
+  ARI_URL: http://asterisk:8088/ari
+  ARI_USER: trainer
+  ARI_PASSWORD: ${ARI_PASSWORD:-trainer}
+  ASTERISK_CONFIG_DIR: /asterisk
+  TELEPHONY_MEDIA_HOST: backend
 
 services:
   nginx:
@@ -60,6 +69,7 @@ services:
       <<: *backend-env
     volumes:
       - storage:/storage
+      - asterisk-conf:/asterisk
       - ./data:/data:ro
       - ${MODELS_DIR:-./models}:/models:ro
     depends_on:
@@ -250,14 +260,52 @@ services:
     volumes:
       - ${MODELS_DIR:-./models}:/models:ro
 
+  # ---------- Профиль telephony: Asterisk (PJSIP, WebRTC, ARI) ----------
+  # Софтфон в браузере ходит через nginx (wss://<хост>/ws/sip), настольные телефоны — на
+  # порт SIP_PORT (udp/tcp). Звук идёт напрямую на порты RTP, поэтому они опубликованы;
+  # на Docker Desktop нужен TELEPHONY_EXTERNAL_IP (адрес машины), см. .env.example.
+  asterisk:
+    build:
+      context: ./deploy/asterisk
+    profiles: ["telephony"]
+    restart: unless-stopped
+    # The host name goes into SIP Contact headers of WebSocket calls; the random container id
+    # (all hex digits) is not a valid host name for the browser softphone.
+    hostname: asterisk
+    environment:
+      ARI_PASSWORD: ${ARI_PASSWORD:-trainer}
+      TELEPHONY_EXTERNAL_IP: ${TELEPHONY_EXTERNAL_IP:-}
+      TELEPHONY_LOCAL_NET: ${TELEPHONY_LOCAL_NET:-172.16.0.0/12}
+      TELEPHONY_RTP_START: ${TELEPHONY_RTP_START:-10000}
+      TELEPHONY_RTP_END: ${TELEPHONY_RTP_END:-10100}
+      TZ: ${TZ:-Europe/Moscow}
+    ports:
+      - "${SIP_PORT:-5060}:5060/udp"
+      - "${SIP_PORT:-5060}:5060/tcp"
+      # ARI on the host only for scripts/bench_call.py; the backend uses the internal address.
+      - "${ARI_PORT:-8088}:8088"
+      - "${TELEPHONY_RTP_START:-10000}-${TELEPHONY_RTP_END:-10100}:${TELEPHONY_RTP_START:-10000}-${TELEPHONY_RTP_END:-10100}/udp"
+    volumes:
+      - asterisk-conf:/etc/asterisk/generated
+      # Recordings land in storage/recordings; voiced replies are played from storage/tts.
+      - storage:/var/spool/asterisk/recording
+      - storage:/var/lib/asterisk/sounds/trainer:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/healthcheck.sh"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
   # ---------- Профили следующих волн (объявлены, пока пустые) ----------
-  # telephony: Asterisk (PJSIP, WebRTC, ARI) — волна 6.
   # live: vLLM, потоковые STT/TTS, VAD — трек G.
   # monitoring: Prometheus, Grafana — фаза E.
   profiles-placeholder:
     image: alpine:3.20
-    command: ["sh", "-c", "echo 'Профили telephony, live, monitoring будут заполнены в следующих волнах'"]
-    profiles: ["telephony", "live", "monitoring"]
+    command: ["sh", "-c", "echo 'Профили live, monitoring будут заполнены в следующих волнах'"]
+    profiles: ["live", "monitoring"]
 
 volumes:
   pgdata:
@@ -265,3 +313,4 @@ volumes:
   storage:
   backups:
   certs:
+  asterisk-conf:

@@ -1,0 +1,82 @@
+{
+  "at": "2026-09-16T19:58:05.191291+00:00",
+  "scenario": "call_2-1_zadymlenie_musoroprovoda",
+  "student": "student12",
+  "questions": [
+    "Что случилось?",
+    "Диктуйте адрес",
+    "На каком этаже?",
+    "Кто-нибудь пострадал?",
+    "Как вас зовут?"
+  ],
+  "rounds": 3,
+  "note": "ноутбук Windows, Docker Desktop 8 ГБ; Qwen2.5-1.5B Q4_K_M (select), faster-whisper base int8, Piper denis; телефон бенча — A-law 8 кГц",
+  "calls": [
+    [
+      {
+        "question": "Что случилось?",
+        "latency_s": 19.203
+      },
+      {
+        "question": "Диктуйте адрес",
+        "latency_s": 3.406
+      },
+      {
+        "question": "На каком этаже?",
+        "latency_s": null
+      },
+      {
+        "question": "Кто-нибудь пострадал?",
+        "latency_s": null
+      },
+      {
+        "question": "Как вас зовут?",
+        "latency_s": 10.453
+      }
+    ],
+    [
+      {
+        "question": "Что случилось?",
+        "latency_s": 13.969
+      },
+      {
+        "question": "Диктуйте адрес",
+        "latency_s": 9.313
+      },
+      {
+        "question": "На каком этаже?",
+        "latency_s": 7.062
+      },
+      {
+        "question": "Кто-нибудь пострадал?",
+        "latency_s": 17.86
+      },
+      {
+        "question": "Как вас зовут?",
+        "latency_s": 7.687
+      }
+    ],
+    [
+      {
+        "question": "Что случилось?",
+        "latency_s": 2.75
+      },
+      {
+        "question": "Диктуйте адрес",
+        "latency_s": 3.516
+      },
+      {
+        "question": "На каком этаже?",
+        "latency_s": 3.907
+      },
+      {
+        "question": "Кто-нибудь пострадал?",
+        "latency_s": 4.266
+      },
+      {
+        "question": "Как вас зовут?",
+        "latency_s": 4.484
+      }
+    ]
+  ]
+}

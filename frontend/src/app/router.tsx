@@ -18,6 +18,7 @@ import { TeacherSessionPage } from "@/pages/teacher/session";
 import { TeacherSessionsPage } from "@/pages/teacher/sessions";
 import { CardPage } from "@/emulator/card-page";
 import { JournalPage } from "@/emulator/journal-page";
+import { StudentFrame } from "@/softphone/student-frame";
 
 export const router = createBrowserRouter([
   { path: "/", element: <HomePage /> },
@@ -27,18 +28,24 @@ export const router = createBrowserRouter([
     element: <RequireRole roles={["student"]} />,
     children: [
       {
-        path: "/student",
-        element: <AppShell />,
+        // The softphone lives here so it stays registered across the cabinet and the АРМ.
+        element: <StudentFrame />,
         children: [
-          { index: true, element: <StudentAssignmentsPage /> },
-          { path: "progress", element: <PlaceholderPage title="Прогресс" /> },
-          { path: "reference", element: <StudentReferencePage /> },
-          { path: "attempts/:attemptId/review", element: <AttemptReviewPage /> },
+          {
+            path: "/student",
+            element: <AppShell />,
+            children: [
+              { index: true, element: <StudentAssignmentsPage /> },
+              { path: "progress", element: <PlaceholderPage title="Прогресс" /> },
+              { path: "reference", element: <StudentReferencePage /> },
+              { path: "attempts/:attemptId/review", element: <AttemptReviewPage /> },
+            ],
+          },
+          // The АРМ-112 emulator has its own chrome: no cabinet shell around it.
+          { path: "/student/sessions/:sessionId/journal", element: <JournalPage /> },
+          { path: "/student/attempts/:attemptId", element: <CardPage /> },
         ],
       },
-      // The АРМ-112 emulator has its own chrome: no cabinet shell around it.
-      { path: "/student/sessions/:sessionId/journal", element: <JournalPage /> },
-      { path: "/student/attempts/:attemptId", element: <CardPage /> },
     ],
   },
   {

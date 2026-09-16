@@ -19,6 +19,8 @@ from app.routers.grammar import router as grammar_router
 from app.routers.me import router as me_router
 from app.routers.reference import router as reference_router
 from app.routers.system import router as system_router
+from app.telephony import service as telephony
+from app.telephony.router import router as telephony_router
 from app.training import sweeper
 from app.training.router import router as training_router
 from app.training.teacher import router as teacher_router
@@ -39,7 +41,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     )
     # The «Не оповещено» sweep needs a running loop; tests call it explicitly instead.
     sweep_task = sweeper.start() if settings.app_env != "test" else None
+    if settings.app_env != "test":
+        await telephony.start()
     yield
+    await telephony.stop()
     if sweep_task is not None:
         await sweeper.stop(sweep_task)
     from app.db import engine
@@ -97,6 +102,7 @@ def create_app() -> FastAPI:
     app.include_router(training_router, prefix=API_PREFIX)
     app.include_router(teacher_router, prefix=API_PREFIX)
     app.include_router(dialog_router, prefix=API_PREFIX)
+    app.include_router(telephony_router, prefix=API_PREFIX)
     # WebSocket lives outside /api: nginx proxies /ws/ with the upgrade headers.
     app.include_router(ws_router)
     return app
