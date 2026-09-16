@@ -1,6 +1,12 @@
 [
   {
     "ticket_no": 1,
+    "item_no": 1,
+    "confirmed": true,
+    "note": "низкая уверенность из-за курсива в адресе, текст сверен со сканом"
+  },
+  {
+    "ticket_no": 1,
     "item_no": 2,
     "field": "situation",
     "from": "пострадавиих",
@@ -24,6 +30,22 @@
     "note": "курсив"
   },
   {
+    "ticket_no": 3,
+    "item_no": 3,
+    "field": "situation",
+    "from": "Ваз красный — водитель",
+    "to": "Ваз красный водитель",
+    "note": "тире, которого нет в скане"
+  },
+  {
+    "ticket_no": 4,
+    "item_no": 3,
+    "field": "address",
+    "from": "корн.902",
+    "to": "корп.902",
+    "note": "п/н"
+  },
+  {
     "ticket_no": 6,
     "item_no": 1,
     "field": "situation",
@@ -32,12 +54,36 @@
     "note": "запятая"
   },
   {
+    "ticket_no": 6,
+    "item_no": 1,
+    "field": "address",
+    "from": "сторона, км не доезжая до съёзда",
+    "to": "сторона, 1 км не доезжая до съезда",
+    "note": "потеряна «1», е/ё"
+  },
+  {
     "ticket_no": 7,
     "item_no": 1,
     "field": "address",
     "from": "(ири ‘уточнении",
     "to": "(при уточнении",
     "note": "курсив"
+  },
+  {
+    "ticket_no": 7,
+    "item_no": 1,
+    "field": "situation",
+    "from": "ожог рук ‚ 916-",
+    "to": "ожог рук , 916-",
+    "note": "запятая"
+  },
+  {
+    "ticket_no": 7,
+    "item_no": 3,
+    "field": "address",
+    "from": "код ЭВ",
+    "to": "код 5В",
+    "note": "5 распознана как Э"
   },
   {
     "ticket_no": 8,
@@ -70,6 +116,20 @@
     "from": "дом 20 кори. 2",
     "to": "дом 20 корп. 2",
     "note": "корп."
+  },
+  {
+    "ticket_no": 12,
+    "item_no": 3,
+    "field": "address",
+    "from": "АЗС НЕМ",
+    "to": "АЗС SHELL",
+    "note": "латиница прочитана как кириллица"
+  },
+  {
+    "ticket_no": 12,
+    "item_no": 3,
+    "confirmed": true,
+    "note": "латиница SHELL есть в оригинале"
   },
   {
     "ticket_no": 13,
@@ -112,12 +172,58 @@
     "note": "в скане «15/19» зачёркнуто, от руки написано «12»"
   },
   {
+    "ticket_no": 19,
+    "item_no": 1,
+    "field": "address",
+    "from": "500 м отавтобусной",
+    "to": "500 м от автобусной",
+    "note": "пробел"
+  },
+  {
+    "ticket_no": 20,
+    "item_no": 2,
+    "field": "address",
+    "from": "рядом с КИТ",
+    "to": "рядом с КПП",
+    "note": "ПП распознано как ИТ"
+  },
+  {
     "ticket_no": 21,
     "item_no": 3,
     "field": "address",
     "from": "ресторана \\ЗМНЕГТЕ,",
     "to": "ресторана WHEITE,",
     "note": "латиница"
+  },
+  {
+    "ticket_no": 21,
+    "item_no": 3,
+    "confirmed": true,
+    "note": "латиница WHEITE есть в оригинале"
+  },
+  {
+    "ticket_no": 22,
+    "item_no": 2,
+    "field": "address",
+    "from": "Ленинградском пт.",
+    "to": "Ленинградском ш.",
+    "note": "ш/пт"
+  },
+  {
+    "ticket_no": 22,
+    "item_no": 3,
+    "field": "address",
+    "from": "дом 115,",
+    "to": "дом 11Б,",
+    "note": "Б распознана как 5"
+  },
+  {
+    "ticket_no": 24,
+    "item_no": 1,
+    "field": "address",
+    "from": "двору 5 подъезда",
+    "to": "двор у 5 подъезда",
+    "note": "пробел"
   },
   {
     "ticket_no": 24,
@@ -150,6 +256,14 @@
     "from": "КВ. 5, ПОД .[, эт. 1",
     "to": "кв. 5, под. 1, эт. 1",
     "note": "регистр и 1"
+  },
+  {
+    "ticket_no": 26,
+    "item_no": 1,
+    "field": "address",
+    "from": "дом 3}",
+    "to": "дом 3)",
+    "note": "скобка"
   },
   {
     "ticket_no": 26,
@@ -217,6 +331,14 @@
   },
   {
     "ticket_no": 30,
+    "item_no": 2,
+    "field": "situation",
+    "from": "ваз21 10 красный",
+    "to": "ваз2110 красный",
+    "note": "лишний пробел"
+  },
+  {
+    "ticket_no": 30,
     "item_no": 3,
     "field": "address",
     "from": "НМ, с/и Вороновское",
@@ -232,23 +354,11 @@
     "note": "запятая"
   },
   {
-    "ticket_no": 26,
-    "item_no": 1,
-    "field": "address",
-    "from": "дом 3}",
-    "to": "дом 3)",
-    "note": "скобка"
-  },
-  {
-    "ticket_no": 1,
-    "item_no": 1,
-    "confirmed": true,
-    "note": "низкая уверенность из-за курсива в адресе, текст сверен со сканом"
-  },
-  {
-    "ticket_no": 21,
-    "item_no": 3,
-    "confirmed": true,
-    "note": "латиница WHEITE есть в оригинале"
+    "ticket_no": 31,
+    "item_no": 2,
+    "field": "situation",
+    "from": "красная 7 128 7? 177",
+    "to": "красная ? 128 ?? 177",
+    "note": "знаки «?» распознаны как 7"
   }
 ]
