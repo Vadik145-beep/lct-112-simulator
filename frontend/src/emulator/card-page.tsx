@@ -22,6 +22,7 @@ import {
   useAttempt,
   useFinishAttempt,
   useOpenAttempt,
+  useProgressReporter,
   useSetStatus,
   type AttemptOut,
   type TransitionOut,
@@ -104,6 +105,7 @@ function CardView({
   const setStatus = useSetStatus(attempt.id);
   const finish = useFinishAttempt(attempt.id);
   const { draft, setDraft, clearDraft } = useDraft(attempt.id);
+  const reportProgress = useProgressReporter(attempt.id);
   const [panelOpen, setPanelOpen] = useState(true);
   const [showHelp, setShowHelp] = useState(false);
   const [hintsOn, setHintsOn] = useState(true);
@@ -113,6 +115,11 @@ function CardView({
 
   const card = attempt.card;
   const finished = attempt.state === "finished" || attempt.state === "evaluated";
+
+  // The teacher's monitoring shows whether the trainee is reading or filling the status row.
+  useEffect(() => {
+    if (!finished) reportProgress(draft.open ? "editing_status" : "viewing");
+  }, [draft.open, finished, reportProgress]);
   const evaluation = attempt.evaluation as { total: number; passed: boolean } | null;
   const transitions = attempt.transitions;
   const byCode = useMemo(() => new Map(transitions.map((t) => [t.code, t])), [transitions]);

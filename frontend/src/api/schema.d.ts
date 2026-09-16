@@ -537,6 +537,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/attempts/{attempt_id}/progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report Progress
+         * @description What the trainee is doing in an open card (PRD 12: ``attempt.progress``, the client
+         *     sends it at most every 2 s). Shown on the teacher's monitoring tile, not stored on the
+         *     attempt.
+         */
+        post: operations["report_progress_api_attempts__attempt_id__progress_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sessions/{session_id}/restart": {
         parameters: {
             query?: never;
@@ -552,6 +574,181 @@ export interface paths {
          *     exercise can be run again from the first card. Hidden (404) outside demo mode.
          */
         post: operations["restart_session_api_sessions__session_id__restart_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/students": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Students
+         * @description Every trainee of the system: the pool a group is composed from.
+         */
+        get: operations["list_students_api_students_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/groups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Groups */
+        get: operations["list_groups_api_groups_get"];
+        put?: never;
+        /** Create Group */
+        post: operations["create_group_api_groups_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/groups/{group_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Group */
+        patch: operations["update_group_api_groups__group_id__patch"];
+        trace?: never;
+    };
+    "/api/sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Sessions
+         * @description The teacher's own sessions, newest first.
+         */
+        get: operations["list_sessions_api_sessions_get"];
+        put?: never;
+        /** Create Session */
+        post: operations["create_session_api_sessions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sessions/{session_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Session */
+        get: operations["get_session_api_sessions__session_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Session
+         * @description Settings change only while the session is a draft; the title and hints may change
+         *     at any time.
+         */
+        patch: operations["update_session_api_sessions__session_id__patch"];
+        trace?: never;
+    };
+    "/api/sessions/{session_id}/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Session
+         * @description Starts the lesson: the group sees it as active and gets cards on opening the journal.
+         */
+        post: operations["start_session_api_sessions__session_id__start_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sessions/{session_id}/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Finish Session
+         * @description Finishes the lesson: open cards are closed and scored, untouched ones withdrawn.
+         */
+        post: operations["finish_session_api_sessions__session_id__finish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sessions/{session_id}/monitor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Monitor Session
+         * @description Snapshot for the live monitoring; the WebSocket keeps it current.
+         */
+        get: operations["monitor_session_api_sessions__session_id__monitor_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sessions/{session_id}/report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Session Report */
+        get: operations["session_report_api_sessions__session_id__report_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -877,6 +1074,37 @@ export interface components {
             /** Replacements */
             replacements: string[];
         };
+        /** GroupIn */
+        GroupIn: {
+            /** Title */
+            title: string;
+            /** Student Ids */
+            student_ids?: string[];
+        };
+        /** GroupOut */
+        GroupOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /** Members */
+            members: components["schemas"]["StudentOut"][];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** GroupPatch */
+        GroupPatch: {
+            /** Title */
+            title?: string | null;
+            /** Student Ids */
+            student_ids?: string[] | null;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -1001,6 +1229,95 @@ export interface components {
             /** Message */
             message: string;
         };
+        /** MonitorCard */
+        MonitorCard: {
+            /**
+             * Attempt Id
+             * Format: uuid
+             */
+            attempt_id: string;
+            /** Card Number */
+            card_number: string;
+            /** Incident Title */
+            incident_title: string;
+            /** State */
+            state: string;
+            /** Response Status */
+            response_status: string;
+            /** Response Status Title */
+            response_status_title: string;
+            /** Card Status */
+            card_status: string;
+            /**
+             * Issued At
+             * Format: date-time
+             */
+            issued_at: string;
+            /** Received At */
+            received_at: string | null;
+            /** Primary Status At */
+            primary_status_at: string | null;
+            /** Submitted At */
+            submitted_at: string | null;
+            /** Total */
+            total: number | null;
+            /** Passed */
+            passed: boolean | null;
+        };
+        /** MonitorOut */
+        MonitorOut: {
+            /**
+             * Session Id
+             * Format: uuid
+             */
+            session_id: string;
+            /** Status */
+            status: string;
+            /** Norm Seconds */
+            norm_seconds: number;
+            /** Pass Threshold */
+            pass_threshold: number;
+            /** Cards Total */
+            cards_total: number;
+            /** Students */
+            students: components["schemas"]["MonitorStudent"][];
+            /** Last Seq */
+            last_seq: number;
+        };
+        /** MonitorStudent */
+        MonitorStudent: {
+            /**
+             * Student Id
+             * Format: uuid
+             */
+            student_id: string;
+            /** Full Name */
+            full_name: string;
+            /** Login */
+            login: string;
+            /** Service Code */
+            service_code: string | null;
+            /** Active */
+            active: components["schemas"]["MonitorCard"][];
+            /** Finished */
+            finished: number;
+            /** Passed */
+            passed: number;
+            /** Average */
+            average: number | null;
+            /** Last Total */
+            last_total: number | null;
+            /** Last Attempt Id */
+            last_attempt_id: string | null;
+        };
+        /**
+         * ProgressRequest
+         * @description What the trainee is doing in the card right now (shown on the monitoring tile).
+         */
+        ProgressRequest: {
+            /** Stage */
+            stage: string;
+        };
         /** PublicConfig */
         PublicConfig: {
             /** Demo Mode */
@@ -1009,6 +1326,22 @@ export interface components {
             external_ai: boolean;
             /** App Env */
             app_env: string;
+        };
+        /** QueueScenarioOut */
+        QueueScenarioOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /** Difficulty */
+            difficulty: number;
+            /** Service Code */
+            service_code: string | null;
+            /** Incident Type Code */
+            incident_type_code: string | null;
         };
         /** ReferenceSearchOut */
         ReferenceSearchOut: {
@@ -1025,6 +1358,136 @@ export interface components {
             code: string;
             /** Title */
             title: string;
+        };
+        /** ReportAttempt */
+        ReportAttempt: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Card Number */
+            card_number: string;
+            /** Scenario Title */
+            scenario_title: string;
+            /** Incident Title */
+            incident_title: string;
+            /** State */
+            state: string;
+            /** Card Status */
+            card_status: string;
+            /** Card Status Title */
+            card_status_title: string;
+            /**
+             * Issued At
+             * Format: date-time
+             */
+            issued_at: string;
+            /** Submitted At */
+            submitted_at: string | null;
+            /** Total */
+            total: number | null;
+            /** Passed */
+            passed: boolean | null;
+            /** Seconds */
+            seconds: number | null;
+            /** Norm Seconds */
+            norm_seconds: number;
+            /** Deviation */
+            deviation: number | null;
+            /** Decision Expected */
+            decision_expected: string | null;
+            /** Decision Actual */
+            decision_actual: string | null;
+            /** Decision Correct */
+            decision_correct: boolean | null;
+            /** Errors */
+            errors: string[];
+            /** Grammar Percent */
+            grammar_percent: number | null;
+        };
+        /** ReportErrorCount */
+        ReportErrorCount: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Count */
+            count: number;
+        };
+        /** ReportOut */
+        ReportOut: {
+            /**
+             * Session Id
+             * Format: uuid
+             */
+            session_id: string;
+            /** Title */
+            title: string;
+            /** Status */
+            status: string;
+            /** Started At */
+            started_at: string | null;
+            /** Finished At */
+            finished_at: string | null;
+            /** Norm Seconds */
+            norm_seconds: number;
+            /** Pass Threshold */
+            pass_threshold: number;
+            summary: components["schemas"]["ReportSummary"];
+            /** Students */
+            students: components["schemas"]["ReportStudent"][];
+        };
+        /** ReportStudent */
+        ReportStudent: {
+            /**
+             * Student Id
+             * Format: uuid
+             */
+            student_id: string;
+            /** Full Name */
+            full_name: string;
+            /** Login */
+            login: string;
+            /** Service Code */
+            service_code: string | null;
+            /** Attempts */
+            attempts: components["schemas"]["ReportAttempt"][];
+            /** Attempts Total */
+            attempts_total: number;
+            /** Evaluated */
+            evaluated: number;
+            /** Passed */
+            passed: number;
+            /** Average */
+            average: number | null;
+            /** Average Seconds */
+            average_seconds: number | null;
+            /** Average Deviation */
+            average_deviation: number | null;
+            /** Wrong Decisions */
+            wrong_decisions: number;
+            /** Typical Errors */
+            typical_errors: components["schemas"]["ReportErrorCount"][];
+            /** Grammar Percent */
+            grammar_percent: number | null;
+        };
+        /** ReportSummary */
+        ReportSummary: {
+            /** Students */
+            students: number;
+            /** Participated */
+            participated: number;
+            /** Evaluated */
+            evaluated: number;
+            /** Passed */
+            passed: number;
+            /** Average */
+            average: number | null;
+            /** Average Seconds */
+            average_seconds: number | null;
+            /** Typical Errors */
+            typical_errors: components["schemas"]["ReportErrorCount"][];
         };
         /** ResponseStatusOut */
         ResponseStatusOut: {
@@ -1098,6 +1561,69 @@ export interface components {
             /** Is Own */
             is_own: boolean;
         };
+        /**
+         * SessionIn
+         * @description Settings of a lesson (PRD 13.7). Fields not sent keep the trainer defaults.
+         */
+        SessionIn: {
+            /** Title */
+            title: string;
+            /**
+             * Mode
+             * @default card_response
+             */
+            mode: string;
+            /**
+             * Group Id
+             * Format: uuid
+             */
+            group_id: string;
+            /**
+             * Card Source
+             * @default scenarios
+             */
+            card_source: string;
+            /** Scenario Ids */
+            scenario_ids?: string[];
+            /** Incident Groups */
+            incident_groups?: string[];
+            /**
+             * Difficulty
+             * @default 1
+             */
+            difficulty: number;
+            /** Service Profile */
+            service_profile?: string[];
+            /**
+             * Norm Seconds
+             * @default 30
+             */
+            norm_seconds: number;
+            /**
+             * Pass Threshold
+             * @default 70
+             */
+            pass_threshold: number;
+            /**
+             * Hints Enabled
+             * @default true
+             */
+            hints_enabled: boolean;
+            /**
+             * Cards Per Student
+             * @default 0
+             */
+            cards_per_student: number;
+            /**
+             * Unfinished Seconds
+             * @default 172800
+             */
+            unfinished_seconds: number;
+            /** Weights */
+            weights?: {
+                [key: string]: number;
+            };
+        };
         /** SessionInfo */
         SessionInfo: {
             /**
@@ -1122,6 +1648,137 @@ export interface components {
             /** Finished At */
             finished_at: string | null;
             service: components["schemas"]["ServiceInfo"] | null;
+        };
+        /** SessionListItem */
+        SessionListItem: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /** Mode */
+            mode: string;
+            /** Status */
+            status: string;
+            /** Group Id */
+            group_id: string | null;
+            /** Group Title */
+            group_title: string;
+            /** Difficulty */
+            difficulty: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Started At */
+            started_at: string | null;
+            /** Finished At */
+            finished_at: string | null;
+            /** Students */
+            students: number;
+            /** Evaluated */
+            evaluated: number;
+            /** Average */
+            average: number | null;
+        };
+        /** SessionOut */
+        SessionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /** Mode */
+            mode: string;
+            /** Status */
+            status: string;
+            /** Group Id */
+            group_id: string | null;
+            /** Group Title */
+            group_title: string;
+            /** Difficulty */
+            difficulty: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Started At */
+            started_at: string | null;
+            /** Finished At */
+            finished_at: string | null;
+            /** Students */
+            students: number;
+            /** Evaluated */
+            evaluated: number;
+            /** Average */
+            average: number | null;
+            /** Card Source */
+            card_source: string;
+            /** Scenario Ids */
+            scenario_ids: string[];
+            /** Incident Groups */
+            incident_groups: string[];
+            /** Service Profile */
+            service_profile: string[];
+            /** Norm Seconds */
+            norm_seconds: number;
+            /** Pass Threshold */
+            pass_threshold: number;
+            /** Hints Enabled */
+            hints_enabled: boolean;
+            /** Cards Per Student */
+            cards_per_student: number;
+            /** Unfinished Seconds */
+            unfinished_seconds: number;
+            /** Weights */
+            weights: {
+                [key: string]: number;
+            };
+            /** Members */
+            members: components["schemas"]["StudentOut"][];
+            /** Queue */
+            queue: components["schemas"]["QueueScenarioOut"][];
+            /** Last Seq */
+            last_seq: number;
+        };
+        /** SessionPatch */
+        SessionPatch: {
+            /** Title */
+            title?: string | null;
+            /** Mode */
+            mode?: string | null;
+            /** Group Id */
+            group_id?: string | null;
+            /** Card Source */
+            card_source?: string | null;
+            /** Scenario Ids */
+            scenario_ids?: string[] | null;
+            /** Incident Groups */
+            incident_groups?: string[] | null;
+            /** Difficulty */
+            difficulty?: number | null;
+            /** Service Profile */
+            service_profile?: string[] | null;
+            /** Norm Seconds */
+            norm_seconds?: number | null;
+            /** Pass Threshold */
+            pass_threshold?: number | null;
+            /** Hints Enabled */
+            hints_enabled?: boolean | null;
+            /** Cards Per Student */
+            cards_per_student?: number | null;
+            /** Unfinished Seconds */
+            unfinished_seconds?: number | null;
+            /** Weights */
+            weights?: {
+                [key: string]: number;
+            } | null;
         };
         /** StatusLogEntryOut */
         StatusLogEntryOut: {
@@ -1174,6 +1831,20 @@ export interface components {
             okrug: string;
             /** District */
             district: string;
+        };
+        /** StudentOut */
+        StudentOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Login */
+            login: string;
+            /** Full Name */
+            full_name: string;
+            /** Service Code */
+            service_code: string | null;
         };
         /** TicketOut */
         TicketOut: {
@@ -2076,6 +2747,39 @@ export interface operations {
             };
         };
     };
+    report_progress_api_attempts__attempt_id__progress_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProgressRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     restart_session_api_sessions__session_id__restart_post: {
         parameters: {
             query?: never;
@@ -2093,6 +2797,368 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_students_api_students_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentOut"][];
+                };
+            };
+        };
+    };
+    list_groups_api_groups_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupOut"][];
+                };
+            };
+        };
+    };
+    create_group_api_groups_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GroupIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_group_api_groups__group_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GroupPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_sessions_api_sessions_get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionListItem"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_session_api_sessions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SessionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_session_api_sessions__session_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_session_api_sessions__session_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SessionPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_session_api_sessions__session_id__start_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    finish_session_api_sessions__session_id__finish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    monitor_session_api_sessions__session_id__monitor_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MonitorOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    session_report_api_sessions__session_id__report_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportOut"];
+                };
             };
             /** @description Validation Error */
             422: {

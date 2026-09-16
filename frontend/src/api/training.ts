@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useEffect, useRef } from "react";
 
 import { api, errorMessage } from "@/api/client";
 import type { components } from "@/api/schema";
@@ -21,7 +22,7 @@ export class NetworkError extends Error {
   }
 }
 
-async function unwrap<T>(call: Promise<{ data?: T; error?: unknown; response: Response }>): Promise<T> {
+export async function unwrap<T>(call: Promise<{ data?: T; error?: unknown; response: Response }>): Promise<T> {
   let result: { data?: T; error?: unknown; response: Response };
   try {
     result = await call;
@@ -35,10 +36,15 @@ async function unwrap<T>(call: Promise<{ data?: T; error?: unknown; response: Re
 export const journalKey = (sessionId: string) => ["journal", sessionId] as const;
 export const attemptKey = (attemptId: string) => ["attempt", attemptId] as const;
 
+// «Мои задания» has no WebSocket of its own: a lesson the teacher starts shows up on
+// the next poll.
+const ASSIGNMENTS_POLL_MS = 5000;
+
 export function useAssignments() {
   return useQuery({
     queryKey: ["assignments"],
     queryFn: () => unwrap(api.GET("/api/me/assignments")),
+    refetchInterval: ASSIGNMENTS_POLL_MS,
   });
 }
 
@@ -101,6 +107,43 @@ export function useFinishAttempt(attemptId: string) {
       void client.invalidateQueries({ queryKey: journalKey(data.attempt.session.id) });
     },
   });
+}
+
+// PRD 12: «attempt.progress» goes out at most once per 2 s.
+const PROGRESS_INTERVAL_MS = 2000;
+
+/**
+ * Tells the teacher's monitoring what the trainee is doing in the card. Calls are
+ * throttled: the latest stage is sent, at most once per 2 s; failures are ignored.
+ */
+export function useProgressReporter(attemptId: string) {
+  const last = useRef(0);
+  const pending = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const send = useCallback(
+    (stage: string) => {
+      void api.POST("/api/attempts/{attempt_id}/progress", {
+        params: { path: { attempt_id: attemptId } },
+        body: { stage },
+      });
+      last.current = Date.now();
+    },
+    [attemptId],
+  );
+  useEffect(
+    () => () => {
+      if (pending.current) clearTimeout(pending.current);
+    },
+    [],
+  );
+  return useCallback(
+    (stage: string) => {
+      if (pending.current) clearTimeout(pending.current);
+      const wait = PROGRESS_INTERVAL_MS - (Date.now() - last.current);
+      if (wait <= 0) send(stage);
+      else pending.current = setTimeout(() => send(stage), wait);
+    },
+    [send],
+  );
 }
 
 export function useReferenceSearch(query: string) {

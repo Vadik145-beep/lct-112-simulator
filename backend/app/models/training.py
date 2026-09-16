@@ -39,6 +39,9 @@ SESSION_DRAFT = "draft"
 SESSION_RUNNING = "running"
 SESSION_FINISHED = "finished"
 
+# АРМ-112 marks a card «Не завершено» 48 hours after the service accepted it (memo page 27).
+UNFINISHED_SECONDS_DEFAULT = 48 * 3600
+
 # Attempt lifecycle for the card-response mode.
 ATTEMPT_ISSUED = "issued"  # card is in the journal, «Добавлена»
 ATTEMPT_RECEIVED = "received"  # opened by the trainee, «Получена службой»
@@ -146,6 +149,12 @@ class TrainingSession(Base):
     norm_seconds: Mapped[int] = mapped_column(Integer, nullable=False, default=30)
     pass_threshold: Mapped[int] = mapped_column(Integer, nullable=False, default=70)
     hints_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    # Cards each trainee gets before the queue is considered done; 0 = the whole queue.
+    cards_per_student: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    # Seconds after the primary status before an open card becomes «Не завершено».
+    unfinished_seconds: Mapped[int] = mapped_column(
+        Integer, nullable=False, default=UNFINISHED_SECONDS_DEFAULT
+    )
     voice_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     dialog_mode: Mapped[str] = mapped_column(String(16), nullable=False, default="select")
     weights: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)

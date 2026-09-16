@@ -2,10 +2,11 @@ import { ArrowRight, BookOpen, Check, CircleAlert, X } from "lucide-react";
 import { Link, Navigate, useParams } from "react-router-dom";
 
 import { useAttempt, type AttemptOut } from "@/api/training";
+import { useAuth } from "@/app/use-auth";
 import { ErrorState, LoadingState } from "@/components/states";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatSeconds, formatTime } from "@/emulator/time";
+import { acceptanceTimer, formatSeconds, formatTime, useNow } from "@/emulator/time";
 import { cn } from "@/lib/utils";
 
 // Shapes of `attempt.evaluation` (EvaluationResult.to_dict() of the evaluation engine).
@@ -60,19 +61,24 @@ const STATUS_TITLES: Record<string, string> = {
 const DECISION_TITLES = { accept: "Принята", reject: "Не принята" };
 const COMPONENT_ORDER = ["decision", "time", "status_chain", "comments", "typical_errors", "grammar"];
 
+/** The review of an attempt: the trainee's own after the card is closed, or the teacher's
+ * view of any attempt of their session (a card in work shows what is done so far). */
 export function AttemptReviewPage() {
   const { attemptId } = useParams<{ attemptId: string }>();
-  if (!attemptId) return <Navigate to="/student" replace />;
-  return <Review attemptId={attemptId} />;
+  const { user } = useAuth();
+  const teacher = user?.role === "teacher";
+  if (!attemptId) return <Navigate to={teacher ? "/teacher" : "/student"} replace />;
+  return <Review attemptId={attemptId} teacher={teacher} />;
 }
 
-function Review({ attemptId }: { attemptId: string }) {
+function Review({ attemptId, teacher }: { attemptId: string; teacher: boolean }) {
   const query = useAttempt(attemptId);
   if (query.isPending) return <LoadingState text="Готовим разбор…" />;
   if (query.isError) return <ErrorState message={query.error.message} onRetry={() => void query.refetch()} />;
   const attempt = query.data;
   const evaluation = attempt.evaluation as Evaluation | null;
   if (!evaluation) {
+    if (teacher) return <InProgressView attempt={attempt} onRefresh={() => void query.refetch()} />;
     return (
       <div className="space-y-4">
         <h1 className="text-2xl font-semibold">Разбор карточки {attempt.card.number}</h1>
@@ -85,10 +91,83 @@ function Review({ attemptId }: { attemptId: string }) {
       </div>
     );
   }
-  return <ReviewView attempt={attempt} evaluation={evaluation} />;
+  return <ReviewView attempt={attempt} evaluation={evaluation} teacher={teacher} />;
 }
 
-function ReviewView({ attempt, evaluation }: { attempt: AttemptOut; evaluation: Evaluation }) {
+/** Teacher's look at a card still in work: the card, the statuses so far, the timer. */
+function InProgressView({ attempt, onRefresh }: { attempt: AttemptOut; onRefresh: () => void }) {
+  const now = useNow();
+  const timer = acceptanceTimer(attempt.issued_at, attempt.primary_status_at, attempt.norm_seconds, now);
+  const late = timer.phase === "overdue" || timer.phase === "late";
+  return (
+    <div className="space-y-6">
+      <div>
+        <Link to={`/teacher/sessions/${attempt.session.id}`} className="text-sm text-muted-foreground hover:underline">
+          ← К занятию
+        </Link>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Просмотр · карточка {attempt.card.number} · {attempt.arm.dispatcher}
+        </p>
+        <h1 className="text-2xl font-semibold">{attempt.card.incident.final_title || "Карточка"}</h1>
+        <p className="text-sm text-muted-foreground">{attempt.card.address.text}</p>
+      </div>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Что уже сделано</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <p>
+              Статус службы: <span className="font-medium">{attempt.response_status_title}</span> · карточка:{" "}
+              <span className={cn("font-medium", attempt.card_status_alert && "text-destructive")}>{attempt.card_status_title}</span>
+            </p>
+            <p>
+              {attempt.primary_status_at ? "Первичный статус через" : "Идёт норматив:"}{" "}
+              <span className={cn("font-mono", late && "text-destructive")}>{formatSeconds(timer.elapsed)}</span>{" "}
+              <span className="text-muted-foreground">при нормативе {attempt.norm_seconds} с</span>
+            </p>
+            <ol className="space-y-1" aria-label="Статусы">
+              {attempt.status_log.map((e, i) => (
+                <li key={i} className="flex items-start gap-2">
+                  <span className="w-16 shrink-0 font-mono text-xs text-muted-foreground">{formatTime(e.at)}</span>
+                  <span>
+                    {e.title}
+                    {e.order_number ? `, наряд ${e.order_number}` : ""}
+                    {e.comment ? ` — ${e.comment}` : ""}
+                    {e.by === "system" && <span className="text-muted-foreground"> (система)</span>}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Карточка</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <p>
+              <span className="text-muted-foreground">Заявитель:</span> {attempt.card.caller.name || "—"}
+              {attempt.card.caller.role && ` (${attempt.card.caller.role})`}
+            </p>
+            <p>
+              <span className="text-muted-foreground">Описание:</span> {attempt.card.description || "—"}
+            </p>
+            <p>
+              <span className="text-muted-foreground">Признаки:</span> {attempt.card.incident.signs.join(", ") || "—"}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+      <p className="text-xs text-muted-foreground">Разбор с оценкой появится, когда обучающийся закроет карточку.</p>
+      <Button variant="outline" onClick={onRefresh}>
+        Обновить
+      </Button>
+    </div>
+  );
+}
+
+function ReviewView({ attempt, evaluation, teacher }: { attempt: AttemptOut; evaluation: Evaluation; teacher: boolean }) {
   const reference = attempt.reference as Reference | null;
   const components = COMPONENT_ORDER.map((k) => evaluation.components[k]).filter((c): c is Component => Boolean(c));
   const dispatcherLog = attempt.status_log.filter((e) => e.by !== "system");
@@ -102,7 +181,15 @@ function ReviewView({ attempt, evaluation }: { attempt: AttemptOut; evaluation: 
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-sm text-muted-foreground">Разбор · карточка {attempt.card.number}</p>
+          {teacher && (
+            <Link to={`/teacher/sessions/${attempt.session.id}/report`} className="text-sm text-muted-foreground hover:underline">
+              ← К отчёту
+            </Link>
+          )}
+          <p className="text-sm text-muted-foreground">
+            Разбор · карточка {attempt.card.number}
+            {teacher && ` · ${attempt.arm.dispatcher}`}
+          </p>
           <h1 className="text-2xl font-semibold">{attempt.card.incident.final_title || "Карточка"}</h1>
           <p className="text-sm text-muted-foreground">{attempt.card.address.text}</p>
         </div>
@@ -157,12 +244,12 @@ function ReviewView({ attempt, evaluation }: { attempt: AttemptOut; evaluation: 
                   <div className="font-medium">{DECISION_TITLES[reference.decision]}</div>
                 </div>
                 <div className="rounded-md bg-muted p-2">
-                  <div className="text-xs text-muted-foreground">Ваше решение</div>
+                  <div className="text-xs text-muted-foreground">{teacher ? "Решение обучающегося" : "Ваше решение"}</div>
                   <div className="font-medium">{decisionOf(evaluation)}</div>
                 </div>
               </div>
             )}
-            <ol className="space-y-1" aria-label="Ваши статусы против эталона">
+            <ol className="space-y-1" aria-label={teacher ? "Статусы обучающегося против эталона" : "Ваши статусы против эталона"}>
               {referenceChain.map((step, i) => {
                 const entry = dispatcherLog.find((e) => e.status === step.status);
                 return (
@@ -266,16 +353,27 @@ function ReviewView({ attempt, evaluation }: { attempt: AttemptOut; evaluation: 
         </CardContent>
       </Card>
 
-      <div className="flex flex-wrap gap-2">
-        <Button asChild>
-          <Link to={`/student/sessions/${attempt.session.id}/journal`}>
-            Следующая карточка <ArrowRight />
-          </Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link to={`/student/attempts/${attempt.id}`}>Открыть карточку</Link>
-        </Button>
-      </div>
+      {teacher ? (
+        <div className="flex flex-wrap gap-2">
+          <Button asChild>
+            <Link to={`/teacher/sessions/${attempt.session.id}`}>К занятию</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to={`/teacher/sessions/${attempt.session.id}/report`}>К отчёту</Link>
+          </Button>
+        </div>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          <Button asChild>
+            <Link to={`/student/sessions/${attempt.session.id}/journal`}>
+              Следующая карточка <ArrowRight />
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to={`/student/attempts/${attempt.id}`}>Открыть карточку</Link>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

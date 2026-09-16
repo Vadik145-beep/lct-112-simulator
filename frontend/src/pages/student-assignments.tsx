@@ -98,11 +98,9 @@ function AssignmentRow({ assignment }: { assignment: AssignmentOut }) {
           {assignment.finished_cards > 0 ? ` · закрыто карточек: ${assignment.finished_cards}` : ""}
         </div>
       </div>
-      {assignment.status !== "draft" && (
-        <Button asChild variant="outline" size="sm">
-          <Link to={`/student/sessions/${assignment.id}/journal`}>Журнал</Link>
-        </Button>
-      )}
+      <Button asChild variant="outline" size="sm">
+        <Link to={`/student/sessions/${assignment.id}/journal`}>{assignment.status === "draft" ? "Ждать начала в журнале" : "Журнал"}</Link>
+      </Button>
     </li>
   );
 }

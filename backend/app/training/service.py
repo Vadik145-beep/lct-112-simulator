@@ -45,6 +45,7 @@ from app.models import (
 CARD_REGISTERED = "registered"
 CARD_NOT_NOTIFIED = "not_notified"
 CARD_REFUSED = "refused"
+CARD_NOT_FINISHED = "not_finished"
 CARD_FINISHED = "finished"
 
 # How many cards are in the journal at once per session difficulty (PRD 9.2: at
@@ -276,14 +277,18 @@ async def issue_cards(
     want = CARDS_AT_ONCE.get(ts.difficulty, 1) - (active or 0)
     if want <= 0:
         return [], []
-    done = set(
+    done = list(
         await session.scalars(
             select(Attempt.scenario_id).where(
                 Attempt.session_id == ts.id, Attempt.student_id == student.id
             )
         )
     )
-    queue = [s for s in await scenario_queue(session, ts) if s.id not in done][:want]
+    if ts.cards_per_student:
+        want = min(want, ts.cards_per_student - len(done))
+        if want <= 0:
+            return [], []
+    queue = [s for s in await scenario_queue(session, ts) if s.id not in set(done)][:want]
     attempts: list[Attempt] = []
     events: list[SessionEvent] = []
     for scenario in queue:
@@ -350,6 +355,8 @@ def derive_card_status(attempt: Attempt) -> str:
         return CARD_REFUSED
     if attempt.primary_status_at is None and attempt.card_status == CARD_NOT_NOTIFIED:
         return CARD_NOT_NOTIFIED
+    if attempt.card_status == CARD_NOT_FINISHED:
+        return CARD_NOT_FINISHED
     return CARD_REGISTERED
 
 
@@ -522,8 +529,10 @@ async def evaluate_and_store(
     session: AsyncSession, attempt: Attempt, ts: TrainingSession, body: dict
 ) -> SessionEvent:
     """Scores a closed card synchronously (PRD 9.2: within 2 s) and stores the result."""
+    # The lesson norm (session setting) is what the trainee was told; the scenario's own
+    # value is only a default for the editor.
     result = await evaluate_attempt(
-        body,
+        {**body, "norm_seconds": ts.norm_seconds},
         evaluation_input(attempt),
         weights=ts.weights or None,
         pass_threshold=ts.pass_threshold,
@@ -587,22 +596,27 @@ async def sweep_not_notified(
     session: AsyncSession, now: datetime | None = None
 ) -> list[SessionEvent]:
     """Marks cards that got no primary status within the session norm as «Не оповещено»
+    and accepted cards still open after the session's threshold as «Не завершено»
     (memo, page 27). Safe to run from several replicas: each card changes once."""
     now = now or utcnow()
     rows = await session.execute(
-        select(Attempt, TrainingSession.norm_seconds)
+        select(Attempt, TrainingSession.norm_seconds, TrainingSession.unfinished_seconds)
         .join(TrainingSession, TrainingSession.id == Attempt.session_id)
         .where(
             Attempt.state.in_(ACTIVE_ATTEMPT_STATES),
-            Attempt.primary_status_at.is_(None),
             Attempt.card_status == CARD_REGISTERED,
         )
         .with_for_update(of=Attempt, skip_locked=True)
     )
     events: list[SessionEvent] = []
-    for attempt, norm_seconds in rows:
-        if attempt.issued_at + timedelta(seconds=norm_seconds) > now:
-            continue
-        attempt.card_status = CARD_NOT_NOTIFIED
+    for attempt, norm_seconds, unfinished_seconds in rows:
+        if attempt.primary_status_at is None:
+            if attempt.issued_at + timedelta(seconds=norm_seconds) > now:
+                continue
+            attempt.card_status = CARD_NOT_NOTIFIED
+        else:
+            if attempt.primary_status_at + timedelta(seconds=unfinished_seconds) > now:
+                continue
+            attempt.card_status = CARD_NOT_FINISHED
         events.append(await _card_status_event(session, attempt))
     return events

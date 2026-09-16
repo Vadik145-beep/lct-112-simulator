@@ -11,6 +11,11 @@ import { PlaceholderPage } from "@/pages/placeholder";
 import { AttemptReviewPage } from "@/pages/attempt-review";
 import { StudentAssignmentsPage } from "@/pages/student-assignments";
 import { StudentReferencePage } from "@/pages/student-reference";
+import { TeacherGroupsPage } from "@/pages/teacher/groups";
+import { SessionFormPage } from "@/pages/teacher/session-form";
+import { SessionReportPage } from "@/pages/teacher/session-report";
+import { TeacherSessionPage } from "@/pages/teacher/session";
+import { TeacherSessionsPage } from "@/pages/teacher/sessions";
 import { CardPage } from "@/emulator/card-page";
 import { JournalPage } from "@/emulator/journal-page";
 
@@ -43,8 +48,13 @@ export const router = createBrowserRouter([
         path: "/teacher",
         element: <AppShell />,
         children: [
-          { index: true, element: <CabinetPage role="teacher" /> },
-          { path: "groups", element: <PlaceholderPage title="Группы" /> },
+          { index: true, element: <TeacherSessionsPage /> },
+          { path: "sessions/new", element: <SessionFormPage /> },
+          { path: "sessions/:sessionId", element: <TeacherSessionPage /> },
+          { path: "sessions/:sessionId/edit", element: <SessionFormPage /> },
+          { path: "sessions/:sessionId/report", element: <SessionReportPage /> },
+          { path: "attempts/:attemptId/review", element: <AttemptReviewPage /> },
+          { path: "groups", element: <TeacherGroupsPage /> },
           { path: "scenarios", element: <PlaceholderPage title="Сценарии" /> },
         ],
       },
