@@ -48,6 +48,8 @@ os.environ.update(
         "REDIS_URL": os.environ.get("TEST_REDIS_URL", "redis://localhost:6379/1"),
         "SECRET_KEY": os.environ.get("SECRET_KEY", "test-secret-key-0123456789abcdef0123456789"),
         "LOG_LEVEL": "WARNING",
+        # The repository's data folder, whatever .env says (there it is the container path).
+        "DATA_DIR": str(BACKEND_DIR.parent / "data"),
     }
 )
 

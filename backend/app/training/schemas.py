@@ -1,0 +1,202 @@
+"""Response and request models of the card-response training API."""
+
+from __future__ import annotations
+
+import uuid
+from datetime import datetime
+
+from pydantic import BaseModel, Field
+
+
+class ServiceInfo(BaseModel):
+    code: str
+    title: str
+    short_title: str
+    no_reject: bool = False
+
+
+class SessionInfo(BaseModel):
+    id: uuid.UUID
+    title: str
+    mode: str
+    status: str
+    difficulty: int
+    norm_seconds: int
+    hints_enabled: bool
+    started_at: datetime | None
+    finished_at: datetime | None
+    service: ServiceInfo | None
+
+
+class AssignmentOut(SessionInfo):
+    active_cards: int
+    finished_cards: int
+
+
+class ArmInfo(BaseModel):
+    """Who sits at the emulated workstation (shown in the journal header)."""
+
+    dispatcher: str
+    operator_no: str
+    arm_no: str
+
+
+class ServiceStatusOut(BaseModel):
+    code: str
+    title: str
+    short_title: str
+    status: str
+    status_title: str
+    at: datetime | None
+    is_own: bool
+
+
+class CallerOut(BaseModel):
+    name: str = ""
+    role: str = ""
+    phone: str = ""
+
+
+class AddressOut(BaseModel):
+    text: str
+    street: str = ""
+    house: str = ""
+    building: str = ""
+    structure: str = ""
+    entrance: str = ""
+    floor: str = ""
+    apartment: str = ""
+    code: str = ""
+    okrug: str = ""
+    district: str = ""
+    descriptive: str = ""
+
+
+class IncidentOut(BaseModel):
+    type_code: str | None
+    group_title: str
+    final_title: str
+    signs: list[str]
+
+
+class CardOut(BaseModel):
+    number: str
+    created_at: datetime
+    operator_no: str
+    arm_no: str
+    caller: CallerOut
+    address: AddressOut
+    description: str
+    incident: IncidentOut
+    flags: dict[str, bool]
+    injured: bool
+    ambulance_refused: bool
+    blocked: bool
+    emergency: bool
+    incident_flag: bool
+    phones: dict[str, str]
+    services: list[ServiceStatusOut]
+
+
+class JournalItem(BaseModel):
+    attempt_id: uuid.UUID
+    card_number: str
+    state: str
+    response_status: str
+    response_status_title: str
+    card_status: str
+    card_status_title: str
+    card_status_alert: bool
+    issued_at: datetime
+    received_at: datetime | None
+    primary_status_at: datetime | None
+    submitted_at: datetime | None
+    norm_seconds: int
+    incident_title: str
+    incident_group: str
+    injured: bool
+    address: str
+    caller: CallerOut
+    description: str
+    signs: list[str]
+    operator_no: str
+    arm_no: str
+    services: list[ServiceStatusOut]
+
+
+class JournalOut(BaseModel):
+    session: SessionInfo
+    arm: ArmInfo
+    items: list[JournalItem]
+    page: int
+    per_page: int
+    total: int
+    last_seq: int
+
+
+class StatusLogEntryOut(BaseModel):
+    status: str
+    title: str
+    order_number: str | None
+    comment: str | None
+    reject_reason: str | None
+    reject_reason_title: str | None
+    at: datetime
+    by: str
+
+
+class TransitionOut(BaseModel):
+    code: str
+    title: str
+    requires_comment: bool
+    requires_order_number: bool
+    is_final: bool
+    is_primary: bool
+
+
+class RejectReasonOut(BaseModel):
+    code: str
+    title: str
+
+
+class AttemptOut(BaseModel):
+    id: uuid.UUID
+    session: SessionInfo
+    arm: ArmInfo
+    state: str
+    response_status: str
+    response_status_title: str
+    card_status: str
+    card_status_title: str
+    card_status_alert: bool
+    issued_at: datetime
+    received_at: datetime | None
+    primary_status_at: datetime | None
+    submitted_at: datetime | None
+    norm_seconds: int
+    card: CardOut
+    service: ServiceInfo | None
+    status_log: list[StatusLogEntryOut]
+    transitions: list[TransitionOut]
+    reject_reasons: list[RejectReasonOut]
+    # Reference solution, visible after the card is closed (PRD 11: «эталон после завершения»).
+    reference: dict | None
+    # Filled by the evaluation engine once the card is closed; null until then.
+    evaluation: dict | None
+    last_seq: int
+
+
+class StatusRequest(BaseModel):
+    status: str = Field(min_length=1, max_length=32)
+    order_number: str | None = Field(default=None, max_length=64)
+    comment: str | None = Field(default=None, max_length=2000)
+    reject_reason: str | None = Field(default=None, max_length=32)
+    # Client-generated id of the action; a retry with the same id is applied once.
+    action_id: str | None = Field(default=None, max_length=64)
+
+
+class StatusResponse(BaseModel):
+    attempt: AttemptOut
+    applied: bool
+    # Cards issued right after this one was closed (queue mode).
+    issued: list[uuid.UUID]

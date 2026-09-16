@@ -6,9 +6,11 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from app.auth.deps import ActiveUser, DbSession
+from app.config import get_settings
+from app.domain.memo_search import MIN_QUERY_LENGTH, SEARCH_LIMIT, search_memo
 from app.domain.services import available_flags, resolve_services
 from app.errors import ApiError
 from app.importers.organizers import normalize_street
@@ -121,6 +123,25 @@ class TicketOut(BaseModel):
     address: str
     ocr_confident: bool
     traps: list[str]
+
+
+class MemoHitOut(BaseModel):
+    page: int
+    text: str
+
+
+class TypeHitOut(BaseModel):
+    code: str
+    final_title: str
+    group_title: str
+    signs: list[str]
+    main_service: str | None
+
+
+class ReferenceSearchOut(BaseModel):
+    query: str
+    memo: list[MemoHitOut]
+    types: list[TypeHitOut]
 
 
 class StreetOut(BaseModel):
@@ -289,3 +310,44 @@ async def streets(
     )
     rows = await session.scalars(query)
     return [StreetOut.model_validate(r, from_attributes=True) for r in rows]
+
+
+@router.get("/reference/search", response_model=ReferenceSearchOut)
+async def reference_search(
+    user: ActiveUser,
+    session: DbSession,
+    q: Annotated[str, Query(min_length=MIN_QUERY_LENGTH, max_length=100)],
+) -> ReferenceSearchOut:
+    """Trainee's reference: paragraphs of the memo and classifier types matching the words."""
+    memo_path = f"{get_settings().data_dir}/seed/memo.txt"
+    words = [w for w in q.lower().replace("ё", "е").split() if len(w) >= MIN_QUERY_LENGTH]
+    types: list[TypeHitOut] = []
+    if words:
+        query = select(IncidentType, IncidentGroup.title).join(
+            IncidentGroup, IncidentGroup.code == IncidentType.group_code
+        )
+        for word in words:
+            pattern = f"%{word}%"
+            query = query.where(
+                func.replace(func.lower(IncidentType.final_title), "ё", "е").like(pattern)
+                | func.replace(func.lower(IncidentType.sign1), "ё", "е").like(pattern)
+                | func.replace(func.lower(func.coalesce(IncidentType.sign2, "")), "ё", "е").like(
+                    pattern
+                )
+            )
+        rows = await session.execute(query.order_by(IncidentType.code).limit(SEARCH_LIMIT))
+        types = [
+            TypeHitOut(
+                code=t.code,
+                final_title=t.final_title,
+                group_title=group_title,
+                signs=[s for s in (t.sign1, t.sign2, t.sign3) if s],
+                main_service=t.main_service,
+            )
+            for t, group_title in rows
+        ]
+    return ReferenceSearchOut(
+        query=q,
+        memo=[MemoHitOut(page=h.page, text=h.text) for h in search_memo(memo_path, q)],
+        types=types,
+    )
