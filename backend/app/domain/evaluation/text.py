@@ -121,8 +121,12 @@ def keyword_coverage(text: str, keywords: Iterable[str]) -> tuple[list[str], lis
     return found, missing
 
 
-_TOPIC_KEYWORDS: list[tuple[str, list[str]]] = [
-    (t["code"], [normalize_text(k) for k in t["keywords"]]) for t in CALLER_TOPICS if t["keywords"]
+# (topic code, [(normalized keyword, whole word)]): a keyword written with a trailing space in
+# ``caller_topics`` («дом ») matches the whole word only, others match at a word start (stems).
+_TOPIC_KEYWORDS: list[tuple[str, list[tuple[str, bool]]]] = [
+    (t["code"], [(normalize_text(k), k.endswith(" ")) for k in t["keywords"]])
+    for t in CALLER_TOPICS
+    if t["keywords"]
 ]
 
 
@@ -135,9 +139,10 @@ def detect_topics(text: str) -> list[str]:
     padded = f" {normalized} "
     found = []
     for code, keywords in _TOPIC_KEYWORDS:
-        for keyword in keywords:
+        for keyword, whole_word in keywords:
             # Keywords are stems («пострадавш») or phrases; match at a word start.
-            if f" {keyword}" in padded:
+            needle = f" {keyword} " if whole_word else f" {keyword}"
+            if needle in padded:
                 found.append(code)
                 break
     return found

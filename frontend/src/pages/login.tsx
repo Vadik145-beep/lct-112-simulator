@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
 import { GraduationCap, Shield, UserRound } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
-import { api, type Role } from "@/api/client";
+import { type Role } from "@/api/client";
+import { usePublicConfig } from "@/api/config";
 import { useAuth } from "@/app/use-auth";
 import { FullScreenLoading } from "@/components/states";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -28,15 +28,7 @@ export function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<"form" | Role | null>(null);
 
-  const config = useQuery({
-    queryKey: ["config"],
-    queryFn: async () => {
-      const { data, error } = await api.GET("/api/config");
-      if (!data) throw error;
-      return data;
-    },
-    staleTime: Infinity,
-  });
+  const config = usePublicConfig();
 
   // Do not offer the form while a previous session may still be restored.
   if (status === "loading") return <FullScreenLoading />;

@@ -1,11 +1,26 @@
-import { LogOut } from "lucide-react";
+import { LogOut, TriangleAlert } from "lucide-react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
+import { usePublicConfig } from "@/api/config";
 import { useAuth } from "@/app/use-auth";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { ROLE_NAV, ROLE_TITLES } from "@/lib/roles";
 import { cn } from "@/lib/utils";
+
+/** PRD section 2: when ALLOW_EXTERNAL_AI is on, every cabinet says so; never on the stand. */
+export function ExternalAiBanner() {
+  const config = usePublicConfig();
+  if (!config.data?.external_ai) return null;
+  return (
+    <div role="alert" className="bg-amber-500 text-amber-950">
+      <div className="mx-auto flex max-w-6xl items-center gap-2 px-4 py-1.5 text-sm font-medium">
+        <TriangleAlert className="size-4 shrink-0" aria-hidden />
+        Внешняя модель: не для закрытого контура
+      </div>
+    </div>
+  );
+}
 
 /** Common frame for all cabinets: header with user, role, theme and logout; role navigation. */
 export function AppShell() {
@@ -20,6 +35,7 @@ export function AppShell() {
 
   return (
     <div className="flex min-h-dvh flex-col">
+      <ExternalAiBanner />
       <header className="border-b bg-card">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
           <div className="flex items-center gap-2 font-semibold">
