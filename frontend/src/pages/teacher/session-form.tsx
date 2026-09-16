@@ -34,6 +34,9 @@ const DEFAULTS: Omit<SessionIn, "group_id"> = {
   cards_per_student: 0,
   unfinished_seconds: 48 * HOUR,
   weights: {},
+  // Call-intake settings; the controls appear with the mode in wave 7.
+  voice_enabled: false,
+  dialog_mode: "select",
 };
 
 const selectClass =
@@ -69,6 +72,8 @@ function toInput(s: SessionOut): SessionIn {
     cards_per_student: s.cards_per_student,
     unfinished_seconds: s.unfinished_seconds,
     weights: s.weights,
+    voice_enabled: s.voice_enabled,
+    dialog_mode: s.dialog_mode,
   };
 }
 

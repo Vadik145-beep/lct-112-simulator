@@ -57,6 +57,10 @@ class SessionIn(BaseModel):
     cards_per_student: int = 0
     unfinished_seconds: int = UNFINISHED_SECONDS_DEFAULT
     weights: dict[str, int] = Field(default_factory=dict)
+    # Call-intake settings (PRD 9.3): the operator speaks through the softphone, and how the
+    # caller answers (select | hybrid | generate | buttons | live). Kept on card sessions too.
+    voice_enabled: bool = False
+    dialog_mode: str = "select"
 
 
 class SessionPatch(BaseModel):
@@ -74,6 +78,8 @@ class SessionPatch(BaseModel):
     cards_per_student: int | None = None
     unfinished_seconds: int | None = None
     weights: dict[str, int] | None = None
+    voice_enabled: bool | None = None
+    dialog_mode: str | None = None
 
 
 class QueueScenarioOut(BaseModel):
@@ -111,6 +117,8 @@ class SessionOut(SessionListItem):
     cards_per_student: int
     unfinished_seconds: int
     weights: dict[str, int]
+    voice_enabled: bool
+    dialog_mode: str
     members: list[StudentOut]
     # The queue: fixed once the session starts, a preview of the current filters before.
     queue: list[QueueScenarioOut]
