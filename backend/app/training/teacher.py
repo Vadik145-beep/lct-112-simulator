@@ -182,6 +182,8 @@ async def _session_out(session: DbSession, ts: TrainingSession) -> SessionOut:
         cards_per_student=ts.cards_per_student,
         unfinished_seconds=ts.unfinished_seconds,
         weights=dict(ts.weights or {}),
+        voice_enabled=ts.voice_enabled,
+        dialog_mode=ts.dialog_mode,
         members=[_student_out(u) for u in members],
         queue=[_queue_out(s) for s in queue],
         last_seq=await present.last_seq(session, ts.id),

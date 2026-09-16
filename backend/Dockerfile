@@ -6,6 +6,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     UV_PROJECT_ENVIRONMENT=/opt/venv \
     PATH="/opt/venv/bin:$PATH"
 
+# ffmpeg encodes the voiced replies to MP3 (app/providers/tts.py); WAV works without it.
+RUN apt-get update     && apt-get install -y --no-install-recommends ffmpeg     && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 COPY --from=ghcr.io/astral-sh/uv:0.5 /uv /usr/local/bin/uv

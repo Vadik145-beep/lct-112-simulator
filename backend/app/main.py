@@ -11,6 +11,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.auth.router import router as auth_router
 from app.config import get_settings
+from app.dialog.router import router as dialog_router
 from app.errors import install_error_handlers
 from app.logging import configure_logging, get_logger
 from app.routers.cabinets import router as cabinets_router
@@ -95,6 +96,7 @@ def create_app() -> FastAPI:
     app.include_router(grammar_router, prefix=API_PREFIX)
     app.include_router(training_router, prefix=API_PREFIX)
     app.include_router(teacher_router, prefix=API_PREFIX)
+    app.include_router(dialog_router, prefix=API_PREFIX)
     # WebSocket lives outside /api: nginx proxies /ws/ with the upgrade headers.
     app.include_router(ws_router)
     return app

@@ -52,6 +52,8 @@ describe("monitor reducer", () => {
     state = applyEvent(state, event("attempt.progress", "s1", { attempt_id: "a1", stage: "editing_status" }));
     expect(state.stages.s1?.stage).toBe("editing_status");
     expect(state.stages.s1?.attempt_id).toBe("a1");
+    state = applyEvent(state, event("dialog.turn", "s1", { attempt_id: "a1", turns: 3 }));
+    expect(state.stages.s1?.stage).toBe("talking");
     state = applyEvent(
       state,
       event("attempt.status_changed", "s1", { attempt_id: "a1", state: "in_progress", response_status: "accepted", primary_status_at: T0 }),

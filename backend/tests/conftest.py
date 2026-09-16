@@ -50,6 +50,13 @@ os.environ.update(
         "LOG_LEVEL": "WARNING",
         # The repository's data folder, whatever .env says (there it is the container path).
         "DATA_DIR": str(BACKEND_DIR.parent / "data"),
+        # Local models of the repository (tests skip when they are not downloaded); the AI
+        # services of the compose profile are never called from tests.
+        "MODELS_DIR": str(BACKEND_DIR.parent / "models"),
+        "STORAGE_DIR": str(BACKEND_DIR / ".pytest_cache" / "storage"),
+        "LLM_DIALOG_URL": "",
+        "LLM_GEN_URL": "",
+        "STT_URL": "",
     }
 )
 

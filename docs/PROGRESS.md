@@ -4,8 +4,97 @@
 
 ## Текущая волна
 
-Волна 4 ([plan/wave-04.md](../plan/wave-04.md)), ветка `wave-04/sessions`, issue #5.
-Все задачи сделаны, проверки зелёные, ждёт ручной проверки раздела «Показать» и PR.
+Волна 5 ([plan/wave-05.md](../plan/wave-05.md)), ветка `wave-05/dialog`, issue #6.
+Шла параллельно с волной 3 (независимая часть: провайдеры, модели, замеры), после мержа
+волны 3 добавлены эндпоинты диалога поверх `attempts`. Волна 4 не начата.
+
+### Сделано
+
+- `scripts/fetch_models.sh` + `scripts/models.manifest`: Qwen2.5 1.5B/3B/7B (Q4_K_M),
+  faster-whisper base/small, Piper denis/dmitri/irina, e5-small (ONNX); sha256 из LFS,
+  докачка, проверка. Папка `models/` (не в git, `MODELS_DIR`) монтируется как `/models`.
+- Профиль `ai` в compose: `llm-dialog`, `llm-gen` (llama.cpp server, `--jinja`, слоты,
+  `LLM_LOAD_MODE`), `stt` (`deploy/stt/`: faster-whisper за эндпоинтом
+  `/v1/audio/transcriptions`). `ffmpeg` в образе бэкенда (MP3). Настройки в `.env.example`.
+- `app/providers/llm.py` — клиент llama.cpp (`/v1/chat/completions`, JSON по схеме,
+  `cache_prompt`, `id_slot` на разговор, окно недоступности 15 с).
+- `app/providers/dialog.py` — `DialogProvider`: `select` (номер по `enum` из id + подстраховка
+  ключевыми словами), `generate` (лист фактов, 40 токенов, JSON `{reply, topics}`, защита роли
+  в три слоя), `hybrid` (`select` → при `null` генерация, реплика «на утверждение»),
+  `buttons` (без модели; в него деградирует любой режим при недоступном сервере), `live` →
+  `select` с предупреждением (трек G). `get_dialog_provider(mode)` — по режиму занятия.
+- `app/providers/tts.py` — Piper: голоса сценариев `ru_male_1`… → модели и темп (`VOICES`),
+  шум по сложности, WAV+MP3, озвучка по предложениям; `NoTTS` — текст без звука.
+- `app/providers/stt.py` — HTTP-клиент к `stt` с подсказкой (улицы сценария + термины);
+  `NoSTT` — ввод текстом.
+- `app/providers/embeddings.py` — e5 через `onnxruntime`+`tokenizers`; пороги 0.85/0.88
+  по замеру (DECISIONS).
+- `ALLOW_EXTERNAL_AI`: проверка всех адресов (`LLM_DIALOG_URL`, `LLM_GEN_URL`, `STT_URL`)
+  на старте, плашка «Внешняя модель: не для закрытого контура» во всех кабинетах
+  (`frontend/src/app/shell.tsx`, тест). `GET /api/config` отдаёт `dialog_mode`.
+- `app/dialog/` (router, service, schemas) — ход диалога в попытке приёма вызова:
+  `GET /attempts/{id}/dialog` (стенограмма, темы: обязательные/выясненные, режим,
+  доступность STT/TTS), `POST /attempts/{id}/say` (текст), `/utterance` (аудио → STT →
+  как say; без `stt` — 503 «введите текст»), `/ask-topic` (кнопка темы, без модели),
+  `GET /api/media/{path}` (озвученные реплики). Первый ход добавляет реплику-открытие
+  заявителя и ставит `answered_at`. Повтор с тем же `action_id` возвращает сохранённый ход.
+  Каждый ход — событие `dialog.turn` через `append_event`. Озвучка кешируется в
+  `STORAGE_DIR/tts/<scenario>/v<N>/r<id>.mp3`. Сгенерированные реплики `hybrid`
+  добавляются в `scenario_versions.body.replies` с `approved: false, source: generated`.
+- `data/seed/dialog_eval.json` — 100 вопросов оператора по 5 сценариям с допустимыми темами.
+- `scripts/bench_dialog_latency.py` — серия из 20 вопросов текстом и голосом (Piper),
+  все режимы и кандидаты, судья «не по теме», точность `select`, провокации →
+  `docs/PERFORMANCE.md` + `docs/screenshots/wave-05/bench_dialog.json`.
+- Ключевые слова тем: «дом» ищется как целое слово (не «домофон»), у `injured` добавлены
+  «пострадал», «в сознании», «жив», «дышит» (`detect_topics` понимает пробел в конце
+  ключевого слова как «целое слово»).
+- Настройки занятия `voice_enabled`, `dialog_mode` в API преподавателя (`SessionIn`,
+  `SessionPatch`, `SessionOut`; 422 `bad_dialog_mode`); в форме пока скрыты (волна 7).
+  `dialog.turn` в мониторинге → плитка «говорит с заявителем».
+- Тесты: `tests/providers/` (72: диалог с подменной моделью, клиент llama.cpp, STT/TTS,
+  e5, `ALLOW_EXTERNAL_AI`), `tests/api/test_dialog.py` (9: say/ask-topic/utterance,
+  повтор, доступ, hybrid «на утверждение», озвучка и отдача файла, настройки занятия).
+
+### Проверено
+
+- `uv run pytest -q` — 355 зелёных (с файлами организаторов, база `trainer_test_wave05`);
+  `ruff` чисто; фронт `tsc`, `eslint`, `vitest` (18) чисто.
+- Piper: тёплая озвучка фразы ~250 мс, холодная загрузка голоса ~5 с. Whisper base
+  (`deploy/stt`): 4-секундная фраза за 0,8–1,9 с.
+- Замеры (`docs/PERFORMANCE.md`, сырые данные `docs/screenshots/wave-05/bench_dialog.json`):
+  `select` на 1.5B — медиана 0,95 с текстом (p90 1,2 с), 1,7 с голосом; точность 95% с
+  подстраховкой (модель сама 85%), 3B — 86%; провокации 5/5. Судья «не по теме» — 3B
+  (7B не помещается в Docker рядом с другими стеками), оговорки в файле.
+- «Показать»: `scripts/demo_dialog.py` — вопрос текстом → номер реплики → MP3;
+  прогон по сценарию 2-1 в `docs/screenshots/wave-05/demo/` (5 реплик голосом denis).
+- Стенд `docker compose -p wave-05 --profile ai up -d llm-dialog stt` (`.env`:
+  `LLM_LOAD_MODE=mlock`, порты 8081/9000); на Windows модель 1.5B грузится ~2,5 мин.
+
+### Осталось
+
+- Ручная проверка «Показать» Вадимом: послушать `docs/screenshots/wave-05/demo/*.mp3`,
+  прогнать `scripts/demo_dialog.py` со своими вопросами.
+- Замер с 7B-судьёй и whisper `small` — на стенде (`PERFORMANCE.md`, раздел «Как
+  воспроизвести»; `--from-raw` перерисовывает таблицу без повторного прогона).
+- Волна 7: снять `mode_unavailable` для приёма вызова, элементы `voice_enabled` /
+  `dialog_mode` в форме занятия, карточка оператора 112, `sweep_not_notified` для
+  попыток приёма вызова (сейчас через `norm_seconds` пометит их «Не оповещено»).
+- Волна 8: прогрев голосов Piper при старте worker, озвучка при утверждении в
+  `STORAGE_DIR/tts/<scenario>/v<N>/r<id>.mp3`, утверждение реплик `hybrid`.
+
+### Как проверить
+
+```bash
+scripts/fetch_models.sh                                  # один раз, ~9 ГБ
+docker compose -p wave-05 --profile ai up -d --build     # .env: LLM_LOAD_MODE=mlock на Windows
+cd backend && uv run pytest tests/providers tests/api/test_dialog.py -q
+uv run --project backend python scripts/demo_dialog.py "Что случилось?" "Диктуйте адрес" "Кто-нибудь пострадал?"
+uv run --project backend python scripts/bench_dialog_latency.py   --candidate 1.5B=http://localhost:8081 --stt base=http://localhost:9000 --out docs/PERFORMANCE.md
+```
+
+## Волна 4 (закрыта)
+
+Волна 4 ([plan/wave-04.md](../plan/wave-04.md)), ветка `wave-04/sessions`, issue #5, PR #20.
 
 ### Сделано
 
@@ -293,6 +382,7 @@ TEST_DATABASE_ADMIN_URL=postgresql+asyncpg://trainer:trainer-dev-password@localh
 | 1 | 16.09.2026 | `f6e2b1d` (PR #17) | Вадим |
 | 2 | 16.09.2026 | `0de21e3` (PR #18) | Вадим |
 | 3 | 16.09.2026 | `2a211ac` (PR #19) | Вадим |
+| 4 | 16.09.2026 | `d402b84` (PR #20) | Вадим |
 
 ## Открытые вопросы и блокеры
 

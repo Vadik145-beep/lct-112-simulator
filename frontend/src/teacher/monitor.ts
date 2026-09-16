@@ -19,6 +19,7 @@ export interface MonitorState {
 export const STAGE_TITLES: Record<string, string> = {
   viewing: "смотрит карточку",
   editing_status: "проставляет статус",
+  talking: "говорит с заявителем",
 };
 
 export function initialState(snapshot: MonitorOut): MonitorState {
@@ -143,6 +144,11 @@ export function applyEvent(state: MonitorState, event: SessionEvent): MonitorSta
       const stage = str(payload.stage);
       if (!stage) return state;
       return { ...state, stages: { ...state.stages, [event.student_id]: { stage, at: event.at, attempt_id: attemptId } } };
+    }
+    case "dialog.turn": {
+      // Call intake (wave 5+): every exchange with the caller keeps the tile «talking».
+      if (!event.student_id) return state;
+      return { ...state, stages: { ...state.stages, [event.student_id]: { stage: "talking", at: event.at, attempt_id: attemptId } } };
     }
     default:
       return state;

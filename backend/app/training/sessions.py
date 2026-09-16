@@ -41,6 +41,8 @@ from app.training import service as training
 # Card sources a session may use now; tickets and generation arrive with the scenario editor.
 CARD_SOURCE_SCENARIOS = "scenarios"
 CARD_SOURCES = (CARD_SOURCE_SCENARIOS,)
+# How the caller answers in call-intake sessions (PRD 9.3); the provider is in app.providers.dialog.
+DIALOG_MODES = ("select", "hybrid", "generate", "buttons", "live")
 
 DIFFICULTY_RANGE = (1, 3)
 NORM_RANGE = (5, 600)
@@ -144,6 +146,8 @@ class SessionSettings:
     cards_per_student: int
     unfinished_seconds: int
     weights: dict[str, int]
+    voice_enabled: bool = False
+    dialog_mode: str = "select"
 
 
 async def validate_settings(session: AsyncSession, spec: SessionSettings, teacher: User) -> None:
@@ -154,6 +158,8 @@ async def validate_settings(session: AsyncSession, spec: SessionSettings, teache
         )
     if spec.mode != MODE_CARD_RESPONSE:
         raise ApiError(422, "bad_mode", "Неизвестный режим занятия.")
+    if spec.dialog_mode not in DIALOG_MODES:
+        raise ApiError(422, "bad_dialog_mode", f"Режим диалога: один из {', '.join(DIALOG_MODES)}.")
     if spec.card_source not in CARD_SOURCES:
         raise ApiError(
             422,
@@ -235,6 +241,8 @@ def apply_settings(ts: TrainingSession, spec: SessionSettings) -> None:
     ts.cards_per_student = spec.cards_per_student
     ts.unfinished_seconds = spec.unfinished_seconds
     ts.weights = dict(spec.weights)
+    ts.voice_enabled = spec.voice_enabled
+    ts.dialog_mode = spec.dialog_mode
 
 
 async def pick_scenarios(session: AsyncSession, ts: TrainingSession) -> list[Scenario]:

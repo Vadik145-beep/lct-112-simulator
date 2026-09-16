@@ -24,6 +24,7 @@ class PublicConfig(BaseModel):
     demo_mode: bool
     external_ai: bool
     app_env: str
+    dialog_mode: str
 
 
 async def _check_postgres() -> str:
@@ -58,4 +59,9 @@ async def health(response: Response) -> HealthResponse:
 @router.get("/config", response_model=PublicConfig)
 async def public_config() -> PublicConfig:
     s = get_settings()
-    return PublicConfig(demo_mode=s.demo_mode, external_ai=s.allow_external_ai, app_env=s.app_env)
+    return PublicConfig(
+        demo_mode=s.demo_mode,
+        external_ai=s.allow_external_ai,
+        app_env=s.app_env,
+        dialog_mode=s.dialog_mode,
+    )

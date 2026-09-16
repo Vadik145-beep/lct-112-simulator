@@ -755,6 +755,88 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/attempts/{attempt_id}/dialog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Dialog
+         * @description The transcript so far with the topics covered (teacher sees it read-only).
+         */
+        get: operations["get_dialog_api_attempts__attempt_id__dialog_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/say": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Say
+         * @description A typed phrase of the operator; the caller answers in the session's dialog mode.
+         */
+        post: operations["say_api_attempts__attempt_id__say_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/ask-topic": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ask Topic
+         * @description A topic button (������, ������������廅): works without any model.
+         */
+        post: operations["ask_topic_api_attempts__attempt_id__ask_topic_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/utterance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Utterance
+         * @description A spoken phrase: recognized by the ``stt`` service with the scenario's streets as
+         *     hints, then handled like ``say``. Without the service the answer is 503 and the operator
+         *     types instead.
+         */
+        post: operations["utterance_api_attempts__attempt_id__utterance_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -830,6 +912,13 @@ export interface components {
             operator_no: string;
             /** Arm No */
             arm_no: string;
+        };
+        /** AskTopicRequest */
+        AskTopicRequest: {
+            /** Topic */
+            topic: string;
+            /** Action Id */
+            action_id?: string | null;
         };
         /** AssignmentOut */
         AssignmentOut: {
@@ -912,6 +1001,16 @@ export interface components {
             } | null;
             /** Last Seq */
             last_seq: number;
+        };
+        /** Body_utterance_api_attempts__attempt_id__utterance_post */
+        Body_utterance_api_attempts__attempt_id__utterance_post: {
+            /**
+             * File
+             * @description ���� ���������: WAV, WebM/Opus ��� OGG
+             */
+            file: string;
+            /** Action Id */
+            action_id?: string | null;
         };
         /** CabinetOut */
         CabinetOut: {
@@ -1037,6 +1136,59 @@ export interface components {
             groups: components["schemas"]["ClassifierGroupOut"][];
             /** Types Total */
             types_total: number;
+        };
+        /** DialogOut */
+        DialogOut: {
+            /** Attempt Id */
+            attempt_id: string;
+            /** Mode */
+            mode: string;
+            /** Stt Available */
+            stt_available: boolean;
+            /** Tts Available */
+            tts_available: boolean;
+            /** Answered At */
+            answered_at: string | null;
+            /** Turns */
+            turns: components["schemas"]["DialogTurnOut"][];
+            /** Topics */
+            topics: components["schemas"]["TopicOut"][];
+            /** Required Topics */
+            required_topics: string[];
+            /** Seq */
+            seq: number;
+        };
+        /** DialogTurnOut */
+        DialogTurnOut: {
+            /** Index */
+            index: number;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "operator" | "caller";
+            /** Text */
+            text: string;
+            /** Topics */
+            topics?: string[];
+            /** At */
+            at?: string | null;
+            /** Reply Id */
+            reply_id?: number | null;
+            /** Method */
+            method?: string | null;
+            /** Audio Url */
+            audio_url?: string | null;
+            /**
+             * Generated
+             * @default false
+             */
+            generated: boolean;
+            /**
+             * Heard
+             * @default false
+             */
+            heard: boolean;
         };
         /** GrammarCheckIn */
         GrammarCheckIn: {
@@ -1326,6 +1478,8 @@ export interface components {
             external_ai: boolean;
             /** App Env */
             app_env: string;
+            /** Dialog Mode */
+            dialog_mode: string;
         };
         /** QueueScenarioOut */
         QueueScenarioOut: {
@@ -1517,6 +1671,13 @@ export interface components {
          * @enum {string}
          */
         Role: "student" | "teacher" | "admin";
+        /** SayRequest */
+        SayRequest: {
+            /** Text */
+            text: string;
+            /** Action Id */
+            action_id?: string | null;
+        };
         /** ServiceInfo */
         ServiceInfo: {
             /** Code */
@@ -1623,6 +1784,16 @@ export interface components {
             weights?: {
                 [key: string]: number;
             };
+            /**
+             * Voice Enabled
+             * @default false
+             */
+            voice_enabled: boolean;
+            /**
+             * Dialog Mode
+             * @default select
+             */
+            dialog_mode: string;
         };
         /** SessionInfo */
         SessionInfo: {
@@ -1740,6 +1911,10 @@ export interface components {
             weights: {
                 [key: string]: number;
             };
+            /** Voice Enabled */
+            voice_enabled: boolean;
+            /** Dialog Mode */
+            dialog_mode: string;
             /** Members */
             members: components["schemas"]["StudentOut"][];
             /** Queue */
@@ -1779,6 +1954,10 @@ export interface components {
             weights?: {
                 [key: string]: number;
             } | null;
+            /** Voice Enabled */
+            voice_enabled?: boolean | null;
+            /** Dialog Mode */
+            dialog_mode?: string | null;
         };
         /** StatusLogEntryOut */
         StatusLogEntryOut: {
@@ -1876,6 +2055,17 @@ export interface components {
             expires_in: number;
             user: components["schemas"]["UserOut"];
         };
+        /** TopicOut */
+        TopicOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Required */
+            required: boolean;
+            /** Covered */
+            covered: boolean;
+        };
         /** TransitionOut */
         TransitionOut: {
             /** Code */
@@ -1890,6 +2080,20 @@ export interface components {
             is_final: boolean;
             /** Is Primary */
             is_primary: boolean;
+        };
+        /** TurnResponse */
+        TurnResponse: {
+            operator: components["schemas"]["DialogTurnOut"];
+            caller: components["schemas"]["DialogTurnOut"];
+            /** Applied */
+            applied: boolean;
+            /** Pending Reply */
+            pending_reply: boolean;
+            /** Latency Ms */
+            latency_ms: number;
+            /** Heard Text */
+            heard_text?: string | null;
+            dialog: components["schemas"]["DialogOut"];
         };
         /** TypeHitOut */
         TypeHitOut: {
@@ -3158,6 +3362,142 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_dialog_api_attempts__attempt_id__dialog_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DialogOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    say_api_attempts__attempt_id__say_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SayRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TurnResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ask_topic_api_attempts__attempt_id__ask_topic_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AskTopicRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TurnResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    utterance_api_attempts__attempt_id__utterance_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_utterance_api_attempts__attempt_id__utterance_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TurnResponse"];
                 };
             };
             /** @description Validation Error */
