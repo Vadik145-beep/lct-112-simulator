@@ -982,10 +982,127 @@ export interface paths {
         patch: operations["patch_admin_settings_api_admin_settings_patch"];
         trace?: never;
     };
+    "/api/attempts/{attempt_id}/draft": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Save Draft
+         * @description Autosave of the card (the client sends it at most every 2 s). Nothing is scored.
+         */
+        put: operations["save_draft_api_attempts__attempt_id__draft_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/submit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submit Card
+         * @description �����������: closes the call, scores the card within the request (PRD 9.3) and issues
+         *     the next call. Idempotent by ``client_submission_id``.
+         */
+        post: operations["submit_card_api_attempts__attempt_id__submit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * AddressIn
+         * @description Address fields of the card as the operator fills them; empty strings mean �not set�.
+         */
+        AddressIn: {
+            /**
+             * Region
+             * @default
+             */
+            region: string;
+            /**
+             * City
+             * @default
+             */
+            city: string;
+            /**
+             * Okrug
+             * @default
+             */
+            okrug: string;
+            /**
+             * District
+             * @default
+             */
+            district: string;
+            /**
+             * Street
+             * @default
+             */
+            street: string;
+            /**
+             * House
+             * @default
+             */
+            house: string;
+            /**
+             * Building
+             * @default
+             */
+            building: string;
+            /**
+             * Structure
+             * @default
+             */
+            structure: string;
+            /**
+             * Apartment
+             * @default
+             */
+            apartment: string;
+            /**
+             * Entrance
+             * @default
+             */
+            entrance: string;
+            /**
+             * Floor
+             * @default
+             */
+            floor: string;
+            /**
+             * Code
+             * @default
+             */
+            code: string;
+            /**
+             * Object
+             * @default
+             */
+            object: string;
+            /**
+             * Descriptive
+             * @default
+             */
+            descriptive: string;
+        };
         /** AddressOut */
         AddressOut: {
             /** Text */
@@ -1157,6 +1274,7 @@ export interface components {
             evaluation: {
                 [key: string]: unknown;
             } | null;
+            intake?: components["schemas"]["IntakeOut"] | null;
             /** Last Seq */
             last_seq: number;
         };
@@ -1214,6 +1332,24 @@ export interface components {
         CallResponse: {
             dialog: components["schemas"]["DialogOut"];
         };
+        /** CallerIn */
+        CallerIn: {
+            /**
+             * Name
+             * @default
+             */
+            name: string;
+            /**
+             * Role
+             * @default
+             */
+            role: string;
+            /**
+             * Phone
+             * @default
+             */
+            phone: string;
+        };
         /** CallerOut */
         CallerOut: {
             /**
@@ -1240,6 +1376,30 @@ export interface components {
             title: string;
             /** Keywords */
             keywords: string[];
+        };
+        /**
+         * CardIn
+         * @description The card of the operator 112 (PRD 9.3, �SubmittedCard�); services carry what the
+         *     interface resolved from the type and the flags plus the ones added by hand.
+         */
+        CardIn: {
+            /** Signs Path */
+            signs_path?: string[];
+            /** Incident Type */
+            incident_type?: string | null;
+            /** Flags */
+            flags?: {
+                [key: string]: boolean;
+            };
+            /** Services */
+            services?: string[];
+            address?: components["schemas"]["AddressIn"];
+            caller?: components["schemas"]["CallerIn"];
+            /**
+             * Description
+             * @default
+             */
+            description: string;
         };
         /** CardOut */
         CardOut: {
@@ -1407,6 +1567,22 @@ export interface components {
              */
             heard: boolean;
         };
+        /** DraftRequest */
+        DraftRequest: {
+            card: components["schemas"]["CardIn"];
+            /** Updated At */
+            updated_at?: string | null;
+        };
+        /** DraftResponse */
+        DraftResponse: {
+            /**
+             * Saved At
+             * Format: date-time
+             */
+            saved_at: string;
+            /** Seq */
+            seq: number;
+        };
         /** GrammarCheckIn */
         GrammarCheckIn: {
             /** Text */
@@ -1509,6 +1685,23 @@ export interface components {
             final_title: string;
             /** Signs */
             signs: string[];
+        };
+        /**
+         * IntakeOut
+         * @description The call-intake side of an attempt (PRD 13.5): what the operator-112 card needs
+         *     besides the transcript (``GET /attempts/{id}/dialog``).
+         */
+        IntakeOut: {
+            /** Caller Phone */
+            caller_phone: string;
+            /** Draft */
+            draft: {
+                [key: string]: unknown;
+            } | null;
+            /** Title */
+            title: string | null;
+            /** Required Topics */
+            required_topics: string[];
         };
         /** JournalItem */
         JournalItem: {
@@ -2264,6 +2457,20 @@ export interface components {
             full_name: string;
             /** Service Code */
             service_code: string | null;
+        };
+        /** SubmitRequest */
+        SubmitRequest: {
+            card: components["schemas"]["CardIn"];
+            /** Client Submission Id */
+            client_submission_id: string;
+        };
+        /** SubmitResponse */
+        SubmitResponse: {
+            attempt: components["schemas"]["AttemptOut"];
+            /** Applied */
+            applied: boolean;
+            /** Issued */
+            issued: string[];
         };
         /**
          * TelephonySettings
@@ -3995,6 +4202,76 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminSettingsOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    save_draft_api_attempts__attempt_id__draft_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DraftRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DraftResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_card_api_attempts__attempt_id__submit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubmitRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubmitResponse"];
                 };
             };
             /** @description Validation Error */

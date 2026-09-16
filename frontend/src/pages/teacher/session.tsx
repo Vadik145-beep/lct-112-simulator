@@ -239,7 +239,7 @@ function MonitorBoard({
   const snap = state.snapshot;
   const summaries = snap.students.map((s) => ({
     student: s,
-    summary: summarize(s, snap.norm_seconds, snap.pass_threshold, now, snap.cards_total, state.stages[s.student_id]),
+    summary: summarize(s, snap.norm_seconds, snap.pass_threshold, now, snap.cards_total, state.stages[s.student_id], session.mode),
   }));
   const working = summaries.filter((s) => s.summary.status === "working" || s.summary.status === "waiting").length;
   const done = summaries.filter((s) => s.summary.status === "done").length;
@@ -275,6 +275,7 @@ function MonitorBoard({
               threshold={snap.pass_threshold}
               now={now}
               finished={session.status === "finished"}
+              mode={session.mode}
             />
           ))}
         </ul>
@@ -298,6 +299,12 @@ const TILE_STATUS: Record<string, string> = {
   working: "в работе",
   done: "все карточки закрыты",
 };
+const CALL_TILE_STATUS: Record<string, string> = {
+  idle: "ждёт вызов",
+  waiting: "входящий вызов",
+  working: "принимает вызов",
+  done: "все вызовы приняты",
+};
 
 function StudentTile({
   student,
@@ -308,6 +315,7 @@ function StudentTile({
   threshold,
   now,
   finished,
+  mode,
 }: {
   student: MonitorStudent;
   summary: ReturnType<typeof summarize>;
@@ -317,13 +325,22 @@ function StudentTile({
   threshold: number;
   now: number;
   finished: boolean;
+  mode?: string;
 }) {
   const navigate = useNavigate();
   const current = summary.current;
-  const timer = current ? acceptanceTimer(current.issued_at, current.primary_status_at, norm, now) : null;
+  const call = mode === "call_intake";
+  // A call's norm runs from the moment it was taken (received_at) until the card is saved.
+  const timer = current
+    ? call
+      ? current.received_at
+        ? acceptanceTimer(current.received_at, null, norm, now)
+        : null
+      : acceptanceTimer(current.issued_at, current.primary_status_at, norm, now)
+    : null;
   const targetId = current?.attempt_id ?? student.last_attempt_id;
   const alert = summary.overdue || (current?.card_status === "not_notified") || (current?.card_status === "not_finished");
-  const statusText = finished ? (student.finished > 0 ? "занятие завершено" : "не участвовал") : TILE_STATUS[summary.status];
+  const statusText = finished ? (student.finished > 0 ? "занятие завершено" : "не участвовал") : (call ? CALL_TILE_STATUS : TILE_STATUS)[summary.status];
   const stageText = !finished && stage && summary.status !== "idle" ? STAGE_TITLES[stage.stage] ?? stage.stage : null;
 
   return (
@@ -359,7 +376,7 @@ function StudentTile({
           {student.active.length > 1 && (
             <span className="text-muted-foreground">
               {" "}
-              · ещё {student.active.length - 1} в журнале
+              · ещё {student.active.length - 1} {call ? "в очереди" : "в журнале"}
             </span>
           )}
         </div>
@@ -373,11 +390,11 @@ function StudentTile({
                 (timer.phase === "overdue" || timer.phase === "late") && "bg-destructive/15 text-destructive",
                 timer.phase === "done" && "bg-success/15 text-success",
               )}
-              title={current.primary_status_at ? "Время до первичного статуса" : "Идёт норматив принятия"}
+              title={call ? "Идёт разговор и заполнение карточки" : current.primary_status_at ? "Время до первичного статуса" : "Идёт норматив принятия"}
             >
               {formatSeconds(timer.elapsed)}
             </span>
-            <span className="text-xs text-muted-foreground">{current.primary_status_at ? RESPONSE_STATUS_TITLES[current.response_status] ?? current.response_status_title ?? current.response_status : `норматив ${norm} с`}</span>
+            <span className="text-xs text-muted-foreground">{!call && current.primary_status_at ? RESPONSE_STATUS_TITLES[current.response_status] ?? current.response_status_title ?? current.response_status : `норматив ${norm} с`}</span>
           </div>
         )}
         <div className="mt-auto flex items-center justify-between text-xs text-muted-foreground">

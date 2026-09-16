@@ -16,8 +16,9 @@ import { SessionFormPage } from "@/pages/teacher/session-form";
 import { SessionReportPage } from "@/pages/teacher/session-report";
 import { TeacherSessionPage } from "@/pages/teacher/session";
 import { TeacherSessionsPage } from "@/pages/teacher/sessions";
-import { CardPage } from "@/emulator/card-page";
 import { JournalPage } from "@/emulator/journal-page";
+import { AttemptPage } from "@/intake/attempt-page";
+import { CallsPage } from "@/intake/calls-page";
 import { StudentFrame } from "@/softphone/student-frame";
 
 export const router = createBrowserRouter([
@@ -43,7 +44,8 @@ export const router = createBrowserRouter([
           },
           // The АРМ-112 emulator has its own chrome: no cabinet shell around it.
           { path: "/student/sessions/:sessionId/journal", element: <JournalPage /> },
-          { path: "/student/attempts/:attemptId", element: <CardPage /> },
+          { path: "/student/sessions/:sessionId/calls", element: <CallsPage /> },
+          { path: "/student/attempts/:attemptId", element: <AttemptPage /> },
         ],
       },
     ],

@@ -20,6 +20,9 @@ export const STAGE_TITLES: Record<string, string> = {
   viewing: "смотрит карточку",
   editing_status: "проставляет статус",
   talking: "говорит с заявителем",
+  filling_card: "заполняет карточку 112",
+  ringing: "входящий вызов",
+  call_ended: "звонок завершён, заполняет карточку",
 };
 
 export function initialState(snapshot: MonitorOut): MonitorState {
@@ -150,12 +153,43 @@ export function applyEvent(state: MonitorState, event: SessionEvent): MonitorSta
       if (!event.student_id) return state;
       return { ...state, stages: { ...state.stages, [event.student_id]: { stage: "talking", at: event.at, attempt_id: attemptId } } };
     }
+    case "call.ringing":
+    case "call.answered":
+    case "call.ended": {
+      // Call state of the telephony wave (PRD 12): the tile says what the call is doing.
+      if (!event.student_id) return state;
+      const stage = event.type === "call.ringing" ? "ringing" : event.type === "call.answered" ? "talking" : "call_ended";
+      return { ...state, stages: { ...state.stages, [event.student_id]: { stage, at: event.at, attempt_id: attemptId } } };
+    }
     default:
       return state;
   }
 }
 
 export type TileStatus = "idle" | "waiting" | "working" | "done";
+
+/** Call intake: «waiting» is a ringing call (not answered yet), the norm runs from the
+ * moment the call was taken (`received_at`) until the card is saved. */
+function summarizeCall(
+  student: MonitorStudent,
+  normSeconds: number,
+  passThreshold: number,
+  now: number,
+  cardsTotal: number,
+  stage?: Stage,
+): TileSummary {
+  const ringing = student.active.filter((c) => c.state === "issued");
+  const current =
+    student.active.find((c) => c.attempt_id === stage?.attempt_id) ??
+    [...student.active].sort((a, b) => b.issued_at.localeCompare(a.issued_at))[0] ??
+    null;
+  const overdue = student.active.some((c) => c.received_at && now - new Date(c.received_at).getTime() > normSeconds * 1000);
+  const lowScore = student.last_total !== null && student.last_total < passThreshold;
+  let status: TileStatus = "idle";
+  if (student.active.length > 0) status = ringing.length === student.active.length ? "waiting" : "working";
+  else if (cardsTotal > 0 && student.finished >= cardsTotal) status = "done";
+  return { status, current, overdue, lowScore };
+}
 
 export interface TileSummary {
   status: TileStatus;
@@ -174,7 +208,9 @@ export function summarize(
   now: number,
   cardsTotal: number,
   stage?: Stage,
+  mode: string = "card_response",
 ): TileSummary {
+  if (mode === "call_intake") return summarizeCall(student, normSeconds, passThreshold, now, cardsTotal, stage);
   const pending = student.active.filter((c) => !c.primary_status_at);
   const current =
     student.active.find((c) => c.attempt_id === stage?.attempt_id) ??

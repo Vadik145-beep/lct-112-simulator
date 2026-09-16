@@ -25,8 +25,9 @@ export function StudentAssignmentsPage() {
   if (query.isPending) return <LoadingState text="Загружаем задания…" />;
   if (query.isError) return <ErrorState message={query.error.message} onRetry={() => void query.refetch()} />;
 
-  const active = query.data.find((a) => a.status === "running");
-  const rest = query.data.filter((a) => a !== active);
+  // Several lessons may run at once (a card lesson and a call lesson): each gets a card.
+  const running = query.data.filter((a) => a.status === "running");
+  const rest = query.data.filter((a) => a.status !== "running");
 
   return (
     <div className="space-y-6">
@@ -35,22 +36,38 @@ export function StudentAssignmentsPage() {
         <p className="text-sm text-muted-foreground">Занятия, которые назначил преподаватель вашей группе.</p>
       </div>
 
-      {active ? (
-        <Card className="border-primary/40">
+      {running.length > 0 ? (
+        running.map((active) => (
+        <Card key={active.id} className="border-primary/40">
           <CardHeader>
             <CardDescription>Активное занятие · {MODE_TITLES[active.mode] ?? active.mode}</CardDescription>
             <CardTitle className="text-xl">{active.title}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-wrap items-end justify-between gap-4">
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
-              <dt className="text-muted-foreground">Служба</dt>
-              <dd>{active.service?.title ?? "—"}</dd>
-              <dt className="text-muted-foreground">Норматив</dt>
-              <dd>{active.norm_seconds} с на первичный статус</dd>
-              <dt className="text-muted-foreground">Карточки</dt>
-              <dd>
-                в работе {active.active_cards}, закрыто {active.finished_cards}
-              </dd>
+              {active.mode === "call_intake" ? (
+                <>
+                  <dt className="text-muted-foreground">Роль</dt>
+                  <dd>оператор 112</dd>
+                  <dt className="text-muted-foreground">Норматив</dt>
+                  <dd>{active.norm_seconds} с на приём вызова</dd>
+                  <dt className="text-muted-foreground">Вызовы</dt>
+                  <dd>
+                    в работе {active.active_cards}, принято {active.finished_cards}
+                  </dd>
+                </>
+              ) : (
+                <>
+                  <dt className="text-muted-foreground">Служба</dt>
+                  <dd>{active.service?.title ?? "—"}</dd>
+                  <dt className="text-muted-foreground">Норматив</dt>
+                  <dd>{active.norm_seconds} с на первичный статус</dd>
+                  <dt className="text-muted-foreground">Карточки</dt>
+                  <dd>
+                    в работе {active.active_cards}, закрыто {active.finished_cards}
+                  </dd>
+                </>
+              )}
               {active.started_at && (
                 <>
                   <dt className="text-muted-foreground">Начато</dt>
@@ -59,12 +76,19 @@ export function StudentAssignmentsPage() {
               )}
             </dl>
             <Button asChild size="lg">
-              <Link to={`/student/sessions/${active.id}/journal`}>
-                Открыть журнал АРМ-112 <ArrowRight />
-              </Link>
+              {active.mode === "call_intake" ? (
+                <Link to={`/student/sessions/${active.id}/calls`}>
+                  Открыть АРМ оператора 112 <ArrowRight />
+                </Link>
+              ) : (
+                <Link to={`/student/sessions/${active.id}/journal`}>
+                  Открыть журнал АРМ-112 <ArrowRight />
+                </Link>
+              )}
             </Button>
           </CardContent>
         </Card>
+        ))
       ) : (
         <Card>
           <CardContent className="flex flex-col items-center gap-2 py-10 text-center text-muted-foreground">
@@ -99,7 +123,11 @@ function AssignmentRow({ assignment }: { assignment: AssignmentOut }) {
         </div>
       </div>
       <Button asChild variant="outline" size="sm">
-        <Link to={`/student/sessions/${assignment.id}/journal`}>{assignment.status === "draft" ? "Ждать начала в журнале" : "Журнал"}</Link>
+        {assignment.mode === "call_intake" ? (
+          <Link to={`/student/sessions/${assignment.id}/calls`}>{assignment.status === "draft" ? "Ждать начала на АРМ" : "АРМ оператора"}</Link>
+        ) : (
+          <Link to={`/student/sessions/${assignment.id}/journal`}>{assignment.status === "draft" ? "Ждать начала в журнале" : "Журнал"}</Link>
+        )}
       </Button>
     </li>
   );

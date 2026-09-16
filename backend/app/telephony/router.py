@@ -137,7 +137,7 @@ async def answer(attempt_id: uuid.UUID, user: ActiveUser, session: DbSession) ->
 
 
 async def _end_call(
-    session: DbSession, attempt_id: uuid.UUID, user: User, reason: str
+    session: DbSession, attempt_id: uuid.UUID, user: User, reason: str, request: Request
 ) -> CallResponse:
     attempt = await training.get_attempt_for(session, attempt_id, user)
     if attempt.mode != MODE_CALL_INTAKE:
@@ -157,6 +157,19 @@ async def _end_call(
         events = await call_state.mark_call_dropped(session, attempt)
     else:
         events = await call_state.end(session, attempt, reason)
+    if events:
+        # Ending a call is an action on the card (unlike dialog turns, which are training
+        # content and are not audited — decision of wave 5).
+        await write_audit(
+            session,
+            action="call.end",
+            actor_id=user.id,
+            actor_role=user.role,
+            entity="attempt",
+            entity_id=str(attempt.id),
+            details={"reason": reason},
+            ip=client_ip(request),
+        )
     await session.commit()
     await publish_events(events)
     service = telephony.get_service()
@@ -166,21 +179,27 @@ async def _end_call(
 
 
 @router.post("/attempts/{attempt_id}/hangup", response_model=CallResponse)
-async def hangup(attempt_id: uuid.UUID, user: ActiveUser, session: DbSession) -> CallResponse:
+async def hangup(
+    attempt_id: uuid.UUID, user: ActiveUser, session: DbSession, request: Request
+) -> CallResponse:
     """«Завершить»: the operator ends the call; the card stays open for filling in."""
-    return await _end_call(session, attempt_id, user, CALL_END_HANGUP)
+    return await _end_call(session, attempt_id, user, CALL_END_HANGUP, request)
 
 
 @router.post("/attempts/{attempt_id}/no-contact", response_model=CallResponse)
-async def no_contact(attempt_id: uuid.UUID, user: ActiveUser, session: DbSession) -> CallResponse:
+async def no_contact(
+    attempt_id: uuid.UUID, user: ActiveUser, session: DbSession, request: Request
+) -> CallResponse:
     """«Нет контакта»: the caller cannot be reached; the mark goes to the evaluation."""
-    return await _end_call(session, attempt_id, user, "no_contact")
+    return await _end_call(session, attempt_id, user, "no_contact", request)
 
 
 @router.post("/attempts/{attempt_id}/call-dropped", response_model=CallResponse)
-async def call_dropped(attempt_id: uuid.UUID, user: ActiveUser, session: DbSession) -> CallResponse:
+async def call_dropped(
+    attempt_id: uuid.UUID, user: ActiveUser, session: DbSession, request: Request
+) -> CallResponse:
     """«Срыв звонка»: the caller hung up; the mark goes to the evaluation."""
-    return await _end_call(session, attempt_id, user, "call_dropped")
+    return await _end_call(session, attempt_id, user, "call_dropped", request)
 
 
 @router.get("/attempts/{attempt_id}/recording", include_in_schema=False)

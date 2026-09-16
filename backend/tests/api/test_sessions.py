@@ -134,7 +134,8 @@ async def test_create_validates_settings(client: AsyncClient) -> None:
     teacher = await login(client, "teacher1")
     base = {"title": "Проверка", "group_id": await group_id()}
     bad = [
-        {"mode": "call_intake"},
+        {"mode": "bogus"},
+        {"mode": "call_intake", "dialog_mode": "telepathy"},
         {"difficulty": 4},
         {"norm_seconds": 1},
         {"pass_threshold": 101},

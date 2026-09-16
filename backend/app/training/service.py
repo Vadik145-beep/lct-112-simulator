@@ -26,6 +26,7 @@ from app.models import (
     ATTEMPT_IN_PROGRESS,
     ATTEMPT_ISSUED,
     ATTEMPT_RECEIVED,
+    MODE_CALL_INTAKE,
     SCENARIO_APPROVED,
     SESSION_RUNNING,
     Attempt,
@@ -194,7 +195,7 @@ async def scenario_queue(session: AsyncSession, ts: TrainingSession) -> list[Sce
         .where(Scenario.kind == ts.mode, Scenario.status == SCENARIO_APPROVED)
         .order_by(Scenario.created_at, Scenario.title)
     )
-    if ts.service_profile:
+    if ts.service_profile and ts.mode != MODE_CALL_INTAKE:
         query = query.where(Scenario.service_code.in_(ts.service_profile))
     rows = list(await session.scalars(query))
     if ts.incident_groups:
@@ -274,7 +275,9 @@ async def issue_cards(
             Attempt.state.in_(ACTIVE_ATTEMPT_STATES),
         )
     )
-    want = CARDS_AT_ONCE.get(ts.difficulty, 1) - (active or 0)
+    # The 112 operator takes one call at a time whatever the difficulty.
+    at_once = 1 if ts.mode == MODE_CALL_INTAKE else CARDS_AT_ONCE.get(ts.difficulty, 1)
+    want = at_once - (active or 0)
     if want <= 0:
         return [], []
     done = list(
@@ -506,8 +509,11 @@ async def _submitted_event(session: AsyncSession, attempt: Attempt) -> SessionEv
 
 
 def evaluation_input(attempt: Attempt) -> dict:
-    """The attempt as the evaluation engine expects it (PRD 9.2): dispatcher entries of the
-    status log without the bookkeeping fields."""
+    """The attempt as the evaluation engine expects it: for a card (PRD 9.2) the dispatcher
+    entries of the status log without the bookkeeping fields, for a call (PRD 9.3) the
+    submitted card, the transcript and the call marks."""
+    if attempt.mode == MODE_CALL_INTAKE:
+        return call_intake_input(attempt)
     return {
         "issued_at": attempt.issued_at,
         "received_at": attempt.received_at,
@@ -522,6 +528,24 @@ def evaluation_input(attempt: Attempt) -> dict:
             for e in attempt.status_log
             if e.get("by") != BY_SYSTEM
         ],
+    }
+
+
+def call_intake_input(attempt: Attempt) -> dict:
+    """PRD 9.3 input: the card as submitted (or the draft, when the lesson closed the call),
+    the dialog and the marks of the call panel («нет контакта», «срыв звонка»)."""
+    from app.dialog.service import dialog_input
+    from app.intake.service import evaluation_card
+
+    return {
+        # The conversation timer starts when the operator picks up; a card saved without a
+        # single answered call counts from the moment the call rang.
+        "answered_at": attempt.answered_at or attempt.received_at or attempt.issued_at,
+        "submitted_at": attempt.submitted_at,
+        "card": evaluation_card(attempt.draft),
+        "dialog": dialog_input(attempt),
+        "call_dropped_marked": bool(attempt.call_dropped_marked),
+        "no_contact_marked": bool(attempt.no_contact_marked),
     }
 
 
@@ -605,6 +629,8 @@ async def sweep_not_notified(
         .where(
             Attempt.state.in_(ACTIVE_ATTEMPT_STATES),
             Attempt.card_status == CARD_REGISTERED,
+            # A call has no «Не оповещено»: the conversation timer is scored instead.
+            Attempt.mode != MODE_CALL_INTAKE,
         )
         .with_for_update(of=Attempt, skip_locked=True)
     )

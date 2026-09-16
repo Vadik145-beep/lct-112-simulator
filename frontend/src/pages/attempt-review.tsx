@@ -7,6 +7,7 @@ import { ErrorState, LoadingState } from "@/components/states";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { acceptanceTimer, formatSeconds, formatTime, useNow } from "@/emulator/time";
+import { CallReview, type CallEvaluation } from "@/intake/call-review";
 import { cn } from "@/lib/utils";
 
 // Shapes of `attempt.evaluation` (EvaluationResult.to_dict() of the evaluation engine).
@@ -77,20 +78,32 @@ function Review({ attemptId, teacher }: { attemptId: string; teacher: boolean })
   if (query.isError) return <ErrorState message={query.error.message} onRetry={() => void query.refetch()} />;
   const attempt = query.data;
   const evaluation = attempt.evaluation as Evaluation | null;
+  const call = attempt.session.mode === "call_intake";
   if (!evaluation) {
-    if (teacher) return <InProgressView attempt={attempt} onRefresh={() => void query.refetch()} />;
+    if (teacher && !call) return <InProgressView attempt={attempt} onRefresh={() => void query.refetch()} />;
     return (
       <div className="space-y-4">
-        <h1 className="text-2xl font-semibold">Разбор карточки {attempt.card.number}</h1>
+        <h1 className="text-2xl font-semibold">Разбор {call ? "вызова" : "карточки"} {attempt.card.number}</h1>
         <p className="text-muted-foreground">
-          Карточка ещё в работе: разбор появится, когда вы поставите финальный статус или нажмёте «Завершить работу с карточкой».
+          {call
+            ? teacher
+              ? "Вызов ещё в работе: разбор появится, когда обучающийся сохранит карточку."
+              : "Вызов ещё в работе: разбор появится, когда вы сохраните карточку."
+            : "Карточка ещё в работе: разбор появится, когда вы поставите финальный статус или нажмёте «Завершить работу с карточкой»."}
         </p>
-        <Button asChild variant="outline">
-          <Link to={`/student/attempts/${attempt.id}`}>Вернуться к карточке</Link>
-        </Button>
+        {teacher ? (
+          <Button variant="outline" onClick={() => void query.refetch()}>
+            Обновить
+          </Button>
+        ) : (
+          <Button asChild variant="outline">
+            <Link to={`/student/attempts/${attempt.id}`}>Вернуться к {call ? "вызову" : "карточке"}</Link>
+          </Button>
+        )}
       </div>
     );
   }
+  if (call) return <CallReview attempt={attempt} evaluation={evaluation as unknown as CallEvaluation} teacher={teacher} />;
   return <ReviewView attempt={attempt} evaluation={evaluation} teacher={teacher} />;
 }
 

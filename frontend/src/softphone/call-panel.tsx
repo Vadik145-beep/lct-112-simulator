@@ -51,9 +51,10 @@ function LevelMeter({ level }: { level: number }) {
 /**
  * The call panel of the trainee (PRD 9.5): state, answer / hang up, «нет контакта»,
  * «срыв звонка», microphone level and device, the caller's last words. Floats over every
- * page of the trainee while a call rings or goes on; wave 7 embeds it into the operator's card.
+ * page of the trainee while a call rings or goes on; the operator card (wave 7) embeds it
+ * with `compact` (no scenario title, the card shows the transcript itself).
  */
-export function CallPanel({ className }: { className?: string }) {
+export function CallPanel({ className, compact = false }: { className?: string; compact?: boolean }) {
   const phone = useSoftphone();
   const [text, setText] = useState("");
   if (!phone) return null;
@@ -79,7 +80,8 @@ export function CallPanel({ className }: { className?: string }) {
         </div>
         <Badge tone={STATUS_TONE[phone.status]}>{STATUS_LABELS[phone.status]}</Badge>
       </header>
-      {phone.scenarioTitle && <div className="mt-1 text-xs text-muted-foreground">{phone.scenarioTitle}</div>}
+      {/* The operator card hides the scenario title: the trainee must not see what the call is about. */}
+      {phone.scenarioTitle && !compact && <div className="mt-1 text-xs text-muted-foreground">{phone.scenarioTitle}</div>}
 
       {phone.lastCaller && (
         <div className="mt-2 rounded-md bg-muted/60 px-2 py-1.5 text-sm">

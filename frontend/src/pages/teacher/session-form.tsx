@@ -34,10 +34,20 @@ const DEFAULTS: Omit<SessionIn, "group_id"> = {
   cards_per_student: 0,
   unfinished_seconds: 48 * HOUR,
   weights: {},
-  // Call-intake settings; the controls appear with the mode in wave 7.
   voice_enabled: false,
   dialog_mode: "select",
 };
+
+// PRD 9.3: the caller answers with an approved reply (select), may improvise with the
+// teacher approving new lines (hybrid), improvises freely (generate), or the trainee
+// presses topic buttons (buttons, no model).
+const DIALOG_MODES: { code: string; title: string; hint: string }[] = [
+  { code: "select", title: "Готовые реплики", hint: "модель выбирает утверждённую реплику; режим стенда" },
+  { code: "hybrid", title: "Готовые + новые на утверждение", hint: "если реплики нет, модель сочиняет, вы утверждаете" },
+  { code: "generate", title: "Свободная генерация", hint: "только если замер задержки устроил" },
+  { code: "buttons", title: "Кнопки тем", hint: "без модели" },
+];
+const NORM_DEFAULT = { card_response: 30, call_intake: 90 } as const;
 
 const selectClass =
   "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50";
@@ -148,11 +158,35 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               <input type="radio" name="mode" checked={form.mode === "card_response"} onChange={() => patch({ mode: "card_response" })} />
               Реагирование на карточку (ДДС)
             </label>
-            <label className="flex items-center gap-2 text-sm text-muted-foreground">
-              <input type="radio" name="mode" disabled />
-              Приём вызова (оператор 112) — появится позже
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="radio"
+                name="mode"
+                checked={form.mode === "call_intake"}
+                onChange={() => patch({ mode: "call_intake", service_profile: [], norm_seconds: form.norm_seconds === NORM_DEFAULT.card_response ? NORM_DEFAULT.call_intake : form.norm_seconds })}
+              />
+              Приём вызова (оператор 112)
             </label>
           </fieldset>
+          {form.mode === "call_intake" && (
+            <div className="space-y-3 sm:col-span-2" data-testid="call-intake-settings">
+              <div className="space-y-1.5">
+                <Label htmlFor="dialog-mode">Как отвечает заявитель</Label>
+                <select id="dialog-mode" className={selectClass} value={form.dialog_mode} onChange={(e) => patch({ dialog_mode: e.target.value })}>
+                  {DIALOG_MODES.map((m) => (
+                    <option key={m.code} value={m.code}>
+                      {m.title} — {m.hint}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={form.voice_enabled} onChange={(e) => patch({ voice_enabled: e.target.checked })} />
+                Голос: заявитель звучит, обучающийся говорит в гарнитуру
+              </label>
+              <p className="text-xs text-muted-foreground">Без голоса разговор идёт текстом в панели тренажёра.</p>
+            </div>
+          )}
           <div className="space-y-1.5">
             <Label htmlFor="group">Группа</Label>
             <select id="group" className={selectClass} value={groupId} onChange={(e) => patch({ group_id: e.target.value })} required>
@@ -193,8 +227,8 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               ))}
             </div>
           </fieldset>
-          <fieldset>
-            <legend className="mb-2 text-sm font-medium">Профиль службы</legend>
+          <fieldset disabled={form.mode === "call_intake"} className={cn(form.mode === "call_intake" && "opacity-50")}>
+            <legend className="mb-2 text-sm font-medium">Профиль службы{form.mode === "call_intake" ? " (оператор 112 — без службы)" : ""}</legend>
             <div className="grid max-h-64 gap-1 overflow-y-auto rounded-md border p-2 sm:grid-cols-2">
               {services.data.map((s) => (
                 <label key={s.code} className="flex items-start gap-2 text-sm">
@@ -242,7 +276,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
           <div className="space-y-1.5">
             <Label htmlFor="norm">Норматив, секунд</Label>
             <Input id="norm" type="number" min={5} max={600} required value={form.norm_seconds} onChange={(e) => patch({ norm_seconds: Number(e.target.value) })} />
-            <p className="text-xs text-muted-foreground">От «Добавлена» до первичного статуса.</p>
+            <p className="text-xs text-muted-foreground">{form.mode === "call_intake" ? "От ответа на вызов до сохранения карточки." : "От «Добавлена» до первичного статуса."}</p>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="threshold">Порог зачёта, баллов</Label>

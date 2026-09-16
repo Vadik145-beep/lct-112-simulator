@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.evaluation.status_machine import STATUSES
 from app.models import (
+    MODE_CALL_INTAKE,
     Attempt,
     CardStatus,
     IncidentGroup,
@@ -30,6 +31,7 @@ from app.training.schemas import (
     CallerOut,
     CardOut,
     IncidentOut,
+    IntakeOut,
     JournalItem,
     RejectReasonOut,
     ServiceInfo,
@@ -352,6 +354,38 @@ def status_log_out(attempt: Attempt, lookups: Lookups) -> list[StatusLogEntryOut
     return result
 
 
+def caller_phone(attempt: Attempt, body: dict) -> str:
+    """АОН of the call: the scenario's phone when it has one, otherwise a stable number
+    derived from the attempt so the panel never shows an empty АОН."""
+    phone = ((body.get("reference_card") or {}).get("caller") or {}).get("phone")
+    if phone:
+        return str(phone)
+    digits = f"{attempt.id.int % 10_000_000:07d}"
+    tail = attempt.card_number[-2:].rjust(2, "0")
+    return f"+7 (9{digits[:2]}) {digits[2:5]}-{digits[5:7]}-{tail}"
+
+
+def intake_out(attempt: Attempt, body: dict, finished: bool) -> IntakeOut | None:
+    if attempt.mode != MODE_CALL_INTAKE:
+        return None
+    return IntakeOut(
+        caller_phone=caller_phone(attempt, body),
+        draft=attempt.draft,
+        title=str(body.get("title") or "") if finished else None,
+        required_topics=[str(t) for t in body.get("required_topics") or []],
+    )
+
+
+def reference_out(attempt: Attempt, body: dict, finished: bool) -> dict | None:
+    """The reference solution, visible once the card is closed (PRD 11): the status chain
+    of a card, the reference card of a call."""
+    if not finished:
+        return None
+    if attempt.mode == MODE_CALL_INTAKE:
+        return body.get("reference_card")
+    return body.get("reference")
+
+
 def attempt_out(
     attempt: Attempt,
     body: dict,
@@ -390,7 +424,8 @@ def attempt_out(
             RejectReasonOut(code=r.code, title=r.title)
             for r in sorted(lookups.reject_reasons.values(), key=lambda r: r.order)
         ],
-        reference=body.get("reference") if finished else None,
+        reference=reference_out(attempt, body, finished),
         evaluation=evaluation,
+        intake=intake_out(attempt, body, finished),
         last_seq=seq,
     )

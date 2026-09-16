@@ -19,8 +19,9 @@ async function apiToken(request: APIRequestContext, login: string): Promise<stri
 async function resetDemoSession(request: APIRequestContext): Promise<string> {
   const token = await apiToken(request, "student1");
   const headers = { Authorization: `Bearer ${token}` };
-  const assignments = (await (await request.get("/api/me/assignments", { headers })).json()) as { id: string; status: string }[];
-  const running = assignments.find((a) => a.status === "running");
+  const assignments = (await (await request.get("/api/me/assignments", { headers })).json()) as { id: string; status: string; mode: string }[];
+  // The seed also runs a call-intake lesson (wave 7): take the card one.
+  const running = assignments.find((a) => a.status === "running" && a.mode === "card_response");
   expect(running, "seed must provide a running session for student1").toBeTruthy();
   const reset = await request.post(`/api/sessions/${running!.id}/restart`, { headers });
   expect(reset.status()).toBe(204);
