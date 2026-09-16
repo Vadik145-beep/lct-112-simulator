@@ -109,3 +109,49 @@
     min-height: 100dvh;
   }
 }
+
+/* АРМ-112 emulator (memo screenshots, pages 12-24). One fixed palette in both themes:
+   the trainee must see the same picture as the real workstation. */
+.arm {
+  --arm-page: #c4c7ca;
+  --arm-panel: #ececed;
+  --arm-panel-2: #dcdedf;
+  --arm-field: #f7f7f7;
+  --arm-dark: #3a3f45;
+  --arm-dark-2: #2e3237;
+  --arm-row: #2b2f34;
+  --arm-row-hover: #363b41;
+  --arm-strip: #24282c;
+  --arm-text: #1f2328;
+  --arm-text-muted: #5b6168;
+  --arm-on-dark: #f3f4f5;
+  --arm-on-dark-muted: #a8adb3;
+  --arm-orange: #f26522;
+  --arm-blue: #2d8ee8;
+  --arm-blue-dark: #1f6fbf;
+  --arm-red: #e03a2f;
+  --arm-warning: #f0b429;
+  --arm-green: #3fa35f;
+  font-family: var(--font-emulator);
+  color: var(--arm-text);
+  background: var(--arm-page);
+  color-scheme: light;
+}
+.arm ::selection {
+  background: var(--arm-blue);
+  color: #fff;
+}
+.arm input,
+.arm select,
+.arm textarea,
+.arm button {
+  font-family: inherit;
+}
+.arm-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.arm-scroll::-webkit-scrollbar-thumb {
+  background: #6a7077;
+  border-radius: 6px;
+}

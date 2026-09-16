@@ -8,6 +8,11 @@ import { HomePage } from "@/pages/home";
 import { LoginPage } from "@/pages/login";
 import { NotFoundPage } from "@/pages/not-found";
 import { PlaceholderPage } from "@/pages/placeholder";
+import { AttemptReviewPage } from "@/pages/attempt-review";
+import { StudentAssignmentsPage } from "@/pages/student-assignments";
+import { StudentReferencePage } from "@/pages/student-reference";
+import { CardPage } from "@/emulator/card-page";
+import { JournalPage } from "@/emulator/journal-page";
 
 export const router = createBrowserRouter([
   { path: "/", element: <HomePage /> },
@@ -20,10 +25,15 @@ export const router = createBrowserRouter([
         path: "/student",
         element: <AppShell />,
         children: [
-          { index: true, element: <CabinetPage role="student" /> },
+          { index: true, element: <StudentAssignmentsPage /> },
           { path: "progress", element: <PlaceholderPage title="Прогресс" /> },
+          { path: "reference", element: <StudentReferencePage /> },
+          { path: "attempts/:attemptId/review", element: <AttemptReviewPage /> },
         ],
       },
+      // The АРМ-112 emulator has its own chrome: no cabinet shell around it.
+      { path: "/student/sessions/:sessionId/journal", element: <JournalPage /> },
+      { path: "/student/attempts/:attemptId", element: <CardPage /> },
     ],
   },
   {
