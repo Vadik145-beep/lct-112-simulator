@@ -20,6 +20,7 @@ from app.routers.reference import router as reference_router
 from app.routers.system import router as system_router
 from app.training import sweeper
 from app.training.router import router as training_router
+from app.training.teacher import router as teacher_router
 from app.training.ws import router as ws_router
 
 API_PREFIX = "/api"
@@ -93,6 +94,7 @@ def create_app() -> FastAPI:
     app.include_router(reference_router, prefix=API_PREFIX)
     app.include_router(grammar_router, prefix=API_PREFIX)
     app.include_router(training_router, prefix=API_PREFIX)
+    app.include_router(teacher_router, prefix=API_PREFIX)
     # WebSocket lives outside /api: nginx proxies /ws/ with the upgrade headers.
     app.include_router(ws_router)
     return app

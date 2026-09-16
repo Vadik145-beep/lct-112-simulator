@@ -15,7 +15,7 @@ from app.config import get_settings
 from app.domain.evaluation.card_response import comment_texts
 from app.domain.evaluation.schemas import CardResponseAttempt
 from app.errors import ApiError
-from app.events import publish_events
+from app.events import append_event, publish_events
 from app.models import (
     ACTIVE_ATTEMPT_STATES,
     Attempt,
@@ -34,6 +34,7 @@ from app.training.schemas import (
     StatusRequest,
     StatusResponse,
 )
+from app.training.teacher_schemas import ProgressRequest
 
 router = APIRouter(tags=["training"])
 
@@ -64,8 +65,9 @@ async def my_assignments(user: ActiveUser, session: DbSession) -> list[Assignmen
             active[session_id] = active.get(session_id, 0) + count
         else:
             finished[session_id] = finished.get(session_id, 0) + count
+    # Running first, then upcoming, then finished; the newest lesson first inside a group.
     order = {"running": 0, "draft": 1, "finished": 2}
-    sessions.sort(key=lambda s: (order.get(s.status, 3), s.created_at), reverse=False)
+    sessions.sort(key=lambda s: (order.get(s.status, 3), -s.created_at.timestamp()))
     return [
         AssignmentOut(
             **present.session_info(ts, lookups, _own_service(ts, user)).model_dump(),
@@ -266,6 +268,28 @@ async def finish_attempt(
         applied=change.changed,
         issued=[a.id for a in change.issued],
     )
+
+
+@router.post("/attempts/{attempt_id}/progress", status_code=204)
+async def report_progress(
+    attempt_id: uuid.UUID, body: ProgressRequest, user: ActiveUser, session: DbSession
+) -> Response:
+    """What the trainee is doing in an open card (PRD 12: ``attempt.progress``, the client
+    sends it at most every 2 s). Shown on the teacher's monitoring tile, not stored on the
+    attempt."""
+    attempt = await _own_attempt(session, attempt_id, user)
+    if attempt.state in training.CLOSED_STATES:
+        return Response(status_code=204)
+    event = await append_event(
+        session,
+        session_id=attempt.session_id,
+        type_="attempt.progress",
+        student_id=user.id,
+        payload={"attempt_id": attempt.id, "stage": body.stage},
+    )
+    await session.commit()
+    await publish_events([event])
+    return Response(status_code=204)
 
 
 async def _own_attempt(session: DbSession, attempt_id: uuid.UUID, user: User) -> Attempt:
