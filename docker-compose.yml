@@ -1,6 +1,6 @@
 # Ядро тренажёра оператора ДДС-112.
 # Запуск: docker compose up -d --build
-# Профили telephony, ai, live, monitoring объявлены и заполняются в следующих волнах.
+# Профили: ai (локальные модели, см. ниже), telephony, live, monitoring — в следующих волнах.
 
 x-backend-env: &backend-env
   APP_ENV: ${APP_ENV:-development}
@@ -21,7 +21,13 @@ x-backend-env: &backend-env
   LANGUAGETOOL_URL: ${LANGUAGETOOL_URL:-http://languagetool:8010}
   LOG_LEVEL: ${LOG_LEVEL:-INFO}
   DATA_DIR: /data
-  EMBEDDING_MODEL_DIR: ${EMBEDDING_MODEL_DIR:-}
+  STORAGE_DIR: /storage
+  MODELS_DIR: /models
+  EMBEDDING_MODEL_DIR: ${EMBEDDING_MODEL_DIR:-/models/embeddings/multilingual-e5-small}
+  DIALOG_MODE: ${DIALOG_MODE:-select}
+  LLM_DIALOG_URL: ${LLM_DIALOG_URL:-http://llm-dialog:8080}
+  LLM_GEN_URL: ${LLM_GEN_URL:-http://llm-gen:8080}
+  STT_URL: ${STT_URL:-http://stt:9000}
 
 services:
   nginx:
@@ -55,6 +61,7 @@ services:
     volumes:
       - storage:/storage
       - ./data:/data:ro
+      - ${MODELS_DIR:-./models}:/models:ro
     depends_on:
       postgres:
         condition: service_healthy
@@ -77,6 +84,7 @@ services:
     volumes:
       - storage:/storage
       - ./data:/data:ro
+      - ${MODELS_DIR:-./models}:/models:ro
     depends_on:
       backend:
         condition: service_healthy
@@ -160,15 +168,96 @@ services:
       retries: 3
       start_period: 30s
 
+  # ---------- Профиль ai: локальные модели на CPU ----------
+  # Модели скачиваются один раз: scripts/fetch_models.sh (папка MODELS_DIR, по умолчанию ./models).
+  # Без профиля ядро работает: диалог в режиме buttons, реплики текстом, ввод оператора текстом.
+  llm-dialog:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    profiles: ["ai"]
+    restart: unless-stopped
+    command:
+      - -m
+      - /models/llm/${LLM_DIALOG_MODEL:-qwen2.5-1.5b-instruct-q4_k_m.gguf}
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "8080"
+      - -c
+      - "${LLM_DIALOG_CTX:-8192}"
+      - -np
+      - "${LLM_DIALOG_SLOTS:-4}"
+      - -t
+      - "${LLM_THREADS:-4}"
+      - --jinja
+      - --no-webui
+      - --load-mode
+      - ${LLM_LOAD_MODE:-auto}
+    ports:
+      # Exposed for scripts/bench_dialog_latency.py run from the host.
+      - "${LLM_DIALOG_PORT:-8081}:8080"
+    volumes:
+      - ${MODELS_DIR:-./models}:/models:ro
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  llm-gen:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    profiles: ["ai"]
+    restart: unless-stopped
+    command:
+      - -m
+      - /models/llm/${LLM_GEN_MODEL:-qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf}
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "8080"
+      - -c
+      - "${LLM_GEN_CTX:-8192}"
+      - -np
+      - "1"
+      - -t
+      - "${LLM_THREADS:-4}"
+      - --jinja
+      - --no-webui
+      - --load-mode
+      - ${LLM_LOAD_MODE:-auto}
+    ports:
+      - "${LLM_GEN_PORT:-8082}:8080"
+    volumes:
+      - ${MODELS_DIR:-./models}:/models:ro
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
+
+  stt:
+    build:
+      context: ./deploy/stt
+    profiles: ["ai"]
+    restart: unless-stopped
+    environment:
+      STT_MODEL_DIR: /models/stt/${STT_MODEL:-faster-whisper-base}
+      STT_COMPUTE_TYPE: ${STT_COMPUTE_TYPE:-int8}
+      STT_THREADS: ${LLM_THREADS:-4}
+    ports:
+      - "${STT_PORT:-9000}:9000"
+    volumes:
+      - ${MODELS_DIR:-./models}:/models:ro
+
   # ---------- Профили следующих волн (объявлены, пока пустые) ----------
   # telephony: Asterisk (PJSIP, WebRTC, ARI) — волна 6.
-  # ai: llama.cpp (диалог, генерация), faster-whisper — волна 5.
   # live: vLLM, потоковые STT/TTS, VAD — трек G.
   # monitoring: Prometheus, Grafana — фаза E.
   profiles-placeholder:
     image: alpine:3.20
-    command: ["sh", "-c", "echo 'Профили telephony, ai, live, monitoring будут заполнены в следующих волнах'"]
-    profiles: ["telephony", "ai", "live", "monitoring"]
+    command: ["sh", "-c", "echo 'Профили telephony, live, monitoring будут заполнены в следующих волнах'"]
+    profiles: ["telephony", "live", "monitoring"]
 
 volumes:
   pgdata:

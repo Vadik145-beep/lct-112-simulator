@@ -40,8 +40,19 @@ class Settings(BaseSettings):
     # Local sentence-transformers model for embeddings; TF-IDF is used when it is absent.
     embedding_model_dir: str | None = None
 
-    # Optional OpenAI-compatible endpoint for local models (used from wave 5).
-    llm_base_url: str | None = None
+    # Local AI services (compose profile `ai`). Empty address = the fallback without a model.
+    # llama.cpp servers speak the OpenAI-compatible chat API; STT is our own small server with
+    # the OpenAI-compatible transcription endpoint (deploy/stt).
+    llm_dialog_url: str | None = None
+    llm_gen_url: str | None = None
+    stt_url: str | None = None
+    # How the caller answers (PRD 9.3): select | hybrid | generate | buttons | live.
+    # Without a reachable dialog model every mode degrades to `buttons`.
+    dialog_mode: Literal["select", "hybrid", "generate", "buttons", "live"] = "select"
+    # Folder with downloaded models (scripts/fetch_models.sh): tts/ (Piper voices), stt/, llm/.
+    models_dir: str | None = None
+    # Writable folder for generated files (voiced replies, recordings); /storage in compose.
+    storage_dir: str = "../storage"
 
     @field_validator("database_url", "database_admin_url")
     @classmethod
@@ -50,14 +61,33 @@ class Settings(BaseSettings):
             raise ValueError("ожидается адрес вида postgresql+asyncpg://…")
         return value
 
+    def ai_service_urls(self) -> dict[str, str]:
+        """Configured AI endpoints by their .env name (only the non-empty ones)."""
+        urls = {
+            "LLM_DIALOG_URL": self.llm_dialog_url,
+            "LLM_GEN_URL": self.llm_gen_url,
+            "STT_URL": self.stt_url,
+        }
+        return {name: url for name, url in urls.items() if url}
+
+    def external_ai_hosts(self) -> dict[str, str]:
+        """AI endpoints that point outside the local contour, by .env name."""
+        external = {}
+        for name, url in self.ai_service_urls().items():
+            host = urlparse(url).hostname or ""
+            if not _is_local_host(host):
+                external[name] = host
+        return external
+
     def check_external_ai(self) -> None:
         """PRD section 2: refuse to start with an external model when ALLOW_EXTERNAL_AI=false."""
-        if self.allow_external_ai or not self.llm_base_url:
+        if self.allow_external_ai:
             return
-        host = urlparse(self.llm_base_url).hostname or ""
-        if not _is_local_host(host):
+        external = self.external_ai_hosts()
+        if external:
+            listed = ", ".join(f"{name} → {host}" for name, host in external.items())
             raise RuntimeError(
-                f"LLM_BASE_URL указывает на внешний адрес {host}, а ALLOW_EXTERNAL_AI=false. "
+                f"Внешний адрес ИИ-сервиса при ALLOW_EXTERNAL_AI=false: {listed}. "
                 "В закрытом контуре внешние ИИ запрещены: укажите локальный сервер модели "
                 "или включите ALLOW_EXTERNAL_AI=true только для разработки."
             )
