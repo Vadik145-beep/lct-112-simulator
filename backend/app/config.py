@@ -54,6 +54,35 @@ class Settings(BaseSettings):
     # Writable folder for generated files (voiced replies, recordings); /storage in compose.
     storage_dir: str = "../storage"
 
+    # Telephony (PRD 9.5, compose profile `telephony`). Off: the call panel of the browser
+    # works through the microphone and /attempts/{id}/utterance instead of a SIP call.
+    telephony_enabled: bool = False
+    # ARI of Asterisk: HTTP base (the WebSocket of events is derived from it) and the user
+    # from deploy/asterisk/ari.conf.
+    ari_url: str = "http://asterisk:8088/ari"
+    ari_user: str = "trainer"
+    ari_password: str = "trainer"  # noqa: S105 - development default, see .env.example
+    ari_app: str = "trainer"
+    # Where Asterisk sends the operator's audio (ExternalMedia): this host as Asterisk sees it
+    # (empty = the container's own hostname) and the UDP ports used, one per call.
+    telephony_media_host: str = ""
+    telephony_media_port_start: int = 12000
+    telephony_media_port_end: int = 12100
+    # Folder with the generated PJSIP endpoints, shared with the Asterisk container
+    # (empty = do not write; the endpoints then come from pjsip.conf only).
+    asterisk_config_dir: str | None = None
+    # The recordings folder as Asterisk sees it (mounted from STORAGE_DIR/recordings) and
+    # the voiced replies folder for playback (mounted from STORAGE_DIR/tts).
+    asterisk_recording_dir: str = "/var/spool/asterisk/recording"
+    asterisk_sounds_dir: str = "/var/lib/asterisk/sounds/trainer"
+    # Path of the SIP WebSocket in the browser (nginx proxies it to Asterisk).
+    sip_ws_path: str = "/ws/sip"
+    sip_domain: str = "trainer"
+    # Seconds the softphone rings before the call is given up.
+    call_ring_timeout_seconds: int = 45
+    # Silero VAD model (ONNX); missing file = energy-based detector.
+    vad_model_path: str | None = None
+
     @field_validator("database_url", "database_admin_url")
     @classmethod
     def _must_be_asyncpg(cls, value: str) -> str:

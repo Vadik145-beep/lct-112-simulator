@@ -57,6 +57,11 @@ os.environ.update(
         "LLM_DIALOG_URL": "",
         "LLM_GEN_URL": "",
         "STT_URL": "",
+        # Telephony is exercised against a stand-in ARI server (tests/telephony), never the
+        # stand's Asterisk.
+        "TELEPHONY_ENABLED": "false",
+        "ASTERISK_CONFIG_DIR": "",
+        "VAD_MODEL_PATH": "",
     }
 )
 

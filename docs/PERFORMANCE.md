@@ -89,3 +89,32 @@ http://localhost:8083.
 ```bash
 uv run --project backend python scripts/bench_dialog_latency.py --candidate 1.5B=http://localhost:8081 --candidate 3B=http://localhost:8083 --stt base=http://localhost:9000 --judge-url http://localhost:8083 --machine ноутбук разработки, Docker Desktop под Windows: 4 потока на сервер модели, 8 ГБ на Docker --out docs/PERFORMANCE.md
 ```
+
+## Телефония: задержка ответа в линии (волна 6)
+
+Замер 2026-09-16 19:58: `scripts/bench_call.py`, сценарий `call_2-1_zadymlenie_musoroprovoda`, 3 звонок(ов) × 5 вопросов, вопросы озвучены Piper и поданы в линию как RTP; время от конца вопроса в линии до первого звука ответа заявителя (снуп → ExternalMedia → VAD → STT → модель → Piper → воспроизведение).
+Машина и модели: ноутбук Windows, Docker Desktop 8 ГБ; Qwen2.5-1.5B Q4_K_M (select), faster-whisper base int8, Piper denis; телефон бенча — A-law 8 кГц.
+
+| Ответов | Медиана, с | p90, с | Мин, с | Макс, с | Без ответа |
+|---|---|---|---|---|---|
+| 13 | 7.06 | 17.86 | 2.75 | 19.20 | 2 |
+
+По звонкам (первый звонок холодный: реплики озвучиваются Piper на лету и модель заполняет кеш промпта; с волны 8 реплики озвучены при утверждении):
+
+| Звонок | Что случилось? | Диктуйте адрес | На каком этаже? | Кто-нибудь пострадал? | Как вас зовут? |
+|---|---|---|---|---|---|
+| 1 | 19.20 | 3.41 | — | — | 10.45 |
+| 2 | 13.97 | 9.31 | 7.06 | 17.86 | 7.69 |
+| 3 | 2.75 | 3.52 | 3.91 | 4.27 | 4.48 |
+
+Сырые данные: `docs/screenshots/wave-06/bench_call.json`. Воспроизвести: стенд с профилями `ai` и `telephony`, затем `uv run --project backend python scripts/bench_call.py --rounds 3 --note "…"`. Таблица без повторного прогона: `--from-raw`.
+
+### WebRTC в браузере (волна 6)
+
+`frontend/e2e/softphone.spec.ts` (Chromium, фейковый микрофон с вопросом оператора) читает
+статистику `RTCPeerConnection.getStats()` во время разговора и пишет её в
+`docs/screenshots/wave-06/webrtc_stats.json`. Замер 16.09.2026 на том же ноутбуке, браузер и
+Asterisk на одной машине (Docker Desktop, порты RTP опубликованы): кодек Opus, RTT по
+`candidate-pair` 2 мс, джиттер 0 мс, потерь нет — требование ТЗ «до 150 мс в локальной сети»
+выполняется с большим запасом; в локальной сети стенда RTT добавит единицы миллисекунд.
+Задержка ответа заявителя (таблица выше) — это работа моделей, а не сети.

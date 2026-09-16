@@ -837,6 +837,151 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/sip": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Sip Account
+         * @description Credentials of the trainee's softphone; the account is created on first request.
+         */
+        get: operations["my_sip_account_api_me_sip_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/call": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Current Call
+         * @description The call-intake attempt that rings or is in progress: what the panel shows when the
+         *     SIP call carries no attempt id (fallback without telephony).
+         */
+        get: operations["my_current_call_api_me_call_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Answer
+         * @description The operator picks up: the caller's opening is returned (with its voice file) and the
+         *     attempt becomes �� ���������. With telephony the SIP call is answered in the softphone;
+         *     this call only records the state.
+         */
+        post: operations["answer_api_attempts__attempt_id__answer_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/hangup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Hangup
+         * @description �����������: the operator ends the call; the card stays open for filling in.
+         */
+        post: operations["hangup_api_attempts__attempt_id__hangup_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/no-contact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * No Contact
+         * @description ���� ��������: the caller cannot be reached; the mark goes to the evaluation.
+         */
+        post: operations["no_contact_api_attempts__attempt_id__no_contact_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/call-dropped": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Call Dropped
+         * @description ����� ������: the caller hung up; the mark goes to the evaluation.
+         */
+        post: operations["call_dropped_api_attempts__attempt_id__call_dropped_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Admin Settings */
+        get: operations["admin_settings_api_admin_settings_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Patch Admin Settings
+         * @description Telephony settings: ring timeout, recording, codecs; the ARI address applies after a
+         *     restart of the backend.
+         */
+        patch: operations["patch_admin_settings_api_admin_settings_patch"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -900,6 +1045,19 @@ export interface components {
              * @default
              */
             descriptive: string;
+        };
+        /** AdminSettingsOut */
+        AdminSettingsOut: {
+            telephony: components["schemas"]["TelephonySettings"];
+        };
+        /** AdminSettingsPatch */
+        AdminSettingsPatch: {
+            telephony?: components["schemas"]["TelephonySettingsPatch"] | null;
+        };
+        /** AnswerResponse */
+        AnswerResponse: {
+            opening: components["schemas"]["DialogTurnOut"];
+            dialog: components["schemas"]["DialogOut"];
         };
         /**
          * ArmInfo
@@ -1020,6 +1178,42 @@ export interface components {
             /** Sections */
             sections: string[];
         };
+        /**
+         * CallOut
+         * @description The call of the attempt (PRD 9.5): idle | ringing | answered | ended.
+         */
+        CallOut: {
+            /** State */
+            state: string;
+            /** End Reason */
+            end_reason?: string | null;
+            /** Ended At */
+            ended_at?: string | null;
+            /**
+             * Call Dropped Marked
+             * @default false
+             */
+            call_dropped_marked: boolean;
+            /**
+             * No Contact Marked
+             * @default false
+             */
+            no_contact_marked: boolean;
+            /**
+             * Telephony
+             * @default false
+             */
+            telephony: boolean;
+            /**
+             * Recording Available
+             * @default false
+             */
+            recording_available: boolean;
+        };
+        /** CallResponse */
+        CallResponse: {
+            dialog: components["schemas"]["DialogOut"];
+        };
         /** CallerOut */
         CallerOut: {
             /**
@@ -1137,6 +1331,28 @@ export interface components {
             /** Types Total */
             types_total: number;
         };
+        /**
+         * CurrentCallOut
+         * @description The call-intake attempt that rings or is in progress for the trainee.
+         */
+        CurrentCallOut: {
+            /** Attempt Id */
+            attempt_id: string;
+            /** Session Id */
+            session_id: string;
+            /** Card Number */
+            card_number: string;
+            /** Call State */
+            call_state: string;
+            /** Answered At */
+            answered_at: string | null;
+            /** Caller Number */
+            caller_number: string;
+            /** Scenario Title */
+            scenario_title: string;
+            /** Seq */
+            seq: number;
+        };
         /** DialogOut */
         DialogOut: {
             /** Attempt Id */
@@ -1149,6 +1365,7 @@ export interface components {
             tts_available: boolean;
             /** Answered At */
             answered_at: string | null;
+            call: components["schemas"]["CallOut"];
             /** Turns */
             turns: components["schemas"]["DialogTurnOut"][];
             /** Topics */
@@ -1959,6 +2176,29 @@ export interface components {
             /** Dialog Mode */
             dialog_mode?: string | null;
         };
+        /**
+         * SipAccountOut
+         * @description What the browser softphone needs to register (PRD 9.5). ``enabled`` false = no
+         *     Asterisk on this stand, the panel uses the microphone instead.
+         */
+        SipAccountOut: {
+            /** Enabled */
+            enabled: boolean;
+            /** Connected */
+            connected: boolean;
+            /** Ws Path */
+            ws_path: string;
+            /** Domain */
+            domain: string;
+            /** Username */
+            username: string;
+            /** Password */
+            password: string;
+            /** Display Name */
+            display_name: string;
+            /** Phone Username */
+            phone_username: string;
+        };
         /** StatusLogEntryOut */
         StatusLogEntryOut: {
             /** Status */
@@ -2024,6 +2264,41 @@ export interface components {
             full_name: string;
             /** Service Code */
             service_code: string | null;
+        };
+        /**
+         * TelephonySettings
+         * @description What the administrator can change; every field has a default.
+         */
+        TelephonySettings: {
+            /** Enabled */
+            enabled: boolean;
+            /** Ari Url */
+            ari_url: string;
+            /** Ari App */
+            ari_app: string;
+            /** Ring Timeout Seconds */
+            ring_timeout_seconds: number;
+            /** Recording Enabled */
+            recording_enabled: boolean;
+            /** Webrtc Codecs */
+            webrtc_codecs: string[];
+            /** Phone Codecs */
+            phone_codecs: string[];
+            /** Sip Domain */
+            sip_domain: string;
+        };
+        /** TelephonySettingsPatch */
+        TelephonySettingsPatch: {
+            /** Ring Timeout Seconds */
+            ring_timeout_seconds?: number | null;
+            /** Recording Enabled */
+            recording_enabled?: boolean | null;
+            /** Webrtc Codecs */
+            webrtc_codecs?: string[] | null;
+            /** Phone Codecs */
+            phone_codecs?: string[] | null;
+            /** Ari Url */
+            ari_url?: string | null;
         };
         /** TicketOut */
         TicketOut: {
@@ -2093,6 +2368,11 @@ export interface components {
             latency_ms: number;
             /** Heard Text */
             heard_text?: string | null;
+            /**
+             * Call Ended
+             * @default false
+             */
+            call_ended: boolean;
             dialog: components["schemas"]["DialogOut"];
         };
         /** TypeHitOut */
@@ -3498,6 +3778,223 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TurnResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_sip_account_api_me_sip_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SipAccountOut"];
+                };
+            };
+        };
+    };
+    my_current_call_api_me_call_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CurrentCallOut"] | null;
+                };
+            };
+        };
+    };
+    answer_api_attempts__attempt_id__answer_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnswerResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    hangup_api_attempts__attempt_id__hangup_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CallResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    no_contact_api_attempts__attempt_id__no_contact_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CallResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    call_dropped_api_attempts__attempt_id__call_dropped_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CallResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    admin_settings_api_admin_settings_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminSettingsOut"];
+                };
+            };
+        };
+    };
+    patch_admin_settings_api_admin_settings_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminSettingsPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminSettingsOut"];
                 };
             };
             /** @description Validation Error */

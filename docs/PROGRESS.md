@@ -4,9 +4,100 @@
 
 ## Текущая волна
 
-Волна 5 ([plan/wave-05.md](../plan/wave-05.md)), ветка `wave-05/dialog`, issue #6.
-Шла параллельно с волной 3 (независимая часть: провайдеры, модели, замеры), после мержа
-волны 3 добавлены эндпоинты диалога поверх `attempts`. Волна 4 не начата.
+Волна 6 ([plan/wave-06.md](../plan/wave-06.md)), ветка `wave-06/telephony`, issue #7.
+
+### Сделано
+
+- `deploy/asterisk/`: образ на `andrius/asterisk` 22.10.1, профиль `telephony` в compose
+  (`hostname: asterisk`, порты SIP 5060 udp/tcp, ARI 8088, RTP 10000–10100/udp), конфиги
+  `pjsip.conf` (шаблоны `webrtc-*` с `webrtc=yes`/DTLS/ICE и `phone-*` для настольных
+  телефонов), `extensions.conf` (контекст `trainer-out`: звонит софтфону и телефону вместе,
+  ставит `X-Attempt-Id`; `trainer-in`: эхо-тест `100`), `ari.conf`, `http.conf`, `rtp.conf`;
+  `render-config.sh` рендерит пароль ARI, диапазон RTP, транспорты и внешний адрес для ICE
+  из `.env` (`TELEPHONY_EXTERNAL_IP` обязателен на Docker Desktop). nginx проксирует
+  `wss://<хост>/ws/sip` → Asterisk (имя резолвится по запросу, без профиля nginx стартует).
+- Миграция `0005`: `users.sip_password_enc`, `attempts.call_state/call_ended_at/
+  call_end_reason/call_dropped_marked/no_contact_marked`, таблица `settings`.
+- `app/telephony/`: `sip.py` (учётки `stu-<логин>`/`phone-<логин>`, пароль Fernet, генерация
+  `endpoints.conf` в общий том + `res_pjsip` reload через ARI), `ari.py` (HTTP + WebSocket
+  событий с переподключением; обработчики в отдельных задачах), `media.py` (RTP → PCM,
+  `PortPool`, Silero VAD / детектор по громкости, `Segmenter`, `.sln16` через ffmpeg,
+  ресемплинг), `calls.py` (`CallManager`: `attempt.issued` → `Local/s@trainer-out` с
+  `__STU_LOGIN/__ATTEMPT_ID/__RING_TIMEOUT` и `CALLERID(all)`; после ответа — мост + запись
+  `storage/recordings/<attempt>.wav`, снуп `spy=in` + ExternalMedia slin16 на UDP-порт бэкенда,
+  прогон фраз VAD → STT → `dialog.say` → ответ в мост; причины завершения по cause), `service.py`
+  (старт по `TELEPHONY_ENABLED`, подписка на `session-events:*` в Redis, дозвон по
+  незавершённым попыткам при старте, прогрев открывающих реплик, `telephony_active()`),
+  `settings.py` (раздел `telephony` в `settings`), `router.py`: `GET /me/sip`, `GET /me/call`,
+  `POST /attempts/{id}/answer|hangup|no-contact|call-dropped`, `GET /attempts/{id}/recording`,
+  `GET/PATCH /admin/settings`.
+- `app/dialog/call.py`: переходы звонка (`call.ringing/answered/ended`), отметки, «бросил
+  трубку» после второго вопроса (`DROP_AFTER_OPERATOR_TURNS`), общие для SIP и браузера.
+  `dialog.service`: `ensure_opening`/`opening_audio` (реплика-открытие с озвучкой, стем
+  `opening`), запрет ходов после конца звонка (409 `call_ended`), `call` в `DialogOut`,
+  `call_ended` в `TurnResponse`, `audio_source_file`.
+- Фронтенд `src/softphone/`: `sip-phone.ts` (JsSIP: регистрация, входящий, `X-Attempt-Id`,
+  ответ с выбранным микрофоном, `<audio>` для заявителя, уровень микрофона через
+  AnalyserNode, статистика `getStats`), `provider.tsx` (состояния не подключён / готов /
+  входящий / разговор / завершён; SIP-режим и режим браузера через MediaRecorder +
+  `/utterance`, ввод текстом при недоступном STT, опрос `/me/call` и стенограммы),
+  `call-panel.tsx` (плавающая панель: ответить, завершить, «нет контакта», «срыв звонка»,
+  уровень и выбор микрофона, последняя реплика, RTT/джиттер), `SoftphoneBadge` в шапке,
+  `StudentFrame` в роутере (софтфон живёт и в кабинете, и в АРМ).
+- `scripts/issue_call.py` — выдать попытку приёма вызова обучающемуся на стенде (до волны 7);
+  `scripts/bench_call.py` — телефон бенча через ARI (`Stasis:bench-<логин>` INUSE → диалплан
+  ведёт в приложение `bench`), вопросы Piper в линию A-law, замер до первого звука ответа,
+  секция в `PERFORMANCE.md` + `docs/screenshots/wave-06/bench_call.json`, `--from-raw`.
+- Модель Silero VAD в `scripts/models.manifest` (`vad/silero_vad.onnx`, 2,2 МБ).
+- Тесты: `tests/telephony/` (29: RTP, сегментатор, SIP-учётки и файл эндпоинтов, ARI-клиент
+  и `CallManager` на подменном ARI-сервере `fake_ari.py` — originate, события, открывающая
+  реплика, фраза через UDP → STT → ответ, срыв заявителем, завершение), `tests/api/
+  test_telephony.py` (15: `/me/sip`, `/me/call`, `answer/hangup/no-contact/call-dropped`,
+  запись, настройки администратора). e2e `frontend/e2e/softphone.spec.ts`: Chromium с
+  фейковым микрофоном (`e2e/fixtures/operator-question.wav`) — регистрация, входящий, ответ,
+  открывающая реплика, распознанный вопрос и ответ заявителя, статистика WebRTC, завершение.
+
+### Проверено
+
+- `uv run pytest -q` — 396 зелёных, 3 пропущены (база `trainer_test_wave06`); `ruff` чисто;
+  фронт `tsc`, `eslint`, `vitest` (18) чисто.
+- Живой стенд `-p wave-06` (профили `ai` + `telephony`): `scripts/bench_call.py --rounds 3` —
+  13 ответов из 15, медиана 7,1 с (холодные звонки 10–19 с, тёплый третий звонок 2,8–4,5 с),
+  таблица в `docs/PERFORMANCE.md`. Первый звонок медленный из-за озвучки реплик на лету и
+  кеша промпта модели; с озвучкой при утверждении (волна 8) остаётся ~STT 1 с + модель 1 с +
+  VAD 0,6 с.
+- e2e софтфона в Chromium прошёл: `docs/screenshots/wave-06/01-softphone-ready.png … 04-
+  ended.png`, `webrtc_stats.json` (Opus, RTT 2 мс, джиттер 0 мс).
+- В `storage/recordings/` после звонка лежит WAV моста (обе стороны).
+
+### Осталось
+
+- Ручная проверка «Показать» Вадимом: гарнитура, Chrome, `scripts/issue_call.py --student
+  student1`, ответить, спросить «скажите адрес», услышать ответ; видео в
+  `docs/screenshots/wave-06/`. Firefox и Яндекс.Браузер — регистрация и звонок руками.
+- Настольный IP-телефон — трек K (Константин): логин `phone-<логин>`, пароль из
+  `GET /api/me/sip`, порт 5060.
+- Волна 7: снять `mode_unavailable` для `call_intake`, панель вызова встроить в карточку
+  оператора 112 (сейчас плавает над всеми страницами обучающегося), `sweep_not_notified`
+  для приёма вызова, аудит завершения вызова.
+- Волна 8: озвучка реплик при утверждении в `STORAGE_DIR/tts/…` (+ `.sln16`), прогрев
+  голосов Piper.
+- Волна 9: экран настроек телефонии (API уже есть).
+
+### Как проверить
+
+```bash
+scripts/fetch_models.sh                                             # + vad/silero_vad.onnx
+docker compose --profile ai --profile telephony up -d --build       # .env: TELEPHONY_ENABLED=true, TELEPHONY_EXTERNAL_IP=<IP машины> на Docker Desktop
+cd backend && uv run pytest tests/telephony tests/api/test_telephony.py -q
+uv run --project backend python scripts/issue_call.py --student student1   # звонок в софтфон student1
+uv run --project backend python scripts/bench_call.py --rounds 3 --note "…"
+cd frontend && E2E_BASE_URL=https://localhost npx playwright test e2e/softphone.spec.ts
+```
+
+## Волна 5 (закрыта)
+
+Волна 5 ([plan/wave-05.md](../plan/wave-05.md)), ветка `wave-05/dialog`, issue #6, PR #21.
 
 ### Сделано
 
@@ -383,6 +474,7 @@ TEST_DATABASE_ADMIN_URL=postgresql+asyncpg://trainer:trainer-dev-password@localh
 | 2 | 16.09.2026 | `0de21e3` (PR #18) | Вадим |
 | 3 | 16.09.2026 | `2a211ac` (PR #19) | Вадим |
 | 4 | 16.09.2026 | `d402b84` (PR #20) | Вадим |
+| 5 | 16.09.2026 | `bedaa2d` (PR #21) | Вадим |
 
 ## Открытые вопросы и блокеры
 

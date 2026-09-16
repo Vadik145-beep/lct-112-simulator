@@ -14,6 +14,7 @@ from app.auth.deps import ActiveUser, DbSession
 from app.dialog import service as dialog
 from app.dialog.schemas import (
     AskTopicRequest,
+    CallOut,
     DialogOut,
     DialogTurnOut,
     SayRequest,
@@ -50,6 +51,20 @@ def _turn_out(index: int, turn: dict) -> DialogTurnOut:
     )
 
 
+def call_out(attempt: Attempt) -> CallOut:
+    from app.telephony.service import telephony_active
+
+    return CallOut(
+        state=attempt.call_state,
+        end_reason=attempt.call_end_reason,
+        ended_at=attempt.call_ended_at,
+        call_dropped_marked=attempt.call_dropped_marked,
+        no_contact_marked=attempt.no_contact_marked,
+        telephony=telephony_active(),
+        recording_available=bool(attempt.recording_path),
+    )
+
+
 async def _dialog_out(
     session: DbSession, attempt: Attempt, ts: TrainingSession, scenario: CallIntakeScenario
 ) -> DialogOut:
@@ -61,6 +76,7 @@ async def _dialog_out(
         stt_available=dialog.stt_available(),
         tts_available=dialog.tts_available(),
         answered_at=attempt.answered_at,
+        call=call_out(attempt),
         turns=[_turn_out(i, t) for i, t in enumerate(attempt.dialog)],
         topics=[
             TopicOut(
@@ -99,6 +115,7 @@ async def _respond(
         pending_reply=result.pending_reply,
         latency_ms=result.latency_ms,
         heard_text=heard_text,
+        call_ended=result.call_ended,
         dialog=await _dialog_out(session, attempt, ts, scenario),
     )
 

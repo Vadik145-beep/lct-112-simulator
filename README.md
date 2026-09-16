@@ -54,8 +54,22 @@ docker compose up -d --build
 | `redis` | очередь и события |
 | `languagetool` | проверка грамотности |
 | `backup` | ежедневная копия базы в 03:00, хранится 14 копий |
+| `asterisk` (профиль `telephony`) | SIP/WebRTC-телефония: звонок в софтфон браузера или настольный телефон, запись разговора |
 
-Профили `telephony`, `ai`, `live`, `monitoring` объявлены и заполняются по плану.
+Профиль `ai` (`docker compose --profile ai up -d`): `llm-dialog`, `llm-gen` (llama.cpp),
+`stt` (faster-whisper); модели скачиваются `scripts/fetch_models.sh`.
+
+Профиль `telephony` (`docker compose --profile ai --profile telephony up -d`): `asterisk`
+(PJSIP, WebRTC, ARI). В `.env` поставьте `TELEPHONY_ENABLED=true`; на Docker Desktop
+(Windows, macOS) обязателен `TELEPHONY_EXTERNAL_IP` — адрес машины в локальной сети, иначе
+браузер не получит звук. Софтфон обучающегося регистрируется сам при входе
+(`wss://<хост>/ws/sip`), настольный IP-телефон подключается к порту `SIP_PORT` (5060 udp/tcp)
+с логином `phone-<логин>` и паролем из `GET /api/me/sip`; тест гарнитуры — номер `100` (эхо).
+Звонок обучающемуся: `uv run --project backend python scripts/issue_call.py --student student1`
+(до волны 7, пока занятие «приём вызова» не создаётся из формы преподавателя). Без профиля
+панель вызова работает через микрофон браузера.
+
+Профили `live`, `monitoring` объявлены и заполняются по плану.
 
 ## Данные организаторов
 

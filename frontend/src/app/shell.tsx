@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { ROLE_NAV, ROLE_TITLES } from "@/lib/roles";
 import { cn } from "@/lib/utils";
+import { SoftphoneBadge } from "@/softphone/call-panel";
 
 /** PRD section 2: when ALLOW_EXTERNAL_AI is on, every cabinet says so; never on the stand. */
 export function ExternalAiBanner() {
@@ -60,6 +61,7 @@ export function AppShell() {
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-2">
+            <SoftphoneBadge />
             <div className="text-right leading-tight">
               <div className="text-sm font-medium">{user.full_name}</div>
               <div className="text-xs text-muted-foreground">{ROLE_TITLES[user.role]}</div>

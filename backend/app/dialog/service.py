@@ -25,6 +25,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.attributes import flag_modified
 
 from app.config import get_settings
+from app.dialog import call
 from app.domain.evaluation.schemas import CallIntakeScenario, DialogTurn
 from app.domain.reference_data import CALLER_TOPICS
 from app.errors import ApiError
@@ -34,6 +35,10 @@ from app.models import (
     ATTEMPT_IN_PROGRESS,
     ATTEMPT_ISSUED,
     ATTEMPT_RECEIVED,
+    CALL_ANSWERED,
+    CALL_ENDED,
+    CALL_IDLE,
+    CALL_RINGING,
     MODE_CALL_INTAKE,
     Attempt,
     Role,
@@ -70,6 +75,7 @@ class TurnResult:
     pending_reply: bool
     latency_ms: int
     events: list[SessionEvent] = field(default_factory=list)
+    call_ended: bool = False  # the caller hung up after this reply (scenario «бросил трубку»)
 
 
 # ---------------------------------------------------------------- access
@@ -87,6 +93,8 @@ async def dialog_attempt(
             raise ApiError(403, "forbidden", "Говорить с заявителем может только обучающийся.")
         if attempt.state in training.CLOSED_STATES:
             raise ApiError(409, "attempt_closed", "Вызов уже завершён, разговор закрыт.")
+        if attempt.call_state == CALL_ENDED:
+            raise ApiError(409, "call_ended", "Звонок завершён: заявителю больше не сказать.")
     ts = await session.get(TrainingSession, attempt.session_id)
     card = await training.load_scenario_card(session, attempt.scenario_id, attempt.scenario_version)
     scenario = CallIntakeScenario.model_validate(card.body)
@@ -139,10 +147,34 @@ def _ensure_opening(attempt: Attempt, scenario: CallIntakeScenario, now: datetim
     attempt.dialog = [_turn("caller", scenario.caller.opening, [], now, method="opening")]
     if attempt.answered_at is None:
         attempt.answered_at = now
+    if attempt.call_state in (CALL_IDLE, CALL_RINGING):
+        attempt.call_state = CALL_ANSWERED
     if attempt.state in (ATTEMPT_ISSUED, ATTEMPT_RECEIVED):
         attempt.state = ATTEMPT_IN_PROGRESS
         if attempt.received_at is None:
             attempt.received_at = now
+
+
+async def ensure_opening(
+    attempt: Attempt, version: ScenarioVersion, scenario: CallIntakeScenario, now: datetime
+) -> dict:
+    """Turn 0 with its voice file: what the call panel plays when the operator answers."""
+    _ensure_opening(attempt, scenario, now)
+    opening = attempt.dialog[0]
+    if opening.get("method") == "opening" and not opening.get("audio"):
+        audio = await opening_audio(version, scenario)
+        if audio:
+            attempt.dialog = [{**opening, "audio": audio}, *attempt.dialog[1:]]
+            flag_modified(attempt, "dialog")
+    return attempt.dialog[0]
+
+
+async def opening_audio(version: ScenarioVersion, scenario: CallIntakeScenario) -> str | None:
+    """Voice file of the scenario's opening, cached as ``opening`` in the version folder."""
+    reply = CallerReply(
+        text=scenario.caller.opening, topics=[], operator_topics=[], method="opening"
+    )
+    return await reply_audio(None, version, scenario, reply, stem="opening")
 
 
 def provider_for(ts: TrainingSession) -> DialogProvider:
@@ -189,13 +221,15 @@ async def _store_turns(
             "pending_reply": pending,
         },
     )
+    drop_events = await call.caller_drops_after_turn(session, attempt, scenario)
     return TurnResult(
         operator,
         caller,
         applied=True,
         pending_reply=pending,
         latency_ms=reply.latency_ms,
-        events=[event],
+        events=[event, *drop_events],
+        call_ended=bool(drop_events),
     )
 
 
@@ -289,7 +323,11 @@ def _safe(name: str) -> str:
 
 
 async def reply_audio(
-    attempt: Attempt, version: ScenarioVersion, scenario: CallIntakeScenario, reply: CallerReply
+    attempt: Attempt | None,
+    version: ScenarioVersion,
+    scenario: CallIntakeScenario,
+    reply: CallerReply,
+    stem: str | None = None,
 ) -> str | None:
     """Path (relative to STORAGE_DIR) of the reply's audio: the stored recording of an
     approved reply, or a Piper synthesis cached per scenario version and reply; ``None``
@@ -300,11 +338,13 @@ async def reply_audio(
     if tts.method == "text" or not reply.text:
         return None
     folder = Path(TTS_SUBDIR) / _safe(str(version.scenario_id)) / f"v{version.version}"
-    stem = (
-        f"r{reply.reply_id}"
-        if reply.reply_id
-        else f"a{_safe(str(attempt.id))}-{len(attempt.dialog)}"
-    )
+    if stem is None:
+        if reply.reply_id:
+            stem = f"r{reply.reply_id}"
+        elif attempt is not None:
+            stem = f"a{_safe(str(attempt.id))}-{len(attempt.dialog)}"
+        else:
+            return None
     existing = _existing_audio(folder / stem)
     if existing:
         return existing
@@ -337,6 +377,16 @@ def media_file(relative: str) -> Path:
     if root not in candidate.parents or not candidate.is_file():
         raise ApiError(404, "media_not_found", "Аудиофайл не найден.")
     return candidate
+
+
+def audio_source_file(relative: str) -> Path | None:
+    """The WAV of a voiced reply if it exists next to the MP3 (better for telephony), else
+    the file itself; ``None`` when nothing is on disk."""
+    path = storage_root() / relative
+    wav = path.with_suffix(".wav")
+    if wav.is_file():
+        return wav
+    return path if path.is_file() else None
 
 
 def stt_available() -> bool:

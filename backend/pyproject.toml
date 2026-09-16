@@ -25,6 +25,9 @@ dependencies = [
     "piper-tts>=1.8",
     "tokenizers>=0.21",
     "onnxruntime>=1.20",
+    "cryptography>=43.0",
+    "websockets>=13.0",
+    "numpy>=1.26",
 ]
 
 [dependency-groups]

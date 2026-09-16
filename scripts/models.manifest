@@ -26,3 +26,4 @@ rhasspy/piper-voices	ru/ru_RU/dmitri/medium/MODEL_CARD	tts/ru_RU-dmitri-medium.M
 rhasspy/piper-voices	ru/ru_RU/irina/medium/ru_RU-irina-medium.onnx	tts/ru_RU-irina-medium.onnx	63201294	8ff38212d23da300bbe3705c645e6e5b9475f0bfde01558eb17813e22acaaaaa
 rhasspy/piper-voices	ru/ru_RU/irina/medium/ru_RU-irina-medium.onnx.json	tts/ru_RU-irina-medium.onnx.json	4765	-
 rhasspy/piper-voices	ru/ru_RU/irina/medium/MODEL_CARD	tts/ru_RU-irina-medium.MODEL_CARD.md	271	-
+onnx-community/silero-vad	onnx/model.onnx	vad/silero_vad.onnx	2243022	a4a068cd6cf1ea8355b84327595838ca748ec29a25bc91fc82e6c299ccdc5808
