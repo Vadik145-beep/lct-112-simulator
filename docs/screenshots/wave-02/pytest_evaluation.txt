@@ -1,0 +1,176 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0 -- D:\Users\User\Desktop\SmartVoice\lct-worktrees\wave-02\backend\.venv\Scripts\python.exe
+rootdir: D:\Users\User\Desktop\SmartVoice\lct-worktrees\wave-02\backend
+configfile: pyproject.toml
+plugins: anyio-4.15.1, asyncio-1.4.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=session, asyncio_default_test_loop_scope=session
+collecting ... collected 163 items
+
+tests/domain/evaluation/test_call_intake.py::test_perfect_attempt_scores_100 PASSED
+tests/domain/evaluation/test_call_intake.py::test_survey_card_by_type_code[1.5.6.2-25-тип происшествия верен] PASSED
+tests/domain/evaluation/test_call_intake.py::test_survey_card_by_type_code[1.5.6.1-15-верный тип, неверен нижний уровень] PASSED
+tests/domain/evaluation/test_call_intake.py::test_survey_card_by_type_code[1.5.16.0-5-верна только группа] PASSED
+tests/domain/evaluation/test_call_intake.py::test_survey_card_by_type_code[1.3.3.0-5-верна только группа] PASSED
+tests/domain/evaluation/test_call_intake.py::test_survey_card_by_type_code[13.2.4.0-0-тип происшествия не совпал] PASSED
+tests/domain/evaluation/test_call_intake.py::test_survey_card_by_signs_path_when_no_code PASSED
+tests/domain/evaluation/test_call_intake.py::test_flags_and_services PASSED
+tests/domain/evaluation/test_call_intake.py::test_address_parts[улица Берзарина-21-1.0] PASSED
+tests/domain/evaluation/test_call_intake.py::test_address_parts[ул. Берзарина-д. 21-1.0] PASSED
+tests/domain/evaluation/test_call_intake.py::test_address_parts[Берзарина-21-1.0] PASSED
+tests/domain/evaluation/test_call_intake.py::test_address_parts[Берзарино-21-0.6666666666666667] PASSED
+tests/domain/evaluation/test_call_intake.py::test_address_parts[улица Берзарина-12-0.7777777777777778] PASSED
+tests/domain/evaluation/test_call_intake.py::test_address_parts[None-None-0.4444444444444444] PASSED
+tests/domain/evaluation/test_call_intake.py::test_address_optional_parts_only_when_the_reference_has_them PASSED
+tests/domain/evaluation/test_call_intake.py::test_descriptive_address_without_a_street PASSED
+tests/domain/evaluation/test_call_intake.py::test_required_topics_are_proportional PASSED
+tests/domain/evaluation/test_call_intake.py::test_topics_are_inferred_from_text_when_not_labelled PASSED
+tests/domain/evaluation/test_call_intake.py::test_description_keywords_and_similarity PASSED
+tests/domain/evaluation/test_call_intake.py::test_time_component[60-10] PASSED
+tests/domain/evaluation/test_call_intake.py::test_time_component[90-10] PASSED
+tests/domain/evaluation/test_call_intake.py::test_time_component[135-5] PASSED
+tests/domain/evaluation/test_call_intake.py::test_time_component[180-0] PASSED
+tests/domain/evaluation/test_call_intake.py::test_grammar_two_points_per_error_and_renormalization PASSED
+tests/domain/evaluation/test_call_intake.py::test_dropped_call_scenario_with_the_mark PASSED
+tests/domain/evaluation/test_call_intake.py::test_session_weights_without_grammar PASSED
+tests/domain/evaluation/test_call_intake.py::test_evaluate_sync_accepts_raw_dictionaries PASSED
+tests/domain/evaluation/test_card_response.py::test_perfect_attempt_scores_100 PASSED
+tests/domain/evaluation/test_card_response.py::test_prd_example_components PASSED
+tests/domain/evaluation/test_card_response.py::test_rejected_without_comment PASSED
+tests/domain/evaluation/test_card_response.py::test_reject_with_wrong_reason_gives_half_of_the_decision PASSED
+tests/domain/evaluation/test_card_response.py::test_reason_is_inferred_from_the_comment PASSED
+tests/domain/evaluation/test_card_response.py::test_wrong_decision_scores_zero_and_fails_on_a_critical_error PASSED
+tests/domain/evaluation/test_card_response.py::test_corrected_decision_earns_half PASSED
+tests/domain/evaluation/test_card_response.py::test_missing_status_lowers_the_chain PASSED
+tests/domain/evaluation/test_card_response.py::test_extra_status_is_listed PASSED
+tests/domain/evaluation/test_card_response.py::test_invalid_transition_is_skipped_and_reported PASSED
+tests/domain/evaluation/test_card_response.py::test_time_component[10-20] PASSED
+tests/domain/evaluation/test_card_response.py::test_time_component[30-20] PASSED
+tests/domain/evaluation/test_card_response.py::test_time_component[45-10] PASSED
+tests/domain/evaluation/test_card_response.py::test_time_component[60-0] PASSED
+tests/domain/evaluation/test_card_response.py::test_time_component[90-0] PASSED
+tests/domain/evaluation/test_card_response.py::test_time_is_zero_without_a_primary_status PASSED
+tests/domain/evaluation/test_card_response.py::test_comments_and_order_number PASSED
+tests/domain/evaluation/test_card_response.py::test_grammar_errors_reduce_the_component PASSED
+tests/domain/evaluation/test_card_response.py::test_languagetool_down_renormalizes_the_total PASSED
+tests/domain/evaluation/test_card_response.py::test_session_weights_scale_the_maximums PASSED
+tests/domain/evaluation/test_card_response.py::test_weights_must_sum_to_100_and_be_known PASSED
+tests/domain/evaluation/test_card_response.py::test_pass_threshold_is_applied PASSED
+tests/domain/evaluation/test_card_response.py::test_service_103_closes_without_a_squad PASSED
+tests/domain/evaluation/test_card_response.py::test_evaluate_sync_accepts_raw_dictionaries PASSED
+tests/domain/evaluation/test_detectors.py::test_every_typical_error_has_a_detector PASSED
+tests/domain/evaluation/test_detectors.py::test_perfect_attempts_trigger_nothing PASSED
+tests/domain/evaluation/test_detectors.py::test_no_status_fires_without_a_primary_status PASSED
+tests/domain/evaluation/test_detectors.py::test_no_status_silent_when_rejected PASSED
+tests/domain/evaluation/test_detectors.py::test_late_primary_fires_after_the_norm PASSED
+tests/domain/evaluation/test_detectors.py::test_late_primary_silent_within_the_norm PASSED
+tests/domain/evaluation/test_detectors.py::test_status_mismatch_fires_on_accepted_with_a_refusal_comment PASSED
+tests/domain/evaluation/test_detectors.py::test_status_mismatch_fires_on_rejected_with_a_squad PASSED
+tests/domain/evaluation/test_detectors.py::test_status_mismatch_silent_on_a_plain_accept PASSED
+tests/domain/evaluation/test_detectors.py::test_competence_refusal_fires_when_another_service_is_the_excuse PASSED
+tests/domain/evaluation/test_detectors.py::test_competence_refusal_silent_when_the_reference_also_rejects PASSED
+tests/domain/evaluation/test_detectors.py::test_profile_refusal_fires_on_rejecting_a_profile_incident PASSED
+tests/domain/evaluation/test_detectors.py::test_profile_refusal_silent_after_the_decision_is_corrected PASSED
+tests/domain/evaluation/test_detectors.py::test_empty_reject_comment_fires_on_refusal_without_text PASSED
+tests/domain/evaluation/test_detectors.py::test_empty_reject_comment_fires_on_works_refused_without_text PASSED
+tests/domain/evaluation/test_detectors.py::test_empty_reject_comment_silent_with_text PASSED
+tests/domain/evaluation/test_detectors.py::test_incomplete_comment_fires_without_hand_over_information PASSED
+tests/domain/evaluation/test_detectors.py::test_incomplete_comment_silent_when_hand_over_is_stated PASSED
+tests/domain/evaluation/test_detectors.py::test_incomplete_comment_silent_for_a_duplicate PASSED
+tests/domain/evaluation/test_detectors.py::test_progress_missing_fires_when_progress_statuses_are_skipped PASSED
+tests/domain/evaluation/test_detectors.py::test_progress_missing_fires_when_a_progress_status_has_no_comment PASSED
+tests/domain/evaluation/test_detectors.py::test_progress_missing_silent_on_a_full_chain_and_on_a_refusal PASSED
+tests/domain/evaluation/test_detectors.py::test_duplicate_accepted_fires_on_accepting_a_duplicate PASSED
+tests/domain/evaluation/test_detectors.py::test_duplicate_accepted_silent_on_the_original_card PASSED
+tests/domain/evaluation/test_detectors.py::test_wrong_accept_unfixed_fires_when_the_mistake_stays PASSED
+tests/domain/evaluation/test_detectors.py::test_wrong_accept_unfixed_silent_after_works_refused_with_a_comment PASSED
+tests/domain/evaluation/test_detectors.py::test_wrong_final_status_fires_on_works_done_with_a_refusal_comment PASSED
+tests/domain/evaluation/test_detectors.py::test_wrong_final_status_silent_for_service_103_and_real_completion PASSED
+tests/domain/evaluation/test_detectors.py::test_address_not_asked_fires_when_the_address_is_never_touched PASSED
+tests/domain/evaluation/test_detectors.py::test_address_not_asked_silent_when_asked_or_in_the_card PASSED
+tests/domain/evaluation/test_detectors.py::test_no_call_dropped_mark_fires_only_when_the_caller_hung_up PASSED
+tests/domain/evaluation/test_detectors.py::test_region_not_clarified[None-None-True] PASSED
+tests/domain/evaluation/test_detectors.py::test_region_not_clarified[Москва-None-True] PASSED
+tests/domain/evaluation/test_detectors.py::test_region_not_clarified[Волгоградская область-Волжский-False] PASSED
+tests/domain/evaluation/test_detectors.py::test_region_not_clarified[Волгоградская обл.-None-False] PASSED
+tests/domain/evaluation/test_detectors.py::test_region_not_clarified[None-Волжский, Волгоградская область-False] PASSED
+tests/domain/evaluation/test_detectors.py::test_region_not_clarified_silent_for_moscow_scenarios PASSED
+tests/domain/evaluation/test_evaluate_attempt.py::test_card_comments_go_to_languagetool PASSED
+tests/domain/evaluation/test_evaluate_attempt.py::test_call_description_goes_to_languagetool PASSED
+tests/domain/evaluation/test_evaluate_attempt.py::test_languagetool_down_means_not_checked 2026-09-16 14:54:02 [warning  ] languagetool unavailable       error='connection refused'
+PASSED
+tests/domain/evaluation/test_evaluate_attempt.py::test_no_grammar_provider_configured PASSED
+tests/domain/evaluation/test_fixtures.py::test_five_scenarios_of_each_kind PASSED
+tests/domain/evaluation/test_fixtures.py::test_scenario_is_consistent_with_the_reference_data[call_1-3_rebenok_velosiped_volzhskiy] PASSED
+tests/domain/evaluation/test_fixtures.py::test_scenario_is_consistent_with_the_reference_data[call_2-1_zadymlenie_musoroprovoda] PASSED
+tests/domain/evaluation/test_fixtures.py::test_scenario_is_consistent_with_the_reference_data[call_2-2_skandal_sryv_zvonka] PASSED
+tests/domain/evaluation/test_fixtures.py::test_scenario_is_consistent_with_the_reference_data[call_30-2_naezd_na_peshehoda] PASSED
+tests/domain/evaluation/test_fixtures.py::test_scenario_is_consistent_with_the_reference_data[call_31-3_svist_gazovoy_truby] PASSED
+tests/domain/evaluation/test_fixtures.py::test_scenario_is_consistent_with_the_reference_data[card_17-1_pozharnaya_signalizaciya] PASSED
+tests/domain/evaluation/test_fixtures.py::test_scenario_is_consistent_with_the_reference_data[card_2-1_dubl] PASSED
+tests/domain/evaluation/test_fixtures.py::test_scenario_is_consistent_with_the_reference_data[card_2-1_zadymlenie_musoroprovoda] PASSED
+tests/domain/evaluation/test_fixtures.py::test_scenario_is_consistent_with_the_reference_data[card_31-3_svist_gazovoy_truby] PASSED
+tests/domain/evaluation/test_fixtures.py::test_scenario_is_consistent_with_the_reference_data[card_5-2_otravlenie_lekarstvami] PASSED
+tests/domain/evaluation/test_fixtures.py::test_perfect_attempt_scores_100[call_1-3_rebenok_velosiped_volzhskiy] PASSED
+tests/domain/evaluation/test_fixtures.py::test_perfect_attempt_scores_100[call_2-1_zadymlenie_musoroprovoda] PASSED
+tests/domain/evaluation/test_fixtures.py::test_perfect_attempt_scores_100[call_2-2_skandal_sryv_zvonka] PASSED
+tests/domain/evaluation/test_fixtures.py::test_perfect_attempt_scores_100[call_30-2_naezd_na_peshehoda] PASSED
+tests/domain/evaluation/test_fixtures.py::test_perfect_attempt_scores_100[call_31-3_svist_gazovoy_truby] PASSED
+tests/domain/evaluation/test_fixtures.py::test_perfect_attempt_scores_100[card_17-1_pozharnaya_signalizaciya] PASSED
+tests/domain/evaluation/test_fixtures.py::test_perfect_attempt_scores_100[card_2-1_dubl] PASSED
+tests/domain/evaluation/test_fixtures.py::test_perfect_attempt_scores_100[card_2-1_zadymlenie_musoroprovoda] PASSED
+tests/domain/evaluation/test_fixtures.py::test_perfect_attempt_scores_100[card_31-3_svist_gazovoy_truby] PASSED
+tests/domain/evaluation/test_fixtures.py::test_perfect_attempt_scores_100[card_5-2_otravlenie_lekarstvami] PASSED
+tests/domain/evaluation/test_fixtures.py::test_scenario_bodies_tolerate_editorial_keys_but_attempts_do_not PASSED
+tests/domain/evaluation/test_speed.py::test_card_response_is_faster_than_300ms card_response: worst of 20 runs 2.2 ms
+PASSED
+tests/domain/evaluation/test_speed.py::test_call_intake_is_faster_than_300ms call_intake: worst of 20 runs 2.1 ms
+PASSED
+tests/domain/evaluation/test_status_machine.py::test_allowed_next_follows_the_memo PASSED
+tests/domain/evaluation/test_status_machine.py::test_service_103_has_no_reject_statuses PASSED
+tests/domain/evaluation/test_status_machine.py::test_invalid_transition_gives_a_clear_error[received-arrived-not_allowed-После «Получена службой» нельзя проставить «Прибытие»] PASSED
+tests/domain/evaluation/test_status_machine.py::test_invalid_transition_gives_a_clear_error[rejected-response_started-not_allowed-Доступно: «Принята»] PASSED
+tests/domain/evaluation/test_status_machine.py::test_invalid_transition_gives_a_clear_error[works_done-accepted-card_closed-Карточка закрыта статусом «Работы завершены»] PASSED
+tests/domain/evaluation/test_status_machine.py::test_invalid_transition_gives_a_clear_error[accepted-unknown-unknown_status-Неизвестный статус] PASSED
+tests/domain/evaluation/test_status_machine.py::test_invalid_transition_gives_a_clear_error[received-rejected-comment_required-обязателен комментарий] PASSED
+tests/domain/evaluation/test_status_machine.py::test_invalid_transition_gives_a_clear_error[accepted-works_done-comment_required-«Работы завершены» обязателен комментарий] PASSED
+tests/domain/evaluation/test_status_machine.py::test_invalid_transition_gives_a_clear_error[accepted-response_started-order_number_required-обязателен номер наряда] PASSED
+tests/domain/evaluation/test_status_machine.py::test_valid_transitions_pass PASSED
+tests/domain/evaluation/test_status_machine.py::test_check_log_keeps_valid_entries_and_reports_invalid_ones PASSED
+tests/domain/evaluation/test_text.py::test_normalize_text[Задымление, МУСОРОПРОВОД!-задымление мусоропровод] PASSED
+tests/domain/evaluation/test_text.py::test_normalize_text[Ёлки-палки ещё-елки палки еще] PASSED
+tests/domain/evaluation/test_text.py::test_normalize_text[  два   пробела -два пробела] PASSED
+tests/domain/evaluation/test_text.py::test_normalize_text[None-] PASSED
+tests/domain/evaluation/test_text.py::test_normalize_street[ул. Берзарина-берзарина улица] PASSED
+tests/domain/evaluation/test_text.py::test_normalize_street[улица Берзарина-берзарина улица] PASSED
+tests/domain/evaluation/test_text.py::test_normalize_street[Улица  БЕРЗАРИНА-берзарина улица] PASSED
+tests/domain/evaluation/test_text.py::test_normalize_street[Ленинский пр-т-ленинский проспект] PASSED
+tests/domain/evaluation/test_text.py::test_normalize_street[просп. Мира-мира проспект] PASSED
+tests/domain/evaluation/test_text.py::test_normalize_street[Б. Сухаревский пер.-б сухаревский переулок] PASSED
+tests/domain/evaluation/test_text.py::test_normalize_street[Дмитровское ш.-дмитровское шоссе] PASSED
+tests/domain/evaluation/test_text.py::test_normalize_street[бульвар Маршала Рокоссовского-маршала рокоссовского бульвар] PASSED
+tests/domain/evaluation/test_text.py::test_normalize_street[Коломенская наб.-коломенская набережная] PASSED
+tests/domain/evaluation/test_text.py::test_streets_match[ул. Берзарина-улица Берзарина-True] PASSED
+tests/domain/evaluation/test_text.py::test_streets_match[улица берзарина-Улица Берзарина-True] PASSED
+tests/domain/evaluation/test_text.py::test_streets_match[Берзарина-улица Берзарина-True] PASSED
+tests/domain/evaluation/test_text.py::test_streets_match[Берзарино-улица Берзарина-False] PASSED
+tests/domain/evaluation/test_text.py::test_streets_match[улица Вавилова-улица Вавилова-True] PASSED
+tests/domain/evaluation/test_text.py::test_streets_match[Ленинский проспект-Ленинская улица-False] PASSED
+tests/domain/evaluation/test_text.py::test_streets_match[Тюменская улица-ул. Тюменская-True] PASSED
+tests/domain/evaluation/test_text.py::test_streets_match[-улица Берзарина-False] PASSED
+tests/domain/evaluation/test_text.py::test_streets_match[None-улица Берзарина-False] PASSED
+tests/domain/evaluation/test_text.py::test_normalize_house[21-21] PASSED
+tests/domain/evaluation/test_text.py::test_normalize_house[д. 21-21] PASSED
+tests/domain/evaluation/test_text.py::test_normalize_house[дом 21А-21а] PASSED
+tests/domain/evaluation/test_text.py::test_normalize_house[21 а-21а] PASSED
+tests/domain/evaluation/test_text.py::test_normalize_house[None-] PASSED
+tests/domain/evaluation/test_text.py::test_contains_keyword_allows_inflection_and_typos PASSED
+tests/domain/evaluation/test_text.py::test_keyword_coverage_splits_found_and_missing PASSED
+tests/domain/evaluation/test_text.py::test_detect_topics[Скажите адрес, где это произошло?-expected0] PASSED
+tests/domain/evaluation/test_text.py::test_detect_topics[Есть пострадавшие?-expected1] PASSED
+tests/domain/evaluation/test_text.py::test_detect_topics[Как вас зовут? Телефон для связи?-expected2] PASSED
+tests/domain/evaluation/test_text.py::test_detect_topics[Какой подъезд и этаж?-expected3] PASSED
+tests/domain/evaluation/test_text.py::test_detect_topics[Это Москва или область?-expected4] PASSED
+tests/domain/evaluation/test_text.py::test_detect_topics[Приезжайте скорее!-expected5] PASSED
+tests/domain/evaluation/test_text.py::test_detect_topics[-expected6] PASSED
+
+============================= 163 passed in 1.18s =============================

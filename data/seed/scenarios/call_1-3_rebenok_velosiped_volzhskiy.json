@@ -1,0 +1,113 @@
+{
+  "kind": "call_intake",
+  "title": "Ребёнок упал с велосипеда (другой регион)",
+  "ticket_ref": "1-3",
+  "difficulty": 3,
+  "norm_seconds": 90,
+  "caller": {
+    "persona": "mother_anxious",
+    "voice": "ru_female_1",
+    "noise": "street",
+    "opening": "Помогите, сын упал с велосипеда, рука опухла, нога тоже!",
+    "facts": {
+      "what_happened": "ребёнок 11 лет упал с велосипеда, сам, отёк руки и ноги, в сознании",
+      "address": "Волгоградская область, город Волжский, улица Карла Маркса, около Волжского молсыркомбината",
+      "region": "Волгоградская область, не Москва",
+      "injured": "один ребёнок, Смирнов Илья, 11 лет",
+      "caller_name": "Смирнова Анна, мама",
+      "callback_phone": "916-320-12-83"
+    },
+    "behaviour": "называет улицу Карла Маркса без города; город и регион говорит только если спросить",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Сын с велосипеда упал, сам, никто не сбивал. Рука распухла и нога.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "address",
+      "text": "Мы на Карла Маркса, около молсыркомбината.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "region",
+      "text": "Волжский, Волгоградская область. А что, вы не сюда?",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "injured",
+      "text": "Илья, одиннадцать лет, в сознании, плачет.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "caller_name",
+      "text": "Смирнова Анна, я мама.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "callback_phone",
+      "text": "Девять один шесть, три два ноль, один два восемь три.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "repeat",
+      "text": "Что? Говорите громче!",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "unknown",
+      "text": "Не знаю, просто пришлите скорую!",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "region",
+    "injured",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "Травма"
+    ],
+    "incident_type": "22.53.0.0",
+    "flags": {
+      "injured": true
+    },
+    "address": {
+      "region": "Волгоградская область",
+      "city": "Волжский",
+      "street": "улица Карла Маркса",
+      "descriptive": "около Волжского молсыркомбината"
+    },
+    "caller": {
+      "name": "Смирнова Анна",
+      "role": "мать",
+      "phone": "916-320-12-83"
+    },
+    "description_keywords": [
+      "11 лет",
+      "упал с велосипеда",
+      "отек руки",
+      "вызывает мама"
+    ],
+    "description": "Ребёнок 11 лет, Смирнов Илья, упал с велосипеда, упал сам, отёк руки и ноги. Вызывает мама.",
+    "expected_services": [
+      "103",
+      "ntu",
+      "fso"
+    ]
+  }
+}

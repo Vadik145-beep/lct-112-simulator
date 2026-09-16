@@ -1,0 +1,60 @@
+{
+  "kind": "card_response",
+  "title": "Задымление мусоропровода: повторная карточка (дубль)",
+  "ticket_ref": "2-1",
+  "service": "territorial_oiv",
+  "difficulty": 3,
+  "norm_seconds": 30,
+  "duplicate_of": "38260311",
+  "card": {
+    "number": "38260340",
+    "incident_type": "1.5.6.2",
+    "signs": [
+      "жилой дом",
+      "мусоропровод",
+      "дым"
+    ],
+    "flags": {
+      "injured": false,
+      "no_access": false,
+      "threat": false
+    },
+    "address": {
+      "street": "улица Берзарина",
+      "house": "21",
+      "building": "1",
+      "entrance": "3",
+      "okrug": "СЗАО",
+      "district": "район Хорошёво-Мнёвники"
+    },
+    "caller": {
+      "name": "Соседка с 9 этажа",
+      "role": "очевидец",
+      "phone": "+7 916 555-01-02"
+    },
+    "description": "Дым в подъезде из мусоропровода, жильцы вышли на лестницу. Повторное обращение по тому же адресу через 2 минуты.",
+    "notified": [
+      {
+        "service": "101",
+        "status": "Принята"
+      },
+      {
+        "service": "territorial_oiv",
+        "status": "Добавлена"
+      }
+    ]
+  },
+  "reference": {
+    "decision": "reject",
+    "reject_reason": "duplicate",
+    "status_chain": [
+      {
+        "status": "rejected",
+        "comment_example": "Не принята: дубль, реагирование по КП 38260311"
+      }
+    ],
+    "critical_errors": [
+      "duplicate_accepted"
+    ]
+  }
+}

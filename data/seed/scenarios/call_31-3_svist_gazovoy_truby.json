@@ -1,0 +1,128 @@
+{
+  "kind": "call_intake",
+  "title": "Свист от газовой трубы в квартире",
+  "ticket_ref": "31-3",
+  "difficulty": 1,
+  "norm_seconds": 90,
+  "caller": {
+    "persona": "elderly_calm",
+    "voice": "ru_male_3",
+    "noise": "indoor",
+    "opening": "Здравствуйте, у меня на кухне труба газовая свистит, что делать?",
+    "facts": {
+      "what_happened": "свист от газовой трубы на кухне, запаха газа нет",
+      "address": "улица Вавилова, дом 81, корпус 1, квартира 5, подъезд 1, этаж 2, код 5В",
+      "injured": "нет, скорая не нужна",
+      "danger": "газ не перекрывал, окна открыл",
+      "caller_name": "Трунов Олег Егорович",
+      "callback_phone": "916-320-12-83"
+    },
+    "behaviour": "говорит медленно, адрес называет по частям",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Труба на кухне свистит, там где кран. Запаха вроде нет.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "address",
+      "text": "Вавилова, восемьдесят один, корпус один.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "entrance_floor_code",
+      "text": "Первый подъезд, второй этаж, квартира пять. Код пять В.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "injured",
+      "text": "Нет-нет, никому не плохо, скорую не надо.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "danger",
+      "text": "Кран не трогал, окна открыл на всякий случай.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "caller_name",
+      "text": "Трунов Олег Егорович.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "callback_phone",
+      "text": "Девять один шесть, три два ноль, один два восемь три.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "repeat",
+      "text": "Ась? Повторите, милая.",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "entrance_floor_code",
+    "injured",
+    "danger",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "Запах газа в помещении",
+      "От газововго оборудования"
+    ],
+    "incident_type": "13.2.4.0",
+    "flags": {
+      "injured": false,
+      "no_access": false,
+      "threat": false
+    },
+    "address": {
+      "street": "улица Вавилова",
+      "house": "81",
+      "building": "1",
+      "apartment": "5",
+      "entrance": "1",
+      "floor": "2",
+      "code": "5В",
+      "okrug": "ЮЗАО",
+      "district": "Ломоносовский район"
+    },
+    "caller": {
+      "name": "Трунов Олег Егорович",
+      "role": "жилец",
+      "phone": "916-320-12-83"
+    },
+    "description_keywords": [
+      "свист",
+      "газовой трубы",
+      "кухне",
+      "03 не требуется"
+    ],
+    "description": "Свист от газовой трубы в квартире, на кухне. 03 не требуется.",
+    "expected_services": [
+      "101",
+      "mosgaz",
+      "mosoblgaz",
+      "mayor_office",
+      "territorial_oiv",
+      "territorial_oiv_tinao",
+      "ntu",
+      "fso",
+      "cityenergo"
+    ]
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "kind": "call_intake",
+  "title": "Наезд на пешехода, мужчина без сознания",
+  "ticket_ref": "30-2",
+  "difficulty": 2,
+  "norm_seconds": 90,
+  "caller": {
+    "persona": "witness_shaken",
+    "voice": "ru_female_2",
+    "noise": "street",
+    "opening": "Тут человека сбили! Он лежит и не двигается!",
+    "facts": {
+      "what_happened": "наезд на пешехода, мужчина без сознания, машина на месте",
+      "address": "улица Тюменская на пересечении с Тюменским проездом",
+      "injured": "один, мужчина, без сознания, дышит",
+      "vehicle": "ВАЗ 2110 красный, А128АА177, водитель на месте",
+      "danger": "лежит на проезжей части, машины объезжают",
+      "caller_name": "Иванова Елена Сергеевна",
+      "callback_phone": "916-896-32-54"
+    },
+    "behaviour": "испугана, номер машины читает с ошибками, поправляется",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Машина сбила мужчину, он на дороге лежит, не двигается.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "address",
+      "text": "Тюменская улица, где она с Тюменским проездом пересекается.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "injured",
+      "text": "Один человек, мужчина. Без сознания, но вроде дышит.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "vehicle",
+      "text": "ВАЗ десятка, красная. Номер А сто двадцать восемь АА, сто семьдесят семь. Водитель тут, вышел.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "danger",
+      "text": "Он прямо на проезжей части, машины объезжают.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "caller_name",
+      "text": "Иванова Елена Сергеевна.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "callback_phone",
+      "text": "Девятьсот шестнадцать, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "repeat",
+      "text": "Что? Не слышу!",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "injured",
+    "vehicle",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "ДТП пострадавшие",
+      "Наезд на пешехода"
+    ],
+    "incident_type": "2.2.1.0",
+    "flags": {
+      "injured": true,
+      "road_closed": false
+    },
+    "address": {
+      "street": "Тюменская улица",
+      "descriptive": "на пересечении с Тюменским проездом",
+      "okrug": "ВАО",
+      "district": "район Преображенское"
+    },
+    "caller": {
+      "name": "Иванова Елена Сергеевна",
+      "role": "очевидец",
+      "phone": "916-896-32-54"
+    },
+    "description_keywords": [
+      "наезд на пешехода",
+      "без сознания",
+      "ваз 2110",
+      "а128аа177"
+    ],
+    "description": "Наезд на пешехода, мужчина без сознания, на месте ВАЗ 2110 красный А128АА177.",
+    "expected_services": [
+      "102",
+      "103",
+      "cemp",
+      "codd",
+      "duty_arm112",
+      "mkp_analytics",
+      "mayor_office",
+      "ntu",
+      "fso",
+      "cukb_mo"
+    ]
+  }
+}

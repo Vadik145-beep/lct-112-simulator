@@ -1,0 +1,86 @@
+{
+  "kind": "call_intake",
+  "title": "Скандал с продавцом, заявитель бросил трубку",
+  "ticket_ref": "2-2",
+  "difficulty": 3,
+  "norm_seconds": 60,
+  "caller": {
+    "persona": "angry_customer",
+    "voice": "ru_male_2",
+    "noise": "indoor",
+    "opening": "Значит так, я в салоне Мегафон на Сущёвском Валу, они мне продали брак и отказываются менять!",
+    "facts": {
+      "what_happened": "поругался с продавцом салона «Мегафон», требует полицию",
+      "address": "Сущёвский Вал, дом 5, строение 1, салон «Мегафон»",
+      "injured": "нет",
+      "callback_phone": "916-896-32-54"
+    },
+    "behaviour": "раздражён, перебивает; после второго вопроса бросает трубку",
+    "drops_call": true
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Продавец хамит, товар не меняет, я требую полицию!",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "address",
+      "text": "Сущёвский Вал, пять, строение один, салон Мегафон.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "injured",
+      "text": "Какие пострадавшие, вы меня слушаете вообще?!",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "unknown",
+      "text": "Да ну вас, сам разберусь. [бросает трубку]",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "injured"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "Нарушение правил торговли",
+      "Скандал с продавцом, охраной магазина"
+    ],
+    "incident_type": "15.11.7.0",
+    "flags": {
+      "injured": false
+    },
+    "address": {
+      "street": "улица Сущёвский Вал",
+      "house": "5",
+      "structure": "1",
+      "okrug": "СВАО",
+      "district": "район Марьина Роща"
+    },
+    "caller": {
+      "name": null,
+      "role": "участник",
+      "phone": "916-896-32-54"
+    },
+    "description_keywords": [
+      "поругался",
+      "продавцом",
+      "мегафон",
+      "бросил трубку"
+    ],
+    "description": "Поругался с продавцом салона «Мегафон», бросил трубку.",
+    "expected_services": [
+      "102",
+      "dtu",
+      "ntu"
+    ]
+  }
+}

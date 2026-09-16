@@ -21,6 +21,7 @@ dependencies = [
     "python-multipart>=0.0.9",
     "tzdata>=2024.1",
     "openpyxl>=3.1",
+    "rapidfuzz>=3.14.6",
 ]
 
 [dependency-groups]
@@ -59,4 +60,6 @@ asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "session"
 asyncio_default_test_loop_scope = "session"
 testpaths = ["tests"]
+# Test ids contain Russian text (streets, statuses): show it as is.
+disable_test_id_escaping_and_forfeit_all_rights_to_community_support = true
 pythonpath = ["."]
