@@ -1,23 +1,55 @@
-"""Creates demo users. Idempotent: existing users keep their passwords and flags.
+"""Creates demo data (PRD section 15). Idempotent: existing users keep their passwords and
+flags, scenarios get a new version only when their file changed, the demo session keeps
+its status.
 
 Run: python -m app.seed
 """
 
+from __future__ import annotations
+
 import asyncio
+import json
+import uuid
+from pathlib import Path
 
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
 from app.db import SessionLocal
 from app.logging import configure_logging, get_logger
-from app.models import Role, User
+from app.models import (
+    MODE_CARD_RESPONSE,
+    SCENARIO_APPROVED,
+    SESSION_RUNNING,
+    Group,
+    GroupMember,
+    Role,
+    Scenario,
+    ScenarioVersion,
+    Ticket,
+    TrainingSession,
+    User,
+)
 from app.security import hash_password
+from app.training.service import utcnow
 
 log = get_logger(__name__)
 
 # Service profiles are assigned to students so wave 3 can route cards by service.
 # Codes are those of the ``services`` table (see app.importers.classifier.SERVICE_COLUMNS).
 _STUDENT_SERVICES = ["territorial_oiv", "gkh", "gormost", "mosvodostok", "mosgaz", "moslift"]
+
+# Groups (PRD section 15): «Учебная-1» = student1-6 with teacher1, «Учебная-2» = student7-12.
+_GROUPS = [
+    {"title": "Учебная-1", "teacher": "teacher1", "students": range(1, 7)},
+    {"title": "Учебная-2", "teacher": "teacher2", "students": range(7, 13)},
+]
+
+SCENARIOS_DIR = "seed/scenarios"
+DEMO_SESSION_KEY = "demo-card-response-1"
+# student1 works as a district administration dispatcher (see _STUDENT_SERVICES).
+DEMO_SERVICE_PROFILE = ["territorial_oiv"]
 
 
 def demo_users() -> list[dict]:
@@ -52,26 +84,178 @@ def demo_users() -> list[dict]:
     return users
 
 
-async def seed() -> int:
+async def seed_users(session: AsyncSession) -> int:
     settings = get_settings()
     password_hash = hash_password(settings.seed_password)
+    existing = set(await session.scalars(select(User.login)))
     created = 0
-    async with SessionLocal() as session:
-        existing = set(await session.scalars(select(User.login)))
-        for spec in demo_users():
-            if spec["login"] in existing:
-                continue
+    for spec in demo_users():
+        if spec["login"] in existing:
+            continue
+        session.add(
+            User(password_hash=password_hash, must_change_password=not settings.demo_mode, **spec)
+        )
+        created += 1
+    await session.flush()
+    return created
+
+
+async def seed_groups(session: AsyncSession) -> int:
+    users = {u.login: u for u in await session.scalars(select(User))}
+    created = 0
+    for spec in _GROUPS:
+        group = await session.scalar(select(Group).where(Group.title == spec["title"]))
+        if group is None:
+            group = Group(title=spec["title"], teacher_id=users[spec["teacher"]].id)
+            session.add(group)
+            await session.flush()
+            created += 1
+        members = set(
+            await session.scalars(
+                select(GroupMember.student_id).where(GroupMember.group_id == group.id)
+            )
+        )
+        for i in spec["students"]:
+            student = users.get(f"student{i}")
+            if student is not None and student.id not in members:
+                session.add(GroupMember(group_id=group.id, student_id=student.id))
+    await session.flush()
+    return created
+
+
+def _scenario_files(data_dir: Path) -> list[Path]:
+    folder = data_dir / SCENARIOS_DIR
+    return sorted(folder.glob("*.json")) if folder.exists() else []
+
+
+async def _ticket_id(session: AsyncSession, ticket_ref: str | None) -> uuid.UUID | None:
+    if not ticket_ref or "-" not in ticket_ref:
+        return None
+    ticket_no, item_no = ticket_ref.split("-", 1)
+    if not (ticket_no.isdigit() and item_no.isdigit()):
+        return None
+    return await session.scalar(
+        select(Ticket.id).where(Ticket.ticket_no == int(ticket_no), Ticket.item_no == int(item_no))
+    )
+
+
+async def seed_scenarios(session: AsyncSession, data_dir: Path) -> tuple[int, int, list[str]]:
+    """Loads ``data/seed/scenarios/*.json`` (PRD 9.2 / 9.3 bodies). The file stem is the
+    seed key; a changed body becomes a new version. Returns (created, updated, keys)."""
+    created = updated = 0
+    keys: list[str] = []
+    for path in _scenario_files(data_dir):
+        body = json.loads(path.read_text(encoding="utf-8"))
+        key = path.stem
+        keys.append(key)
+        scenario = await session.scalar(select(Scenario).where(Scenario.seed_key == key))
+        fields = {
+            "kind": body.get("kind", MODE_CARD_RESPONSE),
+            "title": body.get("title", key),
+            "ticket_ref": body.get("ticket_ref"),
+            "ticket_id": await _ticket_id(session, body.get("ticket_ref")),
+            "incident_type_code": (body.get("card") or {}).get("incident_type"),
+            "service_code": body.get("service"),
+            "difficulty": int(body.get("difficulty", 1)),
+            # Seed files are the reviewed reference scenarios (PRD 15) unless they say otherwise.
+            "status": body.get("status", SCENARIO_APPROVED),
+        }
+        if scenario is None:
+            scenario = Scenario(seed_key=key, source="ticket", current_version=1, **fields)
+            session.add(scenario)
+            await session.flush()
+            session.add(ScenarioVersion(scenario_id=scenario.id, version=1, body=body))
+            created += 1
+            continue
+        current = await session.scalar(
+            select(ScenarioVersion).where(
+                ScenarioVersion.scenario_id == scenario.id,
+                ScenarioVersion.version == scenario.current_version,
+            )
+        )
+        for name, value in fields.items():
+            setattr(scenario, name, value)
+        if current is None or current.body != body:
+            scenario.current_version += 1
             session.add(
-                User(
-                    password_hash=password_hash,
-                    must_change_password=not settings.demo_mode,
-                    **spec,
+                ScenarioVersion(
+                    scenario_id=scenario.id,
+                    version=scenario.current_version,
+                    body=body,
+                    revision_comment=f"Обновлено из {path.name}",
                 )
             )
-            created += 1
+            updated += 1
+    await session.flush()
+    return created, updated, keys
+
+
+async def seed_demo_session(session: AsyncSession, keys: list[str]) -> bool:
+    """One running card-response session for «Учебная-1» (student1 works as управа). The
+    queue holds only scenarios whose seed files still exist."""
+    teacher = await session.scalar(select(User).where(User.login == "teacher1"))
+    group = await session.scalar(select(Group).where(Group.title == "Учебная-1"))
+    # Cards of the trainee's service, easy ones first; the duplicate card (difficulty 3)
+    # therefore comes after the original it repeats.
+    scenarios = sorted(
+        await session.scalars(
+            select(Scenario).where(
+                Scenario.kind == MODE_CARD_RESPONSE,
+                Scenario.seed_key.in_(keys),
+                Scenario.service_code.in_(DEMO_SERVICE_PROFILE),
+            )
+        ),
+        key=lambda s: (s.difficulty, s.seed_key or ""),
+    )
+    if teacher is None or group is None or not scenarios:
+        return False
+    demo = await session.scalar(
+        select(TrainingSession).where(TrainingSession.seed_key == DEMO_SESSION_KEY)
+    )
+    scenario_ids = [s.id for s in scenarios]
+    if demo is not None:
+        demo.scenario_ids = scenario_ids
+        await session.flush()
+        return False
+    session.add(
+        TrainingSession(
+            seed_key=DEMO_SESSION_KEY,
+            title="Реагирование на карточку: тренировка ДДС управы",
+            teacher_id=teacher.id,
+            group_id=group.id,
+            mode=MODE_CARD_RESPONSE,
+            card_source="scenarios",
+            scenario_ids=scenario_ids,
+            difficulty=3,
+            service_profile=DEMO_SERVICE_PROFILE,
+            norm_seconds=30,
+            pass_threshold=70,
+            hints_enabled=True,
+            status=SESSION_RUNNING,
+            started_at=utcnow(),
+        )
+    )
+    await session.flush()
+    return True
+
+
+async def seed(data_dir: Path | None = None) -> int:
+    data_dir = data_dir or Path(get_settings().data_dir)
+    async with SessionLocal() as session:
+        users_created = await seed_users(session)
+        groups_created = await seed_groups(session)
+        scenarios_created, scenarios_updated, keys = await seed_scenarios(session, data_dir)
+        session_created = await seed_demo_session(session, keys)
         await session.commit()
-    log.info("seed finished", created=created, skipped=len(demo_users()) - created)
-    return created
+    log.info(
+        "seed finished",
+        users_created=users_created,
+        groups_created=groups_created,
+        scenarios_created=scenarios_created,
+        scenarios_updated=scenarios_updated,
+        demo_session_created=session_created,
+    )
+    return users_created
 
 
 if __name__ == "__main__":

@@ -370,9 +370,29 @@ export interface paths {
         };
         /**
          * Streets
-         * @description Prefix search by any word of the street name, «ё» and case insensitive.
+         * @description Prefix search by any word of the street name, ��� and case insensitive.
          */
         get: operations["streets_api_streets_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/reference/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Reference Search
+         * @description Trainee's reference: paragraphs of the memo and classifier types matching the words.
+         */
+        get: operations["reference_search_api_reference_search_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -398,10 +418,304 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/assignments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Assignments
+         * @description Sessions of the trainee's groups, running ones first.
+         */
+        get: operations["my_assignments_api_me_assignments_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sessions/{session_id}/journal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Journal
+         * @description Journal of the trainee's service in a session. Opening it issues the next cards of
+         *     the queue when the trainee has none active (the 30-second norm starts at issue).
+         */
+        get: operations["journal_api_sessions__session_id__journal_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Attempt */
+        get: operations["get_attempt_api_attempts__attempt_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/open": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Open Attempt
+         * @description ��������� �������: called when the dispatcher opens the card (idempotent).
+         */
+        post: operations["open_attempt_api_attempts__attempt_id__open_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Set Status
+         * @description Sets a response status with an optional order number and comment. Only transitions
+         *     allowed by the status machine pass; the error says which statuses are available.
+         */
+        post: operations["set_status_api_attempts__attempt_id__status_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/finish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Finish Attempt
+         * @description ���������� ������ � ��������� from the training panel.
+         */
+        post: operations["finish_attempt_api_attempts__attempt_id__finish_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sessions/{session_id}/restart": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Restart Session
+         * @description Demo stand only (DEMO_MODE=true): drops the trainee's own cards of a session so the
+         *     exercise can be run again from the first card. Hidden (404) outside demo mode.
+         */
+        post: operations["restart_session_api_sessions__session_id__restart_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AddressOut */
+        AddressOut: {
+            /** Text */
+            text: string;
+            /**
+             * Street
+             * @default
+             */
+            street: string;
+            /**
+             * House
+             * @default
+             */
+            house: string;
+            /**
+             * Building
+             * @default
+             */
+            building: string;
+            /**
+             * Structure
+             * @default
+             */
+            structure: string;
+            /**
+             * Entrance
+             * @default
+             */
+            entrance: string;
+            /**
+             * Floor
+             * @default
+             */
+            floor: string;
+            /**
+             * Apartment
+             * @default
+             */
+            apartment: string;
+            /**
+             * Code
+             * @default
+             */
+            code: string;
+            /**
+             * Okrug
+             * @default
+             */
+            okrug: string;
+            /**
+             * District
+             * @default
+             */
+            district: string;
+            /**
+             * Descriptive
+             * @default
+             */
+            descriptive: string;
+        };
+        /**
+         * ArmInfo
+         * @description Who sits at the emulated workstation (shown in the journal header).
+         */
+        ArmInfo: {
+            /** Dispatcher */
+            dispatcher: string;
+            /** Operator No */
+            operator_no: string;
+            /** Arm No */
+            arm_no: string;
+        };
+        /** AssignmentOut */
+        AssignmentOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /** Mode */
+            mode: string;
+            /** Status */
+            status: string;
+            /** Difficulty */
+            difficulty: number;
+            /** Norm Seconds */
+            norm_seconds: number;
+            /** Hints Enabled */
+            hints_enabled: boolean;
+            /** Started At */
+            started_at: string | null;
+            /** Finished At */
+            finished_at: string | null;
+            service: components["schemas"]["ServiceInfo"] | null;
+            /** Active Cards */
+            active_cards: number;
+            /** Finished Cards */
+            finished_cards: number;
+        };
+        /** AttemptOut */
+        AttemptOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            session: components["schemas"]["SessionInfo"];
+            arm: components["schemas"]["ArmInfo"];
+            /** State */
+            state: string;
+            /** Response Status */
+            response_status: string;
+            /** Response Status Title */
+            response_status_title: string;
+            /** Card Status */
+            card_status: string;
+            /** Card Status Title */
+            card_status_title: string;
+            /** Card Status Alert */
+            card_status_alert: boolean;
+            /**
+             * Issued At
+             * Format: date-time
+             */
+            issued_at: string;
+            /** Received At */
+            received_at: string | null;
+            /** Primary Status At */
+            primary_status_at: string | null;
+            /** Submitted At */
+            submitted_at: string | null;
+            /** Norm Seconds */
+            norm_seconds: number;
+            card: components["schemas"]["CardOut"];
+            service: components["schemas"]["ServiceInfo"] | null;
+            /** Status Log */
+            status_log: components["schemas"]["StatusLogEntryOut"][];
+            /** Transitions */
+            transitions: components["schemas"]["TransitionOut"][];
+            /** Reject Reasons */
+            reject_reasons: components["schemas"]["RejectReasonOut"][];
+            /** Reference */
+            reference: {
+                [key: string]: unknown;
+            } | null;
+            /** Evaluation */
+            evaluation: {
+                [key: string]: unknown;
+            } | null;
+            /** Last Seq */
+            last_seq: number;
+        };
         /** CabinetOut */
         CabinetOut: {
             role: components["schemas"]["Role"];
@@ -409,6 +723,24 @@ export interface components {
             title: string;
             /** Sections */
             sections: string[];
+        };
+        /** CallerOut */
+        CallerOut: {
+            /**
+             * Name
+             * @default
+             */
+            name: string;
+            /**
+             * Role
+             * @default
+             */
+            role: string;
+            /**
+             * Phone
+             * @default
+             */
+            phone: string;
         };
         /** CallerTopicOut */
         CallerTopicOut: {
@@ -418,6 +750,45 @@ export interface components {
             title: string;
             /** Keywords */
             keywords: string[];
+        };
+        /** CardOut */
+        CardOut: {
+            /** Number */
+            number: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Operator No */
+            operator_no: string;
+            /** Arm No */
+            arm_no: string;
+            caller: components["schemas"]["CallerOut"];
+            address: components["schemas"]["AddressOut"];
+            /** Description */
+            description: string;
+            incident: components["schemas"]["IncidentOut"];
+            /** Flags */
+            flags: {
+                [key: string]: boolean;
+            };
+            /** Injured */
+            injured: boolean;
+            /** Ambulance Refused */
+            ambulance_refused: boolean;
+            /** Blocked */
+            blocked: boolean;
+            /** Emergency */
+            emergency: boolean;
+            /** Incident Flag */
+            incident_flag: boolean;
+            /** Phones */
+            phones: {
+                [key: string]: string;
+            };
+            /** Services */
+            services: components["schemas"]["ServiceStatusOut"][];
         };
         /** CardStatusOut */
         CardStatusOut: {
@@ -531,12 +902,99 @@ export interface components {
             /** Column Hint */
             column_hint: string | null;
         };
+        /** IncidentOut */
+        IncidentOut: {
+            /** Type Code */
+            type_code: string | null;
+            /** Group Title */
+            group_title: string;
+            /** Final Title */
+            final_title: string;
+            /** Signs */
+            signs: string[];
+        };
+        /** JournalItem */
+        JournalItem: {
+            /**
+             * Attempt Id
+             * Format: uuid
+             */
+            attempt_id: string;
+            /** Card Number */
+            card_number: string;
+            /** State */
+            state: string;
+            /** Response Status */
+            response_status: string;
+            /** Response Status Title */
+            response_status_title: string;
+            /** Card Status */
+            card_status: string;
+            /** Card Status Title */
+            card_status_title: string;
+            /** Card Status Alert */
+            card_status_alert: boolean;
+            /**
+             * Issued At
+             * Format: date-time
+             */
+            issued_at: string;
+            /** Received At */
+            received_at: string | null;
+            /** Primary Status At */
+            primary_status_at: string | null;
+            /** Submitted At */
+            submitted_at: string | null;
+            /** Norm Seconds */
+            norm_seconds: number;
+            /** Incident Title */
+            incident_title: string;
+            /** Incident Group */
+            incident_group: string;
+            /** Injured */
+            injured: boolean;
+            /** Address */
+            address: string;
+            caller: components["schemas"]["CallerOut"];
+            /** Description */
+            description: string;
+            /** Signs */
+            signs: string[];
+            /** Operator No */
+            operator_no: string;
+            /** Arm No */
+            arm_no: string;
+            /** Services */
+            services: components["schemas"]["ServiceStatusOut"][];
+        };
+        /** JournalOut */
+        JournalOut: {
+            session: components["schemas"]["SessionInfo"];
+            arm: components["schemas"]["ArmInfo"];
+            /** Items */
+            items: components["schemas"]["JournalItem"][];
+            /** Page */
+            page: number;
+            /** Per Page */
+            per_page: number;
+            /** Total */
+            total: number;
+            /** Last Seq */
+            last_seq: number;
+        };
         /** LoginRequest */
         LoginRequest: {
             /** Login */
             login: string;
             /** Password */
             password: string;
+        };
+        /** MemoHitOut */
+        MemoHitOut: {
+            /** Page */
+            page: number;
+            /** Text */
+            text: string;
         };
         /** MessageResponse */
         MessageResponse: {
@@ -551,6 +1009,15 @@ export interface components {
             external_ai: boolean;
             /** App Env */
             app_env: string;
+        };
+        /** ReferenceSearchOut */
+        ReferenceSearchOut: {
+            /** Query */
+            query: string;
+            /** Memo */
+            memo: components["schemas"]["MemoHitOut"][];
+            /** Types */
+            types: components["schemas"]["TypeHitOut"][];
         };
         /** RejectReasonOut */
         RejectReasonOut: {
@@ -587,6 +1054,20 @@ export interface components {
          * @enum {string}
          */
         Role: "student" | "teacher" | "admin";
+        /** ServiceInfo */
+        ServiceInfo: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Short Title */
+            short_title: string;
+            /**
+             * No Reject
+             * @default false
+             */
+            no_reject: boolean;
+        };
         /** ServiceOut */
         ServiceOut: {
             /** Code */
@@ -599,6 +1080,91 @@ export interface components {
             no_reject: boolean;
             /** Via Arm112 */
             via_arm112: boolean;
+        };
+        /** ServiceStatusOut */
+        ServiceStatusOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Short Title */
+            short_title: string;
+            /** Status */
+            status: string;
+            /** Status Title */
+            status_title: string;
+            /** At */
+            at: string | null;
+            /** Is Own */
+            is_own: boolean;
+        };
+        /** SessionInfo */
+        SessionInfo: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /** Mode */
+            mode: string;
+            /** Status */
+            status: string;
+            /** Difficulty */
+            difficulty: number;
+            /** Norm Seconds */
+            norm_seconds: number;
+            /** Hints Enabled */
+            hints_enabled: boolean;
+            /** Started At */
+            started_at: string | null;
+            /** Finished At */
+            finished_at: string | null;
+            service: components["schemas"]["ServiceInfo"] | null;
+        };
+        /** StatusLogEntryOut */
+        StatusLogEntryOut: {
+            /** Status */
+            status: string;
+            /** Title */
+            title: string;
+            /** Order Number */
+            order_number: string | null;
+            /** Comment */
+            comment: string | null;
+            /** Reject Reason */
+            reject_reason: string | null;
+            /** Reject Reason Title */
+            reject_reason_title: string | null;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** By */
+            by: string;
+        };
+        /** StatusRequest */
+        StatusRequest: {
+            /** Status */
+            status: string;
+            /** Order Number */
+            order_number?: string | null;
+            /** Comment */
+            comment?: string | null;
+            /** Reject Reason */
+            reject_reason?: string | null;
+            /** Action Id */
+            action_id?: string | null;
+        };
+        /** StatusResponse */
+        StatusResponse: {
+            attempt: components["schemas"]["AttemptOut"];
+            /** Applied */
+            applied: boolean;
+            /** Issued */
+            issued: string[];
         };
         /** StreetOut */
         StreetOut: {
@@ -638,6 +1204,34 @@ export interface components {
             /** Expires In */
             expires_in: number;
             user: components["schemas"]["UserOut"];
+        };
+        /** TransitionOut */
+        TransitionOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Requires Comment */
+            requires_comment: boolean;
+            /** Requires Order Number */
+            requires_order_number: boolean;
+            /** Is Final */
+            is_final: boolean;
+            /** Is Primary */
+            is_primary: boolean;
+        };
+        /** TypeHitOut */
+        TypeHitOut: {
+            /** Code */
+            code: string;
+            /** Final Title */
+            final_title: string;
+            /** Group Title */
+            group_title: string;
+            /** Signs */
+            signs: string[];
+            /** Main Service */
+            main_service: string | null;
         };
         /** TypeServicesOut */
         TypeServicesOut: {
@@ -1001,7 +1595,7 @@ export interface operations {
     classifier_services_api_classifier__code__services_get: {
         parameters: {
             query?: {
-                /** @description Признаки через запятую, например injured,no_access */
+                /** @description �������� ����� �������, �������� injured,no_access */
                 flags?: string;
             };
             header?: never;
@@ -1155,7 +1749,7 @@ export interface operations {
     typical_errors_api_typical_errors_get: {
         parameters: {
             query?: {
-                /** @description card_response или call_intake */
+                /** @description card_response ��� call_intake */
                 mode?: string | null;
             };
             header?: never;
@@ -1235,6 +1829,37 @@ export interface operations {
             };
         };
     };
+    reference_search_api_reference_search_get: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReferenceSearchOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     grammar_check_api_grammar_check_post: {
         parameters: {
             query?: never;
@@ -1256,6 +1881,218 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["GrammarCheckOut"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_assignments_api_me_assignments_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssignmentOut"][];
+                };
+            };
+        };
+    };
+    journal_api_sessions__session_id__journal_get: {
+        parameters: {
+            query?: {
+                page?: number;
+                per_page?: number;
+                student_id?: string | null;
+            };
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JournalOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_attempt_api_attempts__attempt_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttemptOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    open_attempt_api_attempts__attempt_id__open_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttemptOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_status_api_attempts__attempt_id__status_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StatusRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatusResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    finish_attempt_api_attempts__attempt_id__finish_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatusResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    restart_session_api_sessions__session_id__restart_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

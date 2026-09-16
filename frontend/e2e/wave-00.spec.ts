@@ -9,7 +9,7 @@ const ROLES = [
   {
     role: "student",
     button: "Войти как обучающийся",
-    title: "Кабинет обучающегося",
+    title: "Мои задания",
     name: "Кузнецов Обучающийся 1",
     label: "Обучающийся",
     home: "/student",

@@ -18,6 +18,9 @@ from app.routers.grammar import router as grammar_router
 from app.routers.me import router as me_router
 from app.routers.reference import router as reference_router
 from app.routers.system import router as system_router
+from app.training import sweeper
+from app.training.router import router as training_router
+from app.training.ws import router as ws_router
 
 API_PREFIX = "/api"
 
@@ -32,9 +35,15 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         demo_mode=settings.demo_mode,
         external_ai=settings.allow_external_ai,
     )
+    # The «Не оповещено» sweep needs a running loop; tests call it explicitly instead.
+    sweep_task = sweeper.start() if settings.app_env != "test" else None
     yield
+    if sweep_task is not None:
+        await sweeper.stop(sweep_task)
     from app.db import engine
+    from app.events import close_redis
 
+    await close_redis()
     await engine.dispose()
 
 
@@ -83,6 +92,9 @@ def create_app() -> FastAPI:
     app.include_router(cabinets_router, prefix=API_PREFIX)
     app.include_router(reference_router, prefix=API_PREFIX)
     app.include_router(grammar_router, prefix=API_PREFIX)
+    app.include_router(training_router, prefix=API_PREFIX)
+    # WebSocket lives outside /api: nginx proxies /ws/ with the upgrade headers.
+    app.include_router(ws_router)
     return app
 
 

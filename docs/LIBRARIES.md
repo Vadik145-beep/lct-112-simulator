@@ -18,6 +18,7 @@
 | httpx | BSD | клиент HTTP (healthcheck, тесты) |
 | openpyxl | MIT | разбор классификатора (xlsx) |
 | rapidfuzz | MIT | нечёткое сравнение улиц и ключевых слов в оценке |
+| websockets | BSD-3 | клиент WebSocket в тестах (ставится с uvicorn[standard]) |
 | pytest, pytest-asyncio, ruff | MIT | тесты и линтер |
 
 Группа `dataset` (только подготовка данных на машине разработчика, в образ не попадает):
