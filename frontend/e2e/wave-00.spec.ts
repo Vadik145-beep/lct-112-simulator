@@ -18,7 +18,7 @@ const ROLES = [
   {
     role: "teacher",
     button: "Войти как преподаватель",
-    title: "Кабинет преподавателя",
+    title: "Занятия",
     name: "Иванова Мария Петровна",
     label: "Преподаватель",
     home: "/teacher",
@@ -99,7 +99,7 @@ test.describe("Волна 0: вход, роли, кабинеты", () => {
     await page.getByRole("button", { name: "Выйти" }).click();
     await page.getByRole("button", { name: "Войти как преподаватель" }).click();
     await expect(page).toHaveURL(/\/teacher$/);
-    await expect(page.getByRole("heading", { name: "Кабинет преподавателя" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Занятия" })).toBeVisible();
   });
 
   test("вход по логину и паролю, неверный пароль показывает понятную ошибку", async ({ page }) => {
@@ -111,7 +111,7 @@ test.describe("Волна 0: вход, роли, кабинеты", () => {
 
     await page.getByLabel("Пароль").fill("Demo12345");
     await page.getByRole("button", { name: "Войти", exact: true }).click();
-    await expect(page.getByRole("heading", { name: "Кабинет преподавателя" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Занятия" })).toBeVisible();
     await expect(page.getByText("Сидоров Алексей Николаевич")).toBeVisible();
   });
 
