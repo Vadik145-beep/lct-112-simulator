@@ -580,6 +580,340 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/scenarios/options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Scenario Options */
+        get: operations["scenario_options_api_scenarios_options_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Scenarios */
+        get: operations["list_scenarios_api_scenarios_get"];
+        put?: never;
+        /** Create Scenario */
+        post: operations["create_scenario_api_scenarios_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/{scenario_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Scenario */
+        get: operations["get_scenario_api_scenarios__scenario_id__get"];
+        /** Update Scenario */
+        put: operations["update_scenario_api_scenarios__scenario_id__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/{scenario_id}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Scenario Versions */
+        get: operations["scenario_versions_api_scenarios__scenario_id__versions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/{scenario_id}/versions/{version}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Scenario Version Body */
+        get: operations["scenario_version_body_api_scenarios__scenario_id__versions__version__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/from-attempt/{attempt_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Scenario From Attempt
+         * @description The trainee's saved card of a call-intake attempt becomes a card_response draft
+         *     (``source=student``); 201 when created, 200 when it already existed.
+         */
+        post: operations["scenario_from_attempt_api_scenarios_from_attempt__attempt_id__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Scenario
+         * @description Starts a generation job; poll ``GET /jobs/{id}``, the result names the scenario.
+         */
+        post: operations["generate_scenario_api_scenarios_generate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/{scenario_id}/revise": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revise Scenario */
+        post: operations["revise_scenario_api_scenarios__scenario_id__revise_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/jobs/{job_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Job */
+        get: operations["get_job_api_jobs__job_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/{scenario_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve Scenario
+         * @description Approves the reference and/or every reply. 409 ``grammar_unreviewed`` when the grammar
+         *     check reports issues and ``confirm_grammar`` is false; 422 while the body has problems.
+         */
+        post: operations["approve_scenario_api_scenarios__scenario_id__approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/{scenario_id}/grammar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Grammar Scenario
+         * @description Grammar of the description, reference comments and the not yet approved replies.
+         */
+        post: operations["grammar_scenario_api_scenarios__scenario_id__grammar_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/{scenario_id}/replies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Reply */
+        post: operations["add_reply_api_scenarios__scenario_id__replies_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/{scenario_id}/replies/{reply_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Edit Reply */
+        put: operations["edit_reply_api_scenarios__scenario_id__replies__reply_id__put"];
+        post?: never;
+        /** Delete Reply */
+        delete: operations["delete_reply_api_scenarios__scenario_id__replies__reply_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/{scenario_id}/replies/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve Replies
+         * @description Approves the listed replies (all pending when the list is empty) and voices them.
+         */
+        post: operations["approve_replies_api_scenarios__scenario_id__replies_approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/{scenario_id}/replies/{reply_id}/audio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload Reply Audio */
+        post: operations["upload_reply_audio_api_scenarios__scenario_id__replies__reply_id__audio_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/{scenario_id}/preview-dialog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview Dialog
+         * @description The caller answers the teacher's phrase as in a call; nothing is stored, all replies
+         *     count as approved so drafts can be tried.
+         */
+        post: operations["preview_dialog_api_scenarios__scenario_id__preview_dialog_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/reference/docs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Reference Docs */
+        get: operations["list_reference_docs_api_reference_docs_get"];
+        put?: never;
+        /**
+         * Upload Reference Doc
+         * @description Adds a document to the reference used for retrieval during generation.
+         */
+        post: operations["upload_reference_doc_api_reference_docs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/reference/docs/{name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Reference Doc */
+        delete: operations["delete_reference_doc_api_reference_docs__name__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/students": {
         parameters: {
             query?: never;
@@ -1176,6 +1510,24 @@ export interface components {
             opening: components["schemas"]["DialogTurnOut"];
             dialog: components["schemas"]["DialogOut"];
         };
+        /** ApproveIn */
+        ApproveIn: {
+            /**
+             * Reference
+             * @default true
+             */
+            reference: boolean;
+            /**
+             * Replies
+             * @default true
+             */
+            replies: boolean;
+            /**
+             * Confirm Grammar
+             * @default false
+             */
+            confirm_grammar: boolean;
+        };
         /**
          * ArmInfo
          * @description Who sits at the emulated workstation (shown in the journal header).
@@ -1277,6 +1629,22 @@ export interface components {
             intake?: components["schemas"]["IntakeOut"] | null;
             /** Last Seq */
             last_seq: number;
+        };
+        /** Body_upload_reference_doc_api_reference_docs_post */
+        Body_upload_reference_doc_api_reference_docs_post: {
+            /**
+             * File
+             * @description ������������ ��������: PDF, DOCX ��� TXT
+             */
+            file: string;
+        };
+        /** Body_upload_reply_audio_api_scenarios__scenario_id__replies__reply_id__audio_post */
+        Body_upload_reply_audio_api_scenarios__scenario_id__replies__reply_id__audio_post: {
+            /**
+             * File
+             * @description ������ �������: WAV ��� MP3
+             */
+            file: string;
         };
         /** Body_utterance_api_attempts__attempt_id__utterance_post */
         Body_utterance_api_attempts__attempt_id__utterance_post: {
@@ -1529,7 +1897,7 @@ export interface components {
             /** Turns */
             turns: components["schemas"]["DialogTurnOut"][];
             /** Topics */
-            topics: components["schemas"]["TopicOut"][];
+            topics: components["schemas"]["app__dialog__schemas__TopicOut"][];
             /** Required Topics */
             required_topics: string[];
             /** Seq */
@@ -1583,6 +1951,31 @@ export interface components {
             /** Seq */
             seq: number;
         };
+        /** GenerateIn */
+        GenerateIn: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "call_intake" | "card_response";
+            /** Phrase */
+            phrase: string;
+            /** Incident Type */
+            incident_type?: string | null;
+            /** Incident Group */
+            incident_group?: string | null;
+            /** Difficulty */
+            difficulty?: number | null;
+            /** Persona */
+            persona?: string | null;
+            /** Noise */
+            noise?: string | null;
+            /**
+             * Both Kinds
+             * @default false
+             */
+            both_kinds: boolean;
+        };
         /** GrammarCheckIn */
         GrammarCheckIn: {
             /** Text */
@@ -1604,6 +1997,21 @@ export interface components {
             /** Matches */
             matches: components["schemas"]["GrammarMatchOut"][];
         };
+        /** GrammarIssueOut */
+        GrammarIssueOut: {
+            /** Field */
+            field: string;
+            /** Text */
+            text: string;
+            /** Offset */
+            offset: number;
+            /** Length */
+            length: number;
+            /** Message */
+            message: string;
+            /** Replacements */
+            replacements: string[];
+        };
         /** GrammarMatchOut */
         GrammarMatchOut: {
             /** Offset */
@@ -1618,6 +2026,15 @@ export interface components {
             category: string;
             /** Replacements */
             replacements: string[];
+        };
+        /** GrammarReportOut */
+        GrammarReportOut: {
+            /** Available */
+            available: boolean;
+            /** Method */
+            method: string;
+            /** Issues */
+            issues: components["schemas"]["GrammarIssueOut"][];
         };
         /** GroupIn */
         GroupIn: {
@@ -1702,6 +2119,43 @@ export interface components {
             title: string | null;
             /** Required Topics */
             required_topics: string[];
+        };
+        /** JobAcceptedOut */
+        JobAcceptedOut: {
+            /** Job Id */
+            job_id: string;
+        };
+        /** JobOut */
+        JobOut: {
+            /** Id */
+            id: string;
+            /** Type */
+            type: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "queued" | "running" | "done" | "failed";
+            /** Progress */
+            progress: number;
+            /** Message */
+            message: string | null;
+            /** Result */
+            result: {
+                [key: string]: unknown;
+            } | null;
+            /** Error */
+            error: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
         };
         /** JournalItem */
         JournalItem: {
@@ -1872,6 +2326,60 @@ export interface components {
             /** Last Attempt Id */
             last_attempt_id: string | null;
         };
+        /** NoiseOut */
+        NoiseOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+        };
+        /** PersonaOut */
+        PersonaOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Voice */
+            voice: string;
+            /** Style */
+            style: string;
+        };
+        /** PreviewIn */
+        PreviewIn: {
+            /** Text */
+            text: string;
+            /** History */
+            history?: components["schemas"]["PreviewTurnIn"][];
+            /** Mode */
+            mode?: ("select" | "hybrid" | "generate" | "buttons") | null;
+        };
+        /** PreviewOut */
+        PreviewOut: {
+            /** Reply */
+            reply: string;
+            /** Topics */
+            topics: string[];
+            /** Operator Topics */
+            operator_topics: string[];
+            /** Reply Id */
+            reply_id: number | null;
+            /** Method */
+            method: string;
+            /** Audio Url */
+            audio_url: string | null;
+            /** Latency Ms */
+            latency_ms: number;
+        };
+        /** PreviewTurnIn */
+        PreviewTurnIn: {
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "operator" | "caller";
+            /** Text */
+            text: string;
+        };
         /**
          * ProgressRequest
          * @description What the trainee is doing in the card right now (shown on the monitoring tile).
@@ -1907,6 +2415,20 @@ export interface components {
             /** Incident Type Code */
             incident_type_code: string | null;
         };
+        /** ReferenceDocOut */
+        ReferenceDocOut: {
+            /** Name */
+            name: string;
+            /** Chunks */
+            chunks: number;
+            /** Size */
+            size: number;
+            /**
+             * Uploaded At
+             * Format: date-time
+             */
+            uploaded_at: string;
+        };
         /** ReferenceSearchOut */
         ReferenceSearchOut: {
             /** Query */
@@ -1922,6 +2444,53 @@ export interface components {
             code: string;
             /** Title */
             title: string;
+        };
+        /** RepliesApproveIn */
+        RepliesApproveIn: {
+            /** Reply Ids */
+            reply_ids?: number[] | null;
+            /**
+             * Confirm Grammar
+             * @default false
+             */
+            confirm_grammar: boolean;
+        };
+        /** ReplyCreateIn */
+        ReplyCreateIn: {
+            /** Topic */
+            topic: string;
+            /** Text */
+            text: string;
+        };
+        /** ReplyIn */
+        ReplyIn: {
+            /** Topic */
+            topic?: string | null;
+            /** Text */
+            text?: string | null;
+        };
+        /** ReplyOut */
+        ReplyOut: {
+            /** Id */
+            id: number;
+            /** Topic */
+            topic: string;
+            /** Topic Title */
+            topic_title: string;
+            /** Text */
+            text: string;
+            /** Approved */
+            approved: boolean;
+            /** Audio Url */
+            audio_url: string | null;
+            /** Source */
+            source?: string | null;
+            /**
+             * Voicing
+             * @default none
+             * @enum {string}
+             */
+            voicing: "none" | "queued" | "done" | "failed";
         };
         /** ReportAttempt */
         ReportAttempt: {
@@ -2076,6 +2645,11 @@ export interface components {
             /** Description */
             description: string | null;
         };
+        /** ReviseIn */
+        ReviseIn: {
+            /** Comment */
+            comment: string;
+        };
         /**
          * Role
          * @enum {string}
@@ -2087,6 +2661,182 @@ export interface components {
             text: string;
             /** Action Id */
             action_id?: string | null;
+        };
+        /** ScenarioCreateIn */
+        ScenarioCreateIn: {
+            /** Body */
+            body: {
+                [key: string]: unknown;
+            };
+            /**
+             * Status
+             * @default draft
+             * @enum {string}
+             */
+            status: "draft" | "review";
+        };
+        /** ScenarioListItem */
+        ScenarioListItem: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "call_intake" | "card_response";
+            /** Title */
+            title: string;
+            /** Ticket Ref */
+            ticket_ref: string | null;
+            /** Incident Type Code */
+            incident_type_code: string | null;
+            /** Incident Type Title */
+            incident_type_title: string | null;
+            /** Incident Group Code */
+            incident_group_code: string | null;
+            /** Incident Group Title */
+            incident_group_title: string | null;
+            /** Service Code */
+            service_code: string | null;
+            /** Difficulty */
+            difficulty: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "review" | "approved";
+            /** Source */
+            source: string;
+            /** Current Version */
+            current_version: number;
+            /** Replies Total */
+            replies_total: number;
+            /** Replies Approved */
+            replies_approved: number;
+            /** Replies Pending */
+            replies_pending: number;
+            /** Reference Approved */
+            reference_approved: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ScenarioListOut */
+        ScenarioListOut: {
+            /** Items */
+            items: components["schemas"]["ScenarioListItem"][];
+            /** Total */
+            total: number;
+        };
+        /**
+         * ScenarioOptionsOut
+         * @description Everything the generation form and the card need to name things.
+         */
+        ScenarioOptionsOut: {
+            /** Personas */
+            personas: components["schemas"]["PersonaOut"][];
+            /** Noises */
+            noises: components["schemas"]["NoiseOut"][];
+            /** Topics */
+            topics: components["schemas"]["app__scenarios__schemas__TopicOut"][];
+            /** Voices */
+            voices: components["schemas"]["NoiseOut"][];
+            /** Sources */
+            sources: components["schemas"]["NoiseOut"][];
+            /** Statuses */
+            statuses: components["schemas"]["NoiseOut"][];
+            /** Generation Method */
+            generation_method: string;
+            /** Generation Available */
+            generation_available: boolean;
+            /** Tts Available */
+            tts_available: boolean;
+            /** Grammar Available */
+            grammar_available: boolean;
+        };
+        /** ScenarioOut */
+        ScenarioOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "call_intake" | "card_response";
+            /** Title */
+            title: string;
+            /** Ticket Ref */
+            ticket_ref: string | null;
+            /** Ticket Situation */
+            ticket_situation: string | null;
+            /** Ticket Address */
+            ticket_address: string | null;
+            /** Incident Type Code */
+            incident_type_code: string | null;
+            /** Incident Type Title */
+            incident_type_title: string | null;
+            /** Incident Group Title */
+            incident_group_title: string | null;
+            /** Service Code */
+            service_code: string | null;
+            /** Difficulty */
+            difficulty: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "review" | "approved";
+            /** Source */
+            source: string;
+            /** Current Version */
+            current_version: number;
+            /** Author */
+            author: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Body */
+            body: {
+                [key: string]: unknown;
+            };
+            /** Replies */
+            replies: components["schemas"]["ReplyOut"][];
+            /** Reference Approved */
+            reference_approved: boolean;
+            /** Fully Approved */
+            fully_approved: boolean;
+            /** Problems */
+            problems: string[];
+            /** Services */
+            services: components["schemas"]["NoiseOut"][];
+            /** Versions */
+            versions: components["schemas"]["VersionOut"][];
+            /** Generation */
+            generation: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** ScenarioUpdateIn */
+        ScenarioUpdateIn: {
+            /** Body */
+            body: {
+                [key: string]: unknown;
+            };
         };
         /** ServiceInfo */
         ServiceInfo: {
@@ -2537,17 +3287,6 @@ export interface components {
             expires_in: number;
             user: components["schemas"]["UserOut"];
         };
-        /** TopicOut */
-        TopicOut: {
-            /** Code */
-            code: string;
-            /** Title */
-            title: string;
-            /** Required */
-            required: boolean;
-            /** Covered */
-            covered: boolean;
-        };
         /** TransitionOut */
         TransitionOut: {
             /** Code */
@@ -2656,6 +3395,40 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** VersionOut */
+        VersionOut: {
+            /** Version */
+            version: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Created By */
+            created_by: string | null;
+            /** Revision Comment */
+            revision_comment: string | null;
+            /** Is Current */
+            is_current: boolean;
+        };
+        /** TopicOut */
+        app__dialog__schemas__TopicOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Required */
+            required: boolean;
+            /** Covered */
+            covered: boolean;
+        };
+        /** TopicOut */
+        app__scenarios__schemas__TopicOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
         };
     };
     responses: never;
@@ -3477,6 +4250,713 @@ export interface operations {
             header?: never;
             path: {
                 session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    scenario_options_api_scenarios_options_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioOptionsOut"];
+                };
+            };
+        };
+    };
+    list_scenarios_api_scenarios_get: {
+        parameters: {
+            query?: {
+                kind?: string | null;
+                group?: string | null;
+                source?: string | null;
+                status?: string | null;
+                ticket?: string | null;
+                q?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioListOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_scenario_api_scenarios_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScenarioCreateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_scenario_api_scenarios__scenario_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_scenario_api_scenarios__scenario_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScenarioUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    scenario_versions_api_scenarios__scenario_id__versions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VersionOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    scenario_version_body_api_scenarios__scenario_id__versions__version__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+                version: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    scenario_from_attempt_api_scenarios_from_attempt__attempt_id__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generate_scenario_api_scenarios_generate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobAcceptedOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revise_scenario_api_scenarios__scenario_id__revise_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviseIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobAcceptedOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_job_api_jobs__job_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_scenario_api_scenarios__scenario_id__approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApproveIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    grammar_scenario_api_scenarios__scenario_id__grammar_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GrammarReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_reply_api_scenarios__scenario_id__replies_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplyCreateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    edit_reply_api_scenarios__scenario_id__replies__reply_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+                reply_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_reply_api_scenarios__scenario_id__replies__reply_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+                reply_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_replies_api_scenarios__scenario_id__replies_approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RepliesApproveIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_reply_audio_api_scenarios__scenario_id__replies__reply_id__audio_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+                reply_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_reply_audio_api_scenarios__scenario_id__replies__reply_id__audio_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_dialog_api_scenarios__scenario_id__preview_dialog_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PreviewIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_reference_docs_api_reference_docs_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReferenceDocOut"][];
+                };
+            };
+        };
+    };
+    upload_reference_doc_api_reference_docs_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_reference_doc_api_reference_docs_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReferenceDocOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_reference_doc_api_reference_docs__name__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                name: string;
             };
             cookie?: never;
         };

@@ -1,8 +1,9 @@
-import { BookOpen, Check, CircleAlert, X } from "lucide-react";
+import { BookOpen, Check, CircleAlert, FilePlus2, Loader2, X } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { callInfo, useDialog } from "@/api/intake";
+import { useScenarioFromAttempt } from "@/api/scenarios";
 import { getAccessToken } from "@/api/token";
 import { useServices } from "@/api/teacher";
 import type { AttemptOut } from "@/api/training";
@@ -360,8 +361,31 @@ export function CallReview({ attempt, evaluation, teacher }: { attempt: AttemptO
             <Link to={`/teacher/sessions/${attempt.session.id}/report`}>К отчёту</Link>
           </Button>
         )}
+        {teacher && <ToScenarioButton attemptId={attempt.id} />}
       </div>
     </div>
+  );
+}
+
+/** PRD 9.6: the saved card becomes a card_response scenario the teacher approves in the library. */
+function ToScenarioButton({ attemptId }: { attemptId: string }) {
+  const create = useScenarioFromAttempt();
+  const navigate = useNavigate();
+  return (
+    <>
+      <Button
+        variant="outline"
+        disabled={create.isPending}
+        onClick={() => void create.mutateAsync(attemptId).then((s) => navigate(`/teacher/scenarios/${s.id}`))}
+      >
+        {create.isPending ? <Loader2 className="animate-spin" /> : <FilePlus2 />} Сделать сценарием реагирования
+      </Button>
+      {create.isError && (
+        <p className="w-full text-sm text-destructive" role="alert">
+          {create.error.message}
+        </p>
+      )}
+    </>
   );
 }
 

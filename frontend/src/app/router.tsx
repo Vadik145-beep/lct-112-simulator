@@ -12,6 +12,8 @@ import { AttemptReviewPage } from "@/pages/attempt-review";
 import { StudentAssignmentsPage } from "@/pages/student-assignments";
 import { StudentReferencePage } from "@/pages/student-reference";
 import { TeacherGroupsPage } from "@/pages/teacher/groups";
+import { TeacherScenarioPage } from "@/pages/teacher/scenario";
+import { TeacherScenariosPage } from "@/pages/teacher/scenarios";
 import { SessionFormPage } from "@/pages/teacher/session-form";
 import { SessionReportPage } from "@/pages/teacher/session-report";
 import { TeacherSessionPage } from "@/pages/teacher/session";
@@ -64,7 +66,8 @@ export const router = createBrowserRouter([
           { path: "sessions/:sessionId/report", element: <SessionReportPage /> },
           { path: "attempts/:attemptId/review", element: <AttemptReviewPage /> },
           { path: "groups", element: <TeacherGroupsPage /> },
-          { path: "scenarios", element: <PlaceholderPage title="Сценарии" /> },
+          { path: "scenarios", element: <TeacherScenariosPage /> },
+          { path: "scenarios/:scenarioId", element: <TeacherScenarioPage /> },
         ],
       },
     ],
