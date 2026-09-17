@@ -39,9 +39,21 @@ from app.models import (
 )
 from app.training import service as training
 
-# Card sources a session may use now; tickets and generation arrive with the scenario editor.
+# Where the cards of a session come from (PRD 9.6 item 6, «источник карточек» of the ТЗ):
+# «scenarios» / «mixed» — every approved scenario; «generated» — tickets, generation and hand-made
+# ones (everything but trainees' cards); «student_made» — cards trainees saved in call intake and
+# the teacher approved as scenarios (``scenarios.source = student``).
 CARD_SOURCE_SCENARIOS = "scenarios"
-CARD_SOURCES = (CARD_SOURCE_SCENARIOS,)
+CARD_SOURCE_GENERATED = "generated"
+CARD_SOURCE_STUDENT_MADE = "student_made"
+CARD_SOURCE_MIXED = "mixed"
+CARD_SOURCES = (
+    CARD_SOURCE_SCENARIOS,
+    CARD_SOURCE_GENERATED,
+    CARD_SOURCE_STUDENT_MADE,
+    CARD_SOURCE_MIXED,
+)
+SCENARIO_SOURCE_STUDENT = "student"
 # How the caller answers in call-intake sessions (PRD 9.3); the provider is in app.providers.dialog.
 DIALOG_MODES = ("select", "hybrid", "generate", "buttons", "live")
 
@@ -160,8 +172,8 @@ async def validate_settings(session: AsyncSession, spec: SessionSettings, teache
     if spec.card_source not in CARD_SOURCES:
         raise ApiError(
             422,
-            "source_unavailable",
-            "Пока карточки берутся только из утверждённых сценариев.",
+            "bad_card_source",
+            f"Источник карточек: один из {', '.join(CARD_SOURCES)}.",
         )
     await own_group(session, spec.group_id, teacher)
     lo, hi = DIFFICULTY_RANGE
@@ -252,6 +264,10 @@ async def pick_scenarios(session: AsyncSession, ts: TrainingSession) -> list[Sce
     if ts.scenario_ids:
         return await training.scenario_queue(session, ts)
     query = select(Scenario).where(Scenario.kind == ts.mode, Scenario.status == SCENARIO_APPROVED)
+    if ts.card_source == CARD_SOURCE_GENERATED:
+        query = query.where(Scenario.source != SCENARIO_SOURCE_STUDENT)
+    elif ts.card_source == CARD_SOURCE_STUDENT_MADE:
+        query = query.where(Scenario.source == SCENARIO_SOURCE_STUDENT)
     if ts.service_profile and ts.mode != MODE_CALL_INTAKE:
         query = query.where(Scenario.service_code.in_(ts.service_profile))
     rows = list(await session.scalars(query))

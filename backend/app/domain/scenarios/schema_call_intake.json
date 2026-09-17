@@ -1,0 +1,438 @@
+{
+  "$defs": {
+    "Address": {
+      "properties": {
+        "region": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Region"
+        },
+        "city": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "City"
+        },
+        "street": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Street"
+        },
+        "house": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "House"
+        },
+        "building": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Building"
+        },
+        "structure": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Structure"
+        },
+        "entrance": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entrance"
+        },
+        "floor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Floor"
+        },
+        "code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Code"
+        },
+        "apartment": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Apartment"
+        },
+        "okrug": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Okrug"
+        },
+        "district": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "District"
+        },
+        "descriptive": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Descriptive"
+        }
+      },
+      "title": "Address",
+      "type": "object"
+    },
+    "Caller": {
+      "properties": {
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "phone": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Phone"
+        }
+      },
+      "title": "Caller",
+      "type": "object"
+    },
+    "CallerProfile": {
+      "properties": {
+        "persona": {
+          "default": "calm",
+          "title": "Persona",
+          "type": "string"
+        },
+        "voice": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Voice"
+        },
+        "noise": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Noise"
+        },
+        "opening": {
+          "default": "",
+          "title": "Opening",
+          "type": "string"
+        },
+        "facts": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Facts",
+          "type": "object"
+        },
+        "behaviour": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Behaviour"
+        },
+        "drops_call": {
+          "default": false,
+          "title": "Drops Call",
+          "type": "boolean"
+        },
+        "no_contact": {
+          "default": false,
+          "title": "No Contact",
+          "type": "boolean"
+        }
+      },
+      "title": "CallerProfile",
+      "type": "object"
+    },
+    "ReferenceCard": {
+      "properties": {
+        "signs_path": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Signs Path",
+          "type": "array"
+        },
+        "incident_type": {
+          "title": "Incident Type",
+          "type": "string"
+        },
+        "flags": {
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "title": "Flags",
+          "type": "object"
+        },
+        "address": {
+          "$ref": "#/$defs/Address"
+        },
+        "caller": {
+          "$ref": "#/$defs/Caller"
+        },
+        "description_keywords": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Description Keywords",
+          "type": "array"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "expected_services": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Expected Services",
+          "type": "array"
+        }
+      },
+      "required": [
+        "incident_type"
+      ],
+      "title": "ReferenceCard",
+      "type": "object"
+    },
+    "Reply": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "integer"
+        },
+        "topic": {
+          "title": "Topic",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "audio": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Audio"
+        },
+        "approved": {
+          "default": false,
+          "title": "Approved",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "topic",
+        "text"
+      ],
+      "title": "Reply",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "kind": {
+      "const": "call_intake",
+      "title": "Kind",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "ticket_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ticket Ref"
+    },
+    "difficulty": {
+      "default": 1,
+      "title": "Difficulty",
+      "type": "integer"
+    },
+    "norm_seconds": {
+      "default": 90,
+      "title": "Norm Seconds",
+      "type": "integer"
+    },
+    "caller": {
+      "$ref": "#/$defs/CallerProfile"
+    },
+    "replies": {
+      "items": {
+        "$ref": "#/$defs/Reply"
+      },
+      "title": "Replies",
+      "type": "array"
+    },
+    "required_topics": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Topics",
+      "type": "array"
+    },
+    "reference_card": {
+      "$ref": "#/$defs/ReferenceCard"
+    }
+  },
+  "required": [
+    "kind",
+    "title",
+    "caller",
+    "required_topics",
+    "reference_card"
+  ],
+  "title": "CallIntakeScenario",
+  "type": "object"
+}

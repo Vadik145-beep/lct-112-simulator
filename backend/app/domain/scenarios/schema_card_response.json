@@ -1,0 +1,422 @@
+{
+  "$defs": {
+    "Address": {
+      "properties": {
+        "region": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Region"
+        },
+        "city": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "City"
+        },
+        "street": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Street"
+        },
+        "house": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "House"
+        },
+        "building": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Building"
+        },
+        "structure": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Structure"
+        },
+        "entrance": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Entrance"
+        },
+        "floor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Floor"
+        },
+        "code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Code"
+        },
+        "apartment": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Apartment"
+        },
+        "okrug": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Okrug"
+        },
+        "district": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "District"
+        },
+        "descriptive": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Descriptive"
+        }
+      },
+      "title": "Address",
+      "type": "object"
+    },
+    "Caller": {
+      "properties": {
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "phone": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Phone"
+        }
+      },
+      "title": "Caller",
+      "type": "object"
+    },
+    "Card": {
+      "description": "The incident card as the dispatcher sees it in the journal.",
+      "properties": {
+        "number": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Number"
+        },
+        "incident_type": {
+          "title": "Incident Type",
+          "type": "string"
+        },
+        "signs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Signs",
+          "type": "array"
+        },
+        "flags": {
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "title": "Flags",
+          "type": "object"
+        },
+        "address": {
+          "$ref": "#/$defs/Address"
+        },
+        "caller": {
+          "$ref": "#/$defs/Caller"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "notified": {
+          "items": {
+            "$ref": "#/$defs/NotifiedService"
+          },
+          "title": "Notified",
+          "type": "array"
+        }
+      },
+      "required": [
+        "incident_type"
+      ],
+      "title": "Card",
+      "type": "object"
+    },
+    "CardResponseReference": {
+      "properties": {
+        "decision": {
+          "enum": [
+            "accept",
+            "reject"
+          ],
+          "title": "Decision",
+          "type": "string"
+        },
+        "reject_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reject Reason"
+        },
+        "status_chain": {
+          "items": {
+            "$ref": "#/$defs/ReferenceStep"
+          },
+          "title": "Status Chain",
+          "type": "array"
+        },
+        "critical_errors": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Critical Errors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "decision",
+        "status_chain"
+      ],
+      "title": "CardResponseReference",
+      "type": "object"
+    },
+    "NotifiedService": {
+      "properties": {
+        "service": {
+          "title": "Service",
+          "type": "string"
+        },
+        "status": {
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "service",
+        "status"
+      ],
+      "title": "NotifiedService",
+      "type": "object"
+    },
+    "ReferenceStep": {
+      "properties": {
+        "status": {
+          "title": "Status",
+          "type": "string"
+        },
+        "order_number": {
+          "default": false,
+          "title": "Order Number",
+          "type": "boolean"
+        },
+        "comment_example": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comment Example"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "title": "ReferenceStep",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "kind": {
+      "const": "card_response",
+      "title": "Kind",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "ticket_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ticket Ref"
+    },
+    "service": {
+      "title": "Service",
+      "type": "string"
+    },
+    "difficulty": {
+      "default": 1,
+      "title": "Difficulty",
+      "type": "integer"
+    },
+    "norm_seconds": {
+      "default": 30,
+      "title": "Norm Seconds",
+      "type": "integer"
+    },
+    "duplicate_of": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Duplicate Of"
+    },
+    "card": {
+      "$ref": "#/$defs/Card"
+    },
+    "reference": {
+      "$ref": "#/$defs/CardResponseReference"
+    }
+  },
+  "required": [
+    "kind",
+    "title",
+    "service",
+    "card",
+    "reference"
+  ],
+  "title": "CardResponseScenario",
+  "type": "object"
+}
