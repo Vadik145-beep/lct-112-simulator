@@ -140,6 +140,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * My Progress
+         * @description ���� �������� (PRD 13.7): scores per lesson, time, frequent errors, recommendations.
+         */
+        get: operations["my_progress_api_me_progress_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/student/cabinet": {
         parameters: {
             query?: never;
@@ -1089,6 +1109,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/sessions/{session_id}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Export Link
+         * @description Where to download the report from (the typed counterpart of the file endpoint).
+         */
+        post: operations["export_link_api_sessions__session_id__export_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/attempts/{attempt_id}/dialog": {
         parameters: {
             query?: never;
@@ -1294,28 +1334,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/admin/settings": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Admin Settings */
-        get: operations["admin_settings_api_admin_settings_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        /**
-         * Patch Admin Settings
-         * @description Telephony settings: ring timeout, recording, codecs; the ARI address applies after a
-         *     restart of the backend.
-         */
-        patch: operations["patch_admin_settings_api_admin_settings_patch"];
-        trace?: never;
-    };
     "/api/attempts/{attempt_id}/draft": {
         parameters: {
             query?: never;
@@ -1351,6 +1369,315 @@ export interface paths {
          *     the next call. Idempotent by ``client_submission_id``.
          */
         post: operations["submit_card_api_attempts__attempt_id__submit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Users
+         * @description Every account with initials instead of the name (see /reveal).
+         */
+        get: operations["list_users_api_admin_users_get"];
+        put?: never;
+        /** Create User */
+        post: operations["create_user_api_admin_users_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/users/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update User */
+        patch: operations["update_user_api_admin_users__user_id__patch"];
+        trace?: never;
+    };
+    "/api/admin/users/{user_id}/reveal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reveal User
+         * @description ����������: the full name; the look is written to the audit log (PRD 3).
+         */
+        post: operations["reveal_user_api_admin_users__user_id__reveal_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/users/{user_id}/reset-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reset Password
+         * @description A new temporary password, shown once; the user changes it at the next login.
+         */
+        post: operations["reset_password_api_admin_users__user_id__reset_password_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/users/{user_id}/sip": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sip Account
+         * @description The softphone account of a trainee (created on first request), for a desk phone or
+         *     for checking the registration.
+         */
+        post: operations["sip_account_api_admin_users__user_id__sip_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Services */
+        get: operations["list_services_api_admin_services_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/services/{code}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Service
+         * @description Whether the service is alerted through ���-112 and whether it may refuse a card.
+         */
+        patch: operations["update_service_api_admin_services__code__patch"];
+        trace?: never;
+    };
+    "/api/admin/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * System Health
+         * @description Tiles of the services, load, running lessons and calls, open notifications.
+         */
+        get: operations["system_health_api_admin_health_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Notifications */
+        get: operations["notifications_api_admin_notifications_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/notifications/{notification_id}/ack": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Acknowledge Notification */
+        post: operations["acknowledge_notification_api_admin_notifications__notification_id__ack_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Audit Page */
+        get: operations["audit_page_api_admin_audit_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/audit/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Audit Verify
+         * @description Recomputes the hash chain; the check itself is written to the log afterwards.
+         */
+        post: operations["audit_verify_api_admin_audit_verify_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/backups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Backups */
+        get: operations["list_backups_api_admin_backups_get"];
+        put?: never;
+        /**
+         * Create Backup
+         * @description �������� ����� ������: the backup service picks the request up within seconds.
+         */
+        post: operations["create_backup_api_admin_backups_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Settings */
+        get: operations["get_settings__api_admin_settings_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Patch Settings
+         * @description Telephony (ring timeout, recording, codecs; the ARI address applies after a restart of
+         *     the API), log level (at once), backup schedule (the backup service reads it within a
+         *     minute) and the default ��� ��������� threshold of new lessons.
+         */
+        patch: operations["patch_settings_api_admin_settings_patch"];
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/evaluation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Override Evaluation
+         * @description Replaces the total of a closed attempt. The reason is mandatory and goes to the audit
+         *     log; the trainee sees the old total struck through and the reason.
+         */
+        patch: operations["override_evaluation_api_attempts__attempt_id__evaluation_patch"];
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Comment */
+        post: operations["add_comment_api_attempts__attempt_id__comments_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1497,13 +1824,102 @@ export interface components {
              */
             descriptive: string;
         };
+        /** AdminServiceOut */
+        AdminServiceOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Short Title */
+            short_title: string;
+            /** No Reject */
+            no_reject: boolean;
+            /** Via Arm112 */
+            via_arm112: boolean;
+            /** Order */
+            order: number;
+        };
+        /** AdminServicePatch */
+        AdminServicePatch: {
+            /** No Reject */
+            no_reject?: boolean | null;
+            /** Via Arm112 */
+            via_arm112?: boolean | null;
+        };
         /** AdminSettingsOut */
         AdminSettingsOut: {
             telephony: components["schemas"]["TelephonySettings"];
+            logging: components["schemas"]["LoggingSettings"];
+            backups: components["schemas"]["BackupSettings"];
+            training: components["schemas"]["TrainingSettings"];
         };
         /** AdminSettingsPatch */
         AdminSettingsPatch: {
             telephony?: components["schemas"]["TelephonySettingsPatch"] | null;
+            logging?: components["schemas"]["LoggingSettingsPatch"] | null;
+            backups?: components["schemas"]["BackupSettingsPatch"] | null;
+            training?: components["schemas"]["TrainingSettingsPatch"] | null;
+        };
+        /** AdminUserCreated */
+        AdminUserCreated: {
+            user: components["schemas"]["AdminUserOut"];
+            /** Temporary Password */
+            temporary_password: string;
+        };
+        /** AdminUserIn */
+        AdminUserIn: {
+            /** Login */
+            login: string;
+            /** Full Name */
+            full_name: string;
+            role: components["schemas"]["Role"];
+            /** Service Code */
+            service_code?: string | null;
+            /** Password */
+            password?: string | null;
+        };
+        /** AdminUserOut */
+        AdminUserOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Login */
+            login: string;
+            /** Display Name */
+            display_name: string;
+            role: components["schemas"]["Role"];
+            /** Service Code */
+            service_code: string | null;
+            /** Is Blocked */
+            is_blocked: boolean;
+            /** Must Change Password */
+            must_change_password: boolean;
+            /** Has Sip Account */
+            has_sip_account: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Last Login At */
+            last_login_at: string | null;
+        };
+        /** AdminUserPatch */
+        AdminUserPatch: {
+            /** Full Name */
+            full_name?: string | null;
+            role?: components["schemas"]["Role"] | null;
+            /** Service Code */
+            service_code?: string | null;
+            /**
+             * Clear Service
+             * @default false
+             */
+            clear_service: boolean;
+            /** Is Blocked */
+            is_blocked?: boolean | null;
         };
         /** AnswerResponse */
         AnswerResponse: {
@@ -1627,8 +2043,115 @@ export interface components {
                 [key: string]: unknown;
             } | null;
             intake?: components["schemas"]["IntakeOut"] | null;
+            override?: components["schemas"]["OverrideOut"] | null;
+            /**
+             * Comments
+             * @default []
+             */
+            comments: components["schemas"]["CommentOut"][];
             /** Last Seq */
             last_seq: number;
+        };
+        /** AuditPage */
+        AuditPage: {
+            /** Items */
+            items: components["schemas"]["AuditRow"][];
+            /** Page */
+            page: number;
+            /** Per Page */
+            per_page: number;
+            /** Total */
+            total: number;
+            /** Actions */
+            actions: string[];
+        };
+        /** AuditRow */
+        AuditRow: {
+            /** Id */
+            id: number;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Actor Id */
+            actor_id: string | null;
+            /** Actor Login */
+            actor_login: string | null;
+            /** Actor Role */
+            actor_role: string | null;
+            /** Action */
+            action: string;
+            /** Entity */
+            entity: string | null;
+            /** Entity Id */
+            entity_id: string | null;
+            /** Details */
+            details: {
+                [key: string]: unknown;
+            } | null;
+            /** Ip */
+            ip: string | null;
+        };
+        /** AuditVerifyOut */
+        AuditVerifyOut: {
+            /** Ok */
+            ok: boolean;
+            /** Checked */
+            checked: number;
+            /** Broken Id */
+            broken_id: number | null;
+            /** Message */
+            message: string;
+        };
+        /** BackupOut */
+        BackupOut: {
+            /** Id */
+            id: string | null;
+            /** Kind */
+            kind: string;
+            /** Status */
+            status: string;
+            /** File Name */
+            file_name: string | null;
+            /** Size Bytes */
+            size_bytes: number | null;
+            /**
+             * Requested At
+             * Format: date-time
+             */
+            requested_at: string;
+            /** Finished At */
+            finished_at: string | null;
+            /** Error */
+            error: string | null;
+        };
+        /** BackupSettings */
+        BackupSettings: {
+            /** Time */
+            time: string;
+            /** Keep */
+            keep: number;
+        };
+        /** BackupSettingsPatch */
+        BackupSettingsPatch: {
+            /** Time */
+            time?: string | null;
+            /** Keep */
+            keep?: number | null;
+        };
+        /** BackupsOut */
+        BackupsOut: {
+            /** Folder */
+            folder: string;
+            /** Schedule Time */
+            schedule_time: string;
+            /** Keep */
+            keep: number;
+            /** Service Alive */
+            service_alive: boolean;
+            /** Items */
+            items: components["schemas"]["BackupOut"][];
         };
         /** Body_upload_reference_doc_api_reference_docs_post */
         Body_upload_reference_doc_api_reference_docs_post: {
@@ -1859,6 +2382,28 @@ export interface components {
             /** Types Total */
             types_total: number;
         };
+        /** CommentIn */
+        CommentIn: {
+            /** Text */
+            text: string;
+        };
+        /** CommentOut */
+        CommentOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Text */
+            text: string;
+            /** Author Name */
+            author_name: string;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+        };
         /**
          * CurrentCallOut
          * @description The call-intake attempt that rings or is in progress for the trainee.
@@ -1950,6 +2495,29 @@ export interface components {
             saved_at: string;
             /** Seq */
             seq: number;
+        };
+        /** ExportRequest */
+        ExportRequest: {
+            /**
+             * Session Id
+             * Format: uuid
+             */
+            session_id: string;
+            /** Format */
+            format: string;
+            /** Url */
+            url: string;
+        };
+        /** FrequentError */
+        FrequentError: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Count */
+            count: number;
+            /** Memo Ref */
+            memo_ref: string | null;
         };
         /** GenerateIn */
         GenerateIn: {
@@ -2071,6 +2639,27 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** HealthOut */
+        HealthOut: {
+            /**
+             * Checked At
+             * Format: date-time
+             */
+            checked_at: string;
+            /** Services */
+            services: components["schemas"]["ServiceTile"][];
+            load: components["schemas"]["SystemLoad"];
+            /** Running Sessions */
+            running_sessions: number;
+            /** Active Calls */
+            active_calls: number;
+            /** Active Attempts */
+            active_attempts: number;
+            /** Open Notifications */
+            open_notifications: number;
+            /** Version */
+            version: string;
         };
         /** HealthResponse */
         HealthResponse: {
@@ -2226,6 +2815,19 @@ export interface components {
             /** Last Seq */
             last_seq: number;
         };
+        /** LoggingSettings */
+        LoggingSettings: {
+            /**
+             * Level
+             * @enum {string}
+             */
+            level: "DEBUG" | "INFO" | "WARNING" | "ERROR";
+        };
+        /** LoggingSettingsPatch */
+        LoggingSettingsPatch: {
+            /** Level */
+            level?: ("DEBUG" | "INFO" | "WARNING" | "ERROR") | null;
+        };
         /** LoginRequest */
         LoginRequest: {
             /** Login */
@@ -2333,6 +2935,59 @@ export interface components {
             /** Title */
             title: string;
         };
+        /** NotificationOut */
+        NotificationOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Kind */
+            kind: string;
+            /** Source */
+            source: string;
+            /** Title */
+            title: string;
+            /** Message */
+            message: string;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Acknowledged At */
+            acknowledged_at: string | null;
+        };
+        /** OverrideIn */
+        OverrideIn: {
+            /** New Total */
+            new_total: number;
+            /** Reason */
+            reason: string;
+        };
+        /**
+         * OverrideOut
+         * @description The teacher's change of the total (PRD 13.6: the old value struck through).
+         */
+        OverrideOut: {
+            /** Old Total */
+            old_total: number;
+            /** Old Passed */
+            old_passed: boolean;
+            /** New Total */
+            new_total: number;
+            /** New Passed */
+            new_passed: boolean;
+            /** Reason */
+            reason: string;
+            /** Teacher Name */
+            teacher_name: string;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+        };
         /** PersonaOut */
         PersonaOut: {
             /** Code */
@@ -2380,6 +3035,25 @@ export interface components {
             /** Text */
             text: string;
         };
+        /** ProgressOut */
+        ProgressOut: {
+            /** Sessions */
+            sessions: components["schemas"]["ProgressSession"][];
+            /** Attempts */
+            attempts: number;
+            /** Evaluated */
+            evaluated: number;
+            /** Passed */
+            passed: number;
+            /** Average */
+            average: number | null;
+            /** Average Seconds */
+            average_seconds: number | null;
+            /** Frequent Errors */
+            frequent_errors: components["schemas"]["FrequentError"][];
+            /** Recommendations */
+            recommendations: string[];
+        };
         /**
          * ProgressRequest
          * @description What the trainee is doing in the card right now (shown on the monitoring tile).
@@ -2387,6 +3061,44 @@ export interface components {
         ProgressRequest: {
             /** Stage */
             stage: string;
+        };
+        /** ProgressSession */
+        ProgressSession: {
+            /**
+             * Session Id
+             * Format: uuid
+             */
+            session_id: string;
+            /** Title */
+            title: string;
+            /** Mode */
+            mode: string;
+            /** Status */
+            status: string;
+            /** Started At */
+            started_at: string | null;
+            /** Finished At */
+            finished_at: string | null;
+            /** Norm Seconds */
+            norm_seconds: number;
+            /** Pass Threshold */
+            pass_threshold: number;
+            /** Attempts */
+            attempts: number;
+            /** Evaluated */
+            evaluated: number;
+            /** Passed */
+            passed: number;
+            /** Average */
+            average: number | null;
+            /** Average Seconds */
+            average_seconds: number | null;
+            /** Average Deviation */
+            average_deviation: number | null;
+            /** Comments */
+            comments: number;
+            /** Overridden */
+            overridden: number;
         };
         /** PublicConfig */
         PublicConfig: {
@@ -2538,6 +3250,23 @@ export interface components {
             errors: string[];
             /** Grammar Percent */
             grammar_percent: number | null;
+            /**
+             * Remarks
+             * @default []
+             */
+            remarks: string[];
+            /**
+             * Overridden
+             * @default false
+             */
+            overridden: boolean;
+            /** Override Reason */
+            override_reason?: string | null;
+            /**
+             * Comments
+             * @default []
+             */
+            comments: string[];
         };
         /** ReportErrorCount */
         ReportErrorCount: {
@@ -2622,6 +3351,16 @@ export interface components {
             /** Typical Errors */
             typical_errors: components["schemas"]["ReportErrorCount"][];
         };
+        /** ResetPasswordOut */
+        ResetPasswordOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Temporary Password */
+            temporary_password: string;
+        };
         /** ResponseStatusOut */
         ResponseStatusOut: {
             /** Code */
@@ -2644,6 +3383,16 @@ export interface components {
             allowed_next: string[];
             /** Description */
             description: string | null;
+        };
+        /** RevealOut */
+        RevealOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Full Name */
+            full_name: string;
         };
         /** ReviseIn */
         ReviseIn: {
@@ -2882,6 +3631,19 @@ export interface components {
             /** Is Own */
             is_own: boolean;
         };
+        /** ServiceTile */
+        ServiceTile: {
+            /** Name */
+            name: string;
+            /** Title */
+            title: string;
+            /** Status */
+            status: string;
+            /** Detail */
+            detail?: string | null;
+            /** Latency Ms */
+            latency_ms?: number | null;
+        };
         /**
          * SessionIn
          * @description Settings of a lesson (PRD 13.7). Fields not sent keep the trainer defaults.
@@ -2935,11 +3697,8 @@ export interface components {
              * @default 0
              */
             cards_per_student: number;
-            /**
-             * Unfinished Seconds
-             * @default 172800
-             */
-            unfinished_seconds: number;
+            /** Unfinished Seconds */
+            unfinished_seconds?: number | null;
             /** Weights */
             weights?: {
                 [key: string]: number;
@@ -3119,6 +3878,24 @@ export interface components {
             /** Dialog Mode */
             dialog_mode?: string | null;
         };
+        /** SipAccountAdminOut */
+        SipAccountAdminOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Login */
+            login: string;
+            /** Password */
+            password: string;
+            /** Domain */
+            domain: string;
+            /** Ws Path */
+            ws_path: string;
+            /** Telephony Enabled */
+            telephony_enabled: boolean;
+        };
         /**
          * SipAccountOut
          * @description What the browser softphone needs to register (PRD 9.5). ``enabled`` false = no
@@ -3222,6 +3999,19 @@ export interface components {
             /** Issued */
             issued: string[];
         };
+        /** SystemLoad */
+        SystemLoad: {
+            /** Cpu Percent */
+            cpu_percent: number | null;
+            /** Cpu Count */
+            cpu_count: number | null;
+            /** Memory Total Mb */
+            memory_total_mb: number | null;
+            /** Memory Used Mb */
+            memory_used_mb: number | null;
+            /** Load 1 */
+            load_1: number | null;
+        };
         /**
          * TelephonySettings
          * @description What the administrator can change; every field has a default.
@@ -3286,6 +4076,16 @@ export interface components {
             /** Expires In */
             expires_in: number;
             user: components["schemas"]["UserOut"];
+        };
+        /** TrainingSettings */
+        TrainingSettings: {
+            /** Unfinished Seconds */
+            unfinished_seconds: number;
+        };
+        /** TrainingSettingsPatch */
+        TrainingSettingsPatch: {
+            /** Unfinished Seconds */
+            unfinished_seconds?: number | null;
         };
         /** TransitionOut */
         TransitionOut: {
@@ -3643,6 +4443,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserOut"];
+                };
+            };
+        };
+    };
+    my_progress_api_me_progress_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProgressOut"];
                 };
             };
         };
@@ -5342,6 +6162,39 @@ export interface operations {
             };
         };
     };
+    export_link_api_sessions__session_id__export_post: {
+        parameters: {
+            query: {
+                fmt: string;
+            };
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExportRequest"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_dialog_api_attempts__attempt_id__dialog_get: {
         parameters: {
             query?: never;
@@ -5642,59 +6495,6 @@ export interface operations {
             };
         };
     };
-    admin_settings_api_admin_settings_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AdminSettingsOut"];
-                };
-            };
-        };
-    };
-    patch_admin_settings_api_admin_settings_patch: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AdminSettingsPatch"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AdminSettingsOut"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
     save_draft_api_attempts__attempt_id__draft_put: {
         parameters: {
             query?: never;
@@ -5752,6 +6552,545 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SubmitResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_users_api_admin_users_get: {
+        parameters: {
+            query?: {
+                role?: components["schemas"]["Role"] | null;
+                q?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_user_api_admin_users_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminUserIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserCreated"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_user_api_admin_users__user_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminUserPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reveal_user_api_admin_users__user_id__reveal_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RevealOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reset_password_api_admin_users__user_id__reset_password_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResetPasswordOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sip_account_api_admin_users__user_id__sip_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SipAccountAdminOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_services_api_admin_services_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminServiceOut"][];
+                };
+            };
+        };
+    };
+    update_service_api_admin_services__code__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminServicePatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminServiceOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    system_health_api_admin_health_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthOut"];
+                };
+            };
+        };
+    };
+    notifications_api_admin_notifications_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationOut"][];
+                };
+            };
+        };
+    };
+    acknowledge_notification_api_admin_notifications__notification_id__ack_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                notification_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    audit_page_api_admin_audit_get: {
+        parameters: {
+            query?: {
+                actor_id?: string | null;
+                actor_login?: string | null;
+                action?: string | null;
+                date_from?: string | null;
+                date_to?: string | null;
+                page?: number;
+                per_page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditPage"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    audit_verify_api_admin_audit_verify_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditVerifyOut"];
+                };
+            };
+        };
+    };
+    list_backups_api_admin_backups_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BackupsOut"];
+                };
+            };
+        };
+    };
+    create_backup_api_admin_backups_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BackupOut"];
+                };
+            };
+        };
+    };
+    get_settings__api_admin_settings_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminSettingsOut"];
+                };
+            };
+        };
+    };
+    patch_settings_api_admin_settings_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminSettingsPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminSettingsOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    override_evaluation_api_attempts__attempt_id__evaluation_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OverrideIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OverrideOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_comment_api_attempts__attempt_id__comments_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommentIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommentOut"];
                 };
             };
             /** @description Validation Error */

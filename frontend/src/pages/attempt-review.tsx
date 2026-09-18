@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { acceptanceTimer, formatSeconds, formatTime, useNow } from "@/emulator/time";
 import { CallReview, type CallEvaluation } from "@/intake/call-review";
 import { cn } from "@/lib/utils";
+import { ReviewNotes, ScoreBox } from "@/review/teacher-panel";
 
 // Shapes of `attempt.evaluation` (EvaluationResult.to_dict() of the evaluation engine).
 interface Component {
@@ -103,8 +104,16 @@ function Review({ attemptId, teacher }: { attemptId: string; teacher: boolean })
       </div>
     );
   }
-  if (call) return <CallReview attempt={attempt} evaluation={evaluation as unknown as CallEvaluation} teacher={teacher} />;
-  return <ReviewView attempt={attempt} evaluation={evaluation} teacher={teacher} />;
+  return (
+    <div className="space-y-6">
+      {call ? (
+        <CallReview attempt={attempt} evaluation={evaluation as unknown as CallEvaluation} teacher={teacher} />
+      ) : (
+        <ReviewView attempt={attempt} evaluation={evaluation} teacher={teacher} />
+      )}
+      <ReviewNotes attempt={attempt} teacher={teacher} total={evaluation.total} />
+    </div>
+  );
 }
 
 /** Teacher's look at a card still in work: the card, the statuses so far, the timer. */
@@ -206,15 +215,7 @@ function ReviewView({ attempt, evaluation, teacher }: { attempt: AttemptOut; eva
           <h1 className="text-2xl font-semibold">{attempt.card.incident.final_title || "Карточка"}</h1>
           <p className="text-sm text-muted-foreground">{attempt.card.address.text}</p>
         </div>
-        <div className={cn("flex items-center gap-4 rounded-xl border px-5 py-3", evaluation.passed ? "border-success/50 bg-success/10" : "border-destructive/50 bg-destructive/10")}>
-          <div className="text-4xl font-semibold tabular-nums" data-testid="review-total">{evaluation.total}</div>
-          <div className="leading-tight">
-            <div className="text-xs text-muted-foreground">из 100</div>
-            <div className={cn("font-semibold", evaluation.passed ? "text-success" : "text-destructive")} data-testid="review-verdict">
-              {evaluation.passed ? "Зачтено" : "Не зачтено"}
-            </div>
-          </div>
-        </div>
+        <ScoreBox total={evaluation.total} passed={evaluation.passed} override={attempt.override} />
       </div>
 
       <section className="space-y-3">

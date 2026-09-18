@@ -10,6 +10,9 @@ from fastapi import FastAPI, Request, Response
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from app import warmup
+from app.admin import health as health_monitor
+from app.admin import settings as admin_settings
+from app.admin.router import router as admin_router
 from app.auth.router import router as auth_router
 from app.config import get_settings
 from app.dialog.router import router as dialog_router
@@ -25,6 +28,7 @@ from app.scenarios.router import router as scenarios_router
 from app.telephony import service as telephony
 from app.telephony.router import router as telephony_router
 from app.training import sweeper
+from app.training.review import router as review_router
 from app.training.router import router as training_router
 from app.training.teacher import router as teacher_router
 from app.training.ws import router as ws_router
@@ -44,10 +48,17 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     )
     # The «Не оповещено» sweep needs a running loop; tests call it explicitly instead.
     sweep_task = sweeper.start() if settings.app_env != "test" else None
+    monitor_task = None
     if settings.app_env != "test":
+        from app.db import SessionLocal
+
+        async with SessionLocal() as db:
+            await admin_settings.apply_stored(db)
         await telephony.start()
         warmup.start()
+        monitor_task = health_monitor.start()
     yield
+    await health_monitor.stop(monitor_task)
     await telephony.stop()
     if sweep_task is not None:
         await sweeper.stop(sweep_task)
@@ -109,6 +120,8 @@ def create_app() -> FastAPI:
     app.include_router(dialog_router, prefix=API_PREFIX)
     app.include_router(telephony_router, prefix=API_PREFIX)
     app.include_router(intake_router, prefix=API_PREFIX)
+    app.include_router(admin_router, prefix=API_PREFIX)
+    app.include_router(review_router, prefix=API_PREFIX)
     # WebSocket lives outside /api: nginx proxies /ws/ with the upgrade headers.
     app.include_router(ws_router)
     return app

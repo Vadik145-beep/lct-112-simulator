@@ -7,9 +7,10 @@ from __future__ import annotations
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy import select
 
+from app.admin import settings as admin_settings
 from app.audit import write_audit
 from app.auth.deps import DbSession, client_ip, require_role
 from app.errors import ApiError
@@ -22,10 +23,12 @@ from app.models import (
     TrainingSession,
     User,
 )
+from app.reports import export
 from app.training import present
 from app.training import report as reporting
 from app.training import sessions as lessons
 from app.training.teacher_schemas import (
+    ExportRequest,
     GroupIn,
     GroupOut,
     GroupPatch,
@@ -219,7 +222,12 @@ async def list_sessions(
 async def create_session(
     body: SessionIn, user: Teacher, session: DbSession, request: Request
 ) -> SessionOut:
-    spec = lessons.SessionSettings(**body.model_dump())
+    data = body.model_dump()
+    if data["unfinished_seconds"] is None:
+        data["unfinished_seconds"] = (
+            await admin_settings.load_training(session)
+        ).unfinished_seconds
+    spec = lessons.SessionSettings(**data)
     await lessons.validate_settings(session, spec, user)
     ts = TrainingSession(teacher_id=user.id, mode=spec.mode, title=spec.title)
     lessons.apply_settings(ts, spec)
@@ -334,3 +342,43 @@ async def monitor_session(session_id: uuid.UUID, user: Teacher, session: DbSessi
 async def session_report(session_id: uuid.UUID, user: Teacher, session: DbSession) -> ReportOut:
     ts = await lessons.own_session(session, session_id, user)
     return await reporting.build_report(session, ts)
+
+
+@router.get("/sessions/{session_id}/report.{fmt}", include_in_schema=False)
+async def export_report(
+    session_id: uuid.UUID, fmt: str, user: Teacher, session: DbSession, request: Request
+) -> Response:
+    """Download of the report as PDF, XLSX or CSV (PRD 13.7); each download is audited."""
+    if fmt not in export.FORMATS:
+        raise ApiError(404, "not_found", "Формат отчёта: pdf, xlsx или csv.")
+    ts = await lessons.own_session(session, session_id, user)
+    report = await reporting.build_report(session, ts)
+    data, media_type = await export.render(report, fmt)
+    await write_audit(
+        session,
+        action="report.export",
+        actor_id=user.id,
+        actor_role=user.role,
+        entity="training_session",
+        entity_id=str(ts.id),
+        details={"format": fmt},
+        ip=client_ip(request),
+    )
+    await session.commit()
+    filename = f"report-{ts.id.hex[:8]}.{fmt}"
+    return Response(
+        content=data,
+        media_type=media_type,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@router.post("/sessions/{session_id}/export", response_model=ExportRequest)
+async def export_link(
+    session_id: uuid.UUID, fmt: str, user: Teacher, session: DbSession
+) -> ExportRequest:
+    """Where to download the report from (the typed counterpart of the file endpoint)."""
+    if fmt not in export.FORMATS:
+        raise ApiError(422, "bad_format", "Формат отчёта: pdf, xlsx или csv.")
+    ts = await lessons.own_session(session, session_id, user)
+    return ExportRequest(session_id=ts.id, format=fmt, url=f"/api/sessions/{ts.id}/report.{fmt}")

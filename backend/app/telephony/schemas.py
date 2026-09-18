@@ -8,7 +8,6 @@ from datetime import datetime
 from pydantic import BaseModel
 
 from app.dialog.schemas import DialogOut, DialogTurnOut
-from app.telephony.settings import TelephonySettings, TelephonySettingsPatch
 
 
 class SipAccountOut(BaseModel):
@@ -45,11 +44,3 @@ class AnswerResponse(BaseModel):
 
 class CallResponse(BaseModel):
     dialog: DialogOut
-
-
-class AdminSettingsOut(BaseModel):
-    telephony: TelephonySettings
-
-
-class AdminSettingsPatch(BaseModel):
-    telephony: TelephonySettingsPatch | None = None

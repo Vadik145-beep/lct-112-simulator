@@ -44,4 +44,4 @@ coverage/
 backend/htmlcov/
 frontend/playwright-report/
 frontend/test-results/
-models/
+/models/

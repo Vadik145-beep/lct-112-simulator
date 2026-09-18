@@ -27,7 +27,7 @@ from app.models import (
     TrainingSession,
     User,
 )
-from app.training import present
+from app.training import present, review
 from app.training import service as training
 from app.training.schemas import (
     AssignmentOut,
@@ -159,7 +159,8 @@ async def _attempt_out(session: DbSession, attempt: Attempt, ts: TrainingSession
                 # Text the grammar component was checked on; its items carry offsets into it.
                 "checked_text": _checked_text(attempt),
             }
-    return present.attempt_out(
+    override, comments = await review.review_extras(session, attempt)
+    out = present.attempt_out(
         attempt,
         card.body,
         ts,
@@ -168,6 +169,9 @@ async def _attempt_out(session: DbSession, attempt: Attempt, ts: TrainingSession
         seq=await present.last_seq(session, ts.id),
         evaluation=evaluation,
     )
+    out.override = override
+    out.comments = comments
+    return out
 
 
 def _checked_text(attempt: Attempt) -> str:

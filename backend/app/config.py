@@ -83,6 +83,15 @@ class Settings(BaseSettings):
     # Silero VAD model (ONNX); missing file = energy-based detector.
     vad_model_path: str | None = None
 
+    # Backups (PRD 14): the folder shared with the `backup` service (/backups in compose), the
+    # daily time and how many dumps to keep; the administrator overrides the last two.
+    backup_dir: str = "../backups"
+    backup_time: str = "03:00"
+    backup_keep: int = 14
+    # Seconds between two checks of the services by the administrator's monitor
+    # (app.admin.health); 0 disables the loop (tests call it explicitly).
+    health_monitor_seconds: int = 60
+
     @field_validator("database_url", "database_admin_url")
     @classmethod
     def _must_be_asyncpg(cls, value: str) -> str:

@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatSeconds, formatTime } from "@/emulator/time";
 import { EMPTY_ADDRESS } from "@/intake/draft";
 import { cn } from "@/lib/utils";
+import { ScoreBox } from "@/review/teacher-panel";
 
 // Shapes of `attempt.evaluation` (EvaluationResult.to_dict()) and `attempt.reference`
 // (the scenario's reference_card) for a call-intake attempt (PRD 9.3).
@@ -118,15 +119,7 @@ export function CallReview({ attempt, evaluation, teacher }: { attempt: AttemptO
             </p>
           )}
         </div>
-        <div className={cn("flex items-center gap-4 rounded-xl border px-5 py-3", evaluation.passed ? "border-success/50 bg-success/10" : "border-destructive/50 bg-destructive/10")}>
-          <div className="text-4xl font-semibold tabular-nums" data-testid="review-total">{evaluation.total}</div>
-          <div className="leading-tight">
-            <div className="text-xs text-muted-foreground">из 100</div>
-            <div className={cn("font-semibold", evaluation.passed ? "text-success" : "text-destructive")} data-testid="review-verdict">
-              {evaluation.passed ? "Зачтено" : "Не зачтено"}
-            </div>
-          </div>
-        </div>
+        <ScoreBox total={evaluation.total} passed={evaluation.passed} override={attempt.override} />
       </div>
 
       <section className="space-y-3">

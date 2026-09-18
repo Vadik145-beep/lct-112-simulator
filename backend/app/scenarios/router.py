@@ -49,7 +49,8 @@ from app.training import service as training
 
 router = APIRouter(tags=["scenarios"])
 
-Teacher = Annotated[User, Depends(require_role(Role.teacher, Role.admin))]
+# Scenarios belong to teachers only: the administrator neither edits nor approves them (PRD 3).
+Teacher = Annotated[User, Depends(require_role(Role.teacher))]
 
 MAX_DOC_BYTES = 20 * 1024 * 1024
 DOC_SUFFIXES = {".txt", ".md", ".docx", ".pdf"}
@@ -228,7 +229,7 @@ async def get_job(job_id: str, user: Teacher) -> JobOut:
     job = await jobs.get(job_id)
     if job is None:
         raise ApiError(404, "not_found", "Задача не найдена или устарела.")
-    if job.get("owner_id") != str(user.id) and user.role != Role.admin:
+    if job.get("owner_id") != str(user.id):
         raise ApiError(403, "forbidden", "Это задача другого пользователя.")
     return JobOut(**{k: job[k] for k in JobOut.model_fields})
 

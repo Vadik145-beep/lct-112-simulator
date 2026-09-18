@@ -1,10 +1,14 @@
-"""Container healthcheck: exit 0 when the API answers /api/health with 200."""
+"""Container healthcheck: exit 0 when the API answers /api/health with 200.
+
+Imports nothing from the application on purpose: loading the app (routers, PDF and model
+libraries) takes seconds on a loaded machine, and the check has a 5-second budget.
+"""
 
 import sys
 
 import httpx
 
-from app.main import API_PREFIX
+API_PREFIX = "/api"  # same as app.main.API_PREFIX
 
 if __name__ == "__main__":
     try:

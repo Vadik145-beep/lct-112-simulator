@@ -2,14 +2,19 @@ import { createBrowserRouter } from "react-router-dom";
 
 import { RequireRole } from "@/app/require-role";
 import { AppShell } from "@/app/shell";
-import { CabinetPage } from "@/pages/cabinet";
+import { AdminAuditPage } from "@/pages/admin/audit";
+import { AdminBackupsPage } from "@/pages/admin/backups";
+import { AdminHealthPage } from "@/pages/admin/health";
+import { AdminServicesPage } from "@/pages/admin/services";
+import { AdminSettingsPage } from "@/pages/admin/settings";
+import { AdminUsersPage } from "@/pages/admin/users";
 import { ChangePasswordPage } from "@/pages/change-password";
 import { HomePage } from "@/pages/home";
 import { LoginPage } from "@/pages/login";
 import { NotFoundPage } from "@/pages/not-found";
-import { PlaceholderPage } from "@/pages/placeholder";
 import { AttemptReviewPage } from "@/pages/attempt-review";
 import { StudentAssignmentsPage } from "@/pages/student-assignments";
+import { StudentProgressPage } from "@/pages/student-progress";
 import { StudentReferencePage } from "@/pages/student-reference";
 import { TeacherGroupsPage } from "@/pages/teacher/groups";
 import { TeacherScenarioPage } from "@/pages/teacher/scenario";
@@ -39,7 +44,7 @@ export const router = createBrowserRouter([
             element: <AppShell />,
             children: [
               { index: true, element: <StudentAssignmentsPage /> },
-              { path: "progress", element: <PlaceholderPage title="Прогресс" /> },
+              { path: "progress", element: <StudentProgressPage /> },
               { path: "reference", element: <StudentReferencePage /> },
               { path: "attempts/:attemptId/review", element: <AttemptReviewPage /> },
             ],
@@ -79,9 +84,12 @@ export const router = createBrowserRouter([
         path: "/admin",
         element: <AppShell />,
         children: [
-          { index: true, element: <CabinetPage role="admin" /> },
-          { path: "health", element: <PlaceholderPage title="Состояние сервисов" /> },
-          { path: "audit", element: <PlaceholderPage title="Журнал аудита" /> },
+          { index: true, element: <AdminUsersPage /> },
+          { path: "services", element: <AdminServicesPage /> },
+          { path: "health", element: <AdminHealthPage /> },
+          { path: "audit", element: <AdminAuditPage /> },
+          { path: "backups", element: <AdminBackupsPage /> },
+          { path: "settings", element: <AdminSettingsPage /> },
         ],
       },
     ],

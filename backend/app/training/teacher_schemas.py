@@ -7,7 +7,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
-from app.models import MODE_CARD_RESPONSE, UNFINISHED_SECONDS_DEFAULT
+from app.models import MODE_CARD_RESPONSE
 
 # ---------------------------------------------------------------- groups
 
@@ -55,7 +55,8 @@ class SessionIn(BaseModel):
     pass_threshold: int = 70
     hints_enabled: bool = True
     cards_per_student: int = 0
-    unfinished_seconds: int = UNFINISHED_SECONDS_DEFAULT
+    # Empty = the default of the administrator's settings (48 hours out of the box).
+    unfinished_seconds: int | None = None
     weights: dict[str, int] = Field(default_factory=dict)
     # Call-intake settings (PRD 9.3): the operator speaks through the softphone, and how the
     # caller answers (select | hybrid | generate | buttons | live). Kept on card sessions too.
@@ -203,6 +204,12 @@ class ReportAttempt(BaseModel):
     decision_correct: bool | None
     errors: list[str]
     grammar_percent: float | None
+    # Remarks of the review (PRD 13.7: «информация о действиях, замечаниях…»): every error
+    # with its explanation, the teacher's override and comments.
+    remarks: list[str] = []
+    overridden: bool = False
+    override_reason: str | None = None
+    comments: list[str] = []
 
 
 class ReportStudent(BaseModel):
@@ -242,3 +249,9 @@ class ReportOut(BaseModel):
     pass_threshold: int
     summary: ReportSummary
     students: list[ReportStudent]
+
+
+class ExportRequest(BaseModel):
+    session_id: uuid.UUID
+    format: str
+    url: str
