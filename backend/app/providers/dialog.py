@@ -112,8 +112,9 @@ class CallerReply:
     latency_ms: int = 0
 
 
-# Methods of a caller's turn that mean «answered without the model» (keywords, canned text).
-FALLBACK_METHODS = frozenset({"buttons", "guard"})
+# Methods of a caller's turn that mean «the model was unreachable or unusable, answered by
+# keywords». «guard» is not one of them: that is the role protection replacing a bad answer.
+FALLBACK_METHODS = frozenset({"buttons"})
 
 
 class DialogProvider(Protocol):
