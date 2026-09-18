@@ -123,6 +123,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/analytics/groups/{group_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Group Analytics
+         * @description Heat map, dynamics, typical errors and the readiness forecast of the teacher's group
+         *     over the last ``days`` days.
+         */
+        get: operations["group_analytics_api_analytics_groups__group_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/analytics/readiness-model": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Readiness Model
+         * @description How far the forecast can be trusted: metrics on the held-out part of the cohort.
+         */
+        get: operations["readiness_model_api_analytics_readiness_model_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/me": {
         parameters: {
             query?: never;
@@ -2187,6 +2228,19 @@ export interface components {
             /** Sections */
             sections: string[];
         };
+        /** CalibrationBucketOut */
+        CalibrationBucketOut: {
+            /** Lower */
+            lower: number;
+            /** Upper */
+            upper: number;
+            /** Predicted */
+            predicted: number | null;
+            /** Observed */
+            observed: number | null;
+            /** Count */
+            count: number;
+        };
         /**
          * CallOut
          * @description The call of the attempt (PRD 9.5): idle | ringing | answered | ended.
@@ -2496,6 +2550,19 @@ export interface components {
             /** Seq */
             seq: number;
         };
+        /** ErrorCountOut */
+        ErrorCountOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
+            /** Count */
+            count: number;
+            /** Students */
+            students: number;
+            /** Students Share */
+            students_share: number;
+        };
         /** ExportRequest */
         ExportRequest: {
             /**
@@ -2507,6 +2574,15 @@ export interface components {
             format: string;
             /** Url */
             url: string;
+        };
+        /** FeatureWeightOut */
+        FeatureWeightOut: {
+            /** Name */
+            name: string;
+            /** Title */
+            title: string;
+            /** Weight */
+            weight: number;
         };
         /** FrequentError */
         FrequentError: {
@@ -2604,6 +2680,36 @@ export interface components {
             /** Issues */
             issues: components["schemas"]["GrammarIssueOut"][];
         };
+        /** GroupAnalyticsOut */
+        GroupAnalyticsOut: {
+            /**
+             * Group Id
+             * Format: uuid
+             */
+            group_id: string;
+            /** Group Title */
+            group_title: string;
+            period: components["schemas"]["PeriodOut"];
+            /** Demo Data */
+            demo_data: boolean;
+            volume: components["schemas"]["VolumeOut"];
+            /** Students */
+            students: components["schemas"]["PersonOut"][];
+            /** Incident Groups */
+            incident_groups: components["schemas"]["IncidentGroupOut"][];
+            /** Heatmap */
+            heatmap: components["schemas"]["HeatCellOut"][];
+            /** Dynamics */
+            dynamics: components["schemas"]["WeekPointOut"][];
+            /** Errors */
+            errors: components["schemas"]["ErrorCountOut"][];
+            /** Readiness */
+            readiness: components["schemas"]["ReadinessOut"][];
+            /** Model Available */
+            model_available: boolean;
+            /** Summary */
+            summary: string;
+        };
         /** GroupIn */
         GroupIn: {
             /** Title */
@@ -2672,6 +2778,22 @@ export interface components {
             /** Version */
             version: string;
         };
+        /** HeatCellOut */
+        HeatCellOut: {
+            /**
+             * Student Id
+             * Format: uuid
+             */
+            student_id: string;
+            /** Incident Group */
+            incident_group: string;
+            /** Mode */
+            mode: string;
+            /** Mean */
+            mean: number;
+            /** Count */
+            count: number;
+        };
         /** IncidentFlagOut */
         IncidentFlagOut: {
             /** Code */
@@ -2680,6 +2802,13 @@ export interface components {
             title: string;
             /** Column Hint */
             column_hint: string | null;
+        };
+        /** IncidentGroupOut */
+        IncidentGroupOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
         };
         /** IncidentOut */
         IncidentOut: {
@@ -2988,6 +3117,33 @@ export interface components {
              */
             at: string;
         };
+        /** PeriodOut */
+        PeriodOut: {
+            /**
+             * Since
+             * Format: date-time
+             */
+            since: string;
+            /**
+             * Until
+             * Format: date-time
+             */
+            until: string;
+            /** Days */
+            days: number;
+        };
+        /** PersonOut */
+        PersonOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Login */
+            login: string;
+            /** Full Name */
+            full_name: string;
+        };
         /** PersonaOut */
         PersonaOut: {
             /** Code */
@@ -3053,6 +3209,12 @@ export interface components {
             frequent_errors: components["schemas"]["FrequentError"][];
             /** Recommendations */
             recommendations: string[];
+            /** Ratings */
+            ratings: components["schemas"]["RatingOut"][];
+            /** Dynamics */
+            dynamics: components["schemas"]["WeekPointOut"][];
+            /** Demo Data */
+            demo_data: boolean;
         };
         /**
          * ProgressRequest
@@ -3126,6 +3288,77 @@ export interface components {
             service_code: string | null;
             /** Incident Type Code */
             incident_type_code: string | null;
+        };
+        /** RatingOut */
+        RatingOut: {
+            /** Incident Group */
+            incident_group: string;
+            /** Title */
+            title: string;
+            /** Mode */
+            mode: string;
+            /** Rating */
+            rating: number;
+            /** N */
+            n: number;
+        };
+        /** ReadinessModelOut */
+        ReadinessModelOut: {
+            /** Trained */
+            trained: boolean;
+            /** Trained At */
+            trained_at?: string | null;
+            /**
+             * N Total
+             * @default 0
+             */
+            n_total: number;
+            /**
+             * N Train
+             * @default 0
+             */
+            n_train: number;
+            /**
+             * N Test
+             * @default 0
+             */
+            n_test: number;
+            /** Positive Share Test */
+            positive_share_test?: number | null;
+            /** Roc Auc */
+            roc_auc?: number | null;
+            /** Brier */
+            brier?: number | null;
+            /** Brier Baseline */
+            brier_baseline?: number | null;
+            /**
+             * Calibration
+             * @default []
+             */
+            calibration: components["schemas"]["CalibrationBucketOut"][];
+            /**
+             * Features
+             * @default []
+             */
+            features: components["schemas"]["FeatureWeightOut"][];
+        };
+        /** ReadinessOut */
+        ReadinessOut: {
+            /**
+             * Student Id
+             * Format: uuid
+             */
+            student_id: string;
+            /** Full Name */
+            full_name: string;
+            /** Attempts */
+            attempts: number;
+            /** Probability */
+            probability: number | null;
+            /** Risk */
+            risk: string;
+            /** Reasons */
+            reasons: string[];
         };
         /** ReferenceDocOut */
         ReferenceDocOut: {
@@ -3713,6 +3946,11 @@ export interface components {
              * @default select
              */
             dialog_mode: string;
+            /**
+             * Adaptive
+             * @default false
+             */
+            adaptive: boolean;
         };
         /** SessionInfo */
         SessionInfo: {
@@ -3834,6 +4072,8 @@ export interface components {
             voice_enabled: boolean;
             /** Dialog Mode */
             dialog_mode: string;
+            /** Adaptive */
+            adaptive: boolean;
             /** Members */
             members: components["schemas"]["StudentOut"][];
             /** Queue */
@@ -3877,6 +4117,8 @@ export interface components {
             voice_enabled?: boolean | null;
             /** Dialog Mode */
             dialog_mode?: string | null;
+            /** Adaptive */
+            adaptive?: boolean | null;
         };
         /** SipAccountAdminOut */
         SipAccountAdminOut: {
@@ -4212,6 +4454,33 @@ export interface components {
             /** Is Current */
             is_current: boolean;
         };
+        /** VolumeOut */
+        VolumeOut: {
+            /** Students */
+            students: number;
+            /** Students With Attempts */
+            students_with_attempts: number;
+            /** Attempts */
+            attempts: number;
+            /** Sessions */
+            sessions: number;
+        };
+        /** WeekPointOut */
+        WeekPointOut: {
+            /**
+             * Week Start
+             * Format: date-time
+             */
+            week_start: string;
+            /** Mode */
+            mode: string;
+            /** Mean Score */
+            mean_score: number;
+            /** Mean Time Ratio */
+            mean_time_ratio: number;
+            /** Count */
+            count: number;
+        };
         /** TopicOut */
         app__dialog__schemas__TopicOut: {
             /** Code */
@@ -4423,6 +4692,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    group_analytics_api_analytics_groups__group_id__get: {
+        parameters: {
+            query?: {
+                days?: number;
+            };
+            header?: never;
+            path: {
+                group_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GroupAnalyticsOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readiness_model_api_analytics_readiness_model_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReadinessModelOut"];
                 };
             };
         };

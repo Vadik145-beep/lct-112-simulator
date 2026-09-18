@@ -20,7 +20,7 @@
 | rapidfuzz | MIT | нечёткое сравнение улиц и ключевых слов в оценке |
 | websockets | BSD-3 | события ARI Asterisk (`app/telephony/ari.py`), клиент WebSocket в тестах |
 | cryptography | Apache 2.0 / BSD | шифрование SIP-паролей обучающихся (Fernet, ключ из SECRET_KEY) |
-| NumPy | BSD | звук звонка: RTP ↔ PCM, VAD, ресемплинг (`app/telephony/media.py`) |
+| NumPy | BSD | звук звонка: RTP ↔ PCM, VAD, ресемплинг (`app/telephony/media.py`); модель прогноза готовности и симулятор когорты (`app/domain/analytics/`) |
 | piper-tts (+ onnxruntime, numpy, espeak-ng в составе) | GPL-3.0 (piper 1.x, из-за espeak-ng) | озвучка реплик заявителя (`TTSProvider`) |
 | onnxruntime | MIT | запуск модели эмбеддингов e5 (`EmbeddingProvider`) |
 | tokenizers | Apache 2.0 | токенизация текста для e5 |
@@ -48,6 +48,7 @@
 | Библиотека | Лицензия | Зачем |
 |---|---|---|
 | JsSIP | MIT | софтфон в браузере: регистрация по WebSocket, приём вызова по WebRTC (`src/softphone/`) |
+| Apache ECharts | Apache 2.0 | тепловая карта, динамика, калибровочный график и рейтинги в аналитике (`src/components/chart.tsx`), подключены только нужные модули через `echarts/core` |
 
 Сервис `stt` (`deploy/stt`, отдельный образ):
 

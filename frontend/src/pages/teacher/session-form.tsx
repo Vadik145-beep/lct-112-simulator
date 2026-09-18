@@ -36,6 +36,7 @@ const DEFAULTS: Omit<SessionIn, "group_id"> = {
   weights: {},
   voice_enabled: false,
   dialog_mode: "select",
+  adaptive: false,
 };
 
 // PRD 9.3: the caller answers with an approved reply (select), may improvise with the
@@ -92,6 +93,7 @@ function toInput(s: SessionOut): SessionIn {
     weights: s.weights,
     voice_enabled: s.voice_enabled,
     dialog_mode: s.dialog_mode,
+    adaptive: s.adaptive,
   };
 }
 
@@ -317,6 +319,14 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               Показывать обучающимся панель «Тренажёр»
             </label>
             <p className="text-xs text-muted-foreground">Выключите для аттестации.</p>
+          </div>
+          <div className="space-y-1.5">
+            <span className="text-sm font-medium">Адаптивный подбор</span>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={form.adaptive} onChange={(e) => patch({ adaptive: e.target.checked })} />
+              Подбирать карточки под слабые места
+            </label>
+            <p className="text-xs text-muted-foreground">Каждому — сначала его слабая группа происшествий, сложность по рейтингу, непройденные первыми.</p>
           </div>
         </CardContent>
       </Card>

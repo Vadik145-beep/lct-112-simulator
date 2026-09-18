@@ -15,6 +15,8 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.attributes import flag_modified
 
+from app.analytics import ratings
+from app.domain.analytics.adaptive import order_queue
 from app.domain.evaluation import evaluate_attempt
 from app.domain.evaluation import status_machine as machine
 from app.errors import ApiError
@@ -291,7 +293,12 @@ async def issue_cards(
         want = min(want, ts.cards_per_student - len(done))
         if want <= 0:
             return [], []
-    queue = [s for s in await scenario_queue(session, ts) if s.id not in set(done)][:want]
+    candidates = [s for s in await scenario_queue(session, ts) if s.id not in set(done)]
+    if ts.adaptive:
+        # PRD 9.7: the weakest incident group first, difficulty near the rating.
+        state = await ratings.load_state(session, student.id)
+        candidates = order_queue(candidates, mode=ts.mode, ratings=state, done=done)
+    queue = candidates[:want]
     attempts: list[Attempt] = []
     events: list[SessionEvent] = []
     for scenario in queue:
@@ -563,6 +570,7 @@ async def evaluate_and_store(
     )
     data = result.to_dict()
     row = await session.get(Evaluation, attempt.id)
+    first_evaluation = row is None
     if row is None:
         row = Evaluation(attempt_id=attempt.id, total=0, passed=False)
         session.add(row)
@@ -574,6 +582,9 @@ async def evaluate_and_store(
     attempt.result = data
     attempt.state = ATTEMPT_EVALUATED
     await session.flush()
+    # The skill rating moves once per attempt (PRD 9.7), not on a re-evaluation.
+    if first_evaluation:
+        await ratings.apply_evaluation(session, attempt, data["total"])
     return await append_event(
         session,
         session_id=ts.id,

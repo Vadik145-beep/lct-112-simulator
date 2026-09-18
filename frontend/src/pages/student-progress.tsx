@@ -1,16 +1,24 @@
 import { BookOpen, TrendingUp } from "lucide-react";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 
-import { useProgress } from "@/api/review";
+import { scoreDynamicsOption, shortTitle, timeDynamicsOption } from "@/analytics/charts";
+import { useProgress, type ProgressOut } from "@/api/review";
+import { Chart } from "@/components/chart";
+import { baseOption, usePalette, type ChartOption, type ChartPalette } from "@/components/chart-theme";
 import { ErrorState, LoadingState } from "@/components/states";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatDateTime } from "@/emulator/time";
+import { formatDate, formatDateTime } from "@/emulator/time";
 import { cn } from "@/lib/utils";
 import { MODE_TITLES, SESSION_STATUS_TITLES, formatDeviation, formatDuration, formatScore, plural } from "@/teacher/labels";
 
+// The pass threshold the score line marks; the start of every skill rating (PRD 9.7).
+const THRESHOLD = 70;
+const START_RATING = 1400;
+
 /** «Мой прогресс» (PRD 13.7): the score per lesson, time against the norm, frequent errors
- * and what to read. The rating across groups and the forecast come with the analytics. */
+ * and what to read, plus the skill rating by incident group and the weekly dynamics. */
 export function StudentProgressPage() {
   const query = useProgress();
   if (query.isPending) return <LoadingState text="Считаем прогресс…" />;
@@ -21,15 +29,25 @@ export function StudentProgressPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold">Мой прогресс</h1>
-        <p className="text-sm text-muted-foreground">Баллы по занятиям, время против норматива, частые ошибки и что повторить.</p>
+        <p className="text-sm text-muted-foreground">
+          Баллы по занятиям, время против норматива, рейтинг по группам происшествий, частые ошибки и что повторить.
+          {p.demo_data && (
+            <Badge tone="warning" className="ml-2">
+              демонстрационные данные
+            </Badge>
+          )}
+        </p>
       </div>
 
-      <section aria-label="Итоги" className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <section aria-label="Итоги" className="grid grid-cols-2 gap-2 sm:grid-cols-4" data-testid="progress-stats">
         <Stat label="Карточек и вызовов" value={String(p.attempts)} />
         <Stat label="Оценено" value={String(p.evaluated)} />
         <Stat label="Зачтено" value={p.evaluated ? `${p.passed} (${Math.round((100 * p.passed) / p.evaluated)} %)` : "—"} />
         <Stat label="Средний балл" value={formatScore(p.average)} />
       </section>
+
+      <Ratings p={p} />
+      <Dynamics p={p} />
 
       {p.sessions.length === 0 ? (
         <Card>
@@ -89,7 +107,7 @@ export function StudentProgressPage() {
           <CardHeader>
             <CardTitle className="text-base">Частые ошибки</CardTitle>
           </CardHeader>
-          <CardContent className="text-sm">
+          <CardContent className="text-sm" data-testid="progress-errors">
             {p.frequent_errors.length === 0 ? (
               <p className="text-muted-foreground">Повторяющихся ошибок нет.</p>
             ) : (
@@ -121,7 +139,7 @@ export function StudentProgressPage() {
             {p.recommendations.length === 0 ? (
               <p className="text-muted-foreground">Пройдите первое занятие — рекомендации появятся по его итогам.</p>
             ) : (
-              <ul className="list-disc space-y-1 pl-5">
+              <ul className="list-disc space-y-1 pl-5" data-testid="recommendations">
                 {p.recommendations.map((r, i) => (
                   <li key={i}>{r}</li>
                 ))}
@@ -140,5 +158,101 @@ function Stat({ label, value }: { label: string; value: string }) {
       <div className="text-xs text-muted-foreground">{label}</div>
       <div className="text-xl font-semibold tabular-nums">{value}</div>
     </div>
+  );
+}
+
+function Ratings({ p }: { p: ProgressOut }) {
+  const palette = usePalette();
+  const option = useMemo(() => ratingsOption(palette, p), [palette, p]);
+  if (p.ratings.length === 0) return null;
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Рейтинг по группам происшествий</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Начало — {START_RATING}; растёт за хорошие результаты (сильнее — на сложных карточках), падает за слабые. Слабые группы сверху.
+        </p>
+      </CardHeader>
+      <CardContent data-testid="ratings-chart">
+        <Chart option={option} height={Math.max(160, 30 * p.ratings.length + 60)} label="Рейтинг по группам происшествий" />
+      </CardContent>
+    </Card>
+  );
+}
+
+function ratingsOption(palette: ChartPalette, p: ProgressOut): ChartOption {
+  // Bars grow from the start rating: right is above 1400, left is below.
+  const rows = p.ratings;
+  const spread = Math.max(100, ...rows.map((r) => Math.abs(r.rating - START_RATING)));
+  const limit = Math.ceil(spread / 50) * 50;
+  return {
+    ...baseOption(palette),
+    grid: { left: 250, right: 48, top: 8, bottom: 32 },
+    tooltip: {
+      ...(baseOption(palette).tooltip as object),
+      trigger: "axis",
+      formatter: (items: { dataIndex: number }[]) => {
+        const r = rows[items[0]?.dataIndex ?? 0];
+        if (!r) return "";
+        return `${r.title} · ${MODE_TITLES[r.mode] ?? r.mode}<br/>рейтинг <b>${Math.round(r.rating)}</b> по ${r.n} ${plural(r.n, "попытке", "попыткам", "попыткам")}`;
+      },
+    },
+    xAxis: {
+      type: "value",
+      min: -limit,
+      max: limit,
+      name: "Рейтинг (старт 1400)",
+      nameLocation: "middle",
+      nameGap: 24,
+      axisLabel: { color: palette.muted, formatter: (v: number) => String(START_RATING + v) },
+      splitLine: { lineStyle: { color: palette.border } },
+    },
+    yAxis: {
+      type: "category",
+      // The API sorts from the weakest; the category axis draws its first item at the bottom.
+      inverse: true,
+      data: rows.map((r) => `${shortTitle(r.title, 26)} · ${r.mode === "call_intake" ? "вызов" : "карточка"}`),
+      axisLabel: { color: palette.text, fontSize: 12 },
+      axisLine: { lineStyle: { color: palette.muted } },
+    },
+    series: [
+      {
+        name: "Рейтинг",
+        type: "bar",
+        barMaxWidth: 18,
+        data: rows.map((r) => ({
+          value: Math.round(r.rating - START_RATING),
+          itemStyle: { color: r.rating < START_RATING - 25 ? palette.danger : r.rating > START_RATING + 25 ? palette.success : palette.warning, borderRadius: 3 },
+        })),
+        label: {
+          show: true,
+          position: "right",
+          color: palette.text,
+          formatter: (x: { value: number }) => String(START_RATING + x.value),
+        },
+      },
+    ],
+  };
+}
+
+function Dynamics({ p }: { p: ProgressOut }) {
+  const palette = usePalette();
+  const score = useMemo(() => scoreDynamicsOption(palette, p.dynamics, THRESHOLD), [palette, p.dynamics]);
+  const time = useMemo(() => timeDynamicsOption(palette, p.dynamics), [palette, p.dynamics]);
+  if (p.dynamics.length === 0) return null;
+  const first = p.dynamics[0]?.week_start;
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Динамика по неделям</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          С {formatDate(first)} · {p.evaluated} оценённых попыток
+        </p>
+      </CardHeader>
+      <CardContent className="grid gap-6 lg:grid-cols-2">
+        <Chart option={score} height={240} label="Мой средний балл по неделям" />
+        <Chart option={time} height={240} label="Моё время относительно норматива по неделям" />
+      </CardContent>
+    </Card>
   );
 }

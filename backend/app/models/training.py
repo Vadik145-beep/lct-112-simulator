@@ -170,6 +170,8 @@ class TrainingSession(Base):
     )
     voice_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     dialog_mode: Mapped[str] = mapped_column(String(16), nullable=False, default="select")
+    # Adaptive selection by skill ratings (PRD 9.7, app.domain.analytics.adaptive).
+    adaptive: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     weights: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
     status: Mapped[str] = mapped_column(String(16), nullable=False, default=SESSION_DRAFT)
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

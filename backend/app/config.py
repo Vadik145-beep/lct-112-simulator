@@ -53,6 +53,9 @@ class Settings(BaseSettings):
     models_dir: str | None = None
     # Writable folder for generated files (voiced replies, recordings); /storage in compose.
     storage_dir: str = "../storage"
+    # Analytics folder (PRD 9.7): models/ holds the readiness forecast model and its metrics,
+    # data/ the simulated cohort it was trained on; /ai in compose, ../ai from backend/.
+    analytics_dir: str = "../ai"
 
     # Telephony (PRD 9.5, compose profile `telephony`). Off: the call panel of the browser
     # works through the microphone and /attempts/{id}/utterance instead of a SIP call.

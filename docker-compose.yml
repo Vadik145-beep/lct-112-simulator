@@ -27,6 +27,7 @@ x-backend-env: &backend-env
   BACKUP_DIR: /backups
   BACKUP_TIME: ${BACKUP_TIME:-03:00}
   BACKUP_KEEP: ${BACKUP_KEEP:-14}
+  ANALYTICS_DIR: /ai
   EMBEDDING_MODEL_DIR: ${EMBEDDING_MODEL_DIR:-/models/embeddings/multilingual-e5-small}
   DIALOG_MODE: ${DIALOG_MODE:-select}
   LLM_DIALOG_URL: ${LLM_DIALOG_URL:-http://llm-dialog:8080}
@@ -76,6 +77,7 @@ services:
       - asterisk-conf:/asterisk
       - backups:/backups
       - ./data:/data:ro
+      - ./ai:/ai:ro
       - ${MODELS_DIR:-./models}:/models:ro
     depends_on:
       postgres:

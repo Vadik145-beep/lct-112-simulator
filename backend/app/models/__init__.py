@@ -1,3 +1,4 @@
+from app.models.analytics import SkillRating
 from app.models.audit import AuditLog
 from app.models.base import Base
 from app.models.cabinets import (
@@ -124,6 +125,7 @@ __all__ = [
     "Service",
     "SessionEvent",
     "Setting",
+    "SkillRating",
     "Street",
     "Ticket",
     "TrainingSession",
