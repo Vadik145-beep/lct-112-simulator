@@ -75,7 +75,7 @@ test.describe("Волна 9: кабинеты", () => {
     await form.getByLabel("Логин", { exact: true }).fill(login);
     await form.getByLabel("ФИО").fill("Тестов Тест Тестович");
     await form.getByLabel("Роль", { exact: true }).selectOption("student");
-    await form.getByLabel("Служба (для обучающегося ДДС)").selectOption("territorial_oiv");
+    await form.getByLabel("Служба ДДС обучающегося").selectOption("territorial_oiv");
     await form.getByRole("button", { name: "Создать пользователя" }).click();
     const secret = admin.getByTestId("admin-secret");
     await expect(secret).toContainText(`Пользователь создан: ${login}`);
