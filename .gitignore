@@ -36,6 +36,8 @@ deploy/certs/*.crt
 deploy/certs/*.srl
 deploy/certs/*.cnf
 storage/
+# local copies made by the backup code when the API runs outside compose (BACKUP_DIR)
+backups/
 
 # test artefacts
 .pytest_cache/
@@ -44,4 +46,10 @@ coverage/
 backend/htmlcov/
 frontend/playwright-report/
 frontend/test-results/
+# downloaded AI models at the repository root (scripts/fetch_models.sh), not app/models/
 /models/
+
+# readiness forecast: the trained model is committed, the simulated cohort is not
+# (scripts/simulate_cohort.py recreates it)
+!ai/models/
+ai/data/

@@ -27,7 +27,7 @@ const ROLES = [
   {
     role: "admin",
     button: "Войти как администратор",
-    title: "Кабинет администратора",
+    title: "Пользователи",
     name: "Администратор системы",
     label: "Администратор",
     home: "/admin",
@@ -66,7 +66,7 @@ test.describe("Волна 0: вход, роли, кабинеты", () => {
       await expect(page).toHaveURL(new RegExp(`${r.home}$`));
       await expect(page.getByRole("heading", { name: r.title })).toBeVisible();
       await expect(page.getByText(r.name)).toBeVisible();
-      await expect(page.getByText(r.label, { exact: true })).toBeVisible();
+      await expect(page.getByRole("banner").getByText(r.label, { exact: true })).toBeVisible();
       await page.screenshot({ path: `${SHOTS}/02-${r.role}.png`, fullPage: true });
 
       // Someone else's cabinet by direct URL: the page says "Нет доступа" and stays there.
@@ -134,7 +134,7 @@ test.describe("Волна 0: вход, роли, кабинеты", () => {
     });
     await page.goto("/login");
     await page.getByRole("button", { name: "Войти как администратор" }).click();
-    await expect(page.getByRole("heading", { name: "Кабинет администратора" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Пользователи" })).toBeVisible();
     expect(external).toEqual([]);
   });
 });

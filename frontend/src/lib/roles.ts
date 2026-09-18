@@ -27,6 +27,7 @@ export const ROLE_NAV: Record<Role, NavItem[]> = {
   teacher: [
     { to: "/teacher", label: "Занятия" },
     { to: "/teacher/groups", label: "Группы" },
+    { to: "/teacher/analytics", label: "Аналитика" },
     { to: "/teacher/scenarios", label: "Сценарии" },
   ],
   admin: [

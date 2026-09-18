@@ -13,6 +13,7 @@ from app import warmup
 from app.admin import health as health_monitor
 from app.admin import settings as admin_settings
 from app.admin.router import router as admin_router
+from app.analytics.router import router as analytics_router
 from app.auth.router import router as auth_router
 from app.config import get_settings
 from app.dialog.router import router as dialog_router
@@ -110,6 +111,7 @@ def create_app() -> FastAPI:
 
     app.include_router(system_router, prefix=API_PREFIX)
     app.include_router(auth_router, prefix=API_PREFIX)
+    app.include_router(analytics_router, prefix=API_PREFIX)
     app.include_router(me_router, prefix=API_PREFIX)
     app.include_router(cabinets_router, prefix=API_PREFIX)
     app.include_router(reference_router, prefix=API_PREFIX)

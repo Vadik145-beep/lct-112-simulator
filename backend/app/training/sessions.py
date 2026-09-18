@@ -161,6 +161,7 @@ class SessionSettings:
     weights: dict[str, int]
     voice_enabled: bool = False
     dialog_mode: str = "select"
+    adaptive: bool = False
 
 
 async def validate_settings(session: AsyncSession, spec: SessionSettings, teacher: User) -> None:
@@ -253,6 +254,7 @@ def apply_settings(ts: TrainingSession, spec: SessionSettings) -> None:
     ts.weights = dict(spec.weights)
     ts.voice_enabled = spec.voice_enabled
     ts.dialog_mode = spec.dialog_mode
+    ts.adaptive = spec.adaptive
 
 
 async def pick_scenarios(session: AsyncSession, ts: TrainingSession) -> list[Scenario]:
@@ -260,7 +262,7 @@ async def pick_scenarios(session: AsyncSession, ts: TrainingSession) -> list[Sce
     service profile and incident groups, not harder than the session difficulty (when none
     match, harder ones are taken rather than nothing), shuffled inside each difficulty so
     easier cards come first (the duplicate card follows its original). Random for now; the
-    adaptive selection by ratings arrives in wave 10."""
+    adaptive selection by ratings reorders it per trainee in ``service.issue_cards``."""
     if ts.scenario_ids:
         return await training.scenario_queue(session, ts)
     query = select(Scenario).where(Scenario.kind == ts.mode, Scenario.status == SCENARIO_APPROVED)

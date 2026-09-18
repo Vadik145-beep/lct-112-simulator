@@ -33,6 +33,7 @@ from app.models import (
     User,
 )
 from app.security import hash_password
+from app.seed_history import seed_history
 from app.training.service import utcnow
 
 log = get_logger(__name__)
@@ -296,6 +297,7 @@ async def seed(data_dir: Path | None = None) -> int:
         scenarios_created, scenarios_updated, keys = await seed_scenarios(session, data_dir)
         session_created = await seed_demo_session(session, keys)
         call_session_created = await seed_demo_call_session(session, keys)
+        history_attempts = await seed_history(session)
         await session.commit()
     log.info(
         "seed finished",
@@ -305,6 +307,7 @@ async def seed(data_dir: Path | None = None) -> int:
         scenarios_updated=scenarios_updated,
         demo_session_created=session_created,
         demo_call_session_created=call_session_created,
+        history_attempts=history_attempts,
     )
     return users_created
 

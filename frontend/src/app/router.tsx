@@ -16,7 +16,9 @@ import { AttemptReviewPage } from "@/pages/attempt-review";
 import { StudentAssignmentsPage } from "@/pages/student-assignments";
 import { StudentProgressPage } from "@/pages/student-progress";
 import { StudentReferencePage } from "@/pages/student-reference";
+import { TeacherAnalyticsPage } from "@/pages/teacher/analytics";
 import { TeacherGroupsPage } from "@/pages/teacher/groups";
+import { ReadinessModelPage } from "@/pages/teacher/readiness-model";
 import { TeacherScenarioPage } from "@/pages/teacher/scenario";
 import { TeacherScenariosPage } from "@/pages/teacher/scenarios";
 import { SessionFormPage } from "@/pages/teacher/session-form";
@@ -71,6 +73,8 @@ export const router = createBrowserRouter([
           { path: "sessions/:sessionId/report", element: <SessionReportPage /> },
           { path: "attempts/:attemptId/review", element: <AttemptReviewPage /> },
           { path: "groups", element: <TeacherGroupsPage /> },
+          { path: "analytics", element: <TeacherAnalyticsPage /> },
+          { path: "analytics/readiness-model", element: <ReadinessModelPage /> },
           { path: "scenarios", element: <TeacherScenariosPage /> },
           { path: "scenarios/:scenarioId", element: <TeacherScenarioPage /> },
         ],

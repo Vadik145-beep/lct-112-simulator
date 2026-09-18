@@ -1,5 +1,6 @@
-import { Pencil, Plus, Users } from "lucide-react";
+import { BarChart3, Pencil, Plus, Users } from "lucide-react";
 import { useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
 
 import { useCreateGroup, useGroups, useStudents, useUpdateGroup, type GroupOut, type StudentOut } from "@/api/teacher";
 import { ErrorState, LoadingState } from "@/components/states";
@@ -54,9 +55,16 @@ export function TeacherGroupsPage() {
                       {g.members.length} {plural(g.members.length, "обучающийся", "обучающихся", "обучающихся")}
                     </p>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => setEditing(g.id)} aria-label={`Изменить группу ${g.title}`}>
-                    <Pencil /> Изменить
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to={`/teacher/analytics?group=${g.id}`} aria-label={`Аналитика группы ${g.title}`}>
+                        <BarChart3 /> Аналитика
+                      </Link>
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => setEditing(g.id)} aria-label={`Изменить группу ${g.title}`}>
+                      <Pencil /> Изменить
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   {g.members.length === 0 ? (

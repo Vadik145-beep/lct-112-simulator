@@ -1,6 +1,6 @@
 """«Мой прогресс» of the trainee (PRD 13.7): the score per lesson, time against the norm,
-frequent errors and what to read in the memo. The rating across groups and the forecast
-come with the analytics of wave 10; this is the basic view."""
+frequent errors and what to read in the memo, plus the skill ratings by incident group and
+the weekly dynamics from the analytics (``app.analytics.service.progress_extras``)."""
 
 from __future__ import annotations
 
@@ -12,6 +12,8 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.analytics import service as analytics
+from app.analytics.schemas import RatingOut, WeekPointOut
 from app.domain.evaluation.timing import seconds_between
 from app.models import (
     SESSION_DRAFT,
@@ -61,6 +63,11 @@ class ProgressOut(BaseModel):
     average_seconds: float | None
     frequent_errors: list[FrequentError]
     recommendations: list[str]
+    # Analytics (PRD 9.7): ratings from the weakest, mean score and time by week, and whether
+    # the history is the demonstration seed.
+    ratings: list[RatingOut]
+    dynamics: list[WeekPointOut]
+    demo_data: bool
 
 
 def _mean(values: list[float]) -> float | None:
@@ -153,7 +160,10 @@ async def build_progress(session: AsyncSession, student: User) -> ProgressOut:
             for f in frequent:
                 if f.code == te.code:
                     f.memo_ref = te.memo_ref
+    extras = await analytics.progress_extras(session, student)
     recommendations = _recommendations(frequent, late, len(all_seconds), all_totals)
+    if extras.weakest_tip:
+        recommendations = [extras.weakest_tip, *recommendations][:MAX_RECOMMENDATIONS]
     return ProgressOut(
         sessions=rows,
         attempts=len(attempts),
@@ -163,6 +173,9 @@ async def build_progress(session: AsyncSession, student: User) -> ProgressOut:
         average_seconds=_mean(all_seconds),
         frequent_errors=frequent,
         recommendations=recommendations,
+        ratings=extras.ratings,
+        dynamics=extras.dynamics,
+        demo_data=extras.demo_data,
     )
 
 
