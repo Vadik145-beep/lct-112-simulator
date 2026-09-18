@@ -104,6 +104,25 @@ class QueueScenarioOut(BaseModel):
     incident_type_code: str | None
 
 
+class QueuePreviewIn(BaseModel):
+    """The card filters of the lesson form, to show how many cards match before the lesson
+    is created (docs/BUGS.md, 6 and 7)."""
+
+    mode: str = MODE_CARD_RESPONSE
+    card_source: str = "scenarios"
+    scenario_ids: list[uuid.UUID] = Field(default_factory=list)
+    incident_groups: list[str] = Field(default_factory=list)
+    difficulty: int = 1
+    service_profile: list[str] = Field(default_factory=list)
+
+
+class QueuePreviewOut(BaseModel):
+    total: int
+    # True when nothing matched at the chosen difficulty and harder cards will be used.
+    harder_only: bool
+    queue: list[QueueScenarioOut]
+
+
 class SessionListItem(BaseModel):
     id: uuid.UUID
     title: str

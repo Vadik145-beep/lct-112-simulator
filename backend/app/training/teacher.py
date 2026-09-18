@@ -17,6 +17,8 @@ from app.auth.deps import DbSession, client_ip, require_role
 from app.errors import ApiError
 from app.events import publish_events
 from app.models import (
+    MODE_CALL_INTAKE,
+    MODE_CARD_RESPONSE,
     SESSION_DRAFT,
     Group,
     Role,
@@ -35,6 +37,8 @@ from app.training.teacher_schemas import (
     GroupPatch,
     ModelsOut,
     MonitorOut,
+    QueuePreviewIn,
+    QueuePreviewOut,
     QueueScenarioOut,
     ReportOut,
     SessionIn,
@@ -210,6 +214,30 @@ def _queue_out(s: Scenario) -> QueueScenarioOut:
         difficulty=s.difficulty,
         service_code=s.service_code,
         incident_type_code=s.incident_type_code,
+    )
+
+
+@router.post("/sessions/preview", response_model=QueuePreviewOut)
+async def preview_queue(body: QueuePreviewIn, user: Teacher, session: DbSession) -> QueuePreviewOut:
+    """Cards that the given filters would put into the queue — shown in the lesson form
+    before the lesson exists, so an empty queue is not a surprise (docs/BUGS.md, 6 and 7)."""
+    if body.mode not in (MODE_CARD_RESPONSE, MODE_CALL_INTAKE):
+        raise ApiError(422, "bad_mode", "Неизвестный режим занятия.")
+    if body.card_source not in lessons.CARD_SOURCES:
+        raise ApiError(422, "bad_card_source", "Неизвестный источник карточек.")
+    draft = TrainingSession(
+        teacher_id=user.id,
+        mode=body.mode,
+        card_source=body.card_source,
+        scenario_ids=list(body.scenario_ids),
+        incident_groups=list(body.incident_groups),
+        difficulty=body.difficulty,
+        service_profile=list(body.service_profile),
+    )
+    queue = await lessons.pick_scenarios(session, draft)
+    harder_only = bool(queue) and all(s.difficulty > body.difficulty for s in queue)
+    return QueuePreviewOut(
+        total=len(queue), harder_only=harder_only, queue=[_queue_out(s) for s in queue]
     )
 
 

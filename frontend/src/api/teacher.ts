@@ -106,6 +106,18 @@ export function useGroups() {
   return useQuery({ queryKey: groupsKey, queryFn: () => unwrap(api.GET("/api/groups")) });
 }
 
+export type QueuePreviewIn = components["schemas"]["QueuePreviewIn"];
+export type QueuePreviewOut = components["schemas"]["QueuePreviewOut"];
+
+/** Cards the form's filters would put into the queue — shown before the lesson is created. */
+export function useQueuePreview(body: QueuePreviewIn) {
+  return useQuery({
+    queryKey: ["teacher", "queue-preview", body],
+    queryFn: () => unwrap(api.POST("/api/sessions/preview", { body })),
+    placeholderData: (prev) => prev,
+  });
+}
+
 /** Which AI services answer now: the lesson form warns before a mode silently degrades. */
 export function useModels(enabled = true) {
   return useQuery({ queryKey: ["teacher", "models"], queryFn: () => unwrap(api.GET("/api/models")), enabled, staleTime: 15_000 });

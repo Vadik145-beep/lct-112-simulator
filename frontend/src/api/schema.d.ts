@@ -1051,6 +1051,27 @@ export interface paths {
         patch: operations["update_group_api_groups__group_id__patch"];
         trace?: never;
     };
+    "/api/sessions/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview Queue
+         * @description Cards that the given filters would put into the queue — shown in the lesson form
+         *     before the lesson exists, so an empty queue is not a surprise (docs/BUGS.md, 6 and 7).
+         */
+        post: operations["preview_queue_api_sessions_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sessions": {
         parameters: {
             query?: never;
@@ -3311,6 +3332,43 @@ export interface components {
             app_env: string;
             /** Dialog Mode */
             dialog_mode: string;
+        };
+        /**
+         * QueuePreviewIn
+         * @description The card filters of the lesson form, to show how many cards match before the lesson
+         *     is created (docs/BUGS.md, 6 and 7).
+         */
+        QueuePreviewIn: {
+            /**
+             * Mode
+             * @default card_response
+             */
+            mode: string;
+            /**
+             * Card Source
+             * @default scenarios
+             */
+            card_source: string;
+            /** Scenario Ids */
+            scenario_ids?: string[];
+            /** Incident Groups */
+            incident_groups?: string[];
+            /**
+             * Difficulty
+             * @default 1
+             */
+            difficulty: number;
+            /** Service Profile */
+            service_profile?: string[];
+        };
+        /** QueuePreviewOut */
+        QueuePreviewOut: {
+            /** Total */
+            total: number;
+            /** Harder Only */
+            harder_only: boolean;
+            /** Queue */
+            queue: components["schemas"]["QueueScenarioOut"][];
         };
         /** QueueScenarioOut */
         QueueScenarioOut: {
@@ -6276,6 +6334,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GroupOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_queue_api_sessions_preview_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QueuePreviewIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueuePreviewOut"];
                 };
             };
             /** @description Validation Error */

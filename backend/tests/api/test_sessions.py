@@ -389,3 +389,40 @@ async def test_seed_users_untouched(client: AsyncClient) -> None:
     async with SessionLocal() as session:
         logins = set(await session.scalars(select(User.login)))
     assert {"teacher1", "teacher2", "student1", "student12"} <= logins
+
+
+async def test_queue_preview_counts_cards_before_the_lesson_exists(client: AsyncClient) -> None:
+    """docs/BUGS.md 6/7: the lesson form asks how many cards match the filters."""
+    teacher = await login(client, "teacher1")
+    r = await client.post(
+        "/api/sessions/preview",
+        headers=bearer(teacher),
+        json={"mode": "card_response", "difficulty": 1, "service_profile": ["territorial_oiv"]},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["total"] == len(body["queue"]) > 0
+    assert all(s["service_code"] == "territorial_oiv" for s in body["queue"])
+    # A service without approved cards: an honest zero, not a 500.
+    r = await client.post(
+        "/api/sessions/preview",
+        headers=bearer(teacher),
+        json={"mode": "card_response", "difficulty": 1, "service_profile": ["no-such-service"]},
+    )
+    assert r.status_code == 200
+    assert r.json() == {"total": 0, "harder_only": False, "queue": []}
+    # Call intake ignores the service profile and reports cards harder than asked.
+    r = await client.post(
+        "/api/sessions/preview",
+        headers=bearer(teacher),
+        json={"mode": "call_intake", "difficulty": 1, "service_profile": ["no-such-service"]},
+    )
+    assert r.status_code == 200
+    assert r.json()["total"] > 0
+    r = await client.post(
+        "/api/sessions/preview", headers=bearer(teacher), json={"mode": "nonsense"}
+    )
+    assert r.status_code == 422
+    student = await login(client, "student1")
+    r = await client.post("/api/sessions/preview", headers=bearer(student), json={})
+    assert r.status_code == 403

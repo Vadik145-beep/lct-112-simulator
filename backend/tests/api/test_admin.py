@@ -111,6 +111,21 @@ async def test_create_block_reset_and_sip(
     )
     assert r.status_code == 422
     assert "nope" in r.json()["error"]["message"]
+    # docs/BUGS.md 4: a trainee needs a service, a teacher must not have one.
+    r = await client.post(
+        "/api/admin/users",
+        headers=bearer(admin),
+        json={"login": "adm-test-y", "full_name": "Х", "role": "student"},
+    )
+    assert r.status_code == 422
+    assert r.json()["error"]["code"] == "service_required"
+    r = await client.post(
+        "/api/admin/users",
+        headers=bearer(admin),
+        json={"login": "adm-test-y", "full_name": "Х", "role": "teacher", "service_code": "gkh"},
+    )
+    assert r.status_code == 422
+    assert r.json()["error"]["code"] == "service_not_applicable"
 
     # The new user logs in with the temporary password and has to change it first.
     r = await client.post(
@@ -163,13 +178,24 @@ async def test_create_block_reset_and_sip(
         "/api/auth/login", json={"login": "adm-test-student", "password": temporary}
     )
     assert r.status_code == 403
+    # A trainee cannot be left without a service; promoting to teacher drops it by itself.
+    r = await client.patch(
+        f"/api/admin/users/{user_id}", headers=bearer(admin), json={"clear_service": True}
+    )
+    assert r.status_code == 422
+    assert r.json()["error"]["code"] == "service_required"
     r = await client.patch(
         f"/api/admin/users/{user_id}",
         headers=bearer(admin),
-        json={"is_blocked": False, "role": "teacher", "clear_service": True},
+        json={"is_blocked": False, "role": "teacher"},
     )
-    assert r.status_code == 200
+    assert r.status_code == 200, r.text
     assert r.json()["role"] == "teacher" and r.json()["service_code"] is None
+    r = await client.patch(
+        f"/api/admin/users/{user_id}", headers=bearer(admin), json={"service_code": "gkh"}
+    )
+    assert r.status_code == 422
+    assert r.json()["error"]["code"] == "service_not_applicable"
 
     # The administrator cannot block itself or change its own role.
     me = (await client.get("/api/me", headers=bearer(admin))).json()

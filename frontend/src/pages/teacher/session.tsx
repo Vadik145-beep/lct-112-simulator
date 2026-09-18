@@ -20,7 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { acceptanceTimer, formatDateTime, formatSeconds, useNow } from "@/emulator/time";
 import { useSessionEvents, type SessionEvent } from "@/emulator/ws";
 import { cn } from "@/lib/utils";
-import { DIFFICULTY_TITLES, MODE_TITLES, RESPONSE_STATUS_TITLES, SESSION_STATUS_TITLES, formatScore, plural } from "@/teacher/labels";
+import { CARDS_AT_ONCE, DIFFICULTY_TITLES, MODE_TITLES, RESPONSE_STATUS_TITLES, SESSION_STATUS_TITLES, formatScore, plural } from "@/teacher/labels";
 import { STAGE_TITLES, applyEvent, initialState, summarize, type MonitorState } from "@/teacher/monitor";
 
 const STATUS_TONES: Record<string, BadgeTone> = { draft: "neutral", running: "success", finished: "primary" };
@@ -120,7 +120,11 @@ function SettingsSummary({ session }: { session: SessionOut }) {
       <dt className="text-muted-foreground">Порог зачёта</dt>
       <dd>{session.pass_threshold} баллов</dd>
       <dt className="text-muted-foreground">Карточек</dt>
-      <dd>{session.cards_per_student > 0 ? `${session.cards_per_student} на обучающегося` : "вся очередь"}</dd>
+      <dd>
+        {session.mode === "call_intake" ? "по одному вызову" : CARDS_AT_ONCE[session.difficulty] === 1 ? "по одной за раз" : `${CARDS_AT_ONCE[session.difficulty]} одновременно`}
+        {" · "}
+        {session.cards_per_student > 0 ? `всего ${session.cards_per_student} на обучающегося` : "вся очередь"}
+      </dd>
       <dt className="text-muted-foreground">Подсказки</dt>
       <dd>{session.hints_enabled ? "включены" : "выключены (аттестация)"}</dd>
       <dt className="text-muted-foreground">Службы</dt>
