@@ -23,6 +23,10 @@ x-backend-env: &backend-env
   DATA_DIR: /data
   STORAGE_DIR: /storage
   MODELS_DIR: /models
+  # Backups (wave 9): the folder shared with the backup service and the schedule defaults.
+  BACKUP_DIR: /backups
+  BACKUP_TIME: ${BACKUP_TIME:-03:00}
+  BACKUP_KEEP: ${BACKUP_KEEP:-14}
   EMBEDDING_MODEL_DIR: ${EMBEDDING_MODEL_DIR:-/models/embeddings/multilingual-e5-small}
   DIALOG_MODE: ${DIALOG_MODE:-select}
   LLM_DIALOG_URL: ${LLM_DIALOG_URL:-http://llm-dialog:8080}
@@ -70,6 +74,7 @@ services:
     volumes:
       - storage:/storage
       - asterisk-conf:/asterisk
+      - backups:/backups
       - ./data:/data:ro
       - ${MODELS_DIR:-./models}:/models:ro
     depends_on:

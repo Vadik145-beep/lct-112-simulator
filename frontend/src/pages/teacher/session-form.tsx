@@ -127,7 +127,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
       ...form,
       title: form.title.trim(),
       group_id: groupId,
-      unfinished_seconds: Number.isFinite(hours) && hours > 0 ? Math.round(hours * HOUR) : DEFAULTS.unfinished_seconds,
+      unfinished_seconds: Number.isFinite(hours) && hours > 0 ? Math.round(hours * HOUR) : (DEFAULTS.unfinished_seconds ?? null),
     };
     mutation.mutate(body, { onSuccess: (data) => navigate(`/teacher/sessions/${data.id}`) });
   }

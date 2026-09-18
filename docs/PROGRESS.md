@@ -4,7 +4,99 @@
 
 ## Текущая волна
 
-Волна 8 ([plan/wave-08.md](../plan/wave-08.md)), ветка `wave-08/scenarios`, issue #9.
+Волна 9 ([plan/wave-09.md](../plan/wave-09.md)), ветка `wave-09/cabinets`, issue #10.
+Шла параллельно с волной 8 (сценарии) от `main` `08f9a3c`; после мержа волны 8 (`14124a5`)
+перебазирована на неё, граница между ними — в DECISIONS.md («Волна 9»).
+
+### Сделано
+
+- Миграция `0006_cabinets`: `evaluation_overrides`, `comments`, `admin_notifications`,
+  `backups` (модели в `app/models/cabinets.py`).
+- Преподаватель (`app/training/review.py`): `PATCH /attempts/{id}/evaluation` (новый итог +
+  обязательная причина → `evaluation_overrides`, пересчёт зачёта по порогу занятия, аудит
+  `evaluation.override`, событие `evaluation.overridden`), `POST /attempts/{id}/comments`
+  (аудит `attempt.comment`, событие `attempt.commented`). `GET /attempts/{id}` отдаёт
+  `override` и `comments` обучающемуся и преподавателю.
+- Отчёт: у попытки `remarks` (ошибка с пояснением, изменение оценки с причиной, комментарии),
+  `overridden`, `override_reason`, `comments`. Экспорт `GET /sessions/{id}/report.pdf|.xlsx|.csv`
+  (`app/reports/export.py`: ReportLab + DejaVu Sans, openpyxl с тремя листами, CSV «;» с BOM),
+  каждая выгрузка в аудите `report.export`.
+- Обучающийся: `GET /me/progress` (`app/training/progress.py`) — по занятиям балл, время,
+  отличие от норматива, комментарии, изменённые оценки; частые ошибки со ссылкой в памятку;
+  рекомендации.
+- Администратор (`app/admin/`): пользователи (`GET /admin/users` с инициалами вместо ФИО,
+  `POST /admin/users` с временным паролем и `must_change_password`, `PATCH` роль/служба/
+  блокировка с защитой от самоблокировки, `POST …/reveal` с аудитом, `…/reset-password`,
+  `…/sip` для обучающегося); службы (`GET/PATCH /admin/services`: `via_arm112`, `no_reject`);
+  состояние (`GET /admin/health`: плитки backend, worker, postgres, redis, languagetool,
+  asterisk, llm-dialog, llm-gen, stt, backup; CPU/память из `/proc`; идущие занятия, звонки,
+  карточки; открытые оповещения); оповещения (`GET /admin/notifications`,
+  `POST …/{id}/ack`) с монитором раз в минуту (`HEALTH_MONITOR_SECONDS`); аудит
+  (`GET /admin/audit` с фильтрами по логину, действию, датам и страницами;
+  `POST /admin/audit/verify` — пересчёт цепочки хэшей); копии (`GET /admin/backups`,
+  `POST /admin/backups` — файл-запрос службе backup); настройки (`GET/PATCH /admin/settings`:
+  телефония, журналирование, расписание копий, порог «Не завершено»).
+- Служба `backup` (`deploy/backup/backup.sh`): опрос запросов каждые 5 с, ответ `.done/.failed`,
+  чтение `.schedule`, отметка `.alive`; том `backups` смонтирован в `backend`.
+  `scripts/restore_test.sh` — свежая копия → `trainer_restore_test` → вход через
+  `app.admin.restore_check`.
+- nginx: `deploy/nginx/security-headers.conf` (HSTS, CSP без внешних источников,
+  `X-Frame-Options: DENY`, `Permissions-Policy`), подключён на сервере и в location'ах.
+- Фронтенд: разбор — `ScoreBox` (зачёркнутая старая оценка, причина), `ReviewNotes`
+  (комментарии; у преподавателя форма комментария и «Изменить оценку» с причиной) в
+  `src/review/teacher-panel.tsx`; отчёт — кнопки PDF/XLSX/CSV (`downloadReport` через fetch с
+  токеном), бейдж «изменена», число комментариев; «Мой прогресс» (`pages/student-progress.tsx`);
+  кабинет администратора `pages/admin/*`: пользователи, службы, состояние (обновление 15 с),
+  аудит с фильтрами и «Проверить целостность», копии (обновление 5 с), настройки. Навигация
+  администратора: Пользователи · Службы · Состояние · Аудит · Копии · Настройки.
+- Тесты: `tests/api/test_overrides.py` (оценка с причиной и без, права, комментарии, прогресс,
+  экспорт PDF/XLSX/CSV с проверкой кириллицы через pypdf), `tests/api/test_admin.py`
+  (пользователи, службы, ограничения роли, здоровье и оповещение о LanguageTool, аудит и
+  подмена, копии, настройки, CORS), e2e `e2e/admin.spec.ts` (путь «администратор завёл
+  пользователя → группа → занятие → оценка с причиной → PDF» и заголовки безопасности).
+
+### Проверено
+
+- `uv run pytest -q` целиком после ребейза на волну 8 — 482 зелёных, 3 skip (4 мин 41 с на
+  свободной машине). Отдельно `tests/api/test_admin.py tests/api/test_overrides.py tests/reports` — 18
+  зелёных (после мержа волны 8, с тестом «администратор не правит сценарий»); `test_scenarios.py`
+  волны 8 — 13 зелёных после ужесточения роли. `ruff`, `tsc`, `eslint`, `vitest` (23), `build` чисто.
+- Стенд `docker compose -p wave-09 up -d --build` (8493, без профилей `ai`/`telephony`):
+  `e2e/admin.spec.ts` — 2 зелёных (27 с на свободной машине): администратор → пользователь с
+  временным паролем → смена пароля → группа → занятие → карточка → оценка с причиной →
+  комментарий → PDF → «Мой прогресс» и разбор обучающегося → состояние, аудит с `verify`,
+  копия «сейчас», настройки; заголовки безопасности; кабинет на 390 px. Скриншоты в
+  `docs/screenshots/wave-09/`.
+- `scripts/restore_test.sh -p wave-09` — копия через службу backup, восстановление в
+  `trainer_restore_test`, вход admin кодом приложения, цепочка аудита цела.
+- Найдено и исправлено на стенде: `app.healthcheck` импортировал `app.main` (20 с на
+  загруженной машине при бюджете 5 с → backend «unhealthy»); монитор на старте помечал все
+  сервисы упавшими (теперь два прохода подряд, первый через минуту); имена не поднятых
+  compose-сервисов (`llm-dialog`, `stt`) резолвились 4–5 с и показывались падением (теперь
+  «не запущен»); встроенный скрипт темы в `index.html` нарушал CSP (`public/theme-init.js`).
+- Уроки стенда: пять стендов в 8 ГБ Docker → OOM-kill бэкенда и падения Docker Desktop;
+  один стенд за раз. Первая оценка на холодном стенде — до минуты (LanguageTool, e5).
+
+### Осталось
+
+- Плитка нагрузки CPU (P2): в контейнере читается из `/proc`, на Windows пусто — сделано в
+  минимальном виде.
+- Сравнение версий сценариев, прогрев Piper в worker — остатки волны 8, не в этой волне.
+
+### Как проверить
+
+```bash
+docker compose -p wave-09 up -d --build            # .env: 8130/8493, postgres 5438, redis 6385
+cd backend && uv run pytest tests/api/test_admin.py tests/api/test_overrides.py -q
+cd ../frontend && E2E_BASE_URL=https://localhost:8493 npx playwright test e2e/admin.spec.ts
+scripts/restore_test.sh -p wave-09
+# Руками: https://localhost:8493 → «Войти как администратор».
+```
+
+## Волна 8 (закрыта)
+
+Волна 8 ([plan/wave-08.md](../plan/wave-08.md)), ветка `wave-08/scenarios`, issue #9,
+PR #24 (`14124a5`).
 Часть 8a шла параллельно с волнами 6 и 7 (только новые модули, общие файлы не тронуты,
 миграций нет — редакторское состояние живёт в `scenario_versions.body`); после мержа волны 7
 (`08f9a3c`) worktree перебазирован и добавлена часть 8b — карточки обучающихся и источник
@@ -149,9 +241,9 @@ cd frontend && E2E_BASE_URL=https://localhost:8483 npx playwright test e2e/scena
 
 ## Волна 7 (закрыта)
 
-Волна 7 ([plan/wave-07.md](../plan/wave-07.md)), ветка `wave-07/call-intake`, issue #8.
-Начата параллельно с волной 6 (телефония) по браузерному пути; после мержа волны 6
-(`656680d`) перебазирована на неё — см. «Осталось» про встраивание софтфона.
+Волна 7 ([plan/wave-07.md](../plan/wave-07.md)), ветка `wave-07/call-intake`, issue #8,
+PR #23 (`08f9a3c`). Шла параллельно с волной 6 (телефония) по браузерному пути; после мержа
+волны 6 (`656680d`) перебазирована на неё.
 
 ### Сделано
 
@@ -744,6 +836,8 @@ TEST_DATABASE_ADMIN_URL=postgresql+asyncpg://trainer:trainer-dev-password@localh
 | 4 | 16.09.2026 | `d402b84` (PR #20) | Вадим |
 | 5 | 16.09.2026 | `bedaa2d` (PR #21) | Вадим |
 | 6 | 17.09.2026 | `656680d` (PR #22) | Вадим |
+| 7 | 17.09.2026 | `08f9a3c` (PR #23) | Вадим |
+| 8 | 18.09.2026 | `14124a5` (PR #24) | Вадим |
 
 ## Открытые вопросы и блокеры
 

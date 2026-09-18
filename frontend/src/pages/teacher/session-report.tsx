@@ -1,10 +1,12 @@
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Download } from "lucide-react";
 import { Fragment, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 
+import { downloadReport, type ExportFormat } from "@/api/review";
 import { useReport, type ReportAttempt, type ReportStudent } from "@/api/teacher";
 import { ErrorState, LoadingState } from "@/components/states";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDateTime, formatTime } from "@/emulator/time";
 import { cn } from "@/lib/utils";
@@ -39,7 +41,8 @@ function Report({ sessionId }: { sessionId: string }) {
 
   return (
     <div className="space-y-6">
-      <div>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
         <Link to={`/teacher/sessions/${sessionId}`} className="text-sm text-muted-foreground hover:underline">
           ← К занятию
         </Link>
@@ -54,6 +57,8 @@ function Report({ sessionId }: { sessionId: string }) {
         {report.status === "running" && (
           <p className="mt-1 text-sm text-warning-foreground">Занятие ещё идёт: цифры ниже — по уже закрытым карточкам.</p>
         )}
+        </div>
+        <ExportButtons sessionId={sessionId} />
       </div>
 
       <section aria-label="Итоги" className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -113,8 +118,37 @@ function Report({ sessionId }: { sessionId: string }) {
         </table>
       </div>
       <p className="text-xs text-muted-foreground">
-        Экспорт в PDF, XLSX и CSV и изменение оценки с причиной появятся в следующих версиях.
+        Оценку попытки можно изменить в её разборе — с причиной, которая попадает в журнал аудита и в отчёт. Отметка «изменена» стоит у таких попыток.
       </p>
+    </div>
+  );
+}
+
+/** «Скачать PDF / XLSX / CSV»: the file comes with the bearer token, so it is fetched, not linked. */
+function ExportButtons({ sessionId }: { sessionId: string }) {
+  const [busy, setBusy] = useState<ExportFormat | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  async function run(format: ExportFormat) {
+    setBusy(format);
+    setError(null);
+    try {
+      await downloadReport(sessionId, format);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Не удалось скачать отчёт.");
+    } finally {
+      setBusy(null);
+    }
+  }
+  return (
+    <div className="flex flex-col items-end gap-1" data-testid="report-export">
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Скачать отчёт">
+        {(["pdf", "xlsx", "csv"] as const).map((f) => (
+          <Button key={f} variant="outline" size="sm" disabled={busy !== null} onClick={() => void run(f)}>
+            <Download /> {busy === f ? "Готовим…" : f.toUpperCase()}
+          </Button>
+        ))}
+      </div>
+      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
 }
@@ -192,7 +226,14 @@ function AttemptsTable({ attempts, threshold }: { attempts: ReportAttempt[]; thr
               {a.total === null ? (
                 <span className="text-muted-foreground">{a.state === "issued" || a.state === "received" || a.state === "in_progress" ? "в работе" : "—"}</span>
               ) : (
-                <Badge tone={a.passed ? "success" : a.total < threshold ? "danger" : "neutral"}>{formatScore(a.total)}</Badge>
+                <span className="inline-flex items-center gap-1">
+                  <Badge tone={a.passed ? "success" : a.total < threshold ? "danger" : "neutral"}>{formatScore(a.total)}</Badge>
+                  {a.overridden && (
+                    <Badge tone="warning" title={a.override_reason ?? undefined}>
+                      изменена
+                    </Badge>
+                  )}
+                </span>
               )}
             </td>
             <td className={cn("py-1 pr-3 text-right whitespace-nowrap tabular-nums", (a.deviation ?? 0) > 0 && "text-destructive")}>
@@ -208,7 +249,14 @@ function AttemptsTable({ attempts, threshold }: { attempts: ReportAttempt[]; thr
                 </span>
               )}
             </td>
-            <td className="py-1 pr-3">{a.errors.length === 0 ? <span className="text-muted-foreground">—</span> : a.errors.join(", ")}</td>
+            <td className="py-1 pr-3">
+              {a.errors.length === 0 ? <span className="text-muted-foreground">—</span> : a.errors.join(", ")}
+              {a.comments.length > 0 && (
+                <div className="text-xs text-muted-foreground">
+                  {a.comments.length} {plural(a.comments.length, "комментарий", "комментария", "комментариев")}
+                </div>
+              )}
+            </td>
             <td className="py-1 pr-3">
               <Link to={`/teacher/attempts/${a.id}/review`} className="text-primary underline-offset-2 hover:underline">
                 {a.total === null ? "Открыть" : "Разбор"}

@@ -24,7 +24,8 @@ from app.models import (
     TrainingSession,
     User,
 )
-from app.training import present
+from app.models.cabinets import Comment, EvaluationOverride
+from app.training import present, review
 from app.training import service as training
 from app.training import sessions as lessons
 from app.training.teacher_schemas import (
@@ -78,17 +79,37 @@ def _grammar_percent(result: dict | None) -> float | None:
     return round(100 * float(grammar["score"]) / float(grammar["max"]), 1)
 
 
+def _remarks(
+    errors: list[dict], override: EvaluationOverride | None, comments: list[Comment]
+) -> list[str]:
+    remarks = []
+    for e in errors:
+        title = str(e.get("title") or e.get("code"))
+        explanation = str(e.get("explanation") or "").strip()
+        remarks.append(f"{title}: {explanation}" if explanation else title)
+    if override is not None:
+        remarks.append(
+            f"Оценка изменена преподавателем: {override.old_total} → {override.new_total} "
+            f"({override.reason})"
+        )
+    remarks += [f"Комментарий: {c.text}" for c in comments]
+    return remarks
+
+
 def report_attempt(
     attempt: Attempt,
     ts: TrainingSession,
     scenario: Scenario | None,
     incident_title: str,
     card_status_title: str,
+    override: EvaluationOverride | None = None,
+    comments: list[Comment] | None = None,
 ) -> ReportAttempt:
     result = attempt.result
     expected, actual = _decision(result)
     seconds = _primary_seconds(attempt)
     errors = [e for e in (result or {}).get("errors") or []]
+    comments = comments or []
     return ReportAttempt(
         id=attempt.id,
         card_number=attempt.card_number,
@@ -109,6 +130,10 @@ def report_attempt(
         decision_correct=None if expected is None else expected == actual,
         errors=[str(e.get("title") or e.get("code")) for e in errors],
         grammar_percent=_grammar_percent(result),
+        remarks=_remarks(errors, override, comments),
+        overridden=override is not None,
+        override_reason=override.reason if override else None,
+        comments=[c.text for c in comments],
     )
 
 
@@ -119,6 +144,8 @@ class _Loaded:
     scenarios: dict[uuid.UUID, Scenario]
     incident_titles: dict[uuid.UUID, str]
     card_status_titles: dict[str, str]
+    overrides: dict[uuid.UUID, EvaluationOverride] = field(default_factory=dict)
+    comments: dict[uuid.UUID, list[Comment]] = field(default_factory=dict)
 
 
 async def _load(session: AsyncSession, ts: TrainingSession) -> _Loaded:
@@ -160,12 +187,15 @@ async def _load(session: AsyncSession, ts: TrainingSession) -> _Loaded:
     extra_ids = {a.student_id for a in attempts} - known
     if extra_ids:
         members += list(await session.scalars(select(User).where(User.id.in_(extra_ids))))
+    attempt_ids = [a.id for a in attempts]
     return _Loaded(
         members=members,
         attempts=attempts,
         scenarios=scenarios,
         incident_titles=titles,
         card_status_titles={c.code: c.title for c in lookups.card_statuses.values()},
+        overrides=await review.latest_overrides(session, attempt_ids),
+        comments=await review.comments_for(session, attempt_ids),
     )
 
 
@@ -181,6 +211,8 @@ async def build_report(session: AsyncSession, ts: TrainingSession) -> ReportOut:
             scenarios.get(a.scenario_id),
             loaded.incident_titles[a.id],
             loaded.card_status_titles.get(a.card_status, a.card_status),
+            loaded.overrides.get(a.id),
+            loaded.comments.get(a.id),
         )
         acc.attempts.append(row)
         if row.total is None:

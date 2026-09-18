@@ -172,6 +172,25 @@ class IntakeOut(BaseModel):
     required_topics: list[str]
 
 
+class OverrideOut(BaseModel):
+    """The teacher's change of the total (PRD 13.6: the old value struck through)."""
+
+    old_total: float
+    old_passed: bool
+    new_total: float
+    new_passed: bool
+    reason: str
+    teacher_name: str
+    at: datetime
+
+
+class CommentOut(BaseModel):
+    id: uuid.UUID
+    text: str
+    author_name: str
+    at: datetime
+
+
 class AttemptOut(BaseModel):
     id: uuid.UUID
     session: SessionInfo
@@ -198,6 +217,9 @@ class AttemptOut(BaseModel):
     evaluation: dict | None
     # Present for call-intake attempts only.
     intake: IntakeOut | None = None
+    # Teacher's override of the total and comments (wave 9), visible to the trainee too.
+    override: OverrideOut | None = None
+    comments: list[CommentOut] = []
     last_seq: int
 
 

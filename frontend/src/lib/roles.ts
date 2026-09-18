@@ -31,7 +31,10 @@ export const ROLE_NAV: Record<Role, NavItem[]> = {
   ],
   admin: [
     { to: "/admin", label: "Пользователи" },
+    { to: "/admin/services", label: "Службы" },
     { to: "/admin/health", label: "Состояние" },
     { to: "/admin/audit", label: "Аудит" },
+    { to: "/admin/backups", label: "Копии" },
+    { to: "/admin/settings", label: "Настройки" },
   ],
 };

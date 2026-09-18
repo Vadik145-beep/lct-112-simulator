@@ -24,7 +24,9 @@
 | piper-tts (+ onnxruntime, numpy, espeak-ng в составе) | GPL-3.0 (piper 1.x, из-за espeak-ng) | озвучка реплик заявителя (`TTSProvider`) |
 | onnxruntime | MIT | запуск модели эмбеддингов e5 (`EmbeddingProvider`) |
 | tokenizers | Apache 2.0 | токенизация текста для e5 |
+| ReportLab | BSD | отчёт о занятии в PDF (`app/reports/export.py`); шрифт DejaVu Sans (лицензия Bitstream Vera, файл рядом со шрифтами) встроен, кириллица без системных шрифтов |
 | pytest, pytest-asyncio, ruff | MIT | тесты и линтер |
+| pypdf (dev) | BSD | извлечение текста из PDF в тестах экспорта |
 
 Группа `dataset` (только подготовка данных на машине разработчика, в образ не попадает):
 

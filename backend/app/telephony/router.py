@@ -1,6 +1,6 @@
 """Telephony API (PRD 11): the softphone account of the trainee, the call that rings, the
-call controls of the panel (answer, hang up, «нет контакта», «срыв звонка»), the recording,
-and the telephony section of the administrator's settings."""
+call controls of the panel (answer, hang up, «нет контакта», «срыв звонка») and the
+recording. The telephony settings of the administrator are served by ``app.admin``."""
 
 from __future__ import annotations
 
@@ -36,8 +36,6 @@ from app.telephony import settings as telephony_settings
 from app.telephony import sip
 from app.telephony.calls import _caller_id
 from app.telephony.schemas import (
-    AdminSettingsOut,
-    AdminSettingsPatch,
     AnswerResponse,
     CallResponse,
     CurrentCallOut,
@@ -49,7 +47,6 @@ from app.training import service as training
 router = APIRouter(tags=["telephony"])
 
 Student = Annotated[User, Depends(require_role(Role.student))]
-Admin = Annotated[User, Depends(require_role(Role.admin))]
 
 
 # ---------------------------------------------------------------- softphone
@@ -213,40 +210,3 @@ async def recording(attempt_id: uuid.UUID, user: ActiveUser, session: DbSession)
     if root not in path.parents or not path.is_file():
         raise ApiError(404, "recording_not_found", "Файл записи не найден.")
     return FileResponse(path, media_type="audio/wav", filename=f"call-{attempt.card_number}.wav")
-
-
-# ---------------------------------------------------------------- administrator
-
-
-@router.get("/admin/settings", response_model=AdminSettingsOut)
-async def admin_settings(user: Admin, session: DbSession) -> AdminSettingsOut:
-    return AdminSettingsOut(telephony=await telephony_settings.load(session))
-
-
-@router.patch("/admin/settings", response_model=AdminSettingsOut)
-async def patch_admin_settings(
-    body: AdminSettingsPatch, user: Admin, session: DbSession, request: Request
-) -> AdminSettingsOut:
-    """Telephony settings: ring timeout, recording, codecs; the ARI address applies after a
-    restart of the backend."""
-    if body.telephony is None:
-        return AdminSettingsOut(telephony=await telephony_settings.load(session))
-    try:
-        stored = await telephony_settings.store(session, body.telephony, user.id)
-    except ValueError as exc:
-        raise ApiError(422, "bad_settings", str(exc)) from exc
-    await write_audit(
-        session,
-        action="settings.update",
-        actor_id=user.id,
-        actor_role=user.role,
-        entity="settings",
-        entity_id=telephony_settings.SETTINGS_KEY,
-        details=body.telephony.model_dump(exclude_none=True),
-        ip=client_ip(request),
-    )
-    await session.commit()
-    service = telephony.get_service()
-    if service is not None:
-        await service.sync_endpoints()
-    return AdminSettingsOut(telephony=stored)
