@@ -112,6 +112,10 @@ class CallerReply:
     latency_ms: int = 0
 
 
+# Methods of a caller's turn that mean «answered without the model» (keywords, canned text).
+FALLBACK_METHODS = frozenset({"buttons", "guard"})
+
+
 class DialogProvider(Protocol):
     mode: str
 
@@ -576,9 +580,9 @@ def get_dialog_provider(mode: str | None = None) -> DialogProvider:
             if settings.llm_dialog_url
             else None
         )
-        gen_model = (
-            LlamaCppChat(settings.llm_gen_url, name="llm-gen") if settings.llm_gen_url else None
-        )
-        _providers[mode] = build_dialog_provider(mode, dialog_model, gen_model)
+        # The caller's replies — chosen or composed — come from the dialog model: a phrase
+        # must arrive in seconds, and the generation model (7B, LLM_GEN_URL) is loaded on
+        # demand for the teacher's scenarios only (docs/BUGS.md, 10).
+        _providers[mode] = build_dialog_provider(mode, dialog_model)
         log.info("dialog provider", requested=mode, mode=_providers[mode].mode)
     return _providers[mode]

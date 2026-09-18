@@ -10,6 +10,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy import select
 
+from app.admin import health
 from app.admin import settings as admin_settings
 from app.audit import write_audit
 from app.auth.deps import DbSession, client_ip, require_role
@@ -32,6 +33,7 @@ from app.training.teacher_schemas import (
     GroupIn,
     GroupOut,
     GroupPatch,
+    ModelsOut,
     MonitorOut,
     QueueScenarioOut,
     ReportOut,
@@ -51,6 +53,13 @@ def _student_out(user: User) -> StudentOut:
     return StudentOut(
         id=user.id, login=user.login, full_name=user.full_name, service_code=user.service_code
     )
+
+
+@router.get("/models", response_model=ModelsOut)
+async def models(user: Teacher) -> ModelsOut:
+    """Which AI services answer now, so the lesson form can warn before a lesson starts
+    with a dialog mode or a voice that will silently degrade (docs/BUGS.md, 10)."""
+    return ModelsOut(**await health.model_availability())
 
 
 # ---------------------------------------------------------------- groups

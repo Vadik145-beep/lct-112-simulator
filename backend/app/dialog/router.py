@@ -11,6 +11,7 @@ from fastapi import APIRouter, File, Form, UploadFile
 from fastapi.responses import FileResponse
 
 from app.auth.deps import ActiveUser, DbSession
+from app.config import get_settings
 from app.dialog import service as dialog
 from app.dialog.schemas import (
     AskTopicRequest,
@@ -70,9 +71,12 @@ async def _dialog_out(
 ) -> DialogOut:
     covered = dialog.covered_topics(attempt)
     required = set(scenario.required_topics)
+    provider = dialog.provider_for(ts)
     return DialogOut(
         attempt_id=str(attempt.id),
-        mode=dialog.provider_for(ts).mode,
+        mode=provider.mode,
+        requested_mode=ts.dialog_mode or get_settings().dialog_mode,
+        fallback_replies=dialog.fallback_replies(attempt, provider.mode),
         stt_available=dialog.stt_available(),
         tts_available=dialog.tts_available(),
         answered_at=attempt.answered_at,

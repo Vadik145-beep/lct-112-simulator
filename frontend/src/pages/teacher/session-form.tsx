@@ -5,6 +5,7 @@ import {
   useClassifierTree,
   useCreateSession,
   useGroups,
+  useModels,
   useServices,
   useTeacherSession,
   useUpdateSession,
@@ -52,8 +53,8 @@ const CARD_SOURCES = [
 
 const DIALOG_MODES: { code: string; title: string; hint: string }[] = [
   { code: "select", title: "Готовые реплики", hint: "модель выбирает утверждённую реплику; режим стенда" },
-  { code: "hybrid", title: "Готовые + новые на утверждение", hint: "если реплики нет, модель сочиняет, вы утверждаете" },
-  { code: "generate", title: "Свободная генерация", hint: "только если замер задержки устроил" },
+  { code: "hybrid", title: "Готовые + новые", hint: "если реплики нет, модель сочиняет; новое — на утверждение после занятия" },
+  { code: "generate", title: "Свободная генерация", hint: "модель сочиняет каждую реплику; медленнее и менее предсказуемо" },
   { code: "buttons", title: "Кнопки тем", hint: "без модели" },
 ];
 const NORM_DEFAULT = { card_response: 30, call_intake: 90 } as const;
@@ -101,6 +102,7 @@ function toInput(s: SessionOut): SessionIn {
 function SessionForm({ existing }: { existing?: SessionOut }) {
   const navigate = useNavigate();
   const groups = useGroups();
+  const models = useModels(form.mode === "call_intake");
   const tree = useClassifierTree();
   const services = useServices();
   const create = useCreateSession();
@@ -189,12 +191,23 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                     </option>
                   ))}
                 </select>
+                {models.data && !models.data.dialog && form.dialog_mode !== "buttons" && (
+                  <p className="text-xs text-destructive" role="alert" data-testid="dialog-model-warning">
+                    Модель диалога сейчас недоступна: заявитель будет отвечать по ключевым словам, как в режиме «Кнопки тем».
+                  </p>
+                )}
               </div>
               <label className="flex items-center gap-2 text-sm">
                 <input type="checkbox" checked={form.voice_enabled} onChange={(e) => patch({ voice_enabled: e.target.checked })} />
                 Голос: заявитель звучит, обучающийся говорит в гарнитуру
               </label>
               <p className="text-xs text-muted-foreground">Без голоса разговор идёт текстом в панели тренажёра.</p>
+              {models.data && form.voice_enabled && (!models.data.tts || !models.data.stt) && (
+                <p className="text-xs text-destructive" role="alert" data-testid="voice-warning">
+                  {!models.data.tts && "Озвучка недоступна: заявитель ответит текстом. "}
+                  {!models.data.stt && "Распознавание речи недоступно: обучающийся сможет только писать."}
+                </p>
+              )}
             </div>
           )}
           <div className="space-y-1.5">

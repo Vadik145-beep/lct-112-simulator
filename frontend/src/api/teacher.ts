@@ -106,6 +106,11 @@ export function useGroups() {
   return useQuery({ queryKey: groupsKey, queryFn: () => unwrap(api.GET("/api/groups")) });
 }
 
+/** Which AI services answer now: the lesson form warns before a mode silently degrades. */
+export function useModels(enabled = true) {
+  return useQuery({ queryKey: ["teacher", "models"], queryFn: () => unwrap(api.GET("/api/models")), enabled, staleTime: 15_000 });
+}
+
 export function useStudents() {
   return useQuery({ queryKey: ["teacher", "students"], queryFn: () => unwrap(api.GET("/api/students")) });
 }

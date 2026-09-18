@@ -12,6 +12,15 @@ from app.models import MODE_CARD_RESPONSE
 # ---------------------------------------------------------------- groups
 
 
+class ModelsOut(BaseModel):
+    """Availability of the AI services for the lesson form (docs/BUGS.md, 10)."""
+
+    dialog: bool
+    generation: bool
+    stt: bool
+    tts: bool
+
+
 class StudentOut(BaseModel):
     id: uuid.UUID
     login: str
