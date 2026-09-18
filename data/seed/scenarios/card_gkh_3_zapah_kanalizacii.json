@@ -1,0 +1,77 @@
+{
+  "kind": "card_response",
+  "title": "Запах канализации во дворе",
+  "ticket_ref": null,
+  "service": "gkh",
+  "difficulty": 2,
+  "norm_seconds": 30,
+  "card": {
+    "number": "38260403",
+    "incident_type": "14.4.13.0",
+    "signs": [
+      "Водоснабжение и канализация",
+      "Запах канализации"
+    ],
+    "flags": {
+      "injured": false,
+      "no_access": false,
+      "threat": false
+    },
+    "address": {
+      "street": "улица Красного Маяка",
+      "house": "15",
+      "building": "1",
+      "okrug": "ЮАО",
+      "district": "район Чертаново Центральное"
+    },
+    "caller": {
+      "name": "Орлова Марина Петровна",
+      "role": "очевидец",
+      "phone": "+7 916 733-28-04"
+    },
+    "description": "Во дворе у 1 подъезда сильный запах канализации, у люка мокрый асфальт. Пострадавших нет.",
+    "notified": [
+      {
+        "service": "gkh",
+        "status": "Добавлена"
+      },
+      {
+        "service": "mosvodokanal",
+        "status": "Получена службой"
+      },
+      {
+        "service": "territorial_oiv",
+        "status": "Получена службой"
+      }
+    ]
+  },
+  "reference": {
+    "decision": "accept",
+    "reject_reason": null,
+    "status_chain": [
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "response_started",
+        "order_number": true,
+        "comment_example": "Направлен мастер ОДС-7 для осмотра, наряд ЖКХ-134"
+      },
+      {
+        "status": "arrived"
+      },
+      {
+        "status": "works_started",
+        "comment_example": "Осмотр дворовой сети, вызвана бригада Мосводоканала"
+      },
+      {
+        "status": "works_done",
+        "comment_example": "Засор на выпуске устранён совместно с Мосводоканалом, запах ушёл"
+      }
+    ],
+    "critical_errors": [
+      "late_primary",
+      "progress_missing"
+    ]
+  }
+}

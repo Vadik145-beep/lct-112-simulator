@@ -1,0 +1,89 @@
+{
+  "kind": "card_response",
+  "title": "Отключение отопления в нескольких домах",
+  "ticket_ref": null,
+  "service": "moek",
+  "difficulty": 1,
+  "norm_seconds": 30,
+  "card": {
+    "number": "38260421",
+    "incident_type": "14.1.4.0",
+    "signs": [
+      "Массовое отключение (Несколько домов квартал район округ)",
+      "Нет отопления"
+    ],
+    "flags": {
+      "injured": false,
+      "no_access": false,
+      "threat": false
+    },
+    "address": {
+      "street": "улица Молостовых",
+      "house": "10",
+      "building": "1",
+      "okrug": "ВАО",
+      "district": "район Ивановское"
+    },
+    "caller": {
+      "name": "Титов Виктор Семёнович",
+      "role": "жилец",
+      "phone": "+7 916 640-33-18"
+    },
+    "description": "С ночи холодные батареи в домах 10 к.1, 10 к.2 и 12 по улице Молостовых, горячая вода есть. Пострадавших нет.",
+    "notified": [
+      {
+        "service": "101",
+        "status": "Получена службой"
+      },
+      {
+        "service": "ods_psc",
+        "status": "Получена службой"
+      },
+      {
+        "service": "102",
+        "status": "Получена службой"
+      },
+      {
+        "service": "gkh",
+        "status": "Получена службой"
+      },
+      {
+        "service": "moek",
+        "status": "Добавлена"
+      },
+      {
+        "service": "territorial_oiv",
+        "status": "Получена службой"
+      }
+    ]
+  },
+  "reference": {
+    "decision": "accept",
+    "reject_reason": null,
+    "status_chain": [
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "response_started",
+        "order_number": true,
+        "comment_example": "Направлена бригада на ЦТП, наряд МОЭК-3310"
+      },
+      {
+        "status": "arrived"
+      },
+      {
+        "status": "works_started",
+        "comment_example": "Осмотр ЦТП, обнаружена остановка сетевого насоса"
+      },
+      {
+        "status": "works_done",
+        "comment_example": "Насос запущен, циркуляция восстановлена, температура в норме"
+      }
+    ],
+    "critical_errors": [
+      "late_primary",
+      "progress_missing"
+    ]
+  }
+}

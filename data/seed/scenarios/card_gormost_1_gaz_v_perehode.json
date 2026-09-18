@@ -1,0 +1,77 @@
+{
+  "kind": "card_response",
+  "title": "Запах газа в подземном переходе",
+  "ticket_ref": null,
+  "service": "gormost",
+  "difficulty": 2,
+  "norm_seconds": 30,
+  "card": {
+    "number": "38260431",
+    "incident_type": "13.1.3.0",
+    "signs": [
+      "Запах газа на улице",
+      "Подземный переход"
+    ],
+    "flags": {
+      "injured": false,
+      "no_access": false,
+      "threat": true
+    },
+    "address": {
+      "street": "Ленинградский проспект",
+      "house": "37",
+      "descriptive": "подземный переход у станции метро Динамо, южный выход",
+      "okrug": "САО",
+      "district": "Хорошёвский район"
+    },
+    "caller": {
+      "name": "Фомин Игорь Валерьевич",
+      "role": "очевидец",
+      "phone": "+7 916 812-44-09"
+    },
+    "description": "В подземном переходе у метро Динамо резкий запах газа, людей много, дурноты ни у кого нет.",
+    "notified": [
+      {
+        "service": "mosgaz",
+        "status": "Получена службой"
+      },
+      {
+        "service": "gormost",
+        "status": "Добавлена"
+      },
+      {
+        "service": "territorial_oiv",
+        "status": "Получена службой"
+      }
+    ]
+  },
+  "reference": {
+    "decision": "accept",
+    "reject_reason": null,
+    "status_chain": [
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "response_started",
+        "order_number": true,
+        "comment_example": "Направлен дежурный по переходу, наряд ГМ-514"
+      },
+      {
+        "status": "arrived"
+      },
+      {
+        "status": "works_started",
+        "comment_example": "Переход перекрыт, вентиляция включена, ожидание Мосгаза"
+      },
+      {
+        "status": "works_done",
+        "comment_example": "Мосгаз утечку не подтвердил, запах от битумных работ, переход открыт"
+      }
+    ],
+    "critical_errors": [
+      "late_primary",
+      "progress_missing"
+    ]
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "kind": "card_response",
+  "title": "Прорыв теплосети: кипяток на газоне",
+  "ticket_ref": null,
+  "service": "moek",
+  "difficulty": 2,
+  "norm_seconds": 30,
+  "card": {
+    "number": "38260422",
+    "incident_type": "14.2.2.0",
+    "signs": [
+      "Прорыв воды",
+      "в ЦТП или в теплосети"
+    ],
+    "flags": {
+      "injured": false,
+      "no_access": false,
+      "threat": true
+    },
+    "address": {
+      "street": "шоссе Энтузиастов",
+      "house": "52",
+      "okrug": "ВАО",
+      "district": "район Перово"
+    },
+    "caller": {
+      "name": "Захарова Елена Дмитриевна",
+      "role": "очевидец",
+      "phone": "+7 916 271-85-46"
+    },
+    "description": "На газоне у дома 52 из-под земли идёт пар и горячая вода, рядом детская площадка. Пострадавших нет, людей отвели.",
+    "notified": [
+      {
+        "service": "mosgaz",
+        "status": "Получена службой"
+      },
+      {
+        "service": "gkh",
+        "status": "Получена службой"
+      },
+      {
+        "service": "moek",
+        "status": "Добавлена"
+      },
+      {
+        "service": "moscollector",
+        "status": "Получена службой"
+      },
+      {
+        "service": "territorial_oiv",
+        "status": "Получена службой"
+      }
+    ]
+  },
+  "reference": {
+    "decision": "accept",
+    "reject_reason": null,
+    "status_chain": [
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "response_started",
+        "order_number": true,
+        "comment_example": "Направлена аварийная бригада, наряд МОЭК-3324"
+      },
+      {
+        "status": "arrived"
+      },
+      {
+        "status": "works_started",
+        "comment_example": "Участок теплосети отключён, ограждение места"
+      },
+      {
+        "status": "works_done",
+        "comment_example": "Заменён участок трубопровода, теплоснабжение восстановлено"
+      }
+    ],
+    "critical_errors": [
+      "late_primary",
+      "progress_missing"
+    ]
+  }
+}
