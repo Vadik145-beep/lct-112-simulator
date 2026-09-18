@@ -62,6 +62,7 @@ CALL_END_NO_ANSWER = "no_answer"  # the softphone did not answer in time
 CALL_END_NO_CONTACT = "no_contact"  # «нет контакта» pressed
 CALL_END_CALL_DROPPED = "call_dropped"  # «срыв звонка» pressed
 CALL_END_FAILED = "failed"  # telephony error
+CALL_END_CARD_SAVED = "card_saved"  # the operator saved the card without hanging up
 
 
 class Group(Base):

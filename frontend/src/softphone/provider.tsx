@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 
 import { errorMessage } from "@/api/client";
 import { getAccessToken } from "@/api/token";
+import { RequestError } from "@/api/training";
 import { telephonyApi, useCurrentCall, useSipAccount, type DialogOut, type TurnResponse } from "@/api/telephony";
 import { useAuth } from "@/app/use-auth";
 import { newActionId } from "@/emulator/draft";
@@ -275,8 +276,16 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
         stopLocalStream();
         const attemptId = state.attemptId;
         if (attemptId) {
-          const result = await call(attemptId);
-          patch({ status: "ended", endReason: result.dialog.call.end_reason ?? reason });
+          try {
+            const result = await call(attemptId);
+            patch({ status: "ended", endReason: result.dialog.call.end_reason ?? reason });
+          } catch (error) {
+            // The card was saved (or closed by the teacher) while the panel still showed
+            // «разговор»: the call is over on the server, so the panel ends too.
+            if (error instanceof RequestError && error.code === "attempt_closed") {
+              patch({ status: "ended", endReason: reason });
+            } else throw error;
+          }
         } else {
           patch({ status: "ended", endReason: reason });
         }

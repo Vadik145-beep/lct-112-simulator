@@ -72,4 +72,5 @@ export const END_REASON_LABELS: Record<string, string> = {
   no_contact: "отмечено «нет контакта»",
   call_dropped: "отмечено «срыв звонка»",
   failed: "звонок не удался",
+  card_saved: "карточка сохранена",
 };

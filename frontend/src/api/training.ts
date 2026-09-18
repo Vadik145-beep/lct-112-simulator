@@ -22,6 +22,26 @@ export class NetworkError extends Error {
   }
 }
 
+/** Error answered by the server: the HTTP status and the API error code, when the body has one. */
+export class RequestError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+    public readonly code: string | null,
+  ) {
+    super(message);
+    this.name = "RequestError";
+  }
+}
+
+function errorCode(error: unknown): string | null {
+  if (error && typeof error === "object" && "error" in error) {
+    const inner = (error as { error?: { code?: string } }).error;
+    if (inner?.code) return inner.code;
+  }
+  return null;
+}
+
 export async function unwrap<T>(call: Promise<{ data?: T; error?: unknown; response: Response }>): Promise<T> {
   let result: { data?: T; error?: unknown; response: Response };
   try {
@@ -29,7 +49,9 @@ export async function unwrap<T>(call: Promise<{ data?: T; error?: unknown; respo
   } catch {
     throw new NetworkError();
   }
-  if (result.data === undefined) throw new Error(errorMessage(result.error));
+  if (result.data === undefined) {
+    throw new RequestError(errorMessage(result.error), result.response.status, errorCode(result.error));
+  }
   return result.data;
 }
 

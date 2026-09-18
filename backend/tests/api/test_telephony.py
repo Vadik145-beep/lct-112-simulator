@@ -89,6 +89,28 @@ class TestCallControl:
         assert again.status_code == 200
         assert len(again.json()["dialog"]["turns"]) == 1
 
+    async def test_saving_the_card_ends_the_call(self, client: AsyncClient):
+        """docs/BUGS.md 1: «Сохранить» without «Завершить» must end the call, otherwise the
+        softphone keeps «разговор» while the next card is already issued."""
+        from tests.api.test_call_intake import GAS_PIPE_CARD, submit
+
+        attempt_id = await make_attempt()
+        token = await student(client)
+        await call_action(client, token, attempt_id, "answer")
+        r = await submit(client, token, str(attempt_id), GAS_PIPE_CARD, "save-while-talking")
+        assert r.status_code == 200, r.text
+        r = await client.get(f"/api/attempts/{attempt_id}/dialog", headers=bearer(token))
+        call = r.json()["call"]
+        assert call["state"] == "ended"
+        assert call["end_reason"] == "card_saved"
+        assert call["ended_at"]
+        # The current call is gone and a late «Завершить» is refused as a closed card.
+        r = await client.get("/api/me/call", headers=bearer(token))
+        assert r.json() is None or r.json()["attempt_id"] != str(attempt_id)
+        r = await call_action(client, token, attempt_id, "hangup")
+        assert r.status_code == 409
+        assert r.json()["error"]["code"] == "attempt_closed"
+
     async def test_hangup_closes_the_dialog(self, client: AsyncClient):
         attempt_id = await make_attempt()
         token = await student(client)
