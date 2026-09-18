@@ -102,12 +102,12 @@ function toInput(s: SessionOut): SessionIn {
 function SessionForm({ existing }: { existing?: SessionOut }) {
   const navigate = useNavigate();
   const groups = useGroups();
-  const models = useModels(form.mode === "call_intake");
   const tree = useClassifierTree();
   const services = useServices();
   const create = useCreateSession();
   const update = useUpdateSession(existing?.id ?? "");
   const [form, setForm] = useState<SessionIn>(() => (existing ? toInput(existing) : { ...DEFAULTS, group_id: "" }));
+  const models = useModels(form.mode === "call_intake");
   const [unfinishedHours, setUnfinishedHours] = useState(() => String(Math.round((existing?.unfinished_seconds ?? DEFAULTS.unfinished_seconds!) / HOUR)));
   const mutation = existing ? update : create;
 
