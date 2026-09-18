@@ -140,12 +140,12 @@ async def test_full_call_draft_submit_and_review(client: AsyncClient) -> None:
     assert r.json()["intake"]["draft"]["updated_at"]
     assert r.json()["state"] == "in_progress"
 
-    # «Сохранить»: scored at once, the next call rings.
+    # «Сохранить»: scored at once; the next call rings on the next visit to the calls page.
     r = await submit(client, student, attempt_id, GAS_PIPE_CARD, "sub-1")
     assert r.status_code == 200, r.text
     body = r.json()
     assert body["applied"] is True
-    assert len(body["issued"]) == 1
+    assert body["issued"] == []
     attempt = body["attempt"]
     assert attempt["state"] == "evaluated"
     assert attempt["submitted_at"] is not None
@@ -173,9 +173,10 @@ async def test_full_call_draft_submit_and_review(client: AsyncClient) -> None:
     services = components["flags_services"]["items"][1]
     assert services["missing"]  # not every service of the reference was added by hand
 
-    # The next call is the second scenario of the queue.
+    # The next call is the second scenario of the queue, issued by the journal request.
     call = await current_call(client, student, created["id"])
-    assert call["attempt_id"] == body["issued"][0]
+    assert call["attempt_id"] != attempt_id
+    assert call["state"] == "issued"
 
     async with SessionLocal() as session:
         row = await session.get(Evaluation, uuid.UUID(attempt_id))

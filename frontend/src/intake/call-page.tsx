@@ -450,7 +450,7 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
               </ArmButton>
             ) : (
               <ArmButton variant="blue" className="normal-case" onClick={() => navigate(`/student/sessions/${attempt.session.id}/calls`)}>
-                К вызовам
+                Следующий вызов
               </ArmButton>
             )}
           </div>
