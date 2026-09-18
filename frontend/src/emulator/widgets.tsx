@@ -108,7 +108,7 @@ export function TrainerPanel({
   }
   return (
     <aside
-      className={cn("flex shrink-0 flex-col gap-3 border-l border-[#a9adb2] bg-[var(--arm-panel)] p-3 text-sm", width === "wide" ? "w-80" : "w-64")}
+      className={cn("flex min-h-0 shrink-0 flex-col gap-3 border-l border-[#a9adb2] bg-[var(--arm-panel)] p-3 text-sm", width === "wide" ? "w-80" : "w-64")}
       aria-label="Тренажёр"
     >
       <div className="flex items-center justify-between gap-2">
@@ -118,7 +118,7 @@ export function TrainerPanel({
           <PanelRightClose className="size-4" />
         </button>
       </div>
-      <div className="flex flex-1 flex-col gap-3">{children}</div>
+      <div className="flex min-h-0 flex-1 flex-col gap-3">{children}</div>
       <div className="flex flex-col gap-2 border-t border-[#a9adb2] pt-3">
         {footer}
         <Link to="/student" className="text-xs text-[var(--arm-blue-dark)] underline-offset-2 hover:underline">

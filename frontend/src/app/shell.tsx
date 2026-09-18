@@ -43,7 +43,9 @@ export function AppShell() {
             <span className="rounded bg-primary px-1.5 py-0.5 font-mono text-xs text-primary-foreground">112</span>
             <span>Тренажёр ДДС</span>
           </div>
-          <nav className="order-last flex w-full gap-1 overflow-x-auto sm:order-none sm:w-auto sm:flex-1" aria-label="Разделы">
+          {/* Below lg the sections take a row of their own and wrap: no horizontal scroll
+              inside the header at 390–1024 px (docs/BUGS.md, 5). */}
+          <nav className="order-last flex w-full flex-wrap gap-1 lg:order-none lg:w-auto lg:flex-1" aria-label="Разделы">
             {ROLE_NAV[user.role].map((item) => (
               <NavLink
                 key={item.to}
@@ -62,8 +64,8 @@ export function AppShell() {
           </nav>
           <div className="ml-auto flex items-center gap-2">
             <SoftphoneBadge />
-            <div className="text-right leading-tight">
-              <div className="text-sm font-medium">{user.full_name}</div>
+            <div className="min-w-0 max-w-[14rem] text-right leading-tight">
+              <div className="truncate text-sm font-medium" title={user.full_name}>{user.full_name}</div>
               <div className="text-xs text-muted-foreground">{ROLE_TITLES[user.role]}</div>
             </div>
             <ThemeToggle />
