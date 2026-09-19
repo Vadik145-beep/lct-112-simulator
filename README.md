@@ -29,6 +29,28 @@ docker compose up -d --build
 
 Проверка состояния: `curl -sk https://localhost/health`.
 
+### Публичный сертификат
+
+Если у стенда есть доменное имя (например, `155-212-186-2.sslip.io` для IP 155.212.186.2),
+браузер может получать сертификат Let's Encrypt вместо внутреннего. Внутренний сертификат
+на IP остаётся, оба работают одновременно.
+
+```bash
+# 1. Имя в .env и nginx с поддержкой второго сертификата
+echo 'PUBLIC_HOST=155-212-186-2.sslip.io' >> .env
+docker compose build nginx && docker compose up -d nginx
+
+# 2. Выпуск сертификата (порт 80 должен быть открыт снаружи)
+docker run --rm -v app_letsencrypt:/etc/letsencrypt -v app_certbot-www:/var/www/certbot   certbot/certbot certonly --webroot -w /var/www/certbot -d 155-212-186-2.sslip.io   --agree-tos --register-unsafely-without-email --non-interactive
+
+# 3. nginx подхватывает сертификат при старте
+docker compose restart nginx
+```
+
+Продление раз в два месяца: тот же `docker run` с `renew` вместо `certonly … --non-interactive`,
+затем `docker compose restart nginx`. Префикс томов `app_` — имя проекта compose
+(папка `app` или `-p`).
+
 ### Демо-доступы
 
 При `DEMO_MODE=true` (значение по умолчанию) на экране входа есть кнопки «Войти как
