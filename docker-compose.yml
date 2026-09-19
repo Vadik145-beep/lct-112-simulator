@@ -54,8 +54,13 @@ services:
       - "${HTTPS_PORT:-443}:443"
     environment:
       TLS_HOSTS: ${TLS_HOSTS:-localhost,127.0.0.1}
+      # Domain with a Let's Encrypt certificate (README, «Публичный сертификат»); empty = only the
+      # internal certificate above.
+      PUBLIC_HOST: ${PUBLIC_HOST:-}
     volumes:
       - certs:/etc/nginx/certs
+      - letsencrypt:/etc/nginx/letsencrypt:ro
+      - certbot-www:/var/www/certbot:ro
     depends_on:
       backend:
         condition: service_healthy
@@ -321,3 +326,6 @@ volumes:
   backups:
   certs:
   asterisk-conf:
+  # Let's Encrypt certificate of PUBLIC_HOST and the webroot of its challenges.
+  letsencrypt:
+  certbot-www:
