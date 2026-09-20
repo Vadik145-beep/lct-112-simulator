@@ -42,7 +42,8 @@ export class CloudCall {
   async start(keys: WebCallOut): Promise<void> {
     const { default: VapiSdk } = await import("@vapi-ai/web");
     if (this.stopped) return;
-    const vapi = new VapiSdk(keys.public_key, keys.api_url);
+    // avoidEval: Daily's call machine without eval(), so the CSP stays without 'unsafe-eval'.
+    const vapi = new VapiSdk(keys.public_key, keys.api_url, { avoidEval: true });
     this.vapi = vapi;
     vapi.on("call-start", () => {
       this.live = true;

@@ -79,6 +79,9 @@ services:
       # Domain with a Let's Encrypt certificate (profile cloud, plan/track-c-vapi.md);
       # empty = only the internal certificate above.
       PUBLIC_HOST: ${PUBLIC_HOST:-}
+      # The cloud voice in the browser needs Vapi and Daily in the CSP (deploy/nginx/entrypoint.sh).
+      CLOUD_VOICE_ENABLED: ${CLOUD_VOICE_ENABLED:-false}
+      VAPI_API_URL: ${VAPI_API_URL:-https://api.vapi.ai}
     volumes:
       - certs:/etc/nginx/certs
       - letsencrypt:/etc/nginx/letsencrypt:ro
