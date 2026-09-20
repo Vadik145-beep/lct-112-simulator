@@ -10,6 +10,7 @@ import {
 } from "@/emulator/service-call-model";
 import { formatSeconds } from "@/emulator/time";
 import { cn } from "@/lib/utils";
+import { watchLevel } from "@/softphone/sip-phone";
 
 /**
  * A call of the dispatcher to a service officer (issue #36, «звено Б → В»): the transcript,
@@ -19,7 +20,7 @@ import { cn } from "@/lib/utils";
  * browser microphone (issue #60).
  */
 
-// A shorter recording is a slip on the button, not a phrase.
+// A shorter recording is a click without holding the button, not a phrase.
 const MIN_RECORDING_SECONDS = 0.6;
 
 /** The microphone chosen in the softphone settings; the system default when it is gone. */
@@ -64,6 +65,8 @@ export function ServiceCallPanel({
   const [recording, setRecording] = useState(false);
   const [recordedFor, setRecordedFor] = useState(0);
   const [micNote, setMicNote] = useState<string | null>(null);
+  const [micLevel, setMicLevel] = useState(0);
+  const stopLevel = useRef<(() => void) | null>(null);
   const audio = useRef<HTMLAudioElement | null>(null);
   const recorder = useRef<MediaRecorder | null>(null);
   const chunks = useRef<Blob[]>([]);
@@ -119,15 +122,14 @@ export function ServiceCallPanel({
     setText("");
   }
 
-  // Push to talk as in the 112 operator's card: press, speak, press again to send.
-  async function toggleMic() {
-    if (recording) {
-      recorder.current?.stop();
-      return;
-    }
+  // Push to talk exactly as in the 112 operator's card: hold the button and speak, release
+  // to send. A click without holding records nothing.
+  async function startRecording() {
+    if (recorder.current || pending || !open) return;
     setMicNote(null);
     try {
       const stream = await openMicrophone(micDeviceId);
+      stopLevel.current = watchLevel(stream, setMicLevel);
       const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
         ? "audio/webm;codecs=opus"
         : "";
@@ -140,6 +142,9 @@ export function ServiceCallPanel({
       rec.ondataavailable = (e) => chunks.current.push(e.data);
       rec.onstop = () => {
         stream.getTracks().forEach((t) => t.stop());
+        stopLevel.current?.();
+        stopLevel.current = null;
+        setMicLevel(0);
         recorder.current = null;
         setRecording(false);
         const blob = new Blob(chunks.current, {
@@ -149,7 +154,7 @@ export function ServiceCallPanel({
         const seconds = (Date.now() - startedAt) / 1000;
         if (seconds < MIN_RECORDING_SECONDS) {
           setMicNote(
-            "Слишком короткая запись: нажмите микрофон, скажите фразу, нажмите ещё раз.",
+            "Слишком короткая запись: удерживайте кнопку, пока говорите, и отпустите.",
           );
           return;
         }
@@ -167,6 +172,11 @@ export function ServiceCallPanel({
         "Микрофон недоступен: разрешите доступ в браузере или выберите другое устройство.",
       );
     }
+  }
+
+  function stopRecording() {
+    const rec = recorder.current;
+    if (rec && rec.state !== "inactive") rec.stop();
   }
 
   async function play(url: string) {
@@ -291,18 +301,28 @@ export function ServiceCallPanel({
             <button
               type="button"
               aria-label={
-                recording ? "Закончить говорить" : "Говорить в микрофон"
+                recording
+                  ? "Говорите, отпустите, чтобы отправить"
+                  : "Удерживайте и говорите"
               }
               aria-pressed={recording}
               title={
                 recording
-                  ? "Нажмите, чтобы отправить сказанное"
-                  : "Сказать дежурному голосом"
+                  ? "Отпустите, чтобы отправить сказанное"
+                  : "Удерживайте кнопку и говорите дежурному"
               }
               disabled={pending}
-              onClick={() => void toggleMic()}
+              onPointerDown={(e) => {
+                e.preventDefault();
+                void startRecording();
+              }}
+              onPointerUp={stopRecording}
+              onPointerLeave={stopRecording}
+              onPointerCancel={stopRecording}
+              onContextMenu={(e) => e.preventDefault()}
+              data-testid="service-call-talk"
               className={cn(
-                "flex size-7 items-center justify-center rounded-sm border disabled:opacity-50",
+                "flex h-7 select-none items-center justify-center gap-1 rounded-sm border px-2 disabled:opacity-50",
                 recording
                   ? "border-[var(--arm-orange)] bg-[var(--arm-orange)] text-white"
                   : "border-[#a9adb2] bg-white text-[var(--arm-text)] hover:bg-[var(--arm-panel-2)]",
@@ -313,14 +333,35 @@ export function ServiceCallPanel({
               ) : (
                 <Mic className="size-3.5" aria-hidden />
               )}
+              <span className="text-[10px]">
+                {recording ? "говорите" : "удерживайте"}
+              </span>
             </button>
           )}
         </form>
       )}
       {recording && (
-        <span className="text-[10px] text-[var(--arm-orange)]" role="status">
-          Идёт запись, {recordedFor.toFixed(0)} с. Нажмите микрофон ещё раз,
-          чтобы отправить.
+        <span
+          className="flex items-center gap-2 text-[10px] text-[var(--arm-orange)]"
+          role="status"
+        >
+          <span>
+            Говорите, {recordedFor.toFixed(0)} с. Отпустите, чтобы отправить.
+          </span>
+          <span
+            className="h-1.5 w-16 overflow-hidden rounded bg-[#cfd2d4]"
+            aria-label="Уровень микрофона"
+          >
+            <span
+              className={cn(
+                "block h-full",
+                micLevel > 0.02
+                  ? "bg-[var(--arm-green)]"
+                  : "bg-[var(--arm-red)]",
+              )}
+              style={{ width: `${Math.min(100, Math.round(micLevel * 300))}%` }}
+            />
+          </span>
         </span>
       )}
       {micNote && !recording && (
