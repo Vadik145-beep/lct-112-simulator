@@ -15,9 +15,10 @@ Every function works inside the caller's transaction and returns the events it a
 
 from __future__ import annotations
 
+import random
 import re
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -175,7 +176,11 @@ async def ensure_opening(
 async def opening_audio(version: ScenarioVersion, scenario: CallIntakeScenario) -> str | None:
     """Voice file of the scenario's opening, cached as ``opening`` in the version folder."""
     reply = CallerReply(
-        text=scenario.caller.opening, topics=[], operator_topics=[], method="opening"
+        text=scenario.caller.opening,
+        topics=[],
+        operator_topics=[],
+        method="opening",
+        audio=scenario.caller.opening_audio,
     )
     return await reply_audio(None, version, scenario, reply, stem="opening")
 
@@ -199,6 +204,7 @@ async def _store_turns(
     reply: CallerReply,
     now: datetime,
 ) -> TurnResult:
+    reply = pick_variant(attempt, scenario, reply)
     audio = await reply_audio(attempt, version, scenario, reply)
     caller = _turn(
         "caller",
@@ -206,6 +212,7 @@ async def _store_turns(
         reply.topics,
         now,
         reply_id=reply.reply_id,
+        variant=reply.variant or None,
         method=reply.method,
         audio=audio,
         generated=reply.generated,
@@ -284,6 +291,22 @@ async def ask_topic(
     reply = await provider_for(ts).reply_to_topic(_context(attempt, scenario), topic)
     operator = _turn("operator", topic_question(topic), [topic], now, action_id=action_id)
     return await _store_turns(session, attempt, ts, version, scenario, operator, reply, now)
+
+
+def pick_variant(attempt: Attempt, scenario: CallIntakeScenario, reply: CallerReply) -> CallerReply:
+    """An approved reply with other wordings: one of them at random, preferring a wording this
+    call has not played yet. The facts are the same, only the phrase differs."""
+    if reply.reply_id is None:
+        return reply
+    source = next((r for r in scenario.replies if r.id == reply.reply_id), None)
+    if source is None or not source.variants:
+        return reply
+    takes = [(0, reply.text, reply.audio)]
+    takes += [(n, v.text, v.audio) for n, v in enumerate(source.variants, start=1)]
+    played = {t.get("variant", 0) for t in attempt.dialog if t.get("reply_id") == reply.reply_id}
+    fresh = [take for take in takes if take[0] not in played] or takes
+    variant, text, audio = random.choice(fresh)  # noqa: S311 - not security related
+    return replace(reply, text=text, audio=audio, variant=variant)
 
 
 _TOPIC_TITLES = {t["code"]: t["title"] for t in CALLER_TOPICS}
@@ -417,7 +440,7 @@ async def reply_audio(
     folder = Path(TTS_SUBDIR) / _safe(str(version.scenario_id)) / f"v{version.version}"
     if stem is None:
         if reply.reply_id:
-            stem = f"r{reply.reply_id}"
+            stem = f"r{reply.reply_id}" + (f"-v{reply.variant}" if reply.variant else "")
         elif attempt is not None:
             stem = f"a{_safe(str(attempt.id))}-{len(attempt.dialog)}"
         else:

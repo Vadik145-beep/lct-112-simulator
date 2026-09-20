@@ -542,6 +542,7 @@ async def edit_reply(
     if text is not None:
         reply["text"] = text.strip()
         reply["audio"] = None  # the recorded voice no longer matches the text
+        reply["variants"] = []  # other wordings were written for the old text
     version.body = {**version.body, "replies": replies}
     flag_modified(version, "body")
     await write_audit(

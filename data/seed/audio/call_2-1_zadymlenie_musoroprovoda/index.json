@@ -1,0 +1,226 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Алло, 112? У нас в доме мусоропровод дымит, весь этаж в дыму!",
+    "bytes": 70261,
+    "sha256": "dff44e08c410c3bc37280bfb3bed11907b3a9c27"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Мусоропровод дымит, на площадке дым стоит, пламени не вижу.",
+    "bytes": 63991,
+    "sha256": "f9a7951f24f415115da2de6bf1c0ddf717fede65"
+  },
+  "r1-v1": {
+    "sha256": "9b8ec8c0bbb43e59345c3dfe9c82823b71345dfc",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Дым из мусоропровода, вся площадка в дыму. Огня не видно, только дым.",
+    "bytes": 69007
+  },
+  "r1-v2": {
+    "sha256": "a66096ebd7ec0d10cd917ffa551de2e58eef0aff",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Мусоропровод задымился, на лестнице дым стоит, пламени нет.",
+    "bytes": 65245
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Берзарина, дом двадцать один... корпус один, третий подъезд.",
+    "bytes": 79038,
+    "sha256": "e67039cd8c429168e41a274d4e51fa8c7861754a"
+  },
+  "r2-v1": {
+    "sha256": "bde4c596c433712c5e927f3301069a392b115cab",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Улица Берзарина, двадцать один, корпус один. Третий подъезд.",
+    "bytes": 63991
+  },
+  "r2-v2": {
+    "sha256": "dded58aff84e9a4a19de0bf1b1943df6d072f895",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Берзарина, дом двадцать один, корпус один, подъезд третий.",
+    "bytes": 74022
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Я на седьмом, дом семнадцатиэтажный. Домофон шестьдесят восемь.",
+    "bytes": 63991,
+    "sha256": "4626df448c1b1c7651f93b10ada466e466f071f1"
+  },
+  "r3-v1": {
+    "sha256": "19f26c88d9756ff8296f8d63dc85f4bdf34b5abe",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Седьмой этаж, дом семнадцать этажей. Код домофона шестьдесят восемь.",
+    "bytes": 90741
+  },
+  "r3-v2": {
+    "sha256": "a9c31bc2ef1e17441c2f46e85b4534133f8a6680",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Я на седьмом, всего в доме семнадцать. Домофон шестьдесят восемь.",
+    "bytes": 74022
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Нет, пострадавших нет, просто дышать тяжело.",
+    "bytes": 43511,
+    "sha256": "4e3654c19aa9d2f17323677f942b78d39e7e15a7"
+  },
+  "r4-v1": {
+    "sha256": "018c692ff231fc598bf63926765dabc7ee1f7d9a",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Пострадавших нет, никто не пострадал. Просто дым, дышать трудно.",
+    "bytes": 62319
+  },
+  "r4-v2": {
+    "sha256": "c2c231112bbfc2457173a0ecfb358fac671fca33",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Нет, никто не пострадал. Дым только, дышать тяжело.",
+    "bytes": 82799
+  },
+  "r5": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Огня не видно, только дым из мусоропровода.",
+    "bytes": 48527,
+    "sha256": "04c651f2c8b9e6fe1b48283174739f760b18a073"
+  },
+  "r5-v1": {
+    "sha256": "cbfe9d6d95bff4093492075c71d876b831084742",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Огня нет, я не вижу пламени, только дым из мусоропровода.",
+    "bytes": 74022
+  },
+  "r5-v2": {
+    "sha256": "f5b679ea2b08db2c3ba37b94068399ca497065d1",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Пламени не видно, дым один. Из мусоропровода идёт.",
+    "bytes": 79038
+  },
+  "r6": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Ким Олег Юрьевич.",
+    "bytes": 46019,
+    "sha256": "11e19bb8b6677c7f011e9a9b5afe161e783c4766"
+  },
+  "r6-v1": {
+    "sha256": "eec1fcf3f96728d952fb2b8f4deb43f4aff862be",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Ким. Олег Юрьевич.",
+    "bytes": 33062
+  },
+  "r6-v2": {
+    "sha256": "f4b3c307b42f2e1fb1ae0af39392e53500157446",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Олег Юрьевич Ким.",
+    "bytes": 24285
+  },
+  "r7": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Девятьсот шестнадцать, сто двадцать шесть, тридцать четыре, семьдесят один.",
+    "bytes": 66499,
+    "sha256": "4d03fff89aa43ec08d27c5a4b35ebf9144f4461b"
+  },
+  "r7-v1": {
+    "sha256": "9a72f880d683395aea10df25cd14b639e146fdc7",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Девять один шесть, сто двадцать шесть, тридцать четыре, семьдесят один.",
+    "bytes": 59812
+  },
+  "r7-v2": {
+    "sha256": "4d252f994cd609c41db545346d5b35771ad30673",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Девятьсот шестнадцать, один два шесть, три четыре, семь один.",
+    "bytes": 71515
+  },
+  "r8": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Что? Повторите, плохо слышно!",
+    "bytes": 40586,
+    "sha256": "d383336add6e74f8d69e057518395841e52ab36b"
+  },
+  "r8-v1": {
+    "sha256": "c2761773e06135f3030b61f8f3cae507eaba5c9d",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Что? Не расслышал, повторите.",
+    "bytes": 34316
+  },
+  "r8-v2": {
+    "sha256": "ee781271383a029a1e3275324cc47d34ef81d973",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Повторите, пожалуйста, плохо слышно.",
+    "bytes": 31808
+  },
+  "r9": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Не знаю, приезжайте скорее!",
+    "bytes": 47273,
+    "sha256": "e95b0799288efb9c89855d688b6b91c554b3e5e5"
+  },
+  "r9-v1": {
+    "sha256": "6eaa18938df170b4956bc86e70a687c8e84f5791",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Не знаю. Приезжайте быстрее.",
+    "bytes": 70261
+  },
+  "r9-v2": {
+    "sha256": "b9aa1956949c124cae56dd60c39426d541f66e7c",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Я не знаю, пришлите кого-нибудь.",
+    "bytes": 40586
+  }
+}

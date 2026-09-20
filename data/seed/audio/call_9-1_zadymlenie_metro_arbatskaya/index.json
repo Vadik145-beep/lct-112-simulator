@@ -1,0 +1,226 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Здравствуйте, в метро на платформе дым, на Арбатской. Людей выводят.",
+    "bytes": 100772,
+    "sha256": "dd3cbe1612047adf88ed33a4fceeeb7f3969eb89"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "На платформе дым, откуда — не понятно, огня не видно.",
+    "bytes": 59812,
+    "sha256": "4f797f1e4bedfe07632a77169bb9a6fcc29855bc"
+  },
+  "r1-v1": {
+    "sha256": "196c0b7642cfe20fec3090dfcadd579acaaa68eb",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Дым на платформе, откуда идёт — не видно. Огня нет.",
+    "bytes": 53542
+  },
+  "r1-v2": {
+    "sha256": "6f245f70d48b7ca0a55bc12936df9e0722169163",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "На платформе задымление, источник не понятен, пламени не вижу.",
+    "bytes": 65245
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Станция Арбатская, на платформе.",
+    "bytes": 39332,
+    "sha256": "596318fc9e633eea1c554a0349b5e2c4e3bfef50"
+  },
+  "r2-v1": {
+    "sha256": "210366b90d93b7cde4d8af0c14cfca0a94f4d2ca",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Арбатская, станция метро, платформа.",
+    "bytes": 46019
+  },
+  "r2-v2": {
+    "sha256": "567540cdb47446f3c044c51fc20ae6de5e637ad8",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Метро Арбатская, я на платформе.",
+    "bytes": 34316
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Это Филёвская линия, голубая. Не та, что глубокая.",
+    "bytes": 57304,
+    "sha256": "c4ad99365f8a878f97a3dc01c4491cc9392d6a56"
+  },
+  "r3-v1": {
+    "sha256": "dee3b8dad7e218d57a0af062ee720bf3744e8810",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Филёвская линия, голубая. Не Арбатско-Покровская.",
+    "bytes": 65245
+  },
+  "r3-v2": {
+    "sha256": "c7eeb468388630860e75170788f13b0061429400",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Это Филёвская, голубая ветка. Не та, глубокая.",
+    "bytes": 61066
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Пострадавших нет, люди просто выходят наверх.",
+    "bytes": 51035,
+    "sha256": "d36eaaa713d53414f46ae2e7a38ae43b9c2a5f18"
+  },
+  "r4-v1": {
+    "sha256": "9d0efea2f40bc0960a23ff6db726c69727e469bf",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Пострадавших нет, людей просто выводят наверх.",
+    "bytes": 49781
+  },
+  "r4-v2": {
+    "sha256": "9546ae4ea0c6f9353adb98b2c6b348bc45caa426",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Никто не пострадал, пассажиры спокойно выходят.",
+    "bytes": 57304
+  },
+  "r5": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Дым погуще становится, дежурные людей на выход направляют.",
+    "bytes": 57304,
+    "sha256": "28bf3b4096c2c5eb28fcc0b140bbf56ee5fab6fc"
+  },
+  "r5-v1": {
+    "sha256": "d083b313b6f8a10d69a3783f53a6a59dc30da879",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Дым усиливается, дежурные выводят людей к выходу.",
+    "bytes": 49781
+  },
+  "r5-v2": {
+    "sha256": "5bb2aba7d7f628fc15583940cf58e89d9ba89557",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Дыма становится больше, сотрудники всех направляют на выход.",
+    "bytes": 57304
+  },
+  "r6": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Тихий Олег Юрьевич.",
+    "bytes": 46019,
+    "sha256": "c3b098c5de6ee640803d1997ffb59227871c134d"
+  },
+  "r6-v1": {
+    "sha256": "9d0e0d05739b365a462d2e16cf6eb7f0c1998e07",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Тихий. Олег Юрьевич.",
+    "bytes": 31808
+  },
+  "r6-v2": {
+    "sha256": "150cd785c35839c23321524beb07e65b90384e97",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Олег Юрьевич Тихий.",
+    "bytes": 34316
+  },
+  "r7": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Девять шестнадцать, сто двадцать три, девяносто восемь, семьдесят восемь.",
+    "bytes": 57304,
+    "sha256": "94095f270ef27b07d493ae85b45aebf233adc8cf"
+  },
+  "r7-v1": {
+    "sha256": "37e8176bdb7b6fe9d29c9c1370e74298dafc1f96",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Девятьсот шестнадцать, сто двадцать три, девяносто восемь, семьдесят восемь.",
+    "bytes": 56050
+  },
+  "r7-v2": {
+    "sha256": "b58884e9ee60cff1de62e0fa3c2d6562bf91a543",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Девять один шесть, один два три, девять восемь, семь восемь.",
+    "bytes": 75276
+  },
+  "r8": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Плохо слышно, повторите.",
+    "bytes": 43511,
+    "sha256": "3c7aa8104f74a5ac6690a9e5394787c92d1483e4"
+  },
+  "r8-v1": {
+    "sha256": "cef8c0cc9652a06e08d2478785dd82010e66306f",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Повторите, плохо слышно.",
+    "bytes": 28047
+  },
+  "r8-v2": {
+    "sha256": "b73b3456e26325c2cf2cb22f78e8edec1ba26092",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Не расслышал, повторите, пожалуйста.",
+    "bytes": 34316
+  },
+  "r9": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Не знаю, я пассажир.",
+    "bytes": 23031,
+    "sha256": "f854957b760d7885deffe09b39e298f917f66dc7"
+  },
+  "r9-v1": {
+    "sha256": "a1e6471b32980c4e9989feb95d94cb246a3e3e32",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Не знаю, я просто пассажир.",
+    "bytes": 38078
+  },
+  "r9-v2": {
+    "sha256": "8af2a524433f916f242ddbd67a2f3c1a0af46f99",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Не могу сказать, я пассажир.",
+    "bytes": 41839
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "text": "Значит так, я в салоне Мегафон на Сущёвском Валу, они мне продали брак и отказываются менять!",
+    "bytes": 103279,
+    "sha256": "872ad41c72d8eab1e4f78e4ab5c12e560b93169e"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "text": "Продавец хамит, товар не меняет, я требую полицию!",
+    "bytes": 62319,
+    "sha256": "399997a392bf7b1d8543edb15b3b4aa958de36f6"
+  },
+  "r1-v1": {
+    "sha256": "b0aae07b694aaecbecc3b43166eb6136fd5ad895",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "text": "Мне продали брак и отказываются менять, продавец хамит! Вызывайте полицию!",
+    "bytes": 75276
+  },
+  "r1-v2": {
+    "sha256": "e767a49a586235d126d9879c04712b96ef59ed6e",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "text": "Они брак мне продали, менять не хотят, продавец грубит. Я требую полицию, слышите?",
+    "bytes": 88233
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "text": "Сущёвский Вал, пять, строение один, салон Мегафон.",
+    "bytes": 59812,
+    "sha256": "7f8a6a544eb4f95bcb4ab9dddc06db67c4675c47"
+  },
+  "r2-v1": {
+    "sha256": "f13f69f641d018ee996d54d04eedbd0114a8bf52",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "text": "Сущёвский Вал, дом пять, строение один. Салон Мегафон.",
+    "bytes": 75276
+  },
+  "r2-v2": {
+    "sha256": "5f82261f387f3e04a12d72108eda8261f393cead",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "text": "Салон Мегафон, Сущёвский Вал, пять, строение один.",
+    "bytes": 52288
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "text": "Какие пострадавшие, вы меня слушаете вообще?!",
+    "bytes": 47273,
+    "sha256": "45996a32f35b306e2f1e8c2e24bd735aae49069b"
+  },
+  "r3-v1": {
+    "sha256": "5d511e57d314dad07cd39597fa081547315fd8ec",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "text": "Какие ещё пострадавшие?! Вы вообще слышите, что я говорю?!",
+    "bytes": 66499
+  },
+  "r3-v2": {
+    "sha256": "342e3f76e3d0ae99b94e26efa68286bb2051bfa9",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "text": "Пострадавшие?! Вы издеваетесь? Я про брак говорю!",
+    "bytes": 63991
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "text": "Да ну вас, сам разберусь. [бросает трубку]",
+    "bytes": 63991,
+    "sha256": "6e0bf03a3f8ebec5565edc385318297a74403ddd"
+  },
+  "r4-v1": {
+    "sha256": "f3b2118e3a0ffa5cf3ef6b84c87f05942457f9c8",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "text": "Всё, надоело, сам разберусь. [бросает трубку]",
+    "bytes": 39332
+  },
+  "r4-v2": {
+    "sha256": "6656a855ec4e2976d797b1a39f61476b15819d8c",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "text": "Бесполезно с вами говорить. Сам решу. [бросает трубку]",
+    "bytes": 41839
+  }
+}

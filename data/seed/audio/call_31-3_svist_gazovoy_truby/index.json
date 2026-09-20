@@ -1,0 +1,202 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Здравствуйте, у меня на кухне труба газовая свистит, что делать?",
+    "bytes": 81546,
+    "sha256": "dac03f2a76eb0d5d9b30c80dd02ac40a27af0ef7"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Труба на кухне свистит, там где кран. Запаха вроде нет.",
+    "bytes": 82799,
+    "sha256": "ff1b809ca3f14c441dce1fa2ad04e329c8b31880"
+  },
+  "r1-v1": {
+    "sha256": "f45545d495ffcac55da597a73259f8dc45b3fffe",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Газовая труба на кухне свистит, около крана. Запаха газа нет, вроде.",
+    "bytes": 76530
+  },
+  "r1-v2": {
+    "sha256": "88950af7b0f43e156478ce2d7d4dcee887f9d37d",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Свистит труба, газовая, на кухне, там где кран. Газом не пахнет.",
+    "bytes": 91995
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Вавилова, восемьдесят один, корпус один.",
+    "bytes": 58558,
+    "sha256": "49894ae65d224b491f6bfdaf76222721d0ad1fe1"
+  },
+  "r2-v1": {
+    "sha256": "90af8b03e5d4d848fd1258120b4bdb9f817271cf",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Улица Вавилова, дом восемьдесят один, корпус первый.",
+    "bytes": 97010
+  },
+  "r2-v2": {
+    "sha256": "b3a66204877f9b7c67fafa9980d1a1216c792e37",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Вавилова, дом восемьдесят один, корпус один.",
+    "bytes": 52288
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Первый подъезд, второй этаж, квартира пять. Код пять В.",
+    "bytes": 65245,
+    "sha256": "7b55ad96ae904ba4b22ee8ca874b731068530716"
+  },
+  "r3-v1": {
+    "sha256": "85ddf3d784a9ff5cbe2ff54435efe5abbc72e74d",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Подъезд первый, этаж второй, квартира пятая. Код пять В.",
+    "bytes": 88233
+  },
+  "r3-v2": {
+    "sha256": "db8a159fa37876dfb74aaed2a22ba90ed0ab590d",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Первый подъезд, второй этаж. Квартира пять, код на домофоне пять В.",
+    "bytes": 108713
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Нет-нет, никому не плохо, скорую не надо.",
+    "bytes": 53542,
+    "sha256": "12c67361688cc4e0c99fd4e1ed4e5fb7f92c4d6d"
+  },
+  "r4-v1": {
+    "sha256": "6156be935464593f7eaddfa0f3b464f210e1d1d8",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Нет, никому не плохо. Скорая не нужна.",
+    "bytes": 52288
+  },
+  "r4-v2": {
+    "sha256": "f23e850c29e7f3de6a830cbe8db0b136b55929db",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Никто не пострадал, я один. Скорую не надо.",
+    "bytes": 67753
+  },
+  "r5": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Кран не трогал, окна открыл на всякий случай.",
+    "bytes": 51035,
+    "sha256": "23a9beb12e94a6ce378ea88dee92e51ea6c8fa36"
+  },
+  "r5-v1": {
+    "sha256": "95937b7c524592436376c2220453457fe0f9a5c0",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Кран не трогал, не перекрывал. Окна открыл на всякий случай.",
+    "bytes": 95756
+  },
+  "r5-v2": {
+    "sha256": "d55c8688f631eef3872b714daa789f84d454c652",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Газ не перекрывал, боюсь трогать. Окна открыл, проветриваю.",
+    "bytes": 72768
+  },
+  "r6": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Трунов Олег Егорович.",
+    "bytes": 49781,
+    "sha256": "49a46f08a7e9a0f3f662b5da3e86d2e2892829e2"
+  },
+  "r6-v1": {
+    "sha256": "701cb6f8ab33115adb38c4b13ff2e0676d9899ef",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Трунов. Олег Егорович.",
+    "bytes": 44765
+  },
+  "r6-v2": {
+    "sha256": "1ea8da219a9a570c7ec0a2a7c801b1f1fcd04692",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Олег Егорович Трунов.",
+    "bytes": 40586
+  },
+  "r7": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Девять один шесть, три два ноль, один два восемь три.",
+    "bytes": 79038,
+    "sha256": "36feef90168c46e807d7ec710ad0d43ac2b85aa7"
+  },
+  "r7-v1": {
+    "sha256": "e46fa55b4a4b3c3ab165cb897a25d23a3474983d",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Девятьсот шестнадцать, триста двадцать, двенадцать, восемьдесят три.",
+    "bytes": 69007
+  },
+  "r7-v2": {
+    "sha256": "4db0f62445a0110acc7f3db84aaf7c09b5a5e808",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "text": "Девять один шесть, три два ноль, один два, восемь три.",
+    "bytes": 85725
+  },
+  "r8": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Ась? Повторите, милая.",
+    "bytes": 31808,
+    "sha256": "617904169d07415e3dfb5f01d64eb0d1df7bb809"
+  },
+  "r8-v1": {
+    "sha256": "090860bbad8dd406266990281d18982d43637b41",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Ась? Не расслышал, повторите.",
+    "bytes": 41839
+  },
+  "r8-v2": {
+    "sha256": "f8e986144ca55b8127792e5fafb80173389251ed",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Что-что? Повторите, пожалуйста, я плохо слышу.",
+    "bytes": 41839
+  }
+}

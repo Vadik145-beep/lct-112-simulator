@@ -1,0 +1,226 @@
+{
+  "opening": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Алло! Тут дом горит, балкон весь в огне, высоко, этаж тринадцатый где-то!",
+    "bytes": 91995,
+    "sha256": "a51612c35c8f9cee25c3898a81a3779d6452cab6"
+  },
+  "r1": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Балкон горит и два окна рядом, пламя прямо наружу, на тринадцатом!",
+    "bytes": 81546,
+    "sha256": "df604cafc83e383568034de37fe5f0af81f66b40"
+  },
+  "r1-v1": {
+    "sha256": "725af613d2f7f44b80bed0452bc94d80146fedc0",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Горит балкон и окна рядом, два окна, огонь наружу вырывается! Этаж тринадцатый!",
+    "bytes": 118744
+  },
+  "r1-v2": {
+    "sha256": "bf5e3e44fb191f2c1c93124d894cbbb2bb55c165",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Балкон в огне, и два окна рядом полыхают, пламя прямо на улицу! На тринадцатом!",
+    "bytes": 103279
+  },
+  "r2": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Улица Грина, а номер... не знаю я номер! Тут библиотека внизу, сто девяносто третья.",
+    "bytes": 123759,
+    "sha256": "53ae964f0b7864e82750ea4cbd33a1018372fb03"
+  },
+  "r2-v1": {
+    "sha256": "aed8d7b2516319f8605082e83e5b8eb53c4777f7",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Грина, улица Грина! А номер дома я не знаю! Внизу библиотека, сто девяносто три.",
+    "bytes": 125431
+  },
+  "r2-v2": {
+    "sha256": "49402219c26f42fdca2736efdca5747bffe28f48",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Улица Грина, номер не скажу, не знаю. В этом доме библиотека, сто девяносто третья.",
+    "bytes": 127939
+  },
+  "r3": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Этаж тринадцатый, а всего в доме четырнадцать. Подъезд не скажу, я с улицы.",
+    "bytes": 121252,
+    "sha256": "40cb09f378a29ec89c705e0e1c61b7f8df8c454b"
+  },
+  "r3-v1": {
+    "sha256": "985941154a0ff6f4e3958c079017ef5fbdca36b2",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Тринадцатый этаж, в доме четырнадцать. Подъезд не знаю, я на улице.",
+    "bytes": 80292
+  },
+  "r3-v2": {
+    "sha256": "0723aec6ded66d6d2acd827c611187bd8958a695",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Этаж тринадцатый, дом четырнадцатиэтажный. Какой подъезд — не вижу, мы с улицы смотрим.",
+    "bytes": 95756
+  },
+  "r4": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Людей не видно, никто не кричит. Мы на улице стоим, смотрим.",
+    "bytes": 94502,
+    "sha256": "3164b9561d95d0aaac9599baedb9d2f044bc9f40"
+  },
+  "r4-v1": {
+    "sha256": "9049aa1b93f0c5bd9e09de7ccd6c45eed7daac19",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Людей не видим, никто не кричит. Мы снаружи стоим.",
+    "bytes": 67753
+  },
+  "r4-v2": {
+    "sha256": "16caab3326279da74fe00f987df85c1f9f51067a",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Пострадавших не видно, с улицы смотрим. Никто не зовёт.",
+    "bytes": 67753
+  },
+  "r5": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Дом с газом, у нас плиты газовые. Быстрее приезжайте!",
+    "bytes": 66499,
+    "sha256": "2ddd93cf23c3bee67800d58f31cede18f91b4eb7"
+  },
+  "r5-v1": {
+    "sha256": "f9a93063212a765d6748ed63cfcf1cb6262665c2",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "В доме газ, плиты газовые! Скорее приезжайте!",
+    "bytes": 62319
+  },
+  "r5-v2": {
+    "sha256": "027b3e7c0d8f8ecba941e29e9acd7b8923d3f45a",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Дом газифицирован, у всех плиты газовые! Быстрее!",
+    "bytes": 72768
+  },
+  "r6": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Сидорова Анна Викторовна.",
+    "bytes": 23031,
+    "sha256": "7e405e1043f06928d8b87ce0783777c2ea29a64b"
+  },
+  "r6-v1": {
+    "sha256": "956ed2a5fea635ba1c31058f359039107379f503",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Сидорова. Анна Викторовна.",
+    "bytes": 33062
+  },
+  "r6-v2": {
+    "sha256": "9a6c0eaab5b385dc350f6bb6ebe351a9e6ff7b6f",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Анна Викторовна Сидорова.",
+    "bytes": 33062
+  },
+  "r7": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Девять шестнадцать, сто двадцать шесть, тридцать четыре, семьдесят один.",
+    "bytes": 88233,
+    "sha256": "c77729c91454c024be292b5d816eab954b211773"
+  },
+  "r7-v1": {
+    "sha256": "1c396db4fad949b9e7c44700aec1373a9a5daff7",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Девятьсот шестнадцать, сто двадцать шесть, тридцать четыре, семьдесят один.",
+    "bytes": 71515
+  },
+  "r7-v2": {
+    "sha256": "d78142dfd027ba3edd6fe90b4517f14b0366614a",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Девять один шесть, один два шесть, три четыре, семь один.",
+    "bytes": 69007
+  },
+  "r8": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Что? Я не расслышала, повторите!",
+    "bytes": 44765,
+    "sha256": "ee7d7c9f04b34b6648ec7f6e014e1eddd6526614"
+  },
+  "r8-v1": {
+    "sha256": "5fda1ad355f8b012c62a096631f15eaa378822e7",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Что? Повторите, я не слышу!",
+    "bytes": 39332
+  },
+  "r8-v2": {
+    "sha256": "7bf9d4ec173fa5a7bdebcb2a0a3efbd4ba9b827c",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Не расслышала! Что вы сказали?",
+    "bytes": 40586
+  },
+  "r9": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Не знаю, я же говорю, горит!",
+    "bytes": 35570,
+    "sha256": "15a31f739c42fe51a6dac1d9244aff9e393ae3cc"
+  },
+  "r9-v1": {
+    "sha256": "04ca24cb2b127a1dac21976f8bfe920ba1cbf587",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Не знаю! Горит, говорю же!",
+    "bytes": 38078
+  },
+  "r9-v2": {
+    "sha256": "05be02800f5dbd11e21ec11ff7235934f5da6f38",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Да не знаю я! Дом горит!",
+    "bytes": 41839
+  }
+}

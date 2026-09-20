@@ -53,7 +53,7 @@ const CARD_SOURCES = [
 ];
 
 const DIALOG_MODES: { code: string; title: string; hint: string }[] = [
-  { code: "select", title: "Готовые реплики", hint: "модель выбирает утверждённую реплику; режим стенда" },
+  { code: "select", title: "Готовые реплики", hint: "модель выбирает утверждённую реплику, звучит её запись; режим стенда" },
   { code: "hybrid", title: "Готовые + новые", hint: "если реплики нет, модель сочиняет; новое — на утверждение после занятия" },
   { code: "generate", title: "Свободная генерация", hint: "модель сочиняет каждую реплику; медленнее и менее предсказуемо" },
   { code: "buttons", title: "Кнопки тем", hint: "без модели" },
@@ -218,7 +218,10 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                 <input type="checkbox" checked={form.voice_enabled} onChange={(e) => patch({ voice_enabled: e.target.checked })} />
                 Голос: заявитель звучит, обучающийся говорит в гарнитуру
               </label>
-              <p className="text-xs text-muted-foreground">Без голоса разговор идёт текстом в панели тренажёра.</p>
+              <p className="text-xs text-muted-foreground">
+                Без голоса разговор идёт текстом в панели тренажёра. Утверждённые реплики эталонных сценариев звучат записанным
+                голосом с эмоцией, остальные — синтезом.
+              </p>
               {models.data && form.voice_enabled && (!models.data.tts || !models.data.stt) && (
                 <p className="text-xs text-destructive" role="alert" data-testid="voice-warning">
                   {!models.data.tts && "Озвучка недоступна: заявитель ответит текстом. "}

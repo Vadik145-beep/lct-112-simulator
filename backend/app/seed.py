@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import shutil
 import uuid
 from pathlib import Path
 
@@ -53,6 +54,10 @@ _GROUPS = [
 ]
 
 SCENARIOS_DIR = "seed/scenarios"
+# Studio recordings of the reference scenarios (scripts/voice_replies.py): copied into
+# ``STORAGE_DIR/tts/seed/<key>/`` and linked from the body, so calls play them instead of Piper.
+AUDIO_DIR = "seed/audio"
+AUDIO_STORAGE = "tts/seed"
 DEMO_SESSION_KEY = "demo-card-response-1"
 DEMO_CALL_SESSION_KEY = "demo-call-intake-1"
 # student1 works as a district administration dispatcher (see _STUDENT_SERVICES).
@@ -137,6 +142,54 @@ def _scenario_files(data_dir: Path) -> list[Path]:
     return sorted(folder.glob("*.json")) if folder.exists() else []
 
 
+def _attach_audio(body: dict, key: str, data_dir: Path, storage_dir: Path) -> int:
+    """Links the recordings of ``data/seed/audio/<key>/`` to the opening and the approved
+    replies of a call-intake body, copying them into storage; returns how many. Deterministic
+    for the same files, so it does not create scenario versions by itself."""
+    source = data_dir / AUDIO_DIR / key
+    if body.get("kind") != MODE_CALL_INTAKE or not source.is_dir():
+        return 0
+    target = storage_dir / AUDIO_STORAGE / key
+    linked = 0
+
+    def link(stem: str) -> str | None:
+        for suffix in (".mp3", ".wav"):
+            file = source / f"{stem}{suffix}"
+            if file.exists():
+                copy = target / file.name
+                if not copy.exists() or copy.stat().st_size != file.stat().st_size:
+                    copy.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copyfile(file, copy)
+                return f"{AUDIO_STORAGE}/{key}/{file.name}"
+        return None
+
+    caller = dict(body.get("caller") or {})
+    opening = link("opening")
+    if opening:
+        caller["opening_audio"] = opening
+        body["caller"] = caller
+        linked += 1
+    replies = []
+    for reply in body.get("replies") or []:
+        if reply.get("approved"):
+            audio = link(f"r{reply.get('id')}")
+            if audio:
+                reply = {**reply, "audio": audio}
+                linked += 1
+            variants = []
+            for n, variant in enumerate(reply.get("variants") or [], start=1):
+                audio = link(f"r{reply.get('id')}-v{n}")
+                if audio:
+                    variant = {**variant, "audio": audio}
+                    linked += 1
+                variants.append(variant)
+            if variants:
+                reply = {**reply, "variants": variants}
+        replies.append(reply)
+    body["replies"] = replies
+    return linked
+
+
 async def _ticket_id(session: AsyncSession, ticket_ref: str | None) -> uuid.UUID | None:
     if not ticket_ref or "-" not in ticket_ref:
         return None
@@ -153,10 +206,12 @@ async def seed_scenarios(session: AsyncSession, data_dir: Path) -> tuple[int, in
     seed key; a changed body becomes a new version. Returns (created, updated, keys)."""
     created = updated = 0
     keys: list[str] = []
+    storage_dir = Path(get_settings().storage_dir)
     for path in _scenario_files(data_dir):
         body = json.loads(path.read_text(encoding="utf-8"))
         key = path.stem
         keys.append(key)
+        _attach_audio(body, key, data_dir, storage_dir)
         scenario = await session.scalar(select(Scenario).where(Scenario.seed_key == key))
         fields = {
             "kind": body.get("kind", MODE_CARD_RESPONSE),
