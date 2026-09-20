@@ -42,6 +42,9 @@ export function ServiceCallPanel({
   telephony,
   sttAvailable,
   micDeviceId,
+  devices,
+  onMicDevice,
+  onMicOpened,
   pending,
   error,
   onSay,
@@ -55,6 +58,10 @@ export function ServiceCallPanel({
   sttAvailable: boolean;
   /** The microphone chosen in the softphone settings (null = the system default). */
   micDeviceId: string | null;
+  /** Microphones the browser knows; the list fills in after the first permission. */
+  devices: MediaDeviceInfo[];
+  onMicDevice: (deviceId: string | null) => void;
+  onMicOpened: () => void;
   pending: boolean;
   error: string | null;
   onSay: (text: string, actionId: string) => void;
@@ -129,6 +136,7 @@ export function ServiceCallPanel({
     setMicNote(null);
     try {
       const stream = await openMicrophone(micDeviceId);
+      onMicOpened();
       stopLevel.current = watchLevel(stream, setMicLevel);
       const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
         ? "audio/webm;codecs=opus"
@@ -339,6 +347,24 @@ export function ServiceCallPanel({
             </button>
           )}
         </form>
+      )}
+      {open && call.answered && canSpeak && devices.length > 0 && (
+        <label className="flex items-center gap-1 text-[10px] text-[var(--arm-text-muted)]">
+          <Mic className="size-3" aria-hidden />
+          <select
+            aria-label="Микрофон"
+            value={micDeviceId ?? ""}
+            onChange={(e) => onMicDevice(e.target.value || null)}
+            className="max-w-[11rem] border-b border-[#a9adb2] bg-white px-1 text-[10px] focus:outline-none"
+          >
+            <option value="">Микрофон по умолчанию</option>
+            {devices.map((d, i) => (
+              <option key={d.deviceId || i} value={d.deviceId}>
+                {d.label || `Микрофон ${i + 1}`}
+              </option>
+            ))}
+          </select>
+        </label>
       )}
       {recording && (
         <span
