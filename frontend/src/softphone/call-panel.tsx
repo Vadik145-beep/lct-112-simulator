@@ -1,4 +1,12 @@
-import { Mic, Phone, PhoneIncoming, PhoneOff, Send } from "lucide-react";
+import {
+  Cloud,
+  Mic,
+  MicOff,
+  Phone,
+  PhoneIncoming,
+  PhoneOff,
+  Send,
+} from "lucide-react";
 import { useState } from "react";
 
 import { Badge, type BadgeTone } from "@/components/ui/badge";
@@ -197,7 +205,44 @@ export function CallPanel({
         )}
       </div>
 
-      {talking && phone.mode === "browser" && (
+      {talking && phone.mode === "browser" && phone.cloud === "connecting" && (
+        <div
+          className="mt-3 flex items-center gap-2 text-sm text-muted-foreground"
+          role="status"
+          data-testid="cloud-connecting"
+        >
+          <Cloud className="size-4 animate-pulse" aria-hidden /> Соединяем с
+          облачным заявителем…
+        </div>
+      )}
+      {talking && phone.mode === "browser" && phone.cloud === "live" && (
+        <div className="mt-3 space-y-2" data-testid="cloud-live">
+          <div
+            className="flex items-center gap-2 text-sm"
+            role="status"
+            aria-live="polite"
+          >
+            <Cloud className="size-4 text-primary" aria-hidden />
+            {phone.callerSpeaking
+              ? "Заявитель говорит…"
+              : "Заявитель слушает: говорите свободно, можно перебивать."}
+          </div>
+          <Button
+            size="sm"
+            variant={phone.muted ? "destructive" : "secondary"}
+            className="w-full"
+            onClick={() => phone.setMuted(!phone.muted)}
+            aria-pressed={phone.muted}
+            data-testid="cloud-mute"
+          >
+            {phone.muted ? <MicOff /> : <Mic />}{" "}
+            {phone.muted ? "Микрофон выключен" : "Микрофон включён"}
+          </Button>
+        </div>
+      )}
+      {talking &&
+        phone.mode === "browser" &&
+        (phone.cloud === "off" || phone.cloud === "failed") && (
         <div className="mt-3 space-y-2">
           {phone.sttAvailable ? (
             <Button

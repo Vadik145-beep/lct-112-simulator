@@ -39,8 +39,9 @@ class TelephonyService:
         self.vapi: VapiClient | None = None
         self.cloud = s.cloud_voice_enabled
         if self.cloud:
-            # The caller is played by Vapi (plan/track-c-vapi.md); the SIP number is set up
-            # in start(), so a missing key only disables cloud calls, not the service.
+            # Lessons in the cloud mode get Vapi as the caller (plan/track-c-vapi.md), the
+            # rest the local pipeline; the SIP number is set up in start(), so a missing key
+            # only sends cloud lessons to the local pipeline, not the service down.
             if s.vapi_api_key:
                 self.vapi = VapiClient(s.vapi_api_url, s.vapi_api_key)
             self.calls: CallManager = CloudCallManager(self.ari, self.vapi)
@@ -188,7 +189,7 @@ def telephony_active() -> bool:
 
 
 def cloud_active() -> bool:
-    """True when the caller of live calls is played by Vapi (plan/track-c-vapi.md)."""
+    """True when SIP calls of cloud lessons can reach Vapi (plan/track-c-vapi.md)."""
     return telephony_active() and _service is not None and _service.cloud
 
 

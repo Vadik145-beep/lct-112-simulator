@@ -29,12 +29,67 @@ N по категории из UI нет»). От `wave-11/bugfix` `a7f2fc2`.
 
 ## Трек C: облачный голос через Vapi (в работе)
 
-План [plan/track-c-vapi.md](../plan/track-c-vapi.md), ветка `track-c/vapi` от
-`wave-11/bugfix`. Демо-режим вне закрытого контура: заявителя играет Vapi (распознавание,
-модель, голос ElevenLabs) через SIP-транк отдельного контейнера `asterisk-cloud`; локальный
-конвейер и стенд экспертизы не меняются.
+План [plan/track-c-vapi.md](../plan/track-c-vapi.md), ветка `track-c/vapi-main` от `main`
+(черновик `track-c/vapi` от `wave-11/bugfix` перенесён на неё 20.09.2026). Демо-режим вне
+закрытого контура: в занятии с режимом диалога «Облачный голос» (`cloud`) заявителя играет
+Vapi (распознавание, модель, голос ElevenLabs) — с телефонией через SIP-транк отдельного
+контейнера `asterisk-cloud`, без телефонии прямо из браузера (Vapi Web SDK); остальные
+режимы, локальный конвейер и стенд экспертизы не меняются.
 
-### Сделано
+### Сделано 20.09.2026 (вторая часть: требования plan/track-c-cloud.md на Vapi)
+
+- `cloud` — режим диалога занятия (`DIALOG_MODES`), а не глобальный переключатель:
+  преподаватель выбирает «Облачный голос» в форме занятия (пункт виден при
+  `GET /api/models → cloud`), при `CLOUD_VOICE_ENABLED=false` сервер отвечает 422
+  `cloud_voice_disabled`. `dialog.cloud_lesson(ts)`; `DialogOut.mode = cloud` только у таких
+  занятий; провайдер `cloud` в `build_dialog_provider` = `select` (запасной).
+- `CloudCallManager` решает по занятию: `cloud` → нога Vapi, остальные → `_run_local`
+  (тот же контейнер `asterisk-cloud` обслуживает и локальные звонки). `CallManager._on_answered`
+  разобран на `_open_bridge` / `_start_spy` / `_speak_opening`.
+- **Запасной путь** (пункт плана «выдернули сеть»): нога Vapi не набралась / не ответила за
+  `CLOUD_VOICE_ANSWER_SECONDS` (15) / оборвалась посреди звонка без `status-update` в течение
+  3 с (`LEG_LOST_GRACE_SECONDS`) → тот же звонок продолжает локальный конвейер (snoop +
+  `select`), вступление проигрывается, если Vapi его не сказал; событие `call.cloud_fallback`
+  в журнале занятия, в мониторинге плитка «облако недоступно, локальная модель», в панели
+  предупреждение «Облачный голос был недоступен: N ответов даны локальной моделью»
+  (`fallback_replies` для режима `cloud` = реплики не из облака).
+- **Замеры**: `speech-update` в `serverMessages`; задержка ответа = от «оператор замолчал»
+  до «заявитель заговорил», пишется в ход `latency_ms`, видна в панели под репликой
+  («☁ 0,8 с»), медиана и максимум в логе `cloud latency` при завершении.
+- **Голос по сценарию**: `voice_config` — `caller.voice` (`ru_male_*` / `ru_female_*` /
+  `ru_child_1`) → `CLOUD_VOICE_VOICE_ID_MALE/FEMALE/ELDER_MALE/ELDER_FEMALE/YOUNG`
+  (пожилые без своего голоса берут голос пола, всё пустое → `CLOUD_VOICE_VOICE_ID`);
+  взволнованные персоны (`panic`, `anxious`, `urgent`, `shaken`, `angry`, `victim`) —
+  ElevenLabs `stability` 0,35, спокойные 0,6.
+- **Браузер без телефонии** (`app/telephony/cloud_web.py`, `POST /attempts/{id}/cloud-call`):
+  бэкенд заводит в Vapi ассистента сценария (факты не попадают в браузер), отдаёт
+  `public_key`, `assistant_id`, `token`; фронт (`softphone/cloud-call.ts`, SDK грузится
+  лениво) поднимает WebRTC-звонок `vapi.start(assistant_id, {variableValues: {callToken}})`.
+  Вебхуки те же (`/api/cloud/vapi/webhook` раздаёт сообщения SIP-менеджеру и браузерным
+  звонкам по `call.assistantId` / токену / id звонка); Vapi пишет запись, из
+  `end-of-call-report.artifact.recordingUrl` файл скачивается в `storage/recordings/web-*.wav`.
+  Завершение: «Завершить» в панели → `/hangup` + `vapi.stop()`; заявитель положил трубку →
+  `status-update` → `call.ended` → панель видит по опросу. Ассистент удаляется в любом
+  случае. Не удалось (нет ключей, 503, SDK не соединился, микрофон запрещён) →
+  `POST /cloud-call/failed`, событие `call.cloud_fallback`, панель работает микрофоном и
+  `select` как раньше. В панели: «Соединяем…» → «Заявитель слушает: говорите свободно,
+  можно перебивать» / «Заявитель говорит…» + кнопка микрофона (mute).
+- Настройки: `VAPI_PUBLIC_KEY`, `CLOUD_VOICE_VOICE_ID_*`, `CLOUD_VOICE_ANSWER_SECONDS`.
+- Тесты: `tests/telephony/test_cloud.py` (20: + режим по занятию, три запасных пути, замеры,
+  голос), `tests/telephony/test_cloud_web.py` (7: старт и ассистент, отказы 409/503, отчёт
+  и запись, завершение с обеих сторон), `tests/api/test_sessions.py::test_cloud_dialog_mode_needs_the_cloud_voice`.
+  На тестовом контуре стенда 44 целевых зелёные; `ruff`, `tsc`, `eslint`, `vitest` чисто.
+
+### Не сделано / ограничения по плану отца
+
+- Страховка по фактам перед озвучкой невозможна: Vapi озвучивает сам; держится промптом
+  («только по фактам», «не выходи из роли»). Проверить провокациями на живом звонке.
+- Замеры по звеньям (STT / первый токен / первый звук) Vapi не отдаёт — только общая
+  задержка ответа. Строку в `docs/PERFORMANCE.md` заполнить после серии живых звонков.
+- Перебивание — встроенное в Vapi, отдельной настройки нет; проверить вживую.
+- P2: набирать Vapi заранее, пока звонит софтфон.
+
+### Сделано 19.09.2026 (черновик)
 
 - Настройки `CLOUD_VOICE_*`, `VAPI_*`, `PUBLIC_HOST`, `CLOUD_*_PORT` (`.env.example`);
   `CLOUD_VOICE_ENABLED=true` при `ALLOW_EXTERNAL_AI=false` не даёт стартовать, как внешние модели.
@@ -71,10 +126,15 @@ N по категории из UI нет»). От `wave-11/bugfix` `a7f2fc2`.
 
 ### Осталось
 
-- Стенд: `PUBLIC_HOST=155-212-186-2.sslip.io`, сертификат Let's Encrypt (webroot через
-  nginx), `docker compose --profile ai --profile cloud up -d`, живой звонок из браузера.
-  Порты 5061/udp,tcp и 10200–10300/udp в ufw уже открыты (19.09.2026).
-- P2: набирать Vapi заранее, пока звонит софтфон; голос по `caller.voice`.
+- Стенд: в `.env` `CLOUD_VOICE_ENABLED=true`, `ALLOW_EXTERNAL_AI=true`, `VAPI_API_KEY`,
+  `VAPI_PUBLIC_KEY`, `CLOUD_VOICE_PUBLIC_URL=https://155-212-186-2.sslip.io`; сертификат
+  Let's Encrypt есть с 20.09. Сначала браузерный путь (телефония выключена), потом
+  `TELEPHONY_ENABLED=true` + `docker compose --profile ai --profile cloud up -d` и звонок
+  через софтфон. Порты 5061/udp,tcp и 10200–10300/udp в ufw открыты (19.09.2026).
+- Живые проверки из плана отца: три вопроса + вопрос не по сценарию + перебить; 5 провокаций;
+  «выдернуть сеть» (остановить `asterisk-cloud`/отключить интернет) — звонок должен
+  продолжиться локально; серия из 20 вопросов для `PERFORMANCE.md`.
+- Показ Константину и видео 2–3 минуты («один билет трижды»).
 
 ## Текущая волна
 

@@ -184,6 +184,11 @@ def provider_for(ts: TrainingSession) -> DialogProvider:
     return get_dialog_provider(ts.dialog_mode or None)
 
 
+def cloud_lesson(ts: TrainingSession) -> bool:
+    """The lesson's caller is played by Vapi (plan/track-c-vapi.md)."""
+    return ts.dialog_mode == EXTERNAL_METHOD and get_settings().cloud_voice_enabled
+
+
 async def _store_turns(
     session: AsyncSession,
     attempt: Attempt,
@@ -310,10 +315,12 @@ async def external_turn(
     text: str,
     *,
     now: datetime | None = None,
+    latency_ms: int | None = None,
 ) -> tuple[dict | None, list[SessionEvent]]:
     """One turn heard from the cloud voice provider (plan/track-c-vapi.md): the operator's
     phrase or the caller's reply as the provider transcribed it. Topics come from keywords;
-    the evaluation engine reads them like any other turn."""
+    the evaluation engine reads them like any other turn. ``latency_ms`` of a caller's turn:
+    from the end of the operator's phrase to the first sound of the reply."""
     if role not in ("operator", "caller"):
         raise ValueError(f"unknown dialog role: {role!r}")
     text = text.strip()
@@ -324,7 +331,15 @@ async def external_turn(
     if _is_opening(attempt, role, text):
         return attempt.dialog[0], []
     topics = [t for t in detect_topics(text) if t not in SERVICE_TOPICS]
-    turn = _turn(role, text, topics, now, method=EXTERNAL_METHOD, heard=role == "operator")
+    turn = _turn(
+        role,
+        text,
+        topics,
+        now,
+        method=EXTERNAL_METHOD,
+        heard=role == "operator",
+        latency_ms=latency_ms if role == "caller" else None,
+    )
     attempt.dialog = [*attempt.dialog, turn]
     flag_modified(attempt, "dialog")
     await session.flush()
@@ -452,9 +467,16 @@ def audio_source_file(relative: str) -> Path | None:
 
 
 def fallback_replies(attempt: Attempt, mode: str) -> int:
-    """Caller's turns answered without the model in a model mode (docs/BUGS.md, 10)."""
+    """Caller's turns answered without the model in a model mode (docs/BUGS.md, 10). In the
+    cloud mode: replies the local stand-by gave while Vapi was unreachable."""
     if mode == "buttons":
         return 0
+    if mode == EXTERNAL_METHOD:
+        return sum(
+            1
+            for turn in attempt.dialog[1:]
+            if turn.get("role") == "caller" and turn.get("method") != EXTERNAL_METHOD
+        )
     return sum(
         1
         for turn in attempt.dialog

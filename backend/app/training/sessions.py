@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import get_settings
 from app.domain.evaluation import apply_weights
 from app.domain.evaluation import call_intake as call_intake_engine
 from app.domain.evaluation import card_response as card_response_engine
@@ -55,7 +56,9 @@ CARD_SOURCES = (
 )
 SCENARIO_SOURCE_STUDENT = "student"
 # How the caller answers in call-intake sessions (PRD 9.3); the provider is in app.providers.dialog.
-DIALOG_MODES = ("select", "hybrid", "generate", "buttons", "live")
+DIALOG_MODES = ("select", "hybrid", "generate", "buttons", "live", "cloud")
+# The caller lives in Vapi (plan/track-c-vapi.md); only where CLOUD_VOICE_ENABLED=true.
+DIALOG_MODE_CLOUD = "cloud"
 
 DIFFICULTY_RANGE = (1, 3)
 NORM_RANGE = (5, 600)
@@ -170,6 +173,13 @@ async def validate_settings(session: AsyncSession, spec: SessionSettings, teache
         raise ApiError(422, "bad_mode", "Неизвестный режим занятия.")
     if spec.dialog_mode not in DIALOG_MODES:
         raise ApiError(422, "bad_dialog_mode", f"Режим диалога: один из {', '.join(DIALOG_MODES)}.")
+    if spec.dialog_mode == DIALOG_MODE_CLOUD and not get_settings().cloud_voice_enabled:
+        raise ApiError(
+            422,
+            "cloud_voice_disabled",
+            "Облачный голос выключен на этой установке (CLOUD_VOICE_ENABLED): "
+            "выберите другой режим диалога.",
+        )
     if spec.card_source not in CARD_SOURCES:
         raise ApiError(
             422,

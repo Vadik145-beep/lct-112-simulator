@@ -86,11 +86,14 @@ class Settings(BaseSettings):
     # Silero VAD model (ONNX); missing file = energy-based detector.
     vad_model_path: str | None = None
 
-    # Cloud voice (plan/track-c-vapi.md, compose profile `cloud`): the caller is played by
-    # Vapi over a SIP trunk of the `asterisk-cloud` container instead of the local pipeline.
-    # Demo only, outside the closed contour: requires ALLOW_EXTERNAL_AI=true and TELEPHONY_ENABLED.
+    # Cloud voice (plan/track-c-vapi.md, compose profile `cloud`): in a lesson with
+    # dialog_mode=cloud the caller is played by Vapi — over a SIP trunk of the `asterisk-cloud`
+    # container when telephony is on, straight from the browser (Vapi Web SDK) when it is off.
+    # Demo only, outside the closed contour: requires ALLOW_EXTERNAL_AI=true.
     cloud_voice_enabled: bool = False
     vapi_api_key: str | None = None
+    # Public key of the Vapi account: the browser starts web calls with it (no telephony).
+    vapi_public_key: str | None = None
     vapi_api_url: str = "https://api.vapi.ai"
     # SIP host of Vapi (sip.vapi.ai or sip.eu.vapi.ai); the trunk in asterisk-cloud points here.
     vapi_sip_host: str = "sip.vapi.ai"
@@ -103,7 +106,14 @@ class Settings(BaseSettings):
     cloud_voice_model_provider: str = "openai"
     cloud_voice_model: str = "gpt-4.1"
     cloud_voice_voice_provider: str = "11labs"
+    # The default voice and, when set, the voices by the scenario's caller (ru_male_*,
+    # ru_female_*, ru_child_*; the «slow» variants ru_male_3 / ru_female_2 are the elderly).
     cloud_voice_voice_id: str = "3EuKHIEZbSzrHGNmdYsx"
+    cloud_voice_voice_id_male: str | None = None
+    cloud_voice_voice_id_female: str | None = None
+    cloud_voice_voice_id_elder_male: str | None = None
+    cloud_voice_voice_id_elder_female: str | None = None
+    cloud_voice_voice_id_young: str | None = None
     cloud_voice_voice_model: str = "eleven_multilingual_v2"
     cloud_voice_transcriber_provider: str = "deepgram"
     cloud_voice_transcriber_model: str = "nova-2"
@@ -111,6 +121,8 @@ class Settings(BaseSettings):
     # Longest cloud call in seconds (Vapi ends it) and seconds of silence before it hangs up.
     cloud_voice_max_seconds: int = 900
     cloud_voice_silence_seconds: int = 60
+    # Seconds the SIP leg to Vapi may ring before the call falls back to the local pipeline.
+    cloud_voice_answer_seconds: int = 15
 
     # Backups (PRD 14): the folder shared with the `backup` service (/backups in compose), the
     # daily time and how many dumps to keep; the administrator overrides the last two.

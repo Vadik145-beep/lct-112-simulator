@@ -21,6 +21,9 @@ class RecordingManager(CloudCallManager):
     def __init__(self) -> None:  # no ARI, no Vapi: only the webhook dispatch is exercised
         self.messages: list[dict] = []
 
+    def call_for_message(self, message: dict):
+        return None
+
     async def webhook(self, message: dict) -> dict:
         self.messages.append(message)
         return (

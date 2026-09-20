@@ -26,6 +26,7 @@ from app.routers.me import router as me_router
 from app.routers.reference import router as reference_router
 from app.routers.system import router as system_router
 from app.scenarios.router import router as scenarios_router
+from app.telephony import cloud_web
 from app.telephony import service as telephony
 from app.telephony.cloud_router import router as cloud_voice_router
 from app.telephony.router import router as telephony_router
@@ -58,10 +59,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         async with SessionLocal() as db:
             await admin_settings.apply_stored(db)
         await telephony.start()
+        await cloud_web.start()
         warmup.start()
         monitor_task = health_monitor.start()
     yield
     await health_monitor.stop(monitor_task)
+    await cloud_web.stop()
     await telephony.stop()
     if sweep_task is not None:
         await sweeper.stop(sweep_task)

@@ -19,6 +19,8 @@ class ModelsOut(BaseModel):
     generation: bool
     stt: bool
     tts: bool
+    # The cloud voice (plan/track-c-vapi.md) may be chosen as the dialog mode of a lesson.
+    cloud: bool = False
 
 
 class StudentOut(BaseModel):

@@ -1,30 +1,40 @@
 """Calls whose caller is played by Vapi (plan/track-c-vapi.md).
 
-The trainee is rung exactly as in ``calls.CallManager``. When the trainee answers, instead
-of the ExternalMedia spy and the local pipeline, the manager dials Vapi through the SIP
-trunk of ``asterisk-cloud`` (``Local/s@vapi-out``) and bridges both legs; the bridge is
-recorded as usual. Vapi identifies the call by the caller number of that leg, a one-off
-numeric token, asks the backend which assistant to use (``assistant-request``) and reports
-every final phrase (``transcript``); the phrases become ordinary dialog turns.
+The trainee is rung exactly as in ``calls.CallManager``. When the trainee answers a call of a
+lesson in the ``cloud`` dialog mode, instead of the ExternalMedia spy and the local pipeline
+the manager dials Vapi through the SIP trunk of ``asterisk-cloud`` (``Local/s@vapi-out``) and
+bridges both legs; the bridge is recorded as usual. Vapi identifies the call by the caller
+number of that leg, a one-off numeric token, asks the backend which assistant to use
+(``assistant-request``) and reports every final phrase (``transcript``); the phrases become
+ordinary dialog turns. Lessons in the other modes run the local conversation as before.
+
+When the cloud does not answer (the SIP leg fails or rings out) or its leg drops without
+Vapi ending the call, the same call continues on the local pipeline with the lesson's
+stand-by provider (``select``); the session log gets ``call.cloud_fallback``.
 
 The call ends when the trainee hangs up (Asterisk event), when Vapi ends it (assistant hung
-up, silence, maximum duration: ``status-update``) or when the SIP leg fails.
+up, silence, maximum duration: ``status-update``) or when nothing can play the caller.
+
+``CloudTurns`` — the part shared with the browser calls (``app.telephony.cloud_web``): the
+transcript, the reply latency from ``speech-update`` and the final report.
 """
 
 from __future__ import annotations
 
+import asyncio
 import contextlib
 import re
 import secrets
-from dataclasses import dataclass
-from typing import Any
+import time
+import uuid
+from dataclasses import dataclass, field
+from typing import Any, Protocol
 
 from app.config import get_settings
 from app.db import SessionLocal
-from app.dialog import call as call_state
 from app.dialog import service as dialog
 from app.domain.evaluation.text import normalize_text
-from app.events import publish_events
+from app.events import append_event, publish_events
 from app.logging import get_logger
 from app.models import (
     CALL_END_CALLER_HANGUP,
@@ -36,8 +46,6 @@ from app.telephony import settings as telephony_settings
 from app.telephony.ari import AriError
 from app.telephony.calls import (
     CHANNEL_FORMAT,
-    RECORDING_FORMAT,
-    RECORDINGS_SUBDIR,
     VAR_ATTEMPT,
     Call,
     CallManager,
@@ -50,13 +58,16 @@ log = get_logger(__name__)
 # Dialplan entry point of the Vapi leg and its channel variables
 # (deploy/asterisk-cloud/extensions.conf).
 VAPI_DIAL_ENDPOINT = "Local/s@vapi-out/n"
-VAR_TOKEN = "__CALL_TOKEN"
+VAR_TOKEN = "__CALL_TOKEN"  # noqa: S105 - channel variable name, not a secret
 VAR_VAPI_USER = "__VAPI_USER"
-VAPI_RING_SECONDS = 30
 TOKEN_DIGITS = 10
 # Roles of Vapi's transcript → roles of the dialog.
 TRANSCRIPT_ROLES = {"user": "operator", "assistant": "caller", "bot": "caller"}
 ENDED_STATUS = "ended"
+# Seconds to wait for Vapi's ``status-update`` after its SIP leg dropped before treating the
+# drop as a failure of the cloud (Vapi hanging up on purpose reports itself within a second).
+LEG_LOST_GRACE_SECONDS = 3.0
+EVENT_CLOUD_FALLBACK = "call.cloud_fallback"
 _DIGITS = re.compile(r"\d+")
 
 
@@ -65,16 +76,168 @@ def new_token() -> str:
     return "".join(secrets.choice("0123456789") for _ in range(TOKEN_DIGITS))
 
 
+class CloudTurns(Protocol):
+    """What the shared transcript handling needs of a call, SIP or browser."""
+
+    attempt_id: uuid.UUID
+    vapi_call_id: str | None
+    vapi_ended: bool
+    operator_stopped_at: float | None
+    pending_latency_ms: int | None
+    latencies_ms: list[int]
+
+
 @dataclass
 class CloudCall(Call):
     token: str = ""
     vapi_channel_id: str | None = None
     vapi_call_id: str | None = None
     vapi_answered: bool = False
+    # Vapi reported the end itself (status-update / report): its leg dropping is no failure.
+    vapi_ended: bool = False
+    # The local pipeline took the call over (the cloud failed).
+    local: bool = False
+    # Reply latency: the operator's last phrase ended at …, the next reply started … later.
+    operator_stopped_at: float | None = None
+    pending_latency_ms: int | None = None
+    latencies_ms: list[int] = field(default_factory=list)
+    leg_lost: asyncio.Task | None = None
 
     def __post_init__(self) -> None:
         if not self.token:
             self.token = new_token()
+
+
+# ---------------------------------------------------------------- shared server messages
+
+
+def note_speech(call: CloudTurns, message: dict) -> int | None:
+    """``speech-update``: the operator stopped → the clock starts; the caller started → the
+    latency of the coming reply. Returns the latency when one was measured."""
+    role, status = str(message.get("role")), str(message.get("status"))
+    now = time.monotonic()
+    if role == "user" and status == "stopped":
+        call.operator_stopped_at = now
+    elif role == "assistant" and status == "started" and call.operator_stopped_at is not None:
+        latency = int((now - call.operator_stopped_at) * 1000)
+        call.operator_stopped_at = None
+        call.pending_latency_ms = latency
+        call.latencies_ms.append(latency)
+        return latency
+    return None
+
+
+async def record_transcript(call: CloudTurns, message: dict) -> dict | None:
+    """A final ``transcript`` message as a dialog turn (partial ones are skipped)."""
+    if message.get("transcriptType", "final") != "final":
+        return None
+    role = TRANSCRIPT_ROLES.get(str(message.get("role")))
+    text = str(message.get("transcript") or "")
+    if not role:
+        return None
+    latency = call.pending_latency_ms if role == "caller" else None
+    async with SessionLocal() as session:
+        loaded = await load_attempt(session, call.attempt_id)
+        if loaded is None or loaded.attempt.call_state == CALL_ENDED:
+            return None
+        turn, events = await dialog.external_turn(
+            session, loaded.attempt, loaded.ts, loaded.scenario, role, text, latency_ms=latency
+        )
+        await session.commit()
+    await publish_events(events)
+    if turn is not None:
+        if role == "caller":
+            call.pending_latency_ms = None
+        log.info(
+            "cloud phrase", attempt=str(call.attempt_id), role=role, text=text, latency_ms=latency
+        )
+    return turn
+
+
+async def apply_report(call: CloudTurns, message: dict) -> None:
+    """The final transcript of ``end-of-call-report``: phrases the live messages missed are
+    added; stored turns are never rewritten."""
+    artifact = message.get("artifact") or {}
+    reported = [
+        (TRANSCRIPT_ROLES[m["role"]], str(m.get("message") or ""))
+        for m in artifact.get("messages") or []
+        if m.get("role") in TRANSCRIPT_ROLES
+    ]
+    async with SessionLocal() as session:
+        loaded = await load_attempt(session, call.attempt_id)
+        if loaded is None:
+            return
+        attempt = loaded.attempt
+        # The report starts with the opening Vapi spoke; turn 0 holds it already.
+        if reported and attempt.dialog and reported[0][0] == "caller":
+            if normalize_text(reported[0][1]) == normalize_text(attempt.dialog[0]["text"]):
+                reported = reported[1:]
+        stored = len(dialog.external_turns(attempt))
+        events = []
+        if attempt.call_state != CALL_ENDED and len(reported) > stored:
+            for role, text in reported[stored:]:
+                _, turn_events = await dialog.external_turn(
+                    session, attempt, loaded.ts, loaded.scenario, role, text
+                )
+                events.extend(turn_events)
+        await session.commit()
+    await publish_events(events)
+
+
+def report_recording_url(message: dict) -> str | None:
+    artifact = message.get("artifact") or {}
+    return artifact.get("recordingUrl") or message.get("recordingUrl") or None
+
+
+def end_reason(ended_reason: str) -> str:
+    reason = ended_reason.lower()
+    if reason.startswith("customer"):
+        return CALL_END_HANGUP
+    if reason.startswith("assistant") or "silence" in reason or "max-duration" in reason:
+        return CALL_END_CALLER_HANGUP
+    return CALL_END_FAILED
+
+
+def token_candidates(message: dict) -> list[str]:
+    """Digit strings a server message may carry our token in: the caller number of the SIP
+    leg (``customer.number`` / ``customer.sipUri``) and the template variables Vapi fills
+    from ``x-`` SIP headers or the browser's overrides."""
+    vapi_call = message.get("call") or {}
+    values: list[str] = []
+    for customer in (vapi_call.get("customer") or {}, message.get("customer") or {}):
+        for key in ("number", "sipUri"):
+            if customer.get(key):
+                values.append(str(customer[key]))
+    variables = (vapi_call.get("assistantOverrides") or {}).get("variableValues") or {}
+    for key, value in variables.items():
+        if "token" in key.lower():
+            values.append(str(value))
+    candidates: list[str] = []
+    for value in values:
+        for digits in _DIGITS.findall(value):
+            if len(digits) >= TOKEN_DIGITS:
+                candidates.append(digits[-TOKEN_DIGITS:])
+    return candidates
+
+
+async def log_fallback(
+    call: CloudTurns, reason: str, *, session_id: uuid.UUID, student_id: uuid.UUID
+) -> None:
+    """``call.cloud_fallback`` in the session log: the teacher's monitor and the review see
+    that the cloud was unavailable and what answered instead."""
+    async with SessionLocal() as session:
+        event = await append_event(
+            session,
+            session_id=session_id,
+            type_=EVENT_CLOUD_FALLBACK,
+            student_id=student_id,
+            payload={"attempt_id": call.attempt_id, "reason": reason},
+        )
+        await session.commit()
+    await publish_events([event])
+
+
+# ---------------------------------------------------------------- the SIP manager
 
 
 class CloudCallManager(CallManager):
@@ -91,7 +254,7 @@ class CloudCallManager(CallManager):
 
     async def setup(self) -> bool:
         """Makes sure the Vapi account has the trainer's SIP number pointing at this stand.
-        A failure is logged: calls then end as «failed» until the next start."""
+        A failure is logged: cloud calls then run on the local pipeline until the next start."""
         s = get_settings()
         if self.vapi is None or not s.cloud_voice_public_url:
             log.warning("cloud voice not configured: VAPI_API_KEY or CLOUD_VOICE_PUBLIC_URL")
@@ -124,7 +287,7 @@ class CloudCallManager(CallManager):
         call_id = vapi_call.get("id")
         if call_id and call_id in self._by_vapi_call:
             return self._by_vapi_call[call_id]
-        for candidate in _token_candidates(message):
+        for candidate in token_candidates(message):
             call = self._by_token.get(candidate)
             if call is not None:
                 if call_id:
@@ -144,8 +307,7 @@ class CloudCallManager(CallManager):
             if kind == "ChannelStateChange" and channel.get("state") == "Up":
                 await self._on_vapi_answered(call)
             elif kind in ("StasisEnd", "ChannelDestroyed"):
-                reason = CALL_END_CALLER_HANGUP if call.vapi_answered else CALL_END_FAILED
-                await self._end(call, reason)
+                await self._on_vapi_leg_gone(call)
             return
         if kind == "Dial":
             peer = event.get("peer") or {}
@@ -156,7 +318,7 @@ class CloudCallManager(CallManager):
                     await self._on_vapi_answered(call)
                 elif status:
                     log.warning("vapi leg failed", attempt=str(call.attempt_id), status=status)
-                    await self._end(call, CALL_END_FAILED)
+                    await self._fallback(call, f"vapi leg {status.lower()}")
                 return
         await super().handle_event(event)
 
@@ -166,18 +328,24 @@ class CloudCallManager(CallManager):
             if call.answered or call.ended:
                 return
             call.answered = True
-        log.info("answered", attempt=str(call.attempt_id), cloud=True)
         async with SessionLocal() as session:
             config = await telephony_settings.load(session)
+            loaded = await load_attempt(session, call.attempt_id)
+            cloud = loaded is not None and dialog.cloud_lesson(loaded.ts)
+        if not cloud:
+            log.info("answered", attempt=str(call.attempt_id))
+            await self._run_local(call, config)
+            return
+        log.info("answered", attempt=str(call.attempt_id), cloud=True)
+        try:
+            await self._open_bridge(call, config)
+        except (AriError, OSError, RuntimeError) as exc:
+            log.warning("cloud call setup failed", attempt=str(call.attempt_id), error=str(exc))
+            await self._end(call, CALL_END_FAILED)
+            return
         try:
             if not self.sip_user:
                 raise RuntimeError("Vapi number is not configured")
-            call.bridge_id = f"br-{call.key}"
-            await self.ari.create_bridge(call.bridge_id)
-            await self.ari.add_channel(call.bridge_id, call.channel_id)
-            if config.recording_enabled:
-                call.recording_name = f"{RECORDINGS_SUBDIR}/{call.key}"
-                await self.ari.record_bridge(call.bridge_id, call.recording_name, RECORDING_FORMAT)
             call.vapi_channel_id = f"vapi-{call.key}"
             self._by_channel[call.vapi_channel_id] = call
             await self.ari.create_channel(
@@ -191,27 +359,19 @@ class CloudCallManager(CallManager):
                     VAR_ATTEMPT: str(call.attempt_id),
                 },
             )
-            await self.ari.dial(call.vapi_channel_id, ring_seconds=VAPI_RING_SECONDS)
-        except (AriError, OSError, RuntimeError) as exc:
-            log.warning("cloud call setup failed", attempt=str(call.attempt_id), error=str(exc))
-            await self._end(call, CALL_END_FAILED)
-            return
-        async with SessionLocal() as session:
-            loaded = await load_attempt(session, call.attempt_id)
-            if loaded is None:
-                await self._end(call, CALL_END_FAILED)
-                return
-            _, events = await call_state.answer(
-                session, loaded.attempt, loaded.ts, loaded.version, loaded.scenario, telephony=True
+            await self.ari.dial(
+                call.vapi_channel_id, ring_seconds=get_settings().cloud_voice_answer_seconds
             )
-            if call.recording_name:
-                loaded.attempt.recording_path = f"{call.recording_name}.{RECORDING_FORMAT}"
-            await session.commit()
-        await publish_events(events)
+        except (AriError, OSError, RuntimeError) as exc:
+            log.warning("vapi leg not dialled", attempt=str(call.attempt_id), error=str(exc))
+            await self._fallback(call, str(exc))
+            return
+        # The state «в разговоре»; the opening is Vapi's first message, nothing to play.
+        await self._speak_opening(call, play=False)
 
     async def _on_vapi_answered(self, call: CloudCall) -> None:
         async with call.lock:
-            if call.vapi_answered or call.ended:
+            if call.vapi_answered or call.ended or call.local:
                 return
             call.vapi_answered = True
         if not call.bridge_id or not call.vapi_channel_id:
@@ -220,9 +380,69 @@ class CloudCallManager(CallManager):
             await self.ari.add_channel(call.bridge_id, call.vapi_channel_id)
         except AriError as exc:
             log.warning("vapi leg not bridged", attempt=str(call.attempt_id), error=str(exc))
-            await self._end(call, CALL_END_FAILED)
+            await self._fallback(call, "vapi leg not bridged")
             return
         log.info("vapi leg bridged", attempt=str(call.attempt_id))
+
+    async def _on_vapi_leg_gone(self, call: CloudCall) -> None:
+        """The SIP leg to Vapi is over. Vapi ending the call reports itself (``status-update``)
+        around the same moment; when no report comes, the cloud dropped and the local pipeline
+        takes over."""
+        if call.ended or call.local:
+            return
+        if call.vapi_ended or not call.vapi_answered:
+            reason = CALL_END_CALLER_HANGUP if call.vapi_answered else CALL_END_FAILED
+            if not call.vapi_answered:
+                await self._fallback(call, "vapi leg dropped before the answer")
+                return
+            await self._end(call, reason)
+            return
+        if call.leg_lost is None:
+            call.leg_lost = asyncio.create_task(self._leg_lost_after_grace(call))
+
+    async def _leg_lost_after_grace(self, call: CloudCall) -> None:
+        await asyncio.sleep(LEG_LOST_GRACE_SECONDS)
+        if call.ended or call.vapi_ended or call.local:
+            return
+        await self._fallback(call, "vapi leg dropped mid-call")
+
+    async def _fallback(self, call: CloudCall, reason: str) -> None:
+        """The local pipeline takes the same call: the spy and the stand-by provider of the
+        lesson; the opening is played when Vapi never got to say it."""
+        async with call.lock:
+            if call.ended or call.local:
+                return
+            call.local = True
+        log.warning(
+            "cloud voice unavailable, local pipeline takes over",
+            attempt=str(call.attempt_id),
+            reason=reason,
+        )
+        heard_opening = call.vapi_answered
+        await self._drop_vapi_leg(call)
+        if not call.bridge_id:
+            await self._end(call, CALL_END_FAILED)
+            return
+        try:
+            await self._start_spy(call)
+        except (AriError, OSError, RuntimeError) as exc:
+            log.warning("local pipeline failed", attempt=str(call.attempt_id), error=str(exc))
+            await self._end(call, CALL_END_FAILED)
+            return
+        await log_fallback(call, reason, session_id=call.session_id, student_id=call.student_id)
+        await self._speak_opening(call, play=not heard_opening)
+
+    async def _drop_vapi_leg(self, call: CloudCall) -> None:
+        self._by_token.pop(call.token, None)
+        if call.vapi_call_id:
+            self._by_vapi_call.pop(call.vapi_call_id, None)
+        if call.vapi_channel_id:
+            self._by_channel.pop(call.vapi_channel_id, None)
+            with contextlib.suppress(AriError):
+                await self.ari.hangup(call.vapi_channel_id)
+        if call.leg_lost is not None and call.leg_lost is not asyncio.current_task():
+            call.leg_lost.cancel()
+            call.leg_lost = None
 
     # ------------------------------------------------------------ server messages
 
@@ -236,16 +456,20 @@ class CloudCallManager(CallManager):
         if call is None:
             log.info("vapi message for an unknown call", type=kind)
             return {}
+        if call.local:
+            return {}
         if kind == "transcript":
-            if message.get("transcriptType", "final") == "final":
-                role = TRANSCRIPT_ROLES.get(str(message.get("role")))
-                if role:
-                    await self._on_transcript(call, role, str(message.get("transcript") or ""))
+            await record_transcript(call, message)
+        elif kind == "speech-update":
+            note_speech(call, message)
         elif kind == "status-update":
             if message.get("status") == ENDED_STATUS:
-                await self._end(call, _end_reason(str(message.get("endedReason") or "")))
+                call.vapi_ended = True
+                await self._end(call, end_reason(str(message.get("endedReason") or "")))
         elif kind == "end-of-call-report":
-            await self._on_report(call, message)
+            call.vapi_ended = True
+            await apply_report(call, message)
+            await self._end(call, end_reason(str(message.get("endedReason") or "")))
         elif kind == "hang":
             log.warning("vapi reports a delay", attempt=str(call.attempt_id))
         return {}
@@ -260,89 +484,18 @@ class CloudCallManager(CallManager):
         log.info("assistant for call", attempt=str(call.attempt_id), vapi_call=call.vapi_call_id)
         return {"assistant": build_assistant(loaded.scenario)}
 
-    async def _on_transcript(self, call: CloudCall, role: str, text: str) -> None:
-        async with SessionLocal() as session:
-            loaded = await load_attempt(session, call.attempt_id)
-            if loaded is None or loaded.attempt.call_state == CALL_ENDED:
-                return
-            turn, events = await dialog.external_turn(
-                session, loaded.attempt, loaded.ts, loaded.scenario, role, text
-            )
-            await session.commit()
-        await publish_events(events)
-        if turn is not None:
-            log.info("cloud phrase", attempt=str(call.attempt_id), role=role, text=text)
-
-    async def _on_report(self, call: CloudCall, message: dict) -> None:
-        """The final transcript: phrases the live messages missed are added, then the call
-        is ended if the status update did not arrive."""
-        artifact = message.get("artifact") or {}
-        reported = [
-            (TRANSCRIPT_ROLES[m["role"]], str(m.get("message") or ""))
-            for m in artifact.get("messages") or []
-            if m.get("role") in TRANSCRIPT_ROLES
-        ]
-        async with SessionLocal() as session:
-            loaded = await load_attempt(session, call.attempt_id)
-            if loaded is None:
-                return
-            attempt = loaded.attempt
-            # The report starts with the opening Vapi spoke; turn 0 holds it already.
-            if reported and attempt.dialog and reported[0][0] == "caller":
-                if normalize_text(reported[0][1]) == normalize_text(attempt.dialog[0]["text"]):
-                    reported = reported[1:]
-            stored = len(dialog.external_turns(attempt))
-            events = []
-            if attempt.call_state != CALL_ENDED and len(reported) > stored:
-                for role, text in reported[stored:]:
-                    _, turn_events = await dialog.external_turn(
-                        session, attempt, loaded.ts, loaded.scenario, role, text
-                    )
-                    events.extend(turn_events)
-            await session.commit()
-        await publish_events(events)
-        await self._end(call, _end_reason(str(message.get("endedReason") or "")))
-
     # ------------------------------------------------------------ teardown
 
     async def _end(self, call: Call, reason: str, *, already_stored: bool = False) -> None:
         if isinstance(call, CloudCall):
-            self._by_token.pop(call.token, None)
-            if call.vapi_call_id:
-                self._by_vapi_call.pop(call.vapi_call_id, None)
-            if call.vapi_channel_id:
-                self._by_channel.pop(call.vapi_channel_id, None)
-                with contextlib.suppress(AriError):
-                    await self.ari.hangup(call.vapi_channel_id)
+            await self._drop_vapi_leg(call)
+            if call.latencies_ms:
+                ordered = sorted(call.latencies_ms)
+                log.info(
+                    "cloud latency",
+                    attempt=str(call.attempt_id),
+                    replies=len(ordered),
+                    median_ms=ordered[len(ordered) // 2],
+                    max_ms=ordered[-1],
+                )
         await super()._end(call, reason, already_stored=already_stored)
-
-
-def _token_candidates(message: dict) -> list[str]:
-    """Digit strings a server message may carry our token in: the caller number of the SIP
-    leg (``customer.number`` / ``customer.sipUri``) and the template variables Vapi fills
-    from ``x-`` SIP headers."""
-    vapi_call = message.get("call") or {}
-    values: list[str] = []
-    for customer in (vapi_call.get("customer") or {}, message.get("customer") or {}):
-        for key in ("number", "sipUri"):
-            if customer.get(key):
-                values.append(str(customer[key]))
-    variables = (vapi_call.get("assistantOverrides") or {}).get("variableValues") or {}
-    for key, value in variables.items():
-        if "token" in key.lower():
-            values.append(str(value))
-    candidates: list[str] = []
-    for value in values:
-        for digits in _DIGITS.findall(value):
-            if len(digits) >= TOKEN_DIGITS:
-                candidates.append(digits[-TOKEN_DIGITS:])
-    return candidates
-
-
-def _end_reason(ended_reason: str) -> str:
-    reason = ended_reason.lower()
-    if reason.startswith("customer"):
-        return CALL_END_HANGUP
-    if reason.startswith("assistant") or "silence" in reason or "max-duration" in reason:
-        return CALL_END_CALLER_HANGUP
-    return CALL_END_FAILED
