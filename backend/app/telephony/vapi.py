@@ -210,6 +210,9 @@ def voice_config(scenario: CallIntakeScenario, settings: Settings | None = None)
         if kind in ("elder_male", "elder_female"):
             settings_["speed"] = round(settings_["speed"] - 0.08, 2)
         voice.update(settings_)
+        if s.cloud_voice_voice_model == "eleven_flash_v2_5":
+            # The only model with language enforcement: no accent drift on short phrases.
+            voice["language"] = s.cloud_voice_language
     return voice
 
 

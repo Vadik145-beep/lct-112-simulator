@@ -571,6 +571,10 @@ def test_voice_follows_the_scenario(cloud_settings: None, monkeypatch: pytest.Mo
     assert panicked_man["stability"] == STABILITY_AGITATED
     assert panicked_man["style"] > calm_woman["style"] and panicked_man["speed"] > 1
     assert voice_config(scenario(None, "calm"))["voiceId"] == "default-voice"
+    # The language is pinned on flash v2.5 only; multilingual v2 detects it itself.
+    assert voice_config(scenario(None, "calm"))["language"] == "ru"
+    monkeypatch.setattr(settings, "cloud_voice_voice_model", "eleven_multilingual_v2")
+    assert "language" not in voice_config(scenario(None, "calm"))
 
 
 def test_webhook_secret_is_stable_and_configurable(monkeypatch: pytest.MonkeyPatch):
