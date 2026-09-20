@@ -38,8 +38,10 @@ from app.providers.grammar import GrammarResult
 
 MODE = "card_response"
 # The six classic components sum to 100 on their own; «Проверка данных» (issue #35) exists only
-# for cards with planted operator mistakes and is normalized in with the rest (see
-# ``apply_weights``), so a card without them scores exactly as before.
+# for cards with planted operator mistakes. When it applies, all seven weights are normalized
+# to 100 together (see ``apply_weights``), so the six classic components shrink proportionally
+# (30 → 25, 20 → 16, 15 → 12, 10 → 8, 5 → 4, the check gets 16, and the rounding remainder goes
+# to the heaviest one). A card without planted mistakes scores exactly as before.
 DEFAULT_WEIGHTS: dict[str, int] = {
     "decision": 30,
     "time": 20,

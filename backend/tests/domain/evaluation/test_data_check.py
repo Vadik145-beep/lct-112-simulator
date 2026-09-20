@@ -92,6 +92,43 @@ def test_right_field_wrong_correction_gives_a_partial_score() -> None:
     assert not {e.code for e in result.errors} & {"error_missed", "false_alarm"}
 
 
+def test_several_false_alarms_never_push_the_component_below_zero() -> None:
+    """Three flags on right fields against one planted error: the fraction would be −1.5
+    shares; the component stays at 0 and the penalty continues only through the detector."""
+    scenario = planted(HOUSE)
+    attempt = flagged(
+        scenario,
+        ("caller.phone", "+7 916 000-00-00"),
+        ("flags.injured", "true"),
+        ("description", "другое описание"),
+    )
+    result = evaluate_card_response(scenario, attempt, grammar=grammar_ok())
+    check = result.components["data_check"]
+    assert check.score == 0
+    assert [i["verdict"] for i in check.items] == ["missed"] + ["false_alarm"] * 3
+    codes = {e.code for e in result.errors}
+    assert {"error_missed", "false_alarm"} <= codes
+    assert result.components["typical_errors"].score >= 0
+    assert 0 <= result.total <= 100
+
+
+def test_classic_components_shrink_when_the_check_applies() -> None:
+    """The six classic maxima on a card with planted errors are the documented shrunk ones."""
+    scenario = planted(HOUSE)
+    attempt = flagged(scenario, ("address.house", "21"))
+    result = evaluate_card_response(scenario, attempt, grammar=grammar_ok())
+    maxima = {k: c.max for k, c in result.components.items()}
+    assert maxima == {
+        "decision": 28,  # 25 + the rounding remainder of 3
+        "time": 16,
+        "status_chain": 16,
+        "comments": 12,
+        "data_check": 16,
+        "typical_errors": 8,
+        "grammar": 4,
+    }
+
+
 def test_scenario_without_planted_errors_has_no_component() -> None:
     scenario = card_scenario()
     result = evaluate_card_response(scenario, perfect_card_attempt(scenario), grammar=grammar_ok())
