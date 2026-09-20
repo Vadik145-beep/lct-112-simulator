@@ -12,7 +12,7 @@ set -e
 if [ "${CLOUD_VOICE_ENABLED:-false}" = "true" ]; then
   VAPI_ORIGIN=$(printf '%s' "${VAPI_API_URL:-https://api.vapi.ai}" | sed -E 's#^(https?://[^/]+).*#\1#')
   sed -i \
-    -e "s#script-src 'self';#script-src 'self' https://*.daily.co 'wasm-unsafe-eval';#" \
+    -e "s#script-src 'self';#script-src 'self' blob: https://*.daily.co 'wasm-unsafe-eval';#" \
     -e "s#connect-src 'self';#connect-src 'self' $VAPI_ORIGIN https://*.daily.co wss://*.daily.co;#" \
     -e "s#media-src 'self' blob:;#media-src 'self' blob: https://*.daily.co;#" \
     /etc/nginx/security-headers.conf
