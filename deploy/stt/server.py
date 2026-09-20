@@ -17,14 +17,18 @@ import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 
+import numpy as np
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from faster_whisper import WhisperModel
+from faster_whisper.audio import decode_audio
 
 MODEL_DIR = Path(os.environ.get("STT_MODEL_DIR", "/models/stt/faster-whisper-base"))
 COMPUTE_TYPE = os.environ.get("STT_COMPUTE_TYPE", "int8")
 THREADS = int(os.environ.get("STT_THREADS", "4"))
 DEFAULT_LANGUAGE = "ru"
 MAX_UPLOAD_BYTES = 25 * 1024 * 1024
+# Diagnostics: a folder to keep uploads that produced no text (empty = keep nothing).
+DUMP_DIR = os.environ.get("STT_DUMP_DIR", "")
 
 model: WhisperModel | None = None
 
@@ -66,7 +70,15 @@ async def transcribe(
     with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
         tmp.write(payload)
         path = tmp.name
+    text = ""
     try:
+        # Level of the recording: tells a silent microphone from unrecognised speech.
+        try:
+            samples = decode_audio(path, sampling_rate=16000)
+            peak = float(np.max(np.abs(samples))) if samples.size else 0.0
+            rms = float(np.sqrt(np.mean(samples.astype(np.float64) ** 2))) if samples.size else 0.0
+        except Exception:  # noqa: BLE001 - a level is a bonus, the transcription still runs
+            peak, rms = -1.0, -1.0
         segments, info = model.transcribe(
             path,
             language=language,
@@ -80,12 +92,21 @@ async def transcribe(
             {"start": round(s.start, 2), "end": round(s.end, 2), "text": s.text.strip()}
             for s in segments
         ]
+        text = " ".join(p["text"] for p in parts).strip()
     finally:
+        if DUMP_DIR and not text:
+            try:
+                Path(DUMP_DIR).mkdir(parents=True, exist_ok=True)
+                Path(DUMP_DIR, f"{int(time.time())}{suffix}").write_bytes(payload)
+            except OSError:
+                pass
         os.unlink(path)
     return {
-        "text": " ".join(p["text"] for p in parts).strip(),
+        "text": text,
         "segments": parts,
         "language": info.language,
         "duration": round(info.duration, 2),
+        "peak": round(peak, 4),
+        "rms": round(rms, 4),
         "processing_ms": round((time.perf_counter() - started) * 1000),
     }
