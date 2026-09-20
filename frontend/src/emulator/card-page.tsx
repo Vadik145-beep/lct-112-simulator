@@ -1043,6 +1043,7 @@ function CardView({
               shownCall.telephony && softphone?.mode === "sip",
             )}
             sttAvailable={sttAvailable}
+            micDeviceId={softphone?.micDeviceId ?? null}
             pending={callBusy}
             error={callError ? callError.message : null}
             onSay={(text, actionId) =>
