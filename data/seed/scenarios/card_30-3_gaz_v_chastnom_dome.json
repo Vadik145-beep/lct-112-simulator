@@ -1,0 +1,76 @@
+{
+  "kind": "card_response",
+  "title": "Запах газа от трубы на вводе в частный дом",
+  "ticket_ref": "30-3",
+  "service": "mosgaz",
+  "difficulty": 1,
+  "norm_seconds": 30,
+  "card": {
+    "number": "38260441",
+    "incident_type": "13.2.3.0",
+    "signs": [
+      "Запах газа в помещении",
+      "Дом частный"
+    ],
+    "flags": {
+      "injured": false,
+      "no_access": false,
+      "threat": true
+    },
+    "address": {
+      "street": "улица Полевая",
+      "house": "7",
+      "city": "посёлок Кокошкино",
+      "okrug": "НАО",
+      "district": "поселение Кокошкино"
+    },
+    "caller": {
+      "name": "Смирнов Алексей Иванович",
+      "role": "жилец",
+      "phone": "+7 916 896-32-54"
+    },
+    "description": "В частном доме запах газа от трубы на вводе, слышен шум в трубе. Газ перекрыл, окна открыл, все вышли на улицу.",
+    "notified": [
+      {
+        "service": "101",
+        "status": "Получена службой"
+      },
+      {
+        "service": "mosgaz",
+        "status": "Добавлена"
+      },
+      {
+        "service": "territorial_oiv",
+        "status": "Получена службой"
+      }
+    ]
+  },
+  "reference": {
+    "decision": "accept",
+    "reject_reason": null,
+    "status_chain": [
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "response_started",
+        "order_number": true,
+        "comment_example": "Направлена аварийная бригада, наряд 07-1188"
+      },
+      {
+        "status": "arrived"
+      },
+      {
+        "status": "works_started",
+        "comment_example": "Отключение ввода, поиск утечки"
+      },
+      {
+        "status": "works_done",
+        "comment_example": "Заменён участок трубы на вводе, утечка устранена, газоснабжение восстановлено"
+      }
+    ],
+    "critical_errors": [
+      "late_primary"
+    ]
+  }
+}

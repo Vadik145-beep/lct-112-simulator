@@ -1,0 +1,89 @@
+{
+  "kind": "card_response",
+  "title": "Вода бьёт из колодца на тротуаре",
+  "ticket_ref": null,
+  "service": "mosvodokanal",
+  "difficulty": 1,
+  "norm_seconds": 30,
+  "card": {
+    "number": "38260411",
+    "incident_type": "14.2.6.3",
+    "signs": [
+      "Прорыв воды (холодной, горячей воды, в т.ч. системы отопления)",
+      "Двор тротуар газон",
+      "из колодца (люка)"
+    ],
+    "flags": {
+      "injured": false,
+      "no_access": false,
+      "threat": false
+    },
+    "address": {
+      "street": "Профсоюзная улица",
+      "house": "93",
+      "okrug": "ЮЗАО",
+      "district": "район Коньково"
+    },
+    "caller": {
+      "name": "Гусев Павел Андреевич",
+      "role": "очевидец",
+      "phone": "+7 916 507-61-20"
+    },
+    "description": "Из колодца на тротуаре у дома 93 фонтаном идёт холодная вода, заливает тротуар и проезд во двор. Пострадавших нет.",
+    "notified": [
+      {
+        "service": "101",
+        "status": "Получена службой"
+      },
+      {
+        "service": "mosgaz",
+        "status": "Получена службой"
+      },
+      {
+        "service": "gkh",
+        "status": "Получена службой"
+      },
+      {
+        "service": "mosvodokanal",
+        "status": "Добавлена"
+      },
+      {
+        "service": "moek",
+        "status": "Получена службой"
+      },
+      {
+        "service": "codd",
+        "status": "Получена службой"
+      }
+    ]
+  },
+  "reference": {
+    "decision": "accept",
+    "reject_reason": null,
+    "status_chain": [
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "response_started",
+        "order_number": true,
+        "comment_example": "Направлена аварийная бригада, наряд МВК-2041"
+      },
+      {
+        "status": "arrived"
+      },
+      {
+        "status": "works_started",
+        "comment_example": "Отключение участка водопровода, откачка"
+      },
+      {
+        "status": "works_done",
+        "comment_example": "Заменена задвижка в колодце, водоснабжение восстановлено"
+      }
+    ],
+    "critical_errors": [
+      "late_primary",
+      "progress_missing"
+    ]
+  }
+}

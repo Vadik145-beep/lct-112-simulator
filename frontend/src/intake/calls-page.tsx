@@ -84,15 +84,24 @@ function Calls({ sessionId }: { sessionId: string }) {
             <>
               <PhoneMissed className="size-10 text-[var(--arm-text-muted)]" aria-hidden />
               <p className="text-lg">Занятие завершено</p>
+              <ArmButton variant="blue" className="normal-case" onClick={() => navigate("/student")}>
+                В кабинет обучающегося
+              </ArmButton>
             </>
           ) : running && !current && done.length > 0 ? (
             // Opening the page asks for the next call; none came, so the queue is done.
             <>
               <PhoneMissed className="size-10 text-[var(--arm-text-muted)]" aria-hidden />
-              <p className="text-lg">Вызовов больше нет: очередь занятия пройдена</p>
-              <ArmButton variant="blue" className="normal-case" onClick={() => void query.refetch()}>
-                Проверить ещё раз
-              </ArmButton>
+              <p className="text-lg">Вызовы отработаны: очередь занятия пройдена</p>
+              <p className="text-xs text-[var(--arm-text-muted)]">Занятие завершит преподаватель; свои разборы смотрите ниже.</p>
+              <div className="flex gap-2">
+                <ArmButton variant="blue" className="normal-case" onClick={() => navigate("/student")}>
+                  В кабинет обучающегося
+                </ArmButton>
+                <ArmButton className="normal-case" onClick={() => void query.refetch()}>
+                  Проверить ещё раз
+                </ArmButton>
+              </div>
             </>
           ) : running ? (
             <>

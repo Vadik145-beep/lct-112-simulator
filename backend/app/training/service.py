@@ -264,8 +264,10 @@ async def issue_cards(
     session: AsyncSession, ts: TrainingSession, student: User
 ) -> tuple[list[Attempt], list[SessionEvent]]:
     """Puts the next cards of the queue into the trainee's journal so that
-    ``CARDS_AT_ONCE[difficulty]`` cards are active. No-op when the session is not running
-    or the queue is exhausted."""
+    ``CARDS_AT_ONCE[difficulty]`` cards are active. Called when the trainee asks for the
+    journal (the norm of a card runs from «Добавлена», so a card is added only while the
+    journal is in front of the trainee), never when a card closes. No-op when the session
+    is not running or the queue is exhausted."""
     if ts.status != SESSION_RUNNING:
         return [], []
     active = await session.scalar(
@@ -467,13 +469,12 @@ async def set_status(
     )
     if attempt.card_status != before_card_status:
         events.append(await _card_status_event(session, attempt))
-    issued: list[Attempt] = []
     if rule["is_final"]:
         events.append(await _submitted_event(session, attempt))
         events.append(await evaluate_and_store(session, attempt, ts, card.body))
-        issued, more = await issue_cards(session, ts, student)
-        events += more
-    return StatusChange(changed=True, events=events, issued=issued)
+    # The next card is not issued here: its 30 s run from «Добавлена», so it appears when
+    # the trainee comes back to the journal (docs/BUGS.md, 9), see ``journal``.
+    return StatusChange(changed=True, events=events, issued=[])
 
 
 async def finish_attempt(
@@ -490,9 +491,7 @@ async def finish_attempt(
     events.append(await _submitted_event(session, attempt))
     card = await load_scenario_card(session, attempt.scenario_id, attempt.scenario_version)
     events.append(await evaluate_and_store(session, attempt, ts, card.body))
-    issued, more = await issue_cards(session, ts, student)
-    events += more
-    return StatusChange(changed=True, events=events, issued=issued)
+    return StatusChange(changed=True, events=events, issued=[])
 
 
 async def _card_status_event(session: AsyncSession, attempt: Attempt) -> SessionEvent:

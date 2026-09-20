@@ -319,16 +319,20 @@ function CardView({
                       <option key={t.code} value={t.code}>{t.title}</option>
                     ))}
                   </select>
-                  <input
-                    aria-label="Номер наряда"
-                    placeholder={selected.requires_order_number ? "Номер наряда (обязателен)" : "Номер наряда"}
-                    value={draft.order_number}
-                    onChange={(e) => setDraft({ order_number: e.target.value })}
-                    className={cn(
-                      "h-8 w-44 border-b px-2 text-sm placeholder:text-[var(--arm-text-muted)] focus:border-[var(--arm-blue)] focus:outline-none",
-                      selected.requires_order_number && !draft.order_number.trim() ? "border-[var(--arm-orange)]" : "border-[#a9adb2]",
-                    )}
-                  />
+                  {(selected.requires_order_number || draft.order_number.trim()) && (
+                    // The order number belongs to «Начало реагирования»; at «Принята» the field
+                    // only made trainees look for something to fill in (docs/BUGS.md, 8).
+                    <input
+                      aria-label="Номер наряда"
+                      placeholder={selected.requires_order_number ? "Номер наряда (обязателен)" : "Номер наряда"}
+                      value={draft.order_number}
+                      onChange={(e) => setDraft({ order_number: e.target.value })}
+                      className={cn(
+                        "h-8 w-44 border-b px-2 text-sm placeholder:text-[var(--arm-text-muted)] focus:border-[var(--arm-blue)] focus:outline-none",
+                        selected.requires_order_number && !draft.order_number.trim() ? "border-[var(--arm-orange)]" : "border-[#a9adb2]",
+                      )}
+                    />
+                  )}
                   {selected.code === STATUS_REJECTED && (
                     <select
                       aria-label="Причина отказа"
@@ -344,7 +348,7 @@ function CardView({
                   )}
                   <input
                     aria-label="Комментарий"
-                    placeholder={selected.requires_comment ? "Комментарий обязателен" : "Комментарий"}
+                    placeholder={selected.requires_comment ? "Комментарий обязателен" : "Комментарий (по желанию)"}
                     value={draft.comment}
                     onChange={(e) => setDraft({ comment: e.target.value })}
                     required={selected.requires_comment}
@@ -354,6 +358,11 @@ function CardView({
                     )}
                   />
                 </div>
+                {!setStatus.isPaused && !error && !selected.requires_comment && !selected.requires_order_number && (
+                  <p className="px-1 text-xs text-[var(--arm-text-muted)]">
+                    Для «{selected.title}» заполнять ничего не нужно: нажмите ✓ (Ctrl+Enter).
+                  </p>
+                )}
                 {setStatus.isPaused && (
                   <p className="px-1 text-xs text-[var(--arm-orange)]" role="alert">
                     Нет связи с сервером. Статус отправится сам, как только связь восстановится; действие не продублируется.

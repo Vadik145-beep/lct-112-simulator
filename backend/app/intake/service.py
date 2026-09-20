@@ -14,6 +14,7 @@ from datetime import UTC, datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.attributes import flag_modified
 
+from app.dialog import call as call_state
 from app.errors import ApiError
 from app.events import append_event
 from app.intake.schemas import CardIn
@@ -21,6 +22,7 @@ from app.models import (
     ATTEMPT_FINISHED,
     ATTEMPT_ISSUED,
     ATTEMPT_RECEIVED,
+    CALL_END_CARD_SAVED,
     MODE_CALL_INTAKE,
     Attempt,
     Role,
@@ -109,8 +111,9 @@ async def submit_card(
     client_submission_id: str,
 ) -> Submission:
     """«Сохранить»: the card is final, the attempt closes and is scored at once; the next
-    call of the queue is issued. A retry with the same ``client_submission_id`` changes
-    nothing and reports ``applied=False``; another id on a closed card is 409."""
+    call of the queue rings on the next visit to the calls page. A retry with the same
+    ``client_submission_id`` changes nothing and reports ``applied=False``; another id on a
+    closed card is 409."""
     if attempt.client_submission_id == client_submission_id:
         return Submission(applied=False, events=[], issued=[])
     if attempt.state in training.CLOSED_STATES:
@@ -124,10 +127,12 @@ async def submit_card(
     attempt.state = ATTEMPT_FINISHED
     attempt.card_status = training.CARD_FINISHED
     events: list[SessionEvent] = [await training._submitted_event(session, attempt)]
+    # «Сохранить» without «Завершить»: the call ends with the card, otherwise the softphone
+    # stays in «разговор» while the next card is already issued (docs/BUGS.md, 1).
+    events += await call_state.end(session, attempt, CALL_END_CARD_SAVED)
     scenario = await training.load_scenario_card(
         session, attempt.scenario_id, attempt.scenario_version
     )
     events.append(await training.evaluate_and_store(session, attempt, ts, scenario.body))
-    issued, more = await training.issue_cards(session, ts, student)
-    events += more
-    return Submission(applied=True, events=events, issued=issued)
+    # The next call rings when the trainee returns to the calls page (docs/BUGS.md, 9).
+    return Submission(applied=True, events=events, issued=[])

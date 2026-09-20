@@ -108,6 +108,17 @@
     @apply bg-background text-foreground font-sans antialiased;
     min-height: 100dvh;
   }
+  /* Native selects of the cabinets: the dropdown list follows the theme instead of the
+     browser's white popup with light text in dark mode (docs/BUGS.md, 3). The emulator
+     (.arm) is always light and styles its own. */
+  select:not(.arm select) {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+  select:not(.arm select) option {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
 }
 
 /* АРМ-112 emulator (memo screenshots, pages 12-24). One fixed palette in both themes:

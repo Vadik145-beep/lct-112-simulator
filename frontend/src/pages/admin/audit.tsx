@@ -68,7 +68,7 @@ export function AdminAuditPage() {
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="audit-action">Действие</Label>
-          <select id="audit-action" value={action} onChange={(e) => setAction(e.target.value)} className="h-9 w-full rounded-md border border-input bg-transparent px-2 text-sm">
+          <select id="audit-action" value={action} onChange={(e) => setAction(e.target.value)} className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm text-foreground">
             <option value="">Все</option>
             {(query.data?.actions ?? []).map((a) => (
               <option key={a} value={a}>

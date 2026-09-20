@@ -1,6 +1,10 @@
-"""Creates demo data (PRD section 15). Idempotent: existing users keep their passwords and
-flags, scenarios get a new version only when their file changed, the demo session keeps
-its status.
+"""Creates the initial data. Idempotent: existing users keep their passwords and flags,
+scenarios get a new version only when their file changed, the demo session keeps its status.
+
+``DEMO_MODE=true`` (the jury stand, development): demo users, groups, two running sessions
+and a month of history (PRD section 15). ``DEMO_MODE=false`` (a clean install at the
+customer's): only the scenarios from the organizers' tickets and one ``admin`` who must
+change the password at the first login; teachers, trainees and groups are created by hand.
 
 Run: python -m app.seed
 """
@@ -88,11 +92,13 @@ def demo_users() -> list[dict]:
 
 
 async def seed_users(session: AsyncSession) -> int:
+    """All demo users in demo mode; only the administrator on a clean install."""
     settings = get_settings()
     password_hash = hash_password(settings.seed_password)
     existing = set(await session.scalars(select(User.login)))
+    specs = demo_users() if settings.demo_mode else demo_users()[:1]
     created = 0
-    for spec in demo_users():
+    for spec in specs:
         if spec["login"] in existing:
             continue
         session.add(
@@ -290,17 +296,23 @@ async def seed_demo_call_session(session: AsyncSession, keys: list[str]) -> bool
 
 
 async def seed(data_dir: Path | None = None) -> int:
-    data_dir = data_dir or Path(get_settings().data_dir)
+    settings = get_settings()
+    data_dir = data_dir or Path(settings.data_dir)
     async with SessionLocal() as session:
         users_created = await seed_users(session)
-        groups_created = await seed_groups(session)
         scenarios_created, scenarios_updated, keys = await seed_scenarios(session, data_dir)
-        session_created = await seed_demo_session(session, keys)
-        call_session_created = await seed_demo_call_session(session, keys)
-        history_attempts = await seed_history(session)
+        groups_created = 0
+        session_created = call_session_created = False
+        history_attempts = 0
+        if settings.demo_mode:
+            groups_created = await seed_groups(session)
+            session_created = await seed_demo_session(session, keys)
+            call_session_created = await seed_demo_call_session(session, keys)
+            history_attempts = await seed_history(session)
         await session.commit()
     log.info(
         "seed finished",
+        demo_mode=settings.demo_mode,
         users_created=users_created,
         groups_created=groups_created,
         scenarios_created=scenarios_created,

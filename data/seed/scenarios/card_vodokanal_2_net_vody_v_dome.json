@@ -1,0 +1,81 @@
+{
+  "kind": "card_response",
+  "title": "Нет воды во всём доме",
+  "ticket_ref": null,
+  "service": "mosvodokanal",
+  "difficulty": 2,
+  "norm_seconds": 30,
+  "card": {
+    "number": "38260412",
+    "incident_type": "14.4.10.0",
+    "signs": [
+      "Водоснабжение и канализация",
+      "Нет воды в здании"
+    ],
+    "flags": {
+      "injured": false,
+      "no_access": false,
+      "threat": false
+    },
+    "address": {
+      "street": "Зеленодольская улица",
+      "house": "24",
+      "building": "1",
+      "okrug": "ЮВАО",
+      "district": "район Кузьминки"
+    },
+    "caller": {
+      "name": "Никитина Ольга Владимировна",
+      "role": "жилец",
+      "phone": "+7 916 355-90-71"
+    },
+    "description": "В доме с утра нет ни холодной, ни горячей воды во всех подъездах, объявлений нет, в соседних домах вода есть.",
+    "notified": [
+      {
+        "service": "gkh",
+        "status": "Получена службой"
+      },
+      {
+        "service": "mosvodokanal",
+        "status": "Добавлена"
+      },
+      {
+        "service": "moek",
+        "status": "Получена службой"
+      },
+      {
+        "service": "territorial_oiv",
+        "status": "Получена службой"
+      }
+    ]
+  },
+  "reference": {
+    "decision": "accept",
+    "reject_reason": null,
+    "status_chain": [
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "response_started",
+        "order_number": true,
+        "comment_example": "Направлена бригада на ввод в дом, наряд МВК-2057"
+      },
+      {
+        "status": "arrived"
+      },
+      {
+        "status": "works_started",
+        "comment_example": "Проверка ввода и уличной сети"
+      },
+      {
+        "status": "works_done",
+        "comment_example": "Устранён свищ на вводе, подача воды в дом возобновлена"
+      }
+    ],
+    "critical_errors": [
+      "late_primary",
+      "progress_missing"
+    ]
+  }
+}

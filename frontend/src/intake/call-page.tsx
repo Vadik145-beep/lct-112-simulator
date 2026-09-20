@@ -183,8 +183,10 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
   const overNorm = talkSeconds > norm;
 
   return (
-    <div className="arm flex min-h-dvh min-w-[1280px]">
-      <div className="flex min-w-0 flex-1 flex-col gap-1 p-1">
+    // Fixed to the viewport like the real workplace: the conversation scrolls inside its
+    // panel instead of growing the page (docs/BUGS.md, 11).
+    <div className="arm flex h-dvh min-w-[1280px] overflow-hidden">
+      <div className="arm-scroll flex min-h-0 min-w-0 flex-1 flex-col gap-1 overflow-y-auto p-1">
         {/* Top: the call panel, phones, incident number, the conversation timer. */}
         <header className="flex items-start gap-1 text-xs">
           <CallBlock phone={phone ?? softphone} />
@@ -450,7 +452,7 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
               </ArmButton>
             ) : (
               <ArmButton variant="blue" className="normal-case" onClick={() => navigate(`/student/sessions/${attempt.session.id}/calls`)}>
-                К вызовам
+                Следующий вызов
               </ArmButton>
             )}
           </div>

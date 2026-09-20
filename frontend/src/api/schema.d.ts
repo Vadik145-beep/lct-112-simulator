@@ -190,7 +190,7 @@ export interface paths {
         };
         /**
          * My Progress
-         * @description ���� �������� (PRD 13.7): scores per lesson, time, frequent errors, recommendations.
+         * @description «Мой прогресс» (PRD 13.7): scores per lesson, time, frequent errors, recommendations.
          */
         get: operations["my_progress_api_me_progress_get"];
         put?: never;
@@ -431,7 +431,7 @@ export interface paths {
         };
         /**
          * Streets
-         * @description Prefix search by any word of the street name, ��� and case insensitive.
+         * @description Prefix search by any word of the street name, «ё» and case insensitive.
          */
         get: operations["streets_api_streets_get"];
         put?: never;
@@ -548,7 +548,7 @@ export interface paths {
         put?: never;
         /**
          * Open Attempt
-         * @description ��������� �������: called when the dispatcher opens the card (idempotent).
+         * @description «Получена службой»: called when the dispatcher opens the card (idempotent).
          */
         post: operations["open_attempt_api_attempts__attempt_id__open_post"];
         delete?: never;
@@ -589,7 +589,7 @@ export interface paths {
         put?: never;
         /**
          * Finish Attempt
-         * @description ���������� ������ � ��������� from the training panel.
+         * @description «Завершить работу с карточкой» from the training panel.
          */
         post: operations["finish_attempt_api_attempts__attempt_id__finish_post"];
         delete?: never;
@@ -975,6 +975,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/models": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Models
+         * @description Which AI services answer now, so the lesson form can warn before a lesson starts
+         *     with a dialog mode or a voice that will silently degrade (docs/BUGS.md, 10).
+         */
+        get: operations["models_api_models_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/students": {
         parameters: {
             query?: never;
@@ -1028,6 +1049,27 @@ export interface paths {
         head?: never;
         /** Update Group */
         patch: operations["update_group_api_groups__group_id__patch"];
+        trace?: never;
+    };
+    "/api/sessions/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview Queue
+         * @description Cards that the given filters would put into the queue — shown in the lesson form
+         *     before the lesson exists, so an empty queue is not a surprise (docs/BUGS.md, 6 and 7).
+         */
+        post: operations["preview_queue_api_sessions_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/sessions": {
@@ -1221,7 +1263,7 @@ export interface paths {
         put?: never;
         /**
          * Ask Topic
-         * @description A topic button (������, ������������廅): works without any model.
+         * @description A topic button («Адрес», «Пострадавшие»…): works without any model.
          */
         post: operations["ask_topic_api_attempts__attempt_id__ask_topic_post"];
         delete?: never;
@@ -1305,7 +1347,7 @@ export interface paths {
         /**
          * Answer
          * @description The operator picks up: the caller's opening is returned (with its voice file) and the
-         *     attempt becomes �� ���������. With telephony the SIP call is answered in the softphone;
+         *     attempt becomes «в разговоре». With telephony the SIP call is answered in the softphone;
          *     this call only records the state.
          */
         post: operations["answer_api_attempts__attempt_id__answer_post"];
@@ -1326,7 +1368,7 @@ export interface paths {
         put?: never;
         /**
          * Hangup
-         * @description �����������: the operator ends the call; the card stays open for filling in.
+         * @description «Завершить»: the operator ends the call; the card stays open for filling in.
          */
         post: operations["hangup_api_attempts__attempt_id__hangup_post"];
         delete?: never;
@@ -1346,7 +1388,7 @@ export interface paths {
         put?: never;
         /**
          * No Contact
-         * @description ���� ��������: the caller cannot be reached; the mark goes to the evaluation.
+         * @description «Нет контакта»: the caller cannot be reached; the mark goes to the evaluation.
          */
         post: operations["no_contact_api_attempts__attempt_id__no_contact_post"];
         delete?: never;
@@ -1366,7 +1408,7 @@ export interface paths {
         put?: never;
         /**
          * Call Dropped
-         * @description ����� ������: the caller hung up; the mark goes to the evaluation.
+         * @description «Срыв звонка»: the caller hung up; the mark goes to the evaluation.
          */
         post: operations["call_dropped_api_attempts__attempt_id__call_dropped_post"];
         delete?: never;
@@ -1406,7 +1448,7 @@ export interface paths {
         put?: never;
         /**
          * Submit Card
-         * @description �����������: closes the call, scores the card within the request (PRD 9.3) and issues
+         * @description «Сохранить»: closes the call, scores the card within the request (PRD 9.3) and issues
          *     the next call. Idempotent by ``client_submission_id``.
          */
         post: operations["submit_card_api_attempts__attempt_id__submit_post"];
@@ -1465,7 +1507,7 @@ export interface paths {
         put?: never;
         /**
          * Reveal User
-         * @description ����������: the full name; the look is written to the audit log (PRD 3).
+         * @description «Показать»: the full name; the look is written to the audit log (PRD 3).
          */
         post: operations["reveal_user_api_admin_users__user_id__reveal_post"];
         delete?: never;
@@ -1547,7 +1589,7 @@ export interface paths {
         head?: never;
         /**
          * Update Service
-         * @description Whether the service is alerted through ���-112 and whether it may refuse a card.
+         * @description Whether the service is alerted through АРМ-112 and whether it may refuse a card.
          */
         patch: operations["update_service_api_admin_services__code__patch"];
         trace?: never;
@@ -1655,7 +1697,7 @@ export interface paths {
         put?: never;
         /**
          * Create Backup
-         * @description �������� ����� ������: the backup service picks the request up within seconds.
+         * @description «Сделать копию сейчас»: the backup service picks the request up within seconds.
          */
         post: operations["create_backup_api_admin_backups_post"];
         delete?: never;
@@ -1682,7 +1724,7 @@ export interface paths {
          * Patch Settings
          * @description Telephony (ring timeout, recording, codecs; the ARI address applies after a restart of
          *     the API), log level (at once), backup schedule (the backup service reads it within a
-         *     minute) and the default ��� ��������� threshold of new lessons.
+         *     minute) and the default «Не завершено» threshold of new lessons.
          */
         patch: operations["patch_settings_api_admin_settings_patch"];
         trace?: never;
@@ -1731,7 +1773,7 @@ export interface components {
     schemas: {
         /**
          * AddressIn
-         * @description Address fields of the card as the operator fills them; empty strings mean �not set�.
+         * @description Address fields of the card as the operator fills them; empty strings mean «not set».
          */
         AddressIn: {
             /**
@@ -2198,7 +2240,7 @@ export interface components {
         Body_upload_reference_doc_api_reference_docs_post: {
             /**
              * File
-             * @description ������������ ��������: PDF, DOCX ��� TXT
+             * @description Методический документ: PDF, DOCX или TXT
              */
             file: string;
         };
@@ -2206,7 +2248,7 @@ export interface components {
         Body_upload_reply_audio_api_scenarios__scenario_id__replies__reply_id__audio_post: {
             /**
              * File
-             * @description ������ �������: WAV ��� MP3
+             * @description Запись реплики: WAV или MP3
              */
             file: string;
         };
@@ -2214,7 +2256,7 @@ export interface components {
         Body_utterance_api_attempts__attempt_id__utterance_post: {
             /**
              * File
-             * @description ���� ���������: WAV, WebM/Opus ��� OGG
+             * @description Речь оператора: WAV, WebM/Opus или OGG
              */
             file: string;
             /** Action Id */
@@ -2324,7 +2366,7 @@ export interface components {
         };
         /**
          * CardIn
-         * @description The card of the operator 112 (PRD 9.3, �SubmittedCard�); services carry what the
+         * @description The card of the operator 112 (PRD 9.3, «SubmittedCard»); services carry what the
          *     interface resolved from the type and the flags plus the ones added by hand.
          */
         CardIn: {
@@ -2486,6 +2528,10 @@ export interface components {
             attempt_id: string;
             /** Mode */
             mode: string;
+            /** Requested Mode */
+            requested_mode: string;
+            /** Fallback Replies */
+            fallback_replies: number;
             /** Stt Available */
             stt_available: boolean;
             /** Tts Available */
@@ -2976,6 +3022,20 @@ export interface components {
             /** Message */
             message: string;
         };
+        /**
+         * ModelsOut
+         * @description Availability of the AI services for the lesson form (docs/BUGS.md, 10).
+         */
+        ModelsOut: {
+            /** Dialog */
+            dialog: boolean;
+            /** Generation */
+            generation: boolean;
+            /** Stt */
+            stt: boolean;
+            /** Tts */
+            tts: boolean;
+        };
         /** MonitorCard */
         MonitorCard: {
             /**
@@ -3272,6 +3332,43 @@ export interface components {
             app_env: string;
             /** Dialog Mode */
             dialog_mode: string;
+        };
+        /**
+         * QueuePreviewIn
+         * @description The card filters of the lesson form, to show how many cards match before the lesson
+         *     is created (docs/BUGS.md, 6 and 7).
+         */
+        QueuePreviewIn: {
+            /**
+             * Mode
+             * @default card_response
+             */
+            mode: string;
+            /**
+             * Card Source
+             * @default scenarios
+             */
+            card_source: string;
+            /** Scenario Ids */
+            scenario_ids?: string[];
+            /** Incident Groups */
+            incident_groups?: string[];
+            /**
+             * Difficulty
+             * @default 1
+             */
+            difficulty: number;
+            /** Service Profile */
+            service_profile?: string[];
+        };
+        /** QueuePreviewOut */
+        QueuePreviewOut: {
+            /** Total */
+            total: number;
+            /** Harder Only */
+            harder_only: boolean;
+            /** Queue */
+            queue: components["schemas"]["QueueScenarioOut"][];
         };
         /** QueueScenarioOut */
         QueueScenarioOut: {
@@ -4872,7 +4969,7 @@ export interface operations {
     classifier_services_api_classifier__code__services_get: {
         parameters: {
             query?: {
-                /** @description �������� ����� �������, �������� injured,no_access */
+                /** @description Признаки через запятую, например injured,no_access */
                 flags?: string;
             };
             header?: never;
@@ -5026,7 +5123,7 @@ export interface operations {
     typical_errors_api_typical_errors_get: {
         parameters: {
             query?: {
-                /** @description card_response ��� call_intake */
+                /** @description card_response или call_intake */
                 mode?: string | null;
             };
             header?: never;
@@ -6122,6 +6219,26 @@ export interface operations {
             };
         };
     };
+    models_api_models_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelsOut"];
+                };
+            };
+        };
+    };
     list_students_api_students_get: {
         parameters: {
             query?: never;
@@ -6217,6 +6334,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GroupOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_queue_api_sessions_preview_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QueuePreviewIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueuePreviewOut"];
                 };
             };
             /** @description Validation Error */

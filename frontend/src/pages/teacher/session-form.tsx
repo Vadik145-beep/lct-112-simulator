@@ -5,6 +5,8 @@ import {
   useClassifierTree,
   useCreateSession,
   useGroups,
+  useModels,
+  useQueuePreview,
   useServices,
   useTeacherSession,
   useUpdateSession,
@@ -16,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { DIFFICULTY_TITLES } from "@/teacher/labels";
+import { CARDS_AT_ONCE, DIFFICULTY_TITLES } from "@/teacher/labels";
 import { cn } from "@/lib/utils";
 
 const HOUR = 3600;
@@ -52,14 +54,14 @@ const CARD_SOURCES = [
 
 const DIALOG_MODES: { code: string; title: string; hint: string }[] = [
   { code: "select", title: "Готовые реплики", hint: "модель выбирает утверждённую реплику; режим стенда" },
-  { code: "hybrid", title: "Готовые + новые на утверждение", hint: "если реплики нет, модель сочиняет, вы утверждаете" },
-  { code: "generate", title: "Свободная генерация", hint: "только если замер задержки устроил" },
+  { code: "hybrid", title: "Готовые + новые", hint: "если реплики нет, модель сочиняет; новое — на утверждение после занятия" },
+  { code: "generate", title: "Свободная генерация", hint: "модель сочиняет каждую реплику; медленнее и менее предсказуемо" },
   { code: "buttons", title: "Кнопки тем", hint: "без модели" },
 ];
 const NORM_DEFAULT = { card_response: 30, call_intake: 90 } as const;
 
 const selectClass =
-  "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50";
+  "flex h-9 w-full rounded-md border border-input bg-background text-foreground px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50";
 
 export function SessionFormPage() {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -106,6 +108,15 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
   const create = useCreateSession();
   const update = useUpdateSession(existing?.id ?? "");
   const [form, setForm] = useState<SessionIn>(() => (existing ? toInput(existing) : { ...DEFAULTS, group_id: "" }));
+  const models = useModels(form.mode === "call_intake");
+  const preview = useQueuePreview({
+    mode: form.mode,
+    card_source: form.card_source,
+    scenario_ids: form.scenario_ids ?? [],
+    incident_groups: form.incident_groups ?? [],
+    difficulty: form.difficulty,
+    service_profile: form.service_profile ?? [],
+  });
   const [unfinishedHours, setUnfinishedHours] = useState(() => String(Math.round((existing?.unfinished_seconds ?? DEFAULTS.unfinished_seconds!) / HOUR)));
   const mutation = existing ? update : create;
 
@@ -189,12 +200,23 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                     </option>
                   ))}
                 </select>
+                {models.data && !models.data.dialog && form.dialog_mode !== "buttons" && (
+                  <p className="text-xs text-destructive" role="alert" data-testid="dialog-model-warning">
+                    Модель диалога сейчас недоступна: заявитель будет отвечать по ключевым словам, как в режиме «Кнопки тем».
+                  </p>
+                )}
               </div>
               <label className="flex items-center gap-2 text-sm">
                 <input type="checkbox" checked={form.voice_enabled} onChange={(e) => patch({ voice_enabled: e.target.checked })} />
                 Голос: заявитель звучит, обучающийся говорит в гарнитуру
               </label>
               <p className="text-xs text-muted-foreground">Без голоса разговор идёт текстом в панели тренажёра.</p>
+              {models.data && form.voice_enabled && (!models.data.tts || !models.data.stt) && (
+                <p className="text-xs text-destructive" role="alert" data-testid="voice-warning">
+                  {!models.data.tts && "Озвучка недоступна: заявитель ответит текстом. "}
+                  {!models.data.stt && "Распознавание речи недоступно: обучающийся сможет только писать."}
+                </p>
+              )}
             </div>
           )}
           <div className="space-y-1.5">
@@ -277,9 +299,12 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                 </option>
               ))}
             </select>
+            <p className="text-xs text-muted-foreground">
+              {form.mode === "call_intake" ? "Оператор 112 принимает по одному вызову." : `На экране одновременно: ${CARDS_AT_ONCE[form.difficulty] ?? 1}.`}
+            </p>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="cards">Карточек на обучающегося</Label>
+            <Label htmlFor="cards">{form.mode === "call_intake" ? "Вызовов на обучающегося (всего за занятие)" : "Карточек на обучающегося (всего за занятие)"}</Label>
             <Input
               id="cards"
               type="number"
@@ -288,7 +313,27 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               value={form.cards_per_student}
               onChange={(e) => patch({ cards_per_student: Number(e.target.value) })}
             />
-            <p className="text-xs text-muted-foreground">0 — вся очередь сценариев.</p>
+            <p className="text-xs text-muted-foreground">0 — вся очередь: каждый получает все подходящие карточки по очереди.</p>
+          </div>
+          <div className="lg:col-span-2" data-testid="queue-preview" aria-live="polite">
+            {preview.isPending ? (
+              <p className="text-xs text-muted-foreground">Считаем подходящие карточки…</p>
+            ) : preview.isError ? (
+              <p className="text-xs text-destructive">Не удалось посчитать карточки: {preview.error.message}</p>
+            ) : preview.data.total === 0 ? (
+              <p className="text-sm text-destructive" role="alert">
+                Под выбранные {form.mode === "call_intake" ? "группы происшествий" : "службы и группы происшествий"} нет утверждённых сценариев — занятие не начнётся. Снимите отметки или утвердите сценарии.
+              </p>
+            ) : (
+              <p className="text-sm">
+                Подходит {form.mode === "call_intake" ? "вызовов" : "карточек"}: <b>{preview.data.total}</b>
+                {preview.data.harder_only && <span className="text-muted-foreground"> — все сложнее выбранной сложности, будут выданы как есть</span>}
+                {form.cards_per_student > preview.data.total && (
+                  <span className="text-muted-foreground"> — меньше, чем «{form.cards_per_student} на обучающегося»: каждый получит {preview.data.total}</span>
+                )}
+                .
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>

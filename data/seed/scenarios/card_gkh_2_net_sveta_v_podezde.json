@@ -1,0 +1,79 @@
+{
+  "kind": "card_response",
+  "title": "Нет света в подъезде",
+  "ticket_ref": null,
+  "service": "gkh",
+  "difficulty": 1,
+  "norm_seconds": 30,
+  "card": {
+    "number": "38260402",
+    "incident_type": "14.3.2.1",
+    "signs": [
+      "Повод локального (частного) коммунального характера",
+      "Нет света",
+      "Квартира, подъезд, дом"
+    ],
+    "flags": {
+      "injured": false,
+      "no_access": false,
+      "threat": false
+    },
+    "address": {
+      "street": "Волгоградский проспект",
+      "house": "113",
+      "building": "3",
+      "entrance": "4",
+      "okrug": "ЮВАО",
+      "district": "район Кузьминки"
+    },
+    "caller": {
+      "name": "Лебедев Сергей Николаевич",
+      "role": "жилец",
+      "phone": "+7 916 118-40-93"
+    },
+    "description": "В 4 подъезде нет освещения на всех этажах с вечера, лифт работает, в квартирах свет есть. Пострадавших нет.",
+    "notified": [
+      {
+        "service": "gkh",
+        "status": "Добавлена"
+      },
+      {
+        "service": "oek",
+        "status": "Получена службой"
+      },
+      {
+        "service": "territorial_oiv",
+        "status": "Получена службой"
+      }
+    ]
+  },
+  "reference": {
+    "decision": "accept",
+    "reject_reason": null,
+    "status_chain": [
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "response_started",
+        "order_number": true,
+        "comment_example": "Направлен электрик ОДС-2, наряд ЖКХ-121"
+      },
+      {
+        "status": "arrived"
+      },
+      {
+        "status": "works_started",
+        "comment_example": "Осмотр электрощитовой подъезда"
+      },
+      {
+        "status": "works_done",
+        "comment_example": "Заменён автомат группы освещения, свет в подъезде восстановлен"
+      }
+    ],
+    "critical_errors": [
+      "late_primary",
+      "progress_missing"
+    ]
+  }
+}

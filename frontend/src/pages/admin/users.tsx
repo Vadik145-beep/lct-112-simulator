@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import { formatDateTime } from "@/emulator/time";
 import { ROLE_TITLES } from "@/lib/roles";
 import { cn } from "@/lib/utils";
@@ -79,14 +80,14 @@ export function AdminUsersPage() {
       <div className="flex flex-wrap items-end gap-3">
         <div className="space-y-1.5">
           <Label htmlFor="users-role">Роль</Label>
-          <select id="users-role" value={role} onChange={(e) => setRole(e.target.value)} className="h-9 rounded-md border border-input bg-transparent px-2 text-sm">
+          <Select id="users-role" value={role} onChange={(e) => setRole(e.target.value)} className="w-auto">
             <option value="">Все</option>
             {ROLES.map((r) => (
               <option key={r} value={r}>
                 {ROLE_TITLES[r]}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="users-q">Логин</Label>
@@ -261,25 +262,30 @@ function CreateForm({ onDone, onCreated }: { onDone: () => void; onCreated: (tit
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="new-role">Роль</Label>
-              <select id="new-role" value={role} onChange={(e) => setRole(e.target.value as Role)} className="h-9 w-full rounded-md border border-input bg-transparent px-2 text-sm">
+              <Select id="new-role" value={role} onChange={(e) => { setRole(e.target.value as Role); if (e.target.value !== "student") setService(""); }}>
                 {ROLES.map((r) => (
                   <option key={r} value={r}>
                     {ROLE_TITLES[r]}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="new-service">Служба (для обучающегося ДДС)</Label>
-              <select id="new-service" value={service} onChange={(e) => setService(e.target.value)} className="h-9 w-full rounded-md border border-input bg-transparent px-2 text-sm">
-                <option value="">Не задана</option>
-                {(services.data ?? []).map((s) => (
-                  <option key={s.code} value={s.code}>
-                    {s.short_title} · {s.code}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {role === "student" ? (
+              <div className="space-y-1.5">
+                <Label htmlFor="new-service">Служба ДДС обучающегося</Label>
+                <Select id="new-service" required value={service} onChange={(e) => setService(e.target.value)}>
+                  <option value="">— выберите службу —</option>
+                  {(services.data ?? []).map((s) => (
+                    <option key={s.code} value={s.code}>
+                      {s.short_title} · {s.code}
+                    </option>
+                  ))}
+                </Select>
+                <p className="text-xs text-muted-foreground">В журнале АРМ-112 обучающийся ставит статусы за эту службу.</p>
+              </div>
+            ) : (
+              <p className="self-end pb-2 text-xs text-muted-foreground">Служба задаётся только обучающемуся ДДС.</p>
+            )}
             <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="new-password">Временный пароль</Label>
               <Input id="new-password" minLength={8} maxLength={256} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="пусто — будет сгенерирован" />

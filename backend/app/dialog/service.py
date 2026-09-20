@@ -48,6 +48,7 @@ from app.models import (
     User,
 )
 from app.providers.dialog import (
+    FALLBACK_METHODS,
     TOPIC_CODES,
     CallerReply,
     DialogContext,
@@ -387,6 +388,17 @@ def audio_source_file(relative: str) -> Path | None:
     if wav.is_file():
         return wav
     return path if path.is_file() else None
+
+
+def fallback_replies(attempt: Attempt, mode: str) -> int:
+    """Caller's turns answered without the model in a model mode (docs/BUGS.md, 10)."""
+    if mode == "buttons":
+        return 0
+    return sum(
+        1
+        for turn in attempt.dialog
+        if turn.get("role") == "caller" and turn.get("method") in FALLBACK_METHODS
+    )
 
 
 def stt_available() -> bool:

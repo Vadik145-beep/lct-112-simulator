@@ -55,7 +55,11 @@ class CallOut(BaseModel):
 
 class DialogOut(BaseModel):
     attempt_id: str
-    mode: str  # dialog mode actually in effect (buttons when no model is reachable)
+    mode: str  # dialog mode actually in effect (buttons when no model is configured)
+    requested_mode: str  # the lesson's dialog mode as the teacher set it
+    # Caller's replies answered without the model (keywords or canned text) because it was
+    # unreachable or its output was unusable; > 0 in a model mode = show a warning.
+    fallback_replies: int
     stt_available: bool
     tts_available: bool
     answered_at: datetime | None

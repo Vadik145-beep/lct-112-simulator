@@ -197,6 +197,34 @@ async def check_services() -> list[ServiceTile]:
     return tiles
 
 
+async def model_availability() -> dict[str, bool]:
+    """Which AI services answer right now: for the teacher's lesson form (docs/BUGS.md, 10).
+    ``dialog`` — the caller's replies, ``generation`` — scenario generation, ``stt`` —
+    speech recognition, ``tts`` — the caller's voice (in-process, no probe)."""
+    from app.dialog.service import tts_available
+
+    s = get_settings()
+    probes = {
+        "dialog": s.llm_dialog_url,
+        "generation": s.llm_gen_url,
+        "stt": s.stt_url,
+    }
+
+    async def alive(url: str | None) -> bool:
+        if not url:
+            return False
+        try:
+            await _check_http(f"{url.rstrip('/')}/health")
+        except Exception:  # any failure means «not available»
+            return False
+        return True
+
+    results = await asyncio.gather(*(alive(url) for url in probes.values()))
+    out = dict(zip(probes, results, strict=True))
+    out["tts"] = tts_available()
+    return out
+
+
 # ---------------------------------------------------------------- load
 
 

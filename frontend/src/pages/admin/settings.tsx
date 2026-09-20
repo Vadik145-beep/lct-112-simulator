@@ -123,7 +123,7 @@ function SettingsForm({ settings }: { settings: AdminSettingsOut }) {
             </CardHeader>
             <CardContent className="space-y-1.5 text-sm">
               <Label htmlFor="log-level">Уровень журнала API</Label>
-              <select id="log-level" value={level} onChange={(e) => setLevel(e.target.value as typeof level)} className="h-9 w-40 rounded-md border border-input bg-transparent px-2 text-sm">
+              <select id="log-level" value={level} onChange={(e) => setLevel(e.target.value as typeof level)} className="h-9 w-40 rounded-md border border-input bg-background text-foreground px-2 text-sm">
                 {LEVELS.map((l) => (
                   <option key={l} value={l}>
                     {l}

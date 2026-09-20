@@ -1,7 +1,7 @@
 """Card-response training API: journal, opening a card, statuses, closing, events."""
 
 import uuid
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pytest
 from httpx import AsyncClient
@@ -155,6 +155,33 @@ async def test_open_sets_received_once(client: AsyncClient) -> None:
     assert len([e for e in r.json()["status_log"] if e["status"] == "received"]) == 1
 
 
+async def test_next_card_is_added_when_the_journal_is_opened(client: AsyncClient) -> None:
+    """docs/BUGS.md 9: the 30 s of a card run from «Добавлена», so the next card must not be
+    added while the trainee is still on the closed card's review; it is added by the
+    journal request, with a fresh ``issued_at``."""
+    session_id = await make_session(
+        difficulty=1, scenario_keys=["card_2-1_zadymlenie_musoroprovoda", "card_2-1_dubl"]
+    )
+    token = await login(client, "student1")
+    first = (await journal(client, token, session_id))["items"][0]["attempt_id"]
+    await client.post(f"/api/attempts/{first}/open", headers=bearer(token))
+    r = await client.post(f"/api/attempts/{first}/finish", headers=bearer(token))
+    assert r.status_code == 200, r.text
+    assert r.json()["issued"] == []
+    async with SessionLocal() as session:
+        count = await session.scalar(
+            select(func.count()).select_from(Attempt).where(Attempt.session_id == session_id)
+        )
+    assert count == 1  # nothing was added behind the trainee's back
+    before = utcnow()
+    page = await journal(client, token, session_id)
+    assert page["total"] == 2
+    second = page["items"][0]
+    assert second["attempt_id"] != first
+    assert second["state"] == "issued"
+    assert datetime.fromisoformat(second["issued_at"]) >= before - timedelta(seconds=1)
+
+
 async def test_full_chain_closes_card_and_issues_next(client: AsyncClient) -> None:
     session_id = await make_session(
         difficulty=1, scenario_keys=["card_2-1_zadymlenie_musoroprovoda", "card_2-1_dubl"]
@@ -222,8 +249,9 @@ async def test_full_chain_closes_card_and_issues_next(client: AsyncClient) -> No
         "works_done",
     ]
     assert attempt["status_log"][3]["order_number"] == "14-217"
-    # Queue mode: the next card is issued at once.
-    assert len(data["issued"]) == 1
+    # Queue mode: the next card is not issued by closing this one (its 30 s run from
+    # «Добавлена», BUGS 9) — it appears when the trainee asks for the journal.
+    assert data["issued"] == []
     page = await journal(client, token, session_id)
     assert page["total"] == 2
     assert page["items"][0]["state"] == "issued"
@@ -342,7 +370,7 @@ async def test_finish_without_final_status(client: AsyncClient) -> None:
     # Closed without any status: the evaluation says so.
     assert attempt["evaluation"]["passed"] is False
     assert "no_status" in {e["code"] for e in attempt["evaluation"]["errors"]}
-    assert len(r.json()["issued"]) == 1
+    assert r.json()["issued"] == []
     r = await client.post(f"/api/attempts/{attempt_id}/finish", headers=bearer(token))
     assert r.json()["applied"] is False
 
@@ -412,8 +440,17 @@ async def test_events_are_dense_and_scoped(client: AsyncClient) -> None:
         "card.status_changed",
         "attempt.submitted",
         "attempt.evaluated",
-        "attempt.issued",
     ]
+    # The next card is added by the journal request, not by closing (BUGS 9).
+    await journal(client, token, session_id)
+    async with SessionLocal() as session:
+        last = await session.scalar(
+            select(SessionEvent.type)
+            .where(SessionEvent.session_id == session_id)
+            .order_by(SessionEvent.seq.desc())
+            .limit(1)
+        )
+    assert last == "attempt.issued"
     student_id = (await client.get("/api/me", headers=bearer(token))).json()["id"]
     assert all(str(e.student_id) == student_id for e in events)
     assert events[-1].payload["status"] == "accepted"

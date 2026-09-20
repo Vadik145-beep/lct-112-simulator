@@ -71,12 +71,22 @@ async def _check_service(session: AsyncSession, code: str | None) -> None:
         raise ApiError(422, "service_not_found", f"Служба «{code}» не найдена в справочнике.")
 
 
+def _check_service_for_role(role: Role, code: str | None) -> None:
+    """A trainee is a dispatcher of one service (the journal tab they answer in); teachers
+    and administrators have none (docs/BUGS.md, 4)."""
+    if role == Role.student and not code:
+        raise ApiError(422, "service_required", "Для обучающегося укажите службу ДДС.")
+    if role != Role.student and code:
+        raise ApiError(422, "service_not_applicable", "Служба задаётся только обучающемуся ДДС.")
+
+
 async def create_user(session: AsyncSession, body: AdminUserIn) -> tuple[User, str]:
     """Creates the user; returns it with the temporary password (given or generated).
     Any first login has to change the password."""
     login = body.login.strip().lower()
     if await session.scalar(select(User).where(User.login == login)):
         raise ApiError(409, "login_taken", f"Логин «{login}» уже занят.")
+    _check_service_for_role(body.role, body.service_code)
     await _check_service(session, body.service_code)
     password = body.password or new_temporary_password()
     user = User(
@@ -110,6 +120,11 @@ async def update_user(session: AsyncSession, user: User, body: AdminUserPatch, a
         await _check_service(session, body.service_code)
         user.service_code = body.service_code
         changes["service_code"] = body.service_code
+    if user.role != Role.student and user.service_code and "role" in changes:
+        # Promoted from trainee: the service goes with the old role.
+        user.service_code = None
+        changes["service_code"] = None
+    _check_service_for_role(user.role, user.service_code)
     if body.is_blocked is not None and body.is_blocked != user.is_blocked:
         if user.id == actor.id:
             raise ApiError(409, "self_block", "Себя заблокировать нельзя.")

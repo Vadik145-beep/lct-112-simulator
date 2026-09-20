@@ -9,6 +9,14 @@ import { ArmButton } from "@/emulator/widgets";
 import { newId } from "@/intake/draft";
 import { cn } from "@/lib/utils";
 
+const DIALOG_MODE_TITLES: Record<string, string> = {
+  select: "Готовые реплики",
+  hybrid: "Готовые + новые",
+  generate: "Свободная генерация",
+  buttons: "Кнопки тем",
+  live: "Живой режим",
+};
+
 /**
  * The conversation with the caller in the training panel (PRD 13.5): the transcript with
  * topics, «заявитель говорит» while a reply plays, «слушаю вас» while the microphone is on,
@@ -134,6 +142,11 @@ export function DialogPanel({
           </span>
         ) : null}
       </div>
+      {dialog.fallback_replies > 0 && (
+        <p className="rounded-sm border border-[var(--arm-red)] bg-white px-2 py-1 text-[11px] leading-snug text-[var(--arm-red)]" role="alert" data-testid="dialog-fallback-warning">
+          Модель заявителя недоступна: {dialog.fallback_replies === 1 ? "ответ подобран" : `${dialog.fallback_replies} ответов подобраны`} по ключевым словам, а не режимом «{DIALOG_MODE_TITLES[dialog.requested_mode] ?? dialog.requested_mode}».
+        </p>
+      )}
       <ol ref={log} className="arm-scroll flex min-h-24 flex-1 flex-col gap-1.5 overflow-y-auto rounded-sm bg-white p-2 text-xs" aria-label="Стенограмма разговора">
         {dialog.turns.length === 0 && <li className="text-[var(--arm-text-muted)]">Ответьте на вызов: заявитель заговорит первым.</li>}
         {dialog.turns.map((t) => (

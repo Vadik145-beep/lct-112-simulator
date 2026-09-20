@@ -10,10 +10,13 @@ export const SESSION_STATUS_TITLES: Record<string, string> = {
 };
 
 export const DIFFICULTY_TITLES: Record<number, string> = {
-  1: "1 — одна карточка, спокойный темп",
-  2: "2 — одна карточка, сложные случаи",
-  3: "3 — несколько карточек одновременно",
+  1: "1 — по одной карточке за раз, простые случаи",
+  2: "2 — по одной карточке за раз, сложные случаи (чужой регион, дубли)",
+  3: "3 — три карточки одновременно",
 };
+
+/** How many cards are on the trainee's screen at once at each difficulty (backend CARDS_AT_ONCE). */
+export const CARDS_AT_ONCE: Record<number, number> = { 1: 1, 2: 1, 3: 3 };
 
 /** A score as the report shows it: one decimal, «—» when there is nothing yet. */
 export function formatScore(value: number | null | undefined): string {

@@ -12,6 +12,8 @@ from app.auth.deps import ActiveUser, DbSession, client_ip
 from app.events import publish_events
 from app.intake import service as intake
 from app.intake.schemas import DraftRequest, DraftResponse, SubmitRequest, SubmitResponse
+from app.models import CALL_END_CARD_SAVED
+from app.telephony import service as telephony
 from app.training import present
 from app.training.router import _attempt_out
 
@@ -57,6 +59,9 @@ async def submit_card(
         )
         await session.commit()
         await publish_events(result.events)
+        service = telephony.get_service()
+        if service is not None:
+            await service.calls.hangup(attempt.id, CALL_END_CARD_SAVED)
     return SubmitResponse(
         attempt=await _attempt_out(session, attempt, ts),
         applied=result.applied,

@@ -1,0 +1,76 @@
+{
+  "kind": "card_response",
+  "title": "Течь стояка в подъезде жилого дома",
+  "ticket_ref": null,
+  "service": "gkh",
+  "difficulty": 1,
+  "norm_seconds": 30,
+  "card": {
+    "number": "38260401",
+    "incident_type": "14.2.3.0",
+    "signs": [
+      "Прорыв воды (холодной, горячей воды, в т.ч. системы отопления)",
+      "Дом многоквартирный квартира подъезд подвал"
+    ],
+    "flags": {
+      "injured": false,
+      "no_access": false,
+      "threat": false
+    },
+    "address": {
+      "street": "улица Свободы",
+      "house": "42",
+      "building": "2",
+      "entrance": "1",
+      "floor": "3",
+      "code": "12К",
+      "okrug": "СЗАО",
+      "district": "район Северное Тушино"
+    },
+    "caller": {
+      "name": "Ковалёва Анна Игоревна",
+      "role": "жилец",
+      "phone": "+7 916 402-17-55"
+    },
+    "description": "На лестничной клетке 3 этажа течёт стояк холодной воды, вода уходит по ступеням на 2 этаж, в квартирах пока сухо. Пострадавших нет.",
+    "notified": [
+      {
+        "service": "gkh",
+        "status": "Добавлена"
+      },
+      {
+        "service": "territorial_oiv",
+        "status": "Получена службой"
+      }
+    ]
+  },
+  "reference": {
+    "decision": "accept",
+    "reject_reason": null,
+    "status_chain": [
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "response_started",
+        "order_number": true,
+        "comment_example": "Направлен дежурный сантехник ОДС-4, наряд ЖКХ-118"
+      },
+      {
+        "status": "arrived"
+      },
+      {
+        "status": "works_started",
+        "comment_example": "Перекрыт стояк по подъезду, устранение течи"
+      },
+      {
+        "status": "works_done",
+        "comment_example": "Заменён участок стояка, вода подана, подъезд осушен"
+      }
+    ],
+    "critical_errors": [
+      "late_primary",
+      "progress_missing"
+    ]
+  }
+}

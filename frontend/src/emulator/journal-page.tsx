@@ -289,10 +289,23 @@ function Journal({ sessionId }: { sessionId: string }) {
           <dt className="text-[var(--arm-text-muted)]">В работе</dt>
           <dd>{activeCount} из {total}</dd>
         </dl>
+        {activeCount === 0 && total > 0 && data.session.status === "running" && (
+          <div className="flex flex-col gap-2 rounded-sm border border-[var(--arm-green)] bg-[#eef8f0] p-2 text-xs" role="status" data-testid="journal-all-done">
+            <span>Все карточки отработаны. Занятие завершит преподаватель; разборы — в строках журнала.</span>
+            <ArmButton variant="blue" className="normal-case" onClick={() => navigate("/student")}>
+              В кабинет обучающегося
+            </ArmButton>
+          </div>
+        )}
+        {data.session.status === "finished" && (
+          <ArmButton variant="blue" className="normal-case" onClick={() => navigate("/student")}>
+            В кабинет обучающегося
+          </ArmButton>
+        )}
         {data.session.hints_enabled && (
           <p className="rounded-sm bg-[var(--arm-field)] p-2 text-xs leading-snug text-[var(--arm-text-muted)]">
-            Откройте карточку из списка: с этого момента считается, что служба её получила. Первичный статус
-            («Принята» или «Не принята») нужно поставить в течение норматива, иначе карточка станет «Не оповещено».
+            Норматив идёт с момента, когда карточка появилась в журнале. Откройте её из списка и поставьте первичный
+            статус («Принята» или «Не принята») в течение норматива, иначе карточка станет «Не оповещено».
           </p>
         )}
       </TrainerPanel>

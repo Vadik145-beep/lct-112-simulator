@@ -27,7 +27,8 @@ from app.models import (
     TrainingSession,
     User,
 )
-from app.providers.dialog import ButtonsDialog, CallerReply, DialogContext
+from app.providers.dialog import ButtonsDialog, CallerReply, DialogContext, SelectDialog
+from app.providers.llm import LlamaCppChat
 from app.providers.stt import Transcript
 from app.training.service import utcnow
 from tests.api.conftest import DATA_DIR
@@ -210,6 +211,44 @@ async def test_utterance_with_recognized_speech(client: AsyncClient, monkeypatch
         files={"file": ("q.wav", b"", "audio/wav")},
     )
     assert r.status_code == 422
+
+
+async def test_unreachable_model_is_reported_not_hidden(client: AsyncClient, monkeypatch) -> None:
+    """docs/BUGS.md 10: a «select» lesson whose model server is down still answers (by
+    keywords), but the dialog says so: ``requested_mode`` stays «select» and
+    ``fallback_replies`` counts the replies made without the model."""
+    dead = LlamaCppChat("http://127.0.0.1:9", name="llm-dialog", timeout=0.5)
+    provider = SelectDialog(dead, ButtonsDialog())
+    monkeypatch.setattr(dialog_service, "provider_for", lambda ts: provider)
+    attempt_id = await make_attempt(dialog_mode="select")
+    token = await login(client, "student1")
+    r = await say(client, token, attempt_id, "Назовите адрес")
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["caller"]["method"] == "buttons"
+    assert body["dialog"]["mode"] == "select"
+    assert body["dialog"]["requested_mode"] == "select"
+    assert body["dialog"]["fallback_replies"] == 1
+    r = await say(client, token, attempt_id, "Кто пострадал?")
+    assert r.json()["dialog"]["fallback_replies"] == 2
+    # A lesson in «buttons» is not degraded: nothing to warn about.
+    monkeypatch.undo()
+    r = await client.get(f"/api/attempts/{attempt_id}/dialog", headers=bearer(token))
+    assert r.json()["mode"] == "buttons"
+    assert r.json()["fallback_replies"] == 0
+
+
+async def test_models_availability_for_the_teacher(client: AsyncClient) -> None:
+    teacher = await login(client, "teacher1")
+    r = await client.get("/api/models", headers=bearer(teacher))
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert set(body) == {"dialog", "generation", "stt", "tts"}
+    assert all(isinstance(v, bool) for v in body.values())
+    assert body["dialog"] is False  # no model server in tests
+    student = await login(client, "student1")
+    r = await client.get("/api/models", headers=bearer(student))
+    assert r.status_code == 403
 
 
 async def test_hybrid_generated_reply_waits_for_approval(client: AsyncClient, monkeypatch) -> None:

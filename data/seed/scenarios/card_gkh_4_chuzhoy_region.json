@@ -1,0 +1,60 @@
+{
+  "kind": "card_response",
+  "title": "Течь в квартире: адрес в Московской области",
+  "ticket_ref": null,
+  "service": "gkh",
+  "difficulty": 2,
+  "norm_seconds": 30,
+  "card": {
+    "number": "38260404",
+    "incident_type": "14.2.3.0",
+    "signs": [
+      "Прорыв воды (холодной, горячей воды, в т.ч. системы отопления)",
+      "Дом многоквартирный квартира подъезд подвал"
+    ],
+    "flags": {
+      "injured": false,
+      "no_access": false,
+      "threat": false
+    },
+    "address": {
+      "region": "Московская область",
+      "city": "Химки",
+      "street": "улица Молодёжная",
+      "house": "14",
+      "apartment": "37",
+      "entrance": "2",
+      "floor": "5"
+    },
+    "caller": {
+      "name": "Белова Татьяна Юрьевна",
+      "role": "жилец",
+      "phone": "+7 916 918-27-63"
+    },
+    "description": "В квартире течёт труба под раковиной, заливает соседей снизу. Адрес: Химки, Молодёжная 14.",
+    "notified": [
+      {
+        "service": "gkh",
+        "status": "Добавлена"
+      },
+      {
+        "service": "territorial_oiv",
+        "status": "Получена службой"
+      }
+    ]
+  },
+  "reference": {
+    "decision": "reject",
+    "reject_reason": "not_our_territory",
+    "status_chain": [
+      {
+        "status": "rejected",
+        "comment_example": "Не принята: территорию не обслуживаем (Московская область), информация передана в ЕДДС г. о. Химки"
+      }
+    ],
+    "critical_errors": [
+      "wrong_accept_unfixed",
+      "late_primary"
+    ]
+  }
+}
