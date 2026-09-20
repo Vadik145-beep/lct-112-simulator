@@ -55,6 +55,8 @@ class Transcript:
     duration_seconds: float = 0.0
     processing_ms: int = 0
     segments: list[dict] = field(default_factory=list)
+    # Peak amplitude of the recording (0..1, -1 unknown): a silent microphone shows as ~0.
+    peak: float = -1.0
 
     @property
     def available(self) -> bool:
@@ -119,6 +121,7 @@ class HttpSTT:
             text=str(payload.get("text") or "").strip(),
             method=self.method,
             duration_seconds=float(payload.get("duration") or 0.0),
+            peak=float(payload.get("peak", -1.0)),
             processing_ms=int(payload.get("processing_ms") or 0),
             segments=list(payload.get("segments") or []),
         )
