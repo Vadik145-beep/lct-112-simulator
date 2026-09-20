@@ -207,10 +207,21 @@ class CallerProfile(BaseModel):
     voice: str | None = None
     noise: str | None = None
     opening: str = ""
+    opening_audio: str | None = None  # studio recording of the opening (app.seed)
     facts: dict[str, str] = Field(default_factory=dict)
     behaviour: str | None = None
     drops_call: bool = False  # the caller hangs up before the operator finishes
     no_contact: bool = False  # nobody answers the call back
+
+
+class ReplyVariant(BaseModel):
+    """Another wording of an approved reply with the same facts; a call plays one of them
+    at random so the caller does not sound like a recording."""
+
+    model_config = SCENARIO
+
+    text: str
+    audio: str | None = None
 
 
 class Reply(BaseModel):
@@ -221,6 +232,7 @@ class Reply(BaseModel):
     text: str
     audio: str | None = None
     approved: bool = False
+    variants: list[ReplyVariant] = Field(default_factory=list)
 
 
 class ServiceReply(Reply):

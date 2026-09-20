@@ -1,0 +1,226 @@
+{
+  "opening": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Алло, скорую! Муж не просыпается, хрипит, я не могу его разбудить!",
+    "bytes": 70261,
+    "sha256": "692948f77974c8fa542485296c41461bc1564373"
+  },
+  "r1": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Лежит, хрипит, глаза не открывает! Я его трясу, а он не отвечает!",
+    "bytes": 69007,
+    "sha256": "86b6e85f0de2cd00c6083bab9cf88a4b21199d6f"
+  },
+  "r1-v1": {
+    "sha256": "157535851ce1e9d8de5c3395cbe729dba6e7820e",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Муж лежит и хрипит, глаза закрыты! Я зову его, трясу, а он не откликается!",
+    "bytes": 114982
+  },
+  "r1-v2": {
+    "sha256": "92a92d6f527f9f7b32e405092b09728d6224f6bc",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Он не просыпается! Хрипит так страшно, я его тормошу, а он никак!",
+    "bytes": 81546
+  },
+  "r2": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Пионерская, дом девятнадцать, квартира пять.",
+    "bytes": 40586,
+    "sha256": "dcf1d70ea2ddb7ae73aee8eb781457cd445e479d"
+  },
+  "r2-v1": {
+    "sha256": "6acb40be1885220e059413555bbb09d075dc7072",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Пионерская, девятнадцать, пятая квартира.",
+    "bytes": 40586
+  },
+  "r2-v2": {
+    "sha256": "37add0ab2f35c0ff33f105c53e34f7c88bb551d6",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Улица Пионерская, дом девятнадцать, квартира пять.",
+    "bytes": 47273
+  },
+  "r3": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Красногорск, Московская область. А что, вы не сюда?",
+    "bytes": 56050,
+    "sha256": "791589f53175c766b43cfa713a62a0b965edcb7b"
+  },
+  "r3-v1": {
+    "sha256": "c80eaa93783376d6272632f2c55c22f72b98ee90",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Это Красногорск, Подмосковье. А вы что, не наши?",
+    "bytes": 52288
+  },
+  "r3-v2": {
+    "sha256": "9ae36b42249f0907f1af21d236fd365ede791ec0",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Красногорск, Московская область. Вы разве не сюда приедете?",
+    "bytes": 66499
+  },
+  "r4": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Первый подъезд, второй этаж, код пять вэ.",
+    "bytes": 48527,
+    "sha256": "c837e8b747d5c317316c76c59947ed6fd3b29b79"
+  },
+  "r4-v1": {
+    "sha256": "3e9fefda82ff8943e8f89123ab386362ab053d91",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Подъезд первый, этаж второй, домофон пять вэ.",
+    "bytes": 59812
+  },
+  "r4-v2": {
+    "sha256": "075e482cc72eaeea97e874e552fa7d289049ca08",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Первый подъезд, второй этаж. Код пять вэ.",
+    "bytes": 46019
+  },
+  "r5": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Муж, Титов Александр Петрович, семьдесят седьмого года, десятого августа. Он дышит, но хрипит.",
+    "bytes": 116236,
+    "sha256": "bdc7eac68c31c26a80035137f6686fdb377e4fca"
+  },
+  "r5-v1": {
+    "sha256": "be3ca97165a74e55fbd80dda2eea48d0755f2e66",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Муж мой, Титов Александр Петрович, десятого августа семьдесят седьмого года. Дышит, но с хрипом.",
+    "bytes": 131701
+  },
+  "r5-v2": {
+    "sha256": "aeedf34b6e0ca53bb0e54143c21bf492804d9f65",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Титов Александр Петрович, семьдесят седьмого года рождения, десятое августа. Он дышит, хрипит только.",
+    "bytes": 119998
+  },
+  "r6": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Титова я, жена его.",
+    "bytes": 31808,
+    "sha256": "d66ca5602ac15002e6c5dcf64422dee545121981"
+  },
+  "r6-v1": {
+    "sha256": "5cd91a2e12cb2e56f3ac833ba0fa036f0853d4b5",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Титова, жена. Я его жена.",
+    "bytes": 48527
+  },
+  "r6-v2": {
+    "sha256": "0c99eece03238b6da27b84ddef0ddcb23c159611",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Я Титова, жена его.",
+    "bytes": 34316
+  },
+  "r7": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Девять шестнадцать, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 65245,
+    "sha256": "2005cd2fdc04ab59f15f9033b78a6a18b79f4baa"
+  },
+  "r7-v1": {
+    "sha256": "53f4b844d528eed54109c3000cfbedcdd0ba4c05",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Девятьсот шестнадцать, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 69007
+  },
+  "r7-v2": {
+    "sha256": "675667200a92ecb5dd738159ad4a1c63347924a9",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Девять один шесть, восемь девять шесть, три два, пять четыре.",
+    "bytes": 72768
+  },
+  "r8": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Что? Громче говорите!",
+    "bytes": 31808,
+    "sha256": "f3f1032d40c62139e40187d4d988d1bf7b1b353e"
+  },
+  "r8-v1": {
+    "sha256": "913faf4198836feed79abc3983b29afdf3058ca7",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Что? Не слышу, повторите!",
+    "bytes": 36824
+  },
+  "r8-v2": {
+    "sha256": "52b97930274420b2dce03098d3d587717b89c3aa",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "А? Говорите громче, я плохо слышу!",
+    "bytes": 47273
+  },
+  "r9": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Не знаю я, приезжайте скорее!",
+    "bytes": 36824,
+    "sha256": "add1530bba59bb7be20543b312a0dd283353b0eb"
+  },
+  "r9-v1": {
+    "sha256": "f3a68f50f03e88de578ba66ef25d6e7d40cafb15",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Не знаю я, не знаю! Приезжайте скорее!",
+    "bytes": 47273
+  },
+  "r9-v2": {
+    "sha256": "89d4eec5bec72dc9a52c7fe2f99d80b3f5868d1e",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
+    "text": "Откуда мне знать! Пришлите скорую быстрее!",
+    "bytes": 47273
+  }
+}
