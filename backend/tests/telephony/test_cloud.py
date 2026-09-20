@@ -508,6 +508,12 @@ def test_caller_prompt_and_assistant(cloud_settings: None, monkeypatch: pytest.M
     assert "panicked" in prompt and "кричит" in prompt
     assert "- address: Ленина 5" in prompt and "- floor: 3" in prompt
     assert "бросаешь трубку" not in prompt
+    # The emotional state follows the persona and asks for expressive, punctuated speech.
+    assert "Ты в панике" in prompt and "многоточи" in prompt
+    from app.telephony.vapi import caller_state
+
+    assert caller_state("elderly_calm") == "calm" and caller_state("mother_anxious") == "anxious"
+    assert caller_state("angry_customer") == "angry" and caller_state(None) == "calm"
     assistant = build_assistant(scenario)
     assert assistant["firstMessage"] == "Алло, у нас газом пахнет!"
     assert assistant["model"]["provider"] == "openai"
@@ -552,13 +558,17 @@ def test_voice_follows_the_scenario(cloud_settings: None, monkeypatch: pytest.Mo
 
     calm_woman = voice_config(scenario("ru_female_1", "calm_commuter"))
     assert calm_woman["voiceId"] == "female-voice" and calm_woman["stability"] == STABILITY_CALM
-    # The elderly woman falls back to the female voice; the elderly man has his own.
-    assert voice_config(scenario("ru_female_2", "elderly_panicked"))["voiceId"] == "female-voice"
+    # The elderly woman falls back to the female voice and speaks slower; the elderly man
+    # has his own voice.
+    elderly_woman = voice_config(scenario("ru_female_2", "elderly_panicked"))
+    assert elderly_woman["voiceId"] == "female-voice"
+    assert elderly_woman["speed"] == 1.0 and elderly_woman["stability"] == STABILITY_AGITATED
     assert voice_config(scenario("ru_male_3", "elderly_calm"))["voiceId"] == "elder-voice"
-    # No male voice configured: the default; an agitated persona is less stable.
+    # No male voice configured: the default; a panicked persona wavers, hurries, is styled.
     panicked_man = voice_config(scenario("ru_male_4", "victim_panicked"))
     assert panicked_man["voiceId"] == "default-voice"
     assert panicked_man["stability"] == STABILITY_AGITATED
+    assert panicked_man["style"] > calm_woman["style"] and panicked_man["speed"] > 1
     assert voice_config(scenario(None, "calm"))["voiceId"] == "default-voice"
 
 
