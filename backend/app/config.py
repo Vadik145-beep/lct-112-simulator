@@ -114,7 +114,9 @@ class Settings(BaseSettings):
     cloud_voice_voice_id_elder_male: str | None = None
     cloud_voice_voice_id_elder_female: str | None = None
     cloud_voice_voice_id_young: str | None = None
-    cloud_voice_voice_model: str = "eleven_multilingual_v2"
+    # eleven_flash_v2_5: the only ElevenLabs model that takes the language explicitly (no
+    # accent drift on short phrases), also the fastest; eleven_multilingual_v2 guesses it.
+    cloud_voice_voice_model: str = "eleven_flash_v2_5"
     # Soniox stt-rt-v5: the best Russian accuracy of the providers tried (plan/track-c-cloud.md);
     # deepgram/nova-2 is the fallback choice.
     cloud_voice_transcriber_provider: str = "soniox"
