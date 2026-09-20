@@ -21,12 +21,15 @@ from app.models import (
     MODE_CARD_RESPONSE,
     SESSION_DRAFT,
     Group,
+    IncidentGroup,
     Role,
     Scenario,
     TrainingSession,
     User,
 )
 from app.reports import export
+from app.scenarios import jobs
+from app.scenarios import service as scenarios
 from app.training import present
 from app.training import report as reporting
 from app.training import sessions as lessons
@@ -41,6 +44,8 @@ from app.training.teacher_schemas import (
     QueuePreviewOut,
     QueueScenarioOut,
     ReportOut,
+    SessionGenerateIn,
+    SessionGenerateOut,
     SessionIn,
     SessionListItem,
     SessionOut,
@@ -345,6 +350,70 @@ async def start_session(
         await session.commit()
         await publish_events(events)
     return await _session_out(session, ts)
+
+
+DEFAULT_GENERATE_COUNT = 3
+MAX_GENERATE_COUNT = 10
+
+
+@router.post("/sessions/{session_id}/generate", response_model=SessionGenerateOut, status_code=202)
+async def generate_for_session(
+    session_id: uuid.UUID,
+    body: SessionGenerateIn,
+    user: Teacher,
+    session: DbSession,
+    request: Request,
+) -> SessionGenerateOut:
+    """Drafts scenarios under the lesson's filters (ТЗ, «Настройка учебной среды»: the
+    teacher picks the categories, the system generates, the teacher approves). One job,
+    ``count`` scenarios round-robin over the selected incident groups (all groups when none
+    is selected), each stored «на проверке»; poll ``GET /jobs/{id}``. Approved ones enter
+    the queue by the usual filters, so nothing is assigned to the lesson directly."""
+    ts = await lessons.own_session(session, session_id, user)
+    if ts.status != SESSION_DRAFT:
+        raise ApiError(
+            409, "session_started", "Занятие уже начато: сценарии генерируются до старта."
+        )
+    titles = {
+        g.code: g.title
+        for g in await session.scalars(select(IncidentGroup).order_by(IncidentGroup.number))
+    }
+    groups = [g for g in ts.incident_groups if g in titles] or list(titles)
+    if not groups:
+        raise ApiError(422, "no_groups", "Классификатор не загружен: нет групп происшествий.")
+    count = body.count or (
+        min(len(groups), MAX_GENERATE_COUNT) if ts.incident_groups else DEFAULT_GENERATE_COUNT
+    )
+    refs = await scenarios.load_refs(session)
+    requests = scenarios.plan_for_groups(
+        refs,
+        kind=ts.mode,
+        groups=groups,
+        titles=titles,
+        difficulty=ts.difficulty,
+        service_profile=list(ts.service_profile),
+        count=count,
+    )
+    if not requests:
+        raise ApiError(
+            422, "no_types", "В выбранных группах происшествий нет типов из классификатора."
+        )
+    job_id = await jobs.create(
+        "generate", user.id, {"session_id": str(ts.id), "count": len(requests), "groups": groups}
+    )
+    await write_audit(
+        session,
+        action="session.generate",
+        actor_id=user.id,
+        actor_role=user.role,
+        entity="training_session",
+        entity_id=str(ts.id),
+        details={"job_id": job_id, "count": len(requests), "groups": groups},
+        ip=client_ip(request),
+    )
+    await session.commit()
+    scenarios.generate_batch(job_id, requests, user.id)
+    return SessionGenerateOut(job_id=job_id, count=len(requests), groups=groups)
 
 
 @router.post("/sessions/{session_id}/finish", response_model=SessionOut)

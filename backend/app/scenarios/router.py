@@ -208,7 +208,7 @@ async def generate_scenario(body: GenerateIn, user: Teacher, session: DbSession)
         noise=body.noise,
     )
     job_id = await jobs.create("generate", user.id, {"phrase": request.phrase, "kind": body.kind})
-    await scenarios.generate_from_phrase(job_id, request, user.id)
+    scenarios.generate_from_phrase(job_id, request, user.id)
     return JobAcceptedOut(job_id=job_id)
 
 

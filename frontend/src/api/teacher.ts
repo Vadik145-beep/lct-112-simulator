@@ -118,6 +118,18 @@ export function useQueuePreview(body: QueuePreviewIn) {
   });
 }
 
+export type SessionGenerateIn = components["schemas"]["SessionGenerateIn"];
+export type SessionGenerateOut = components["schemas"]["SessionGenerateOut"];
+
+/** Drafts scenarios under the lesson's groups, difficulty and services (ТЗ «Настройка учебной
+ * среды»); the job is polled with `useJob`, approved drafts enter the queue by the usual filters. */
+export function useGenerateForSession(id: string) {
+  return useMutation({
+    mutationFn: (body: SessionGenerateIn) =>
+      unwrap(api.POST("/api/sessions/{session_id}/generate", { params: { path: { session_id: id } }, body })),
+  });
+}
+
 /** Which AI services answer now: the lesson form warns before a mode silently degrades. */
 export function useModels(enabled = true) {
   return useQuery({ queryKey: ["teacher", "models"], queryFn: () => unwrap(api.GET("/api/models")), enabled, staleTime: 15_000 });

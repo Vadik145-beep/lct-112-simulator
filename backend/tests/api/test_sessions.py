@@ -1,5 +1,6 @@
 """Teacher API: groups, sessions from draft to report, access rules, monitoring events."""
 
+import asyncio
 import uuid
 from datetime import timedelta
 
@@ -11,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from app.db import SessionLocal
 from app.events import events_after
 from app.models import Group, User
+from app.scenarios import jobs
 from app.training.service import sweep_not_notified, utcnow
 from tests.api.conftest import DATA_DIR
 from tests.conftest import bearer, login
@@ -64,6 +66,23 @@ async def set_status(client: AsyncClient, token: dict, attempt_id: str, **body):
 async def events(session_id: str, after: int = 0) -> list:
     async with SessionLocal() as session:
         return await events_after(session, uuid.UUID(session_id), after, student_id=None)
+
+
+async def wait_job(client: AsyncClient, token: dict, job_id: str) -> dict:
+    for _ in range(200):
+        r = await client.get(f"/api/jobs/{job_id}", headers=bearer(token))
+        assert r.status_code == 200, r.text
+        job = r.json()
+        if job["status"] in {"done", "failed"}:
+            return job
+        await asyncio.sleep(0.1)
+    raise AssertionError(f"задача не завершилась: {job}")
+
+
+@pytest.fixture(autouse=True)
+async def finish_jobs():
+    yield
+    await jobs.wait_all(max_seconds=10)
 
 
 # ---------------------------------------------------------------- groups
@@ -426,3 +445,89 @@ async def test_queue_preview_counts_cards_before_the_lesson_exists(client: Async
     student = await login(client, "student1")
     r = await client.post("/api/sessions/preview", headers=bearer(student), json={})
     assert r.status_code == 403
+
+
+# ---------------------------------------------------------------- generation for a lesson
+
+
+async def test_generate_for_session_drafts_scenarios_under_its_groups(client: AsyncClient) -> None:
+    """ТЗ «Настройка учебной среды»: the teacher picks the categories, the system drafts the
+    scenarios, the teacher approves — only then they enter the lesson queue."""
+    teacher = await login(client, "teacher1")
+    lesson = await create_session(
+        client,
+        teacher,
+        mode="call_intake",
+        incident_groups=["24"],
+        difficulty=1,
+        service_profile=[],
+    )
+    assert lesson["queue"] == []  # no seed scenario is about drones
+
+    r = await client.post(
+        f"/api/sessions/{lesson['id']}/generate", headers=bearer(teacher), json={"count": 2}
+    )
+    assert r.status_code == 202, r.text
+    accepted = r.json()
+    assert accepted["count"] == 2 and accepted["groups"] == ["24"]
+    job = await wait_job(client, teacher, accepted["job_id"])
+    assert job["status"] == "done", job
+    drafted = job["result"]["scenarios"]
+    assert len(drafted) == 2
+    assert all(s["kind"] == "call_intake" and s["incident_group"] == "24" for s in drafted)
+    for item in drafted:
+        r = await client.get(f"/api/scenarios/{item['scenario_id']}", headers=bearer(teacher))
+        assert r.status_code == 200, r.text
+        scenario = r.json()
+        assert scenario["status"] == "review" and scenario["source"] == "generated"
+        assert scenario["incident_type_code"].startswith("24.")
+        assert scenario["difficulty"] == 1
+        assert scenario["generation"]["phrase"]
+
+    # Drafts do not enter the queue; an approved one does, by the lesson's own filters.
+    r = await client.get(f"/api/sessions/{lesson['id']}", headers=bearer(teacher))
+    assert r.json()["queue"] == []
+    first = drafted[0]["scenario_id"]
+    r = await client.post(
+        f"/api/scenarios/{first}/approve",
+        headers=bearer(teacher),
+        json={"reference": True, "replies": True, "confirm_grammar": True},
+    )
+    assert r.status_code == 200, r.text
+    r = await client.get(f"/api/sessions/{lesson['id']}", headers=bearer(teacher))
+    assert [q["id"] for q in r.json()["queue"]] == [first]
+
+    # Default count: one per selected group; a colleague's lesson is not theirs to fill.
+    r = await client.post(
+        f"/api/sessions/{lesson['id']}/generate", headers=bearer(teacher), json={}
+    )
+    assert r.status_code == 202 and r.json()["count"] == 1
+    await wait_job(client, teacher, r.json()["job_id"])
+    other = await login(client, "teacher2")
+    r = await client.post(f"/api/sessions/{lesson['id']}/generate", headers=bearer(other), json={})
+    assert r.status_code == 403
+
+    # Once started the queue is fixed, so generation is refused.
+    await start(client, teacher, lesson["id"])
+    r = await client.post(
+        f"/api/sessions/{lesson['id']}/generate", headers=bearer(teacher), json={}
+    )
+    assert r.status_code == 409
+    assert r.json()["error"]["code"] == "session_started"
+
+
+async def test_generate_for_session_without_groups_covers_several(client: AsyncClient) -> None:
+    """No group selected: three drafts over the first groups of the classifier, in the
+    lesson's mode and within its services."""
+    teacher = await login(client, "teacher1")
+    lesson = await create_session(client, teacher, difficulty=2)
+    r = await client.post(
+        f"/api/sessions/{lesson['id']}/generate", headers=bearer(teacher), json={}
+    )
+    assert r.status_code == 202, r.text
+    assert r.json()["count"] == 3 and len(r.json()["groups"]) > 3
+    job = await wait_job(client, teacher, r.json()["job_id"])
+    assert job["status"] == "done", job
+    kinds = {s["kind"] for s in job["result"]["scenarios"]}
+    groups = [s["incident_group"] for s in job["result"]["scenarios"]]
+    assert kinds == {"card_response"} and len(set(groups)) == 3

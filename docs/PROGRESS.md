@@ -2,6 +2,31 @@
 
 Ведётся агентом и командой. Новая сессия читает этот файл первым.
 
+## Волна 11, ветка `wave-11/gen-by-group` (20.09.2026)
+
+Генерация сценариев под занятие (ТЗ «Настройка учебной среды», аудит ТЗ 20.09: «сгенерировать
+N по категории из UI нет»). От `wave-11/bugfix` `a7f2fc2`.
+
+- `POST /api/sessions/{id}/generate` (`count` 1–10, по умолчанию по одному на выбранную группу,
+  без групп — 3 по первым группам классификатора) → job как у «по фразе», результат
+  `scenarios[]` с `title`, `incident_group`, `method`. Черновики «на проверке», `source=generated`;
+  в очередь после утверждения. 409 после старта, 403 чужое занятие, аудит `session.generate`.
+- `scenarios.plan_for_groups` и `generate_batch` (общий с `generate_from_phrase`).
+- Страница занятия: блок «Сгенерировать» под очередью, прогресс job, список черновиков со
+  ссылками, подсказка про шаблон без модели; названия групп и служб вместо кодов.
+- Тесты: `tests/api/test_sessions.py::test_generate_for_session_*` (28 passed в
+  `test_sessions.py` + `test_scenarios.py` на тестовом контуре стенда), e2e `generate.spec.ts`
+  (1 passed на `-p e2e`, шаблонная генерация).
+- `scripts/bench_scenario_generation.py` и раздел в `docs/PERFORMANCE.md`: 3B генерирует
+  сценарий только при `LLM_DIALOG_CTX=16384` (медиана 78 с, качество — черновик под правку);
+  с 8192/4 слота — 400 и молчаливый шаблон.
+- `.env.example`: `LLM_GEN_URL` на модель диалога для машин с 12 ГБ (с оговоркой про контекст).
+- Боевой стенд `/opt/lct/app` не трогал: правка `.env` там заблокирована политикой сессии.
+- Кто мержит вторым (эта ветка или `wave-11/data-check`, #35): в `docs/DECISIONS.md` оба
+  дописали раздел в конец — оставить оба; `frontend/src/api/schema.d.ts` перегенерировать
+  (`npm run gen:api`), не разрешать руками. Остальные общие файлы (`scenarios/service.py`,
+  `tests/api/test_sessions.py`, `PROGRESS.md`) сливаются сами.
+
 ## Текущая волна
 
 Волна 10 ([plan/wave-10.md](../plan/wave-10.md)), ветка `wave-10/analytics`, issue #11.
