@@ -706,6 +706,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/attempts/{attempt_id}/service-call/{call_id}/utterance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Speak To Officer
+         * @description A spoken phrase from the browser microphone (no telephony): recognised by the ``stt``
+         *     service with the card's street as a hint, then handled like ``say``. Without the service
+         *     the answer is 503 and the dispatcher types instead � as in the 112 operator's card.
+         */
+        post: operations["speak_to_officer_api_attempts__attempt_id__service_call__call_id__utterance_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/attempts/{attempt_id}/service-call/{call_id}/end": {
         parameters: {
             query?: never;
@@ -2379,6 +2401,16 @@ export interface components {
             service_alive: boolean;
             /** Items */
             items: components["schemas"]["BackupOut"][];
+        };
+        /** Body_speak_to_officer_api_attempts__attempt_id__service_call__call_id__utterance_post */
+        Body_speak_to_officer_api_attempts__attempt_id__service_call__call_id__utterance_post: {
+            /**
+             * File
+             * @description ���� ����������: WAV, WebM/Opus ��� OGG
+             */
+            file: string;
+            /** Action Id */
+            action_id?: string | null;
         };
         /** Body_upload_reference_doc_api_reference_docs_post */
         Body_upload_reference_doc_api_reference_docs_post: {
@@ -4152,6 +4184,13 @@ export interface components {
              * @default true
              */
             applied: boolean;
+            /**
+             * Stt Available
+             * @default false
+             */
+            stt_available: boolean;
+            /** Heard Text */
+            heard_text?: string | null;
         };
         /** ServiceCallSayRequest */
         ServiceCallSayRequest: {
@@ -5918,6 +5957,42 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["ServiceCallSayRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceCallResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    speak_to_officer_api_attempts__attempt_id__service_call__call_id__utterance_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+                call_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_speak_to_officer_api_attempts__attempt_id__service_call__call_id__utterance_post"];
             };
         };
         responses: {

@@ -27,6 +27,7 @@ import {
   useProgressReporter,
   useSayToOfficer,
   useSetStatus,
+  useSpeakToOfficer,
   useStartServiceCall,
   useUnflagField,
   type AttemptOut,
@@ -164,15 +165,25 @@ function CardView({
   const softphone = useSoftphone();
   const startCall = useStartServiceCall(attempt.id);
   const sayToOfficer = useSayToOfficer(attempt.id);
+  const speakToOfficer = useSpeakToOfficer(attempt.id);
   const endCall = useEndServiceCall(attempt.id);
+  // Whether the stt service answers comes with every service-call response.
+  const [sttAvailable, setSttAvailable] = useState(false);
   const openCall =
     attempt.service_calls.find((c) => c.ended_at === null) ?? null;
   const [shownCallId, setShownCallId] = useState<string | null>(null);
   const shownCall =
     openCall ?? attempt.service_calls.find((c) => c.id === shownCallId) ?? null;
   const callBusy =
-    startCall.isPending || sayToOfficer.isPending || endCall.isPending;
-  const callError = startCall.error ?? sayToOfficer.error ?? endCall.error;
+    startCall.isPending ||
+    sayToOfficer.isPending ||
+    speakToOfficer.isPending ||
+    endCall.isPending;
+  const callError =
+    startCall.error ??
+    sayToOfficer.error ??
+    speakToOfficer.error ??
+    endCall.error;
   const callsByService = useMemo(() => {
     const map = new Map<string, AttemptOut["service_calls"]>();
     for (const c of attempt.service_calls)
@@ -182,7 +193,10 @@ function CardView({
   const dial = (service: string) => {
     if (finished || openCall || callBusy) return;
     startCall.mutate(service, {
-      onSuccess: (data) => setShownCallId(data.call.id),
+      onSuccess: (data) => {
+        setShownCallId(data.call.id);
+        setSttAvailable(data.stt_available);
+      },
     });
   };
   const hangUpService = () => {
@@ -1028,10 +1042,14 @@ function CardView({
             telephony={Boolean(
               shownCall.telephony && softphone?.mode === "sip",
             )}
+            sttAvailable={sttAvailable}
             pending={callBusy}
             error={callError ? callError.message : null}
             onSay={(text, actionId) =>
               sayToOfficer.mutate({ callId: shownCall.id, text, actionId })
+            }
+            onSpeak={(blob, actionId) =>
+              speakToOfficer.mutate({ callId: shownCall.id, blob, actionId })
             }
             onEnd={hangUpService}
           />

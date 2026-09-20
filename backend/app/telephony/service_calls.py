@@ -12,7 +12,7 @@ from __future__ import annotations
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Query, Request
+from fastapi import APIRouter, File, Form, Query, Request, UploadFile
 from fastapi.responses import FileResponse
 
 from app.audit import write_audit
@@ -24,6 +24,7 @@ from app.domain.evaluation.schemas import CardResponseScenario
 from app.errors import ApiError
 from app.events import publish_events
 from app.models import MODE_CARD_RESPONSE, Attempt, Role, TrainingSession, User
+from app.providers.stt import get_stt_provider
 from app.telephony import service as telephony
 from app.training import present
 from app.training import service as training
@@ -34,6 +35,8 @@ from app.training.schemas import (
 )
 
 router = APIRouter(tags=["telephony"])
+
+MAX_UTTERANCE_BYTES = 10 * 1024 * 1024
 
 
 async def _card_attempt(
@@ -63,6 +66,7 @@ async def _respond(
     pending_reply: bool = False,
     latency_ms: int = 0,
     applied: bool = True,
+    heard_text: str | None = None,
 ) -> ServiceCallResponse:
     lookups = await present.load_lookups(session, {body.get("card", {}).get("incident_type")})
     student = await session.get(User, attempt.student_id)
@@ -71,7 +75,13 @@ async def _respond(
     )
     call = next(c for c in out.service_calls if c.id == call_id)
     return ServiceCallResponse(
-        call=call, attempt=out, pending_reply=pending_reply, latency_ms=latency_ms, applied=applied
+        call=call,
+        attempt=out,
+        pending_reply=pending_reply,
+        latency_ms=latency_ms,
+        applied=applied,
+        stt_available=get_stt_provider().method != "unavailable",
+        heard_text=heard_text,
     )
 
 
@@ -150,6 +160,67 @@ async def say_to_officer(
         pending_reply=result.pending_reply,
         latency_ms=result.latency_ms,
         applied=result.applied,
+    )
+
+
+@router.post(
+    "/attempts/{attempt_id}/service-call/{call_id}/utterance", response_model=ServiceCallResponse
+)
+async def speak_to_officer(
+    attempt_id: uuid.UUID,
+    call_id: str,
+    user: ActiveUser,
+    session: DbSession,
+    file: Annotated[UploadFile, File(description="Речь диспетчера: WAV, WebM/Opus или OGG")],
+    action_id: Annotated[str | None, Form(max_length=64)] = None,
+) -> ServiceCallResponse:
+    """A spoken phrase from the browser microphone (no telephony): recognised by the ``stt``
+    service with the card's street as a hint, then handled like ``say``. Without the service
+    the answer is 503 and the dispatcher types instead — as in the 112 operator's card."""
+    attempt, ts, card, scenario = await _card_attempt(session, attempt_id, user)
+    record = officer.find_call(attempt, call_id)
+    if record.get("ended_at"):
+        raise ApiError(409, "call_ended", "Звонок завершён: дежурному больше не сказать.")
+    audio = await file.read()
+    if not audio:
+        raise ApiError(422, "empty_audio", "Пустая запись: скажите фразу ещё раз.")
+    if len(audio) > MAX_UTTERANCE_BYTES:
+        raise ApiError(413, "audio_too_large", "Запись больше 10 МБ.")
+    address = scenario.card.address
+    hints = [h for h in (address.street, address.district, record.get("service_title")) if h]
+    transcript = await get_stt_provider().transcribe(audio, file.filename or "audio.wav", hints)
+    if not transcript.available:
+        raise ApiError(
+            503,
+            "stt_unavailable",
+            "Распознавание речи недоступно: сервис stt не запущен. Введите фразу текстом.",
+        )
+    if not transcript.text:
+        raise ApiError(422, "nothing_recognized", "Речь не распознана: повторите громче.")
+    result = await officer.say(
+        session,
+        attempt,
+        ts,
+        card.version,
+        scenario,
+        call_id,
+        transcript.text,
+        action_id=action_id,
+        heard=True,
+    )
+    if result.applied:
+        await session.commit()
+        await publish_events(result.events)
+    return await _respond(
+        session,
+        attempt,
+        ts,
+        card.body,
+        call_id,
+        pending_reply=result.pending_reply,
+        latency_ms=result.latency_ms,
+        applied=result.applied,
+        heard_text=transcript.text,
     )
 
 
