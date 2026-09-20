@@ -160,7 +160,7 @@ async def test_create_validates_settings(client: AsyncClient) -> None:
         {"pass_threshold": 101},
         {"incident_groups": ["99"]},
         {"service_profile": ["nope"]},
-        {"weights": {"decision": 50}},
+        {"weights": {"speed": 10}},  # unknown component; sums are normalized since #35
         {"card_source": "tickets"},
         {"cards_per_student": -1},
         {"group_id": await group_id("Учебная-2")},

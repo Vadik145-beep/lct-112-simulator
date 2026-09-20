@@ -32,6 +32,7 @@ from app.training import service as training
 from app.training.schemas import (
     AssignmentOut,
     AttemptOut,
+    FlagFieldRequest,
     JournalOut,
     StatusRequest,
     StatusResponse,
@@ -278,6 +279,74 @@ async def finish_attempt(
         attempt=await _attempt_out(session, attempt, ts),
         applied=change.changed,
         issued=[a.id for a in change.issued],
+    )
+
+
+@router.post("/attempts/{attempt_id}/flag-field", response_model=StatusResponse)
+async def flag_field(
+    attempt_id: uuid.UUID,
+    body: FlagFieldRequest,
+    user: ActiveUser,
+    session: DbSession,
+    request: Request,
+) -> StatusResponse:
+    """«Отметить ошибку» in a card field (issue #35): the dispatcher names the right value.
+    A second flag on the same field replaces the value; only until the card is closed."""
+    attempt = await _own_attempt(session, attempt_id, user)
+    ts = await session.get(TrainingSession, attempt.session_id)
+    change = await training.flag_field(
+        session,
+        attempt,
+        ts,
+        field=body.field,
+        corrected_value=body.corrected_value,
+        action_id=body.action_id,
+    )
+    if change.changed:
+        await write_audit(
+            session,
+            action="attempt.flag_field",
+            actor_id=user.id,
+            actor_role=user.role,
+            entity="attempt",
+            entity_id=str(attempt.id),
+            details={"field": body.field},
+            ip=client_ip(request),
+        )
+        await session.commit()
+        await publish_events(change.events)
+    return StatusResponse(
+        attempt=await _attempt_out(session, attempt, ts), applied=change.changed, issued=[]
+    )
+
+
+@router.delete("/attempts/{attempt_id}/flag-field", response_model=StatusResponse)
+async def unflag_field(
+    attempt_id: uuid.UUID,
+    field: Annotated[str, Query(min_length=1, max_length=64)],
+    user: ActiveUser,
+    session: DbSession,
+    request: Request,
+) -> StatusResponse:
+    """Removes the «ошибка» mark from a field of the card."""
+    attempt = await _own_attempt(session, attempt_id, user)
+    ts = await session.get(TrainingSession, attempt.session_id)
+    change = await training.unflag_field(session, attempt, ts, field=field)
+    if change.changed:
+        await write_audit(
+            session,
+            action="attempt.unflag_field",
+            actor_id=user.id,
+            actor_role=user.role,
+            entity="attempt",
+            entity_id=str(attempt.id),
+            details={"field": field},
+            ip=client_ip(request),
+        )
+        await session.commit()
+        await publish_events(change.events)
+    return StatusResponse(
+        attempt=await _attempt_out(session, attempt, ts), applied=change.changed, issued=[]
     )
 
 

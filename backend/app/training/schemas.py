@@ -145,6 +145,15 @@ class StatusLogEntryOut(BaseModel):
     by: str
 
 
+class FlaggedFieldOut(BaseModel):
+    """A card field the dispatcher marked as an operator mistake (issue #35)."""
+
+    field: str
+    title: str
+    corrected_value: str
+    at: datetime
+
+
 class TransitionOut(BaseModel):
     code: str
     title: str
@@ -209,6 +218,8 @@ class AttemptOut(BaseModel):
     card: CardOut
     service: ServiceInfo | None
     status_log: list[StatusLogEntryOut]
+    # Fields flagged as operator mistakes while checking the card (issue #35).
+    flagged_fields: list[FlaggedFieldOut] = []
     transitions: list[TransitionOut]
     reject_reasons: list[RejectReasonOut]
     # Reference solution, visible after the card is closed (PRD 11: «эталон после завершения»).
@@ -228,6 +239,16 @@ class StatusRequest(BaseModel):
     order_number: str | None = Field(default=None, max_length=64)
     comment: str | None = Field(default=None, max_length=2000)
     reject_reason: str | None = Field(default=None, max_length=32)
+    # Client-generated id of the action; a retry with the same id is applied once.
+    action_id: str | None = Field(default=None, max_length=64)
+
+
+class FlagFieldRequest(BaseModel):
+    """«Отметить ошибку» in a card field: the path of the field and the value the dispatcher
+    considers right (issue #35)."""
+
+    field: str = Field(min_length=1, max_length=64)
+    corrected_value: str = Field(min_length=1, max_length=300)
     # Client-generated id of the action; a retry with the same id is applied once.
     action_id: str | None = Field(default=None, max_length=64)
 

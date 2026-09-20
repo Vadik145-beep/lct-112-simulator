@@ -9,6 +9,7 @@ from datetime import datetime
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.domain.evaluation.data_check import field_title
 from app.domain.evaluation.status_machine import STATUSES
 from app.models import (
     MODE_CALL_INTAKE,
@@ -30,6 +31,7 @@ from app.training.schemas import (
     AttemptOut,
     CallerOut,
     CardOut,
+    FlaggedFieldOut,
     IncidentOut,
     IntakeOut,
     JournalItem,
@@ -419,6 +421,15 @@ def attempt_out(
         card=card_out(attempt, body, lookups),
         service=_service_info(own_code, lookups),
         status_log=status_log_out(attempt, lookups),
+        flagged_fields=[
+            FlaggedFieldOut(
+                field=f["field"],
+                title=field_title(f["field"]),
+                corrected_value=f["corrected_value"],
+                at=datetime.fromisoformat(f["at"]),
+            )
+            for f in attempt.flagged_fields or []
+        ],
         transitions=[TransitionOut(**t.__dict__) for t in transitions],
         reject_reasons=[
             RejectReasonOut(code=r.code, title=r.title)
