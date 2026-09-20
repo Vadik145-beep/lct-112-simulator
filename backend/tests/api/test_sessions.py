@@ -531,3 +531,14 @@ async def test_generate_for_session_without_groups_covers_several(client: AsyncC
     kinds = {s["kind"] for s in job["result"]["scenarios"]}
     groups = [s["incident_group"] for s in job["result"]["scenarios"]]
     assert kinds == {"card_response"} and len(set(groups)) == 3
+
+    # Issue #35: drafts of «Реагирование» may carry planted mistakes of the 112 operator
+    # (their share follows the difficulty). Whatever was planted, the draft stays valid and
+    # approvable: an inconsistent planted error would show up in «problems».
+    for item in job["result"]["scenarios"]:
+        r = await client.get(f"/api/scenarios/{item['scenario_id']}", headers=bearer(teacher))
+        assert r.status_code == 200, r.text
+        scenario = r.json()
+        assert scenario["problems"] == [], scenario["problems"]
+        for error in scenario["body"].get("injected_errors", []):
+            assert error["field"] and error["wrong_value"] != error["correct_value"]
