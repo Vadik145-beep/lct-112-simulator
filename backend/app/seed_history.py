@@ -83,7 +83,12 @@ def _components(mode: str, o: simulate.Outcome, errors: list[dict], norm: int) -
     """Component scores that add up to the generated total, with the items the review and
     the analytics read (time in seconds, decision, missing topics)."""
     if mode == MODE_CARD_RESPONSE:
-        maxima, titles = card_response.DEFAULT_WEIGHTS, card_response.TITLES
+        maxima = {
+            k: v
+            for k, v in card_response.DEFAULT_WEIGHTS.items()
+            if k in card_response.applicable_components(None)
+        }
+        titles = card_response.TITLES
     else:
         maxima, titles = call_intake.DEFAULT_WEIGHTS, call_intake.TITLES
     fixed: dict[str, float] = {

@@ -306,6 +306,59 @@
       "title": "CardResponseReference",
       "type": "object"
     },
+    "InjectedError": {
+      "description": "A mistake of the 112 operator planted in the card (issue #35): the card shows\n``wrong_value``, the dispatcher is expected to flag the field and name ``correct_value``.\n``field`` is a path into the card: ``address.house``, ``address.street``,\n``incident_type``, ``flags.injured``, ``services``, ``caller.phone``, ``description``.\nFor ``services`` the values are ``+code`` (a service that should not be notified) or\n``-code`` (a service that is missing) — the wrong value describes what the card shows,\nthe correct one what to do about it.",
+      "properties": {
+        "field": {
+          "title": "Field",
+          "type": "string"
+        },
+        "wrong_value": {
+          "title": "Wrong Value",
+          "type": "string"
+        },
+        "correct_value": {
+          "title": "Correct Value",
+          "type": "string"
+        },
+        "hint_level": {
+          "default": 2,
+          "title": "Hint Level",
+          "type": "integer"
+        },
+        "wrong_label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Wrong Label"
+        },
+        "correct_label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Correct Label"
+        }
+      },
+      "required": [
+        "field",
+        "wrong_value",
+        "correct_value"
+      ],
+      "title": "InjectedError",
+      "type": "object"
+    },
     "NotifiedService": {
       "properties": {
         "service": {
@@ -408,6 +461,13 @@
     },
     "reference": {
       "$ref": "#/$defs/CardResponseReference"
+    },
+    "injected_errors": {
+      "items": {
+        "$ref": "#/$defs/InjectedError"
+      },
+      "title": "Injected Errors",
+      "type": "array"
     }
   },
   "required": [
