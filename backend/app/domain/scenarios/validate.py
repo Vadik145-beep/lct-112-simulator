@@ -15,9 +15,14 @@ from dataclasses import dataclass, field
 from pydantic import ValidationError
 
 from app.domain.evaluation.data_check import FIELD_TITLES, values_match
-from app.domain.evaluation.schemas import CardResponseScenario, parse_scenario
+from app.domain.evaluation.schemas import (
+    SERVICE_CALL_FACTS,
+    CardResponseScenario,
+    parse_scenario,
+)
 from app.domain.reference_data import REJECT_REASONS, RESPONSE_STATUSES
 from app.domain.scenarios.generated import TOPIC_CODES
+from app.domain.scenarios.officers import default_service_calls
 from app.domain.scenarios.personas import NOISE_CODES, PERSONA_BY_CODE
 from app.domain.services import resolve_services
 from app.providers.tts import VOICES
@@ -81,6 +86,12 @@ def check_body(body: Mapping, refs: ReferenceCodes) -> list[str]:
         if bad_statuses:
             problems.append(f"Неизвестные статусы в эталоне: {', '.join(bad_statuses)}.")
         problems += _check_injected_errors(scenario, refs)
+        for call in reference.service_calls:
+            if call.service not in refs.services:
+                problems.append(f"Неизвестная служба в звонках: {call.service}.")
+            bad_facts = sorted(set(call.required_facts) - set(SERVICE_CALL_FACTS))
+            if bad_facts:
+                problems.append(f"Неизвестные факты звонка в службу: {', '.join(bad_facts)}.")
 
     if type_code not in refs.incident_types:
         problems.append(f"Тип происшествия {type_code} отсутствует в классификаторе.")
@@ -161,6 +172,12 @@ def fill_from_reference(body: dict, refs: ReferenceCodes) -> dict:
         if row is not None:
             card["signs"] = [row[k] for k in ("sign1", "sign2", "sign3") if row.get(k)]
         body["card"] = card
+        reference = dict(body.get("reference") or {})
+        if "service_calls" not in reference and reference:
+            # Issue #36: an accepted card expects a call to the officer of the own service;
+            # an explicit empty list in the editor keeps the calls out of the evaluation.
+            reference["service_calls"] = default_service_calls({**body, "reference": reference})
+            body["reference"] = reference
     return body
 
 

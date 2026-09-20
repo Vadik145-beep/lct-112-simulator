@@ -70,6 +70,17 @@
     "critical_errors": [
       "late_primary",
       "progress_missing"
+    ],
+    "service_calls": [
+      {
+        "service": "gkh",
+        "required_facts": [
+          "address",
+          "incident_type",
+          "injured",
+          "order_number"
+        ]
+      }
     ]
   },
   "injected_errors": [
