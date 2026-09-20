@@ -61,7 +61,23 @@ const STATUS_TITLES: Record<string, string> = {
   works_refused: "Отказ от выполнения работ",
 };
 const DECISION_TITLES = { accept: "Принята", reject: "Не принята" };
-const COMPONENT_ORDER = ["decision", "time", "status_chain", "comments", "typical_errors", "grammar"];
+const COMPONENT_ORDER = ["decision", "time", "status_chain", "comments", "data_check", "typical_errors", "grammar"];
+const VERDICT_TITLES: Record<string, string> = {
+  found: "ошибка найдена и исправлена верно",
+  wrong_correction: "ошибка найдена, но исправление неверно",
+  missed: "ошибка не замечена",
+  false_alarm: "отмечено верное поле",
+};
+interface DataCheckItem {
+  field: string;
+  title: string;
+  wrong_value?: string;
+  correct_value?: string;
+  wrong_label?: string | null;
+  correct_label?: string | null;
+  corrected_value?: string | null;
+  verdict: keyof typeof VERDICT_TITLES;
+}
 
 /** The review of an attempt: the trainee's own after the card is closed, or the teacher's
  * view of any attempt of their session (a card in work shows what is done so far). */
@@ -335,6 +351,8 @@ function ReviewView({ attempt, evaluation, teacher }: { attempt: AttemptOut; eva
         </Card>
       </div>
 
+      {evaluation.components.data_check && <DataCheckCard component={evaluation.components.data_check} teacher={teacher} />}
+
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Комментарии</CardTitle>
@@ -389,6 +407,51 @@ function ReviewView({ attempt, evaluation, teacher }: { attempt: AttemptOut; eva
         </div>
       )}
     </div>
+  );
+}
+
+/** Issue #35: what the 112 operator got wrong in the card and how the dispatcher reacted. */
+function DataCheckCard({ component, teacher }: { component: Component; teacher: boolean }) {
+  const items = component.items as unknown as DataCheckItem[];
+  const shown = (value: string | null | undefined, label: string | null | undefined) => label ?? value ?? "—";
+  return (
+    <Card data-testid="data-check">
+      <CardHeader>
+        <CardTitle className="text-base">Проверка данных</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3 text-sm">
+        <p className="text-muted-foreground">
+          Карточка пришла от оператора 112 с ошибками. {teacher ? "Обучающийся" : "Вы"} отметил{teacher ? "" : "и"}: {items.filter((i) => i.verdict !== "missed").length} из {items.filter((i) => i.verdict !== "false_alarm").length}, лишних отметок:{" "}
+          {items.filter((i) => i.verdict === "false_alarm").length}.
+        </p>
+        <ul className="space-y-2" aria-label="Ошибки в данных карточки">
+          {items.map((item, i) => (
+            <li key={`${item.field}-${i}`} className="flex items-start gap-2" data-verdict={item.verdict}>
+              {item.verdict === "found" ? (
+                <Check className="mt-0.5 size-4 text-success" aria-hidden />
+              ) : item.verdict === "false_alarm" ? (
+                <CircleAlert className="mt-0.5 size-4 text-warning" aria-hidden />
+              ) : (
+                <X className="mt-0.5 size-4 text-destructive" aria-hidden />
+              )}
+              <div>
+                <span className="font-medium">{item.title}</span>
+                <span className="text-muted-foreground"> · {VERDICT_TITLES[item.verdict] ?? item.verdict}</span>
+                {item.verdict !== "false_alarm" && (
+                  <div className="text-xs text-muted-foreground">
+                    В карточке: «{shown(item.wrong_value, item.wrong_label)}», верно: «{shown(item.correct_value, item.correct_label)}»
+                    {item.corrected_value ? `, ${teacher ? "обучающийся указал" : "вы указали"}: «${item.corrected_value}»` : ""}
+                  </div>
+                )}
+                {item.verdict === "false_alarm" && item.corrected_value && (
+                  <div className="text-xs text-muted-foreground">Поле было верным; {teacher ? "обучающийся указал" : "вы указали"}: «{item.corrected_value}»</div>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
   );
 }
 

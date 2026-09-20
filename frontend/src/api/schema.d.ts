@@ -598,6 +598,31 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/attempts/{attempt_id}/flag-field": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Flag Field
+         * @description ��������� ������ in a card field (issue #35): the dispatcher names the right value.
+         *     A second flag on the same field replaces the value; only until the card is closed.
+         */
+        post: operations["flag_field_api_attempts__attempt_id__flag_field_post"];
+        /**
+         * Unflag Field
+         * @description Removes the ������� mark from a field of the card.
+         */
+        delete: operations["unflag_field_api_attempts__attempt_id__flag_field_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/attempts/{attempt_id}/progress": {
         parameters: {
             query?: never;
@@ -2137,6 +2162,11 @@ export interface components {
             service: components["schemas"]["ServiceInfo"] | null;
             /** Status Log */
             status_log: components["schemas"]["StatusLogEntryOut"][];
+            /**
+             * Flagged Fields
+             * @default []
+             */
+            flagged_fields: components["schemas"]["FlaggedFieldOut"][];
             /** Transitions */
             transitions: components["schemas"]["TransitionOut"][];
             /** Reject Reasons */
@@ -2653,6 +2683,36 @@ export interface components {
             title: string;
             /** Weight */
             weight: number;
+        };
+        /**
+         * FlagFieldRequest
+         * @description ��������� ������ in a card field: the path of the field and the value the dispatcher
+         *     considers right (issue #35).
+         */
+        FlagFieldRequest: {
+            /** Field */
+            field: string;
+            /** Corrected Value */
+            corrected_value: string;
+            /** Action Id */
+            action_id?: string | null;
+        };
+        /**
+         * FlaggedFieldOut
+         * @description A card field the dispatcher marked as an operator mistake (issue #35).
+         */
+        FlaggedFieldOut: {
+            /** Field */
+            field: string;
+            /** Title */
+            title: string;
+            /** Corrected Value */
+            corrected_value: string;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
         };
         /** FrequentError */
         FrequentError: {
@@ -5465,6 +5525,74 @@ export interface operations {
     finish_attempt_api_attempts__attempt_id__finish_post: {
         parameters: {
             query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatusResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    flag_field_api_attempts__attempt_id__flag_field_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FlagFieldRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatusResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    unflag_field_api_attempts__attempt_id__flag_field_delete: {
+        parameters: {
+            query: {
+                field: string;
+            };
             header?: never;
             path: {
                 attempt_id: string;

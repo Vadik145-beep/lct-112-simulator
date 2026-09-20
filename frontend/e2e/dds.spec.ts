@@ -240,3 +240,94 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
     await expect(page.getByRole("dialog")).toBeHidden();
   });
 });
+
+test.describe("Задача #35: проверка карточки от оператора 112", () => {
+  test("карточка с неверным домом: обучающийся отмечает поле, вводит верный дом, принимает карточку, в разборе видит «Проверка данных»", async ({ page, request }) => {
+    test.setTimeout(180_000);
+    const { problems, foreign } = watchNetwork(page);
+
+    // A lesson of its own for student2 (an own group, so the demo lesson of student1 stays
+    // untouched) with the seed card that carries a wrong house number.
+    const teacher = await apiToken(request, "teacher1");
+    const th = { Authorization: `Bearer ${teacher}` };
+    const stamp = new Date().toLocaleTimeString("ru-RU");
+    const students = (await (await request.get("/api/students", { headers: th })).json()) as { id: string; login: string }[];
+    const group = await request.post("/api/groups", {
+      headers: th,
+      data: { title: `Группа #35 · ${stamp}`, student_ids: students.filter((s) => s.login === "student2").map((s) => s.id) },
+    });
+    expect(group.status(), await group.text()).toBe(201);
+    const scenarios = (await (await request.get("/api/scenarios", { headers: th, params: { kind: "card_response", q: "соседний дом" } })).json()) as { items: { id: string; title: string }[] };
+    expect(scenarios.items.length, "seed must provide the card with a wrong house").toBeGreaterThan(0);
+    const created = await request.post("/api/sessions", {
+      headers: th,
+      data: {
+        title: `#35: ошибка оператора · ${stamp}`,
+        group_id: ((await group.json()) as { id: string }).id,
+        difficulty: 3,
+        scenario_ids: [scenarios.items[0]!.id],
+        service_profile: ["moek"],
+        norm_seconds: 30,
+        pass_threshold: 70,
+      },
+    });
+    expect(created.status(), await created.text()).toBe(201);
+    const sessionId = ((await created.json()) as { id: string }).id;
+    expect((await request.post(`/api/sessions/${sessionId}/start`, { headers: th })).ok()).toBeTruthy();
+
+    await page.goto("/login");
+    await page.getByLabel("Логин").fill("student2");
+    await page.getByLabel("Пароль").fill(PASSWORD);
+    await page.getByRole("button", { name: "Войти", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Мои задания" })).toBeVisible();
+    await page.goto(`/student/sessions/${sessionId}/journal`);
+    await page.getByRole("link", { name: /Открыть карточку 38260452/ }).click();
+    await expect(page.getByText("Происшествие 38260452")).toBeVisible();
+    await expect(page.getByTestId("own-service-panel")).toContainText("Получена службой");
+
+    // No hint points at the field: only the generic reminder in the training panel.
+    await expect(page.getByTestId("data-check-hint")).toBeVisible();
+    await expect(page.getByTestId("card-address")).toContainText("Зелёный проспект, 19");
+    await expect(page.getByTestId("flag-mark")).toHaveCount(0);
+
+    // The dispatcher flags the house and names the right one; the mark can be removed and set again.
+    await page.getByRole("button", { name: "Отметить ошибку: Дом" }).click();
+    const editor = page.getByRole("form", { name: /Ошибка в поле/ });
+    await editor.getByLabel("Часть адреса").selectOption({ label: "Дом: 19" });
+    await editor.getByLabel("Правильное значение: Дом").fill("17");
+    await editor.getByRole("button", { name: "Отметить" }).click();
+    await expect(editor).toBeHidden();
+    await expect(page.getByTestId("flag-mark")).toContainText("верно: 17");
+    await expect(page.getByTestId("flag-count")).toContainText("1");
+    await page.getByRole("button", { name: "Снять отметку: Дом" }).click();
+    await expect(page.getByTestId("flag-mark")).toHaveCount(0);
+    await page.getByRole("button", { name: "Отметить ошибку: Дом" }).click();
+    await editor.getByLabel("Часть адреса").selectOption({ label: "Дом: 19" });
+    await editor.getByLabel("Правильное значение: Дом").fill("17");
+    await editor.getByRole("button", { name: "Отметить" }).click();
+    await expect(page.getByTestId("flag-mark")).toContainText("верно: 17");
+    await page.screenshot({ path: `../docs/screenshots/wave-11/35-card-flagged.png`, fullPage: true });
+
+    // The card itself still shows what the operator typed; the chain closes the card.
+    await expect(page.getByTestId("card-address")).toContainText("Зелёный проспект, 19");
+    await setStatus(page, "Принята");
+    await setStatus(page, "Начало реагирования", { orderNumber: "МОЭК-4127", comment: "Направлена аварийная бригада тепловых сетей" });
+    await setStatus(page, "Прибытие");
+    await setStatus(page, "Проведение работ", { comment: "Проверка ИТП дома 17, запуск циркуляции" });
+    await setStatus(page, "Работы завершены", { comment: "Заменён насос в ИТП, отопление в доме 17 восстановлено" });
+    await expect(page.getByTestId("card-score")).toHaveText(/^\d+$/, { timeout: 60_000 });
+    await expect(page.getByRole("button", { name: "Ошибка отмечена: Дом" })).toBeDisabled();
+
+    await page.getByRole("link", { name: "Открыть разбор" }).click();
+    const check = page.getByTestId("data-check");
+    await expect(check).toBeVisible();
+    await expect(check).toContainText("ошибка найдена и исправлена верно");
+    await expect(check).toContainText("В карточке: «19», верно: «17»");
+    await expect(page.getByText("Проверка данных", { exact: true }).first()).toBeVisible();
+    await page.screenshot({ path: `../docs/screenshots/wave-11/35-review.png`, fullPage: true });
+
+    expect((await request.post(`/api/sessions/${sessionId}/finish`, { headers: th })).ok()).toBeTruthy();
+    expect(foreign, "все запросы только к своему origin").toEqual([]);
+    expect(problems).toEqual([]);
+  });
+});

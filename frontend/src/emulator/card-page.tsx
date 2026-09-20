@@ -21,14 +21,18 @@ import {
   NetworkError,
   useAttempt,
   useFinishAttempt,
+  useFlagField,
   useOpenAttempt,
   useProgressReporter,
   useSetStatus,
+  useUnflagField,
   type AttemptOut,
   type TransitionOut,
 } from "@/api/training";
 import { ErrorState, LoadingState } from "@/components/states";
 import { newActionId, useDraft } from "@/emulator/draft";
+import { FlagButton, FlagEditor, FlagMark } from "@/emulator/flag-field";
+import { ADDRESS_PARTS, FIELD_TITLES, type FlagRequest } from "@/emulator/flag-field-model";
 import { acceptanceTimer, formatDateTime, formatSeconds, formatTime, useNow } from "@/emulator/time";
 import { ArmButton, TimerBadge, TrainerPanel } from "@/emulator/widgets";
 import { useSessionEvents, type SessionEvent } from "@/emulator/ws";
@@ -112,9 +116,42 @@ function CardView({
   const [issuedNext, setIssuedNext] = useState<string | null>(null);
   const [confirmFinish, setConfirmFinish] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
+  // «Отметить ошибку» (issue #35): which field's editor is open («address» covers its parts).
+  const [flagTarget, setFlagTarget] = useState<string | null>(null);
+  const flagField = useFlagField(attempt.id);
+  const unflagField = useUnflagField(attempt.id);
 
   const card = attempt.card;
   const finished = attempt.state === "finished" || attempt.state === "evaluated";
+  const flagsByField = useMemo(() => new Map(attempt.flagged_fields.map((f) => [f.field, f])), [attempt.flagged_fields]);
+  const addressFlags = attempt.flagged_fields.filter((f) => f.field.startsWith("address."));
+  const addressParts = ADDRESS_PARTS.filter((k) => card.address[k]).map((k) => ({ key: k, title: FIELD_TITLES[`address.${k}`] ?? k, value: card.address[k] }));
+  const flagError = flagField.error ?? unflagField.error;
+
+  const submitFlag = useCallback(
+    (request: FlagRequest) => {
+      flagField.mutate({ ...request, action_id: newActionId() }, { onSuccess: () => setFlagTarget(null) });
+    },
+    [flagField],
+  );
+  const removeFlag = useCallback((field: string) => unflagField.mutate(field), [unflagField]);
+  const flagEditor = (target: string) =>
+    flagTarget === target && !finished ? (
+      <FlagEditor
+        field={target}
+        current={target === "address" ? addressFlags[0] : flagsByField.get(target)}
+        services={card.services}
+        addressParts={addressParts}
+        pending={flagField.isPending}
+        error={flagError ? flagError.message : null}
+        onSubmit={submitFlag}
+        onCancel={() => {
+          flagField.reset();
+          setFlagTarget(null);
+        }}
+      />
+    ) : null;
+  const toggleFlag = (target: string) => setFlagTarget((v) => (v === target ? null : target));
 
   // The teacher's monitoring shows whether the trainee is reading or filling the status row.
   useEffect(() => {
@@ -238,17 +275,32 @@ function CardView({
               <span className="text-base font-semibold">{card.caller.name || "Заявитель не указан"}</span>
               <span className="text-xs text-[var(--arm-text-muted)]">{card.caller.role}</span>
             </div>
-            <div className="flex items-center gap-2 bg-[var(--arm-panel)] px-3 py-2 text-sm font-medium">
-              <span className="flex-1">{card.address.text || "Адрес не указан"}</span>
-              <MapPin className="size-4 text-[var(--arm-text-muted)]" aria-hidden />
+            <div className={cn("flex flex-col gap-1 bg-[var(--arm-panel)] px-3 py-2 text-sm font-medium", addressFlags.length > 0 && "outline outline-1 outline-[var(--arm-orange)]")} data-testid="card-address">
+              <div className="flex items-center gap-2">
+                <span className="flex-1">{card.address.text || "Адрес не указан"}</span>
+                <MapPin className="size-4 text-[var(--arm-text-muted)]" aria-hidden />
+                <FlagButton field="address.house" flagged={addressFlags.length > 0} disabled={finished || addressParts.length === 0} onClick={() => toggleFlag("address")} />
+              </div>
+              {addressFlags.map((f) => (
+                <FlagMark key={f.field} flag={f} services={card.services} disabled={finished} onRemove={() => removeFlag(f.field)} />
+              ))}
+              {flagEditor("address")}
             </div>
-            <div className="flex-1 bg-[var(--arm-panel)] px-3 py-2 text-sm" aria-label="Описание со слов заявителя">
-              {card.description}
+            <div className={cn("flex flex-1 flex-col gap-1 bg-[var(--arm-panel)] px-3 py-2 text-sm", flagsByField.has("description") && "outline outline-1 outline-[var(--arm-orange)]")}>
+              <div className="flex items-start gap-2">
+                <span className="flex-1" aria-label="Описание со слов заявителя">{card.description}</span>
+                <FlagButton field="description" flagged={flagsByField.has("description")} disabled={finished} onClick={() => toggleFlag("description")} />
+              </div>
+              {flagsByField.has("description") && <FlagMark flag={flagsByField.get("description")!} services={card.services} disabled={finished} onRemove={() => removeFlag("description")} />}
+              {flagEditor("description")}
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-4 bg-[var(--arm-panel)] px-3 py-2 text-xs">
-              <span>Пострадавшие: <b>{card.injured ? "да" : "нет"}</b></span>
+            <div className={cn("flex flex-wrap items-center gap-x-4 gap-y-1 bg-[var(--arm-panel)] px-3 py-2 text-xs", flagsByField.has("flags.injured") && "outline outline-1 outline-[var(--arm-orange)]")}>
+              <span className="inline-flex items-center gap-1">
+                Пострадавшие: <b>{card.injured ? "да" : "нет"}</b>
+                <FlagButton field="flags.injured" flagged={flagsByField.has("flags.injured")} disabled={finished} onClick={() => toggleFlag("flags.injured")} />
+              </span>
               <span>Отказ от скорой: <b>{card.ambulance_refused ? "да" : "нет"}</b></span>
               <span>Заблокированные: <b>{card.blocked ? "да" : "нет"}</b></span>
               <span className="ml-auto flex items-center gap-1">
@@ -258,6 +310,12 @@ function CardView({
                   <Pencil className="size-3.5" />
                 </span>
               </span>
+              {flagsByField.has("flags.injured") && (
+                <div className="w-full">
+                  <FlagMark flag={flagsByField.get("flags.injured")!} services={card.services} disabled={finished} onRemove={() => removeFlag("flags.injured")} />
+                </div>
+              )}
+              <div className="w-full empty:hidden">{flagEditor("flags.injured")}</div>
             </div>
             <div className="bg-[var(--arm-dark)] px-3 py-2 text-sm font-semibold text-[var(--arm-on-dark)] underline decoration-[var(--arm-on-dark-muted)] underline-offset-4">
               {card.incident.group_title || "Группа не определена"}
@@ -265,9 +323,16 @@ function CardView({
             <div className="bg-[var(--arm-panel)] px-3 py-2 text-sm font-semibold">
               {card.incident.signs.length > 0 ? card.incident.signs.join(". ") + "." : "—"}
             </div>
-            <div className="bg-[var(--arm-panel)] px-3 py-2 text-sm">
-              <span className="text-[var(--arm-text-muted)]">Класс.: </span>
-              <b>{card.incident.final_title}{card.incident.final_title ? ";" : ""}</b>
+            <div className={cn("flex flex-col gap-1 bg-[var(--arm-panel)] px-3 py-2 text-sm", flagsByField.has("incident_type") && "outline outline-1 outline-[var(--arm-orange)]")}>
+              <div className="flex items-center gap-2">
+                <span className="flex-1">
+                  <span className="text-[var(--arm-text-muted)]">Класс.: </span>
+                  <b>{card.incident.final_title}{card.incident.final_title ? ";" : ""}</b>
+                </span>
+                <FlagButton field="incident_type" flagged={flagsByField.has("incident_type")} disabled={finished} onClick={() => toggleFlag("incident_type")} />
+              </div>
+              {flagsByField.has("incident_type") && <FlagMark flag={flagsByField.get("incident_type")!} services={card.services} disabled={finished} onRemove={() => removeFlag("incident_type")} />}
+              {flagEditor("incident_type")}
             </div>
             <div className="bg-[var(--arm-panel)] px-3 py-2 text-sm text-[var(--arm-text-muted)]">[ВИС] Класс.:</div>
             <div className="flex-1" />
@@ -276,6 +341,12 @@ function CardView({
 
         {/* Bottom: the «Службы» strip with the expanded tab of our service and the status editor. */}
         <div className="relative mt-auto">
+          {(flagsByField.has("services") || flagTarget === "services") && (
+            <div className="ml-[104px] flex w-[900px] flex-col gap-1 bg-white p-1 shadow-lg" data-testid="services-flag">
+              {flagsByField.has("services") && <FlagMark flag={flagsByField.get("services")!} services={card.services} disabled={finished} onRemove={() => removeFlag("services")} />}
+              {flagEditor("services")}
+            </div>
+          )}
           {panelOpen && ownService && (
             <div className="ml-[104px] w-[460px] bg-[var(--arm-blue)] text-white shadow-lg" data-testid="own-service-panel">
               <div className="flex items-center justify-between px-3 py-2">
@@ -442,6 +513,13 @@ function CardView({
               </div>
             ))}
             <div className="ml-auto flex items-center gap-1 px-2">
+              <FlagButton
+                field="services"
+                flagged={flagsByField.has("services")}
+                disabled={finished}
+                onClick={() => toggleFlag("services")}
+                className="size-8 border-[var(--arm-on-dark-muted)] text-[var(--arm-on-dark)] hover:bg-[var(--arm-dark-2)]"
+              />
               <span className="flex size-8 items-center justify-center rounded-sm bg-[var(--arm-panel)] text-[var(--arm-text)]" aria-hidden>
                 <MessageSquareWarning className="size-4" />
               </span>
@@ -520,6 +598,17 @@ function CardView({
                 {HINTS[attempt.response_status] ?? "Действуйте по памятке."}
               </p>
             )}
+            {hintsOn && !finished && (
+              <p className="rounded-sm bg-[var(--arm-field)] p-2 text-xs leading-snug" data-testid="data-check-hint">
+                Проверьте данные карточки: оператор 112 мог ошибиться в адресе, типе, пострадавших или службах. Сверьте поля с описанием со слов заявителя и отметьте ошибку флажком у поля.
+              </p>
+            )}
+          </div>
+        )}
+        {attempt.flagged_fields.length > 0 && (
+          <div className="text-xs" data-testid="flag-count">
+            <span className="text-[var(--arm-text-muted)]">Отмечено ошибок оператора: </span>
+            <b>{attempt.flagged_fields.length}</b>
           </div>
         )}
         {finished ? (

@@ -131,6 +131,36 @@ export function useFinishAttempt(attemptId: string) {
   });
 }
 
+export type FlagFieldRequest = components["schemas"]["FlagFieldRequest"];
+
+/** «Отметить ошибку» in a card field (issue #35); a second flag on the field replaces it. */
+export function useFlagField(attemptId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (body: FlagFieldRequest) =>
+      unwrap(
+        api.POST("/api/attempts/{attempt_id}/flag-field", {
+          params: { path: { attempt_id: attemptId } },
+          body,
+        }),
+      ),
+    onSuccess: (data) => client.setQueryData(attemptKey(attemptId), data.attempt),
+  });
+}
+
+export function useUnflagField(attemptId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (field: string) =>
+      unwrap(
+        api.DELETE("/api/attempts/{attempt_id}/flag-field", {
+          params: { path: { attempt_id: attemptId }, query: { field } },
+        }),
+      ),
+    onSuccess: (data) => client.setQueryData(attemptKey(attemptId), data.attempt),
+  });
+}
+
 // PRD 12: «attempt.progress» goes out at most once per 2 s.
 const PROGRESS_INTERVAL_MS = 2000;
 
