@@ -1,13 +1,31 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 
 import { errorMessage } from "@/api/client";
 import { getAccessToken } from "@/api/token";
 import { RequestError } from "@/api/training";
-import { telephonyApi, useCurrentCall, useSipAccount, type DialogOut, type TurnResponse } from "@/api/telephony";
+import {
+  telephonyApi,
+  useCurrentCall,
+  useSipAccount,
+  type DialogOut,
+  type TurnResponse,
+} from "@/api/telephony";
 import { useAuth } from "@/app/use-auth";
 import { newActionId } from "@/emulator/draft";
-import { SoftphoneContext, type CallStatus, type Softphone, type SoftphoneState } from "@/softphone/context";
+import {
+  SoftphoneContext,
+  type CallStatus,
+  type Softphone,
+  type SoftphoneState,
+} from "@/softphone/context";
 import {
   SipPhone,
   storeMicDevice,
@@ -27,6 +45,7 @@ const initialState: SoftphoneState = {
   registrationDetail: null,
   attemptId: null,
   sessionId: null,
+  serviceCallId: null,
   callerNumber: "",
   callerName: "",
   scenarioTitle: "",
@@ -44,9 +63,15 @@ const initialState: SoftphoneState = {
 
 function callerLineFromDialog(dialog: DialogOut) {
   const last = [...dialog.turns].reverse().find((t) => t.role === "caller");
-  const heard = [...dialog.turns].reverse().find((t) => t.role === "operator" && t.heard);
+  const heard = [...dialog.turns]
+    .reverse()
+    .find((t) => t.role === "operator" && t.heard);
   if (!last) return null;
-  return { text: last.text, audioUrl: last.audio_url ?? null, heardText: heard?.text ?? null };
+  return {
+    text: last.text,
+    audioUrl: last.audio_url ?? null,
+    heardText: heard?.text ?? null,
+  };
 }
 
 /**
@@ -66,12 +91,21 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
   const stopLevel = useRef<(() => void) | null>(null);
   const replyAudio = useRef<HTMLAudioElement | null>(null);
   const client = useQueryClient();
-  const patch = useCallback((part: Partial<SoftphoneState>) => setState((s) => ({ ...s, ...part })), []);
+  const patch = useCallback(
+    (part: Partial<SoftphoneState>) => setState((s) => ({ ...s, ...part })),
+    [],
+  );
 
-  const inCall = state.status === "incoming" || state.status === "talking";
+  const inCall =
+    state.status === "incoming" ||
+    state.status === "talking" ||
+    Boolean(state.serviceCallId);
   // Browser mode: a new attempt shows up by polling; SIP mode: the INVITE tells us, the
   // poll only fills in the attempt when the header is missing.
-  const currentCall = useCurrentCall(isStudent && !inCall && account.isFetched, sipMode ? 5000 : 3000);
+  const currentCall = useCurrentCall(
+    isStudent && !inCall && account.isFetched,
+    sipMode ? 5000 : 3000,
+  );
 
   const refreshDevices = useCallback(async () => {
     if (!navigator.mediaDevices?.enumerateDevices) return;
@@ -84,7 +118,9 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
     if (!audioUrl) return;
     if (!replyAudio.current) replyAudio.current = new Audio();
     const el = replyAudio.current;
-    void fetch(audioUrl, { headers: { Authorization: `Bearer ${getAccessToken() ?? ""}` } })
+    void fetch(audioUrl, {
+      headers: { Authorization: `Bearer ${getAccessToken() ?? ""}` },
+    })
       .then((res) => (res.ok ? res.blob() : null))
       .then((blob) => {
         if (!blob) return;
@@ -107,13 +143,37 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
         ...s,
         registration,
         registrationDetail: detail ?? null,
-        status: s.status === "incoming" || s.status === "talking" ? s.status : registration === "ready" ? "ready" : "disconnected",
+        status:
+          s.status === "incoming" || s.status === "talking"
+            ? s.status
+            : registration === "ready"
+              ? "ready"
+              : "disconnected",
       })),
     );
-    sip.on("incoming", (call) =>
+    sip.on("incoming", (call) => {
+      if (call.serviceCallId) {
+        // The dispatcher started this call from the card: pick up at once, the card page
+        // shows the conversation (issue #36).
+        setState((s) => ({
+          ...s,
+          status: "incoming",
+          serviceCallId: call.serviceCallId,
+          attemptId: call.attemptId ?? s.attemptId,
+          callerNumber: call.callerNumber,
+          callerName: call.callerName,
+          endReason: null,
+          error: null,
+          lastCaller: null,
+          stats: null,
+        }));
+        sip.answer();
+        return;
+      }
       setState((s) => ({
         ...s,
         status: "incoming",
+        serviceCallId: null,
         attemptId: call.attemptId ?? s.attemptId,
         callerNumber: call.callerNumber,
         callerName: call.callerName,
@@ -121,21 +181,33 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
         error: null,
         lastCaller: null,
         stats: null,
-      })),
-    );
+      }));
+    });
     sip.on("talking", () => patch({ status: "talking" }));
     sip.on("level", (micLevel) => patch({ micLevel }));
     sip.on("stats", (stats: CallStats) => patch({ stats }));
     sip.on("ended", () =>
       setState((s) => ({
         ...s,
-        status: s.status === "disconnected" ? "disconnected" : "ended",
+        // An officer's call leaves the phone ready again; a 112 call shows «завершён».
+        status:
+          s.status === "disconnected"
+            ? "disconnected"
+            : s.serviceCallId
+              ? "ready"
+              : "ended",
+        serviceCallId: null,
         micLevel: 0,
         recording: false,
       })),
     );
     const wsUrl = `wss://${location.host}${account.data.ws_path}`;
-    sip.register(wsUrl, `sip:${account.data.username}@${account.data.domain}`, account.data.password, account.data.display_name);
+    sip.register(
+      wsUrl,
+      `sip:${account.data.username}@${account.data.domain}`,
+      account.data.password,
+      account.data.display_name,
+    );
     return () => {
       sip.destroy();
       phone.current = null;
@@ -155,24 +227,35 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
     setState((s) => {
       if (s.status === "talking") return s;
       if (s.mode === "browser") {
-        const ringing = call.call_state === "idle" || call.call_state === "ringing";
+        const ringing =
+          call.call_state === "idle" || call.call_state === "ringing";
         return {
           ...s,
           attemptId: call.attempt_id,
           sessionId: call.session_id,
           callerNumber: call.caller_number,
           scenarioTitle: call.scenario_title,
-          status: ringing ? "incoming" : call.call_state === "answered" ? "talking" : s.status,
+          status: ringing
+            ? "incoming"
+            : call.call_state === "answered"
+              ? "talking"
+              : s.status,
           endReason: null,
         };
       }
-      return { ...s, attemptId: s.attemptId ?? call.attempt_id, sessionId: call.session_id, scenarioTitle: call.scenario_title };
+      return {
+        ...s,
+        attemptId: s.attemptId ?? call.attempt_id,
+        sessionId: call.session_id,
+        scenarioTitle: call.scenario_title,
+      };
     });
   }, [currentCall.data]);
 
-  // ---------- Transcript while talking.
+  // ---------- Transcript while talking (a 112 call; the card page follows an officer's call).
   useEffect(() => {
-    if (state.status !== "talking" || !state.attemptId) return;
+    if (state.status !== "talking" || !state.attemptId || state.serviceCallId)
+      return;
     const attemptId = state.attemptId;
     let stopped = false;
     const tick = async () => {
@@ -184,7 +267,12 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
           ...s,
           lastCaller: line ?? s.lastCaller,
           sttAvailable: dialog.stt_available,
-          ...(dialog.call.state === "ended" ? { status: "ended" as CallStatus, endReason: dialog.call.end_reason ?? null } : {}),
+          ...(dialog.call.state === "ended"
+            ? {
+                status: "ended" as CallStatus,
+                endReason: dialog.call.end_reason ?? null,
+              }
+            : {}),
         }));
         if (dialog.call.state === "ended") phone.current?.hangup();
       } catch {
@@ -197,14 +285,15 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
       stopped = true;
       clearInterval(timer);
     };
-  }, [state.status, state.attemptId]);
+  }, [state.status, state.attemptId, state.serviceCallId]);
 
   useEffect(() => {
     void refreshDevices();
   }, [refreshDevices]);
 
   const attemptOrThrow = () => {
-    if (!state.attemptId) throw new Error("Вызов не привязан к карточке: обновите страницу.");
+    if (!state.attemptId)
+      throw new Error("Вызов не привязан к карточке: обновите страницу.");
     return state.attemptId;
   };
 
@@ -214,7 +303,12 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
       try {
         await work();
       } catch (err) {
-        patch({ error: errorMessage(err, err instanceof Error ? err.message : undefined) });
+        patch({
+          error: errorMessage(
+            err,
+            err instanceof Error ? err.message : undefined,
+          ),
+        });
       } finally {
         patch({ busy: false });
       }
@@ -234,12 +328,23 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
     (turn: TurnResponse) => {
       setState((s) => ({
         ...s,
-        lastCaller: { text: turn.caller.text, audioUrl: turn.caller.audio_url ?? null, heardText: turn.heard_text ?? null },
+        lastCaller: {
+          text: turn.caller.text,
+          audioUrl: turn.caller.audio_url ?? null,
+          heardText: turn.heard_text ?? null,
+        },
         sttAvailable: turn.dialog.stt_available,
-        ...(turn.call_ended ? { status: "ended" as CallStatus, endReason: turn.dialog.call.end_reason ?? null } : {}),
+        ...(turn.call_ended
+          ? {
+              status: "ended" as CallStatus,
+              endReason: turn.dialog.call.end_reason ?? null,
+            }
+          : {}),
       }));
       playReply(turn.caller.audio_url ?? null);
-      void client.invalidateQueries({ queryKey: ["dialog", turn.dialog.attempt_id] });
+      void client.invalidateQueries({
+        queryKey: ["dialog", turn.dialog.attempt_id],
+      });
       if (turn.call_ended) stopLocalStream();
     },
     [client, playReply, stopLocalStream],
@@ -250,7 +355,8 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
       withBusy(async () => {
         if (state.mode === "sip") {
           phone.current?.answer();
-          if (state.attemptId) await telephonyApi.answer(state.attemptId).catch(() => null);
+          if (state.attemptId)
+            await telephonyApi.answer(state.attemptId).catch(() => null);
           return;
         }
         const attemptId = attemptOrThrow();
@@ -258,8 +364,13 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
         setState((s) => ({
           ...s,
           status: "talking",
-          sessionId: result.dialog.seq !== undefined ? s.sessionId : s.sessionId,
-          lastCaller: { text: result.opening.text, audioUrl: result.opening.audio_url ?? null, heardText: null },
+          sessionId:
+            result.dialog.seq !== undefined ? s.sessionId : s.sessionId,
+          lastCaller: {
+            text: result.opening.text,
+            audioUrl: result.opening.audio_url ?? null,
+            heardText: null,
+          },
           sttAvailable: result.dialog.stt_available,
         }));
         playReply(result.opening.audio_url ?? null);
@@ -270,7 +381,10 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
   );
 
   const finish = useCallback(
-    (call: (attemptId: string) => Promise<{ dialog: DialogOut }>, reason: string) =>
+    (
+      call: (attemptId: string) => Promise<{ dialog: DialogOut }>,
+      reason: string,
+    ) =>
       withBusy(async () => {
         phone.current?.hangup();
         stopLocalStream();
@@ -278,11 +392,17 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
         if (attemptId) {
           try {
             const result = await call(attemptId);
-            patch({ status: "ended", endReason: result.dialog.call.end_reason ?? reason });
+            patch({
+              status: "ended",
+              endReason: result.dialog.call.end_reason ?? reason,
+            });
           } catch (error) {
             // The card was saved (or closed by the teacher) while the panel still showed
             // «разговор»: the call is over on the server, so the panel ends too.
-            if (error instanceof RequestError && error.code === "attempt_closed") {
+            if (
+              error instanceof RequestError &&
+              error.code === "attempt_closed"
+            ) {
               patch({ status: "ended", endReason: reason });
             } else throw error;
           }
@@ -294,9 +414,18 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
     [withBusy, state.attemptId, patch, stopLocalStream, client],
   );
 
-  const hangup = useCallback(() => finish(telephonyApi.hangup, "hangup"), [finish]);
-  const noContact = useCallback(() => finish(telephonyApi.noContact, "no_contact"), [finish]);
-  const callDropped = useCallback(() => finish(telephonyApi.callDropped, "call_dropped"), [finish]);
+  const hangup = useCallback(
+    () => finish(telephonyApi.hangup, "hangup"),
+    [finish],
+  );
+  const noContact = useCallback(
+    () => finish(telephonyApi.noContact, "no_contact"),
+    [finish],
+  );
+  const callDropped = useCallback(
+    () => finish(telephonyApi.callDropped, "call_dropped"),
+    [finish],
+  );
 
   const setMicDevice = useCallback(
     (deviceId: string | null) => {
@@ -321,15 +450,24 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
   }, [client]);
 
   const startRecording = useCallback(async () => {
-    if (state.mode !== "browser" || state.status !== "talking" || recorder.current) return;
+    if (
+      state.mode !== "browser" ||
+      state.status !== "talking" ||
+      recorder.current
+    )
+      return;
     try {
       const constraints: MediaStreamConstraints = {
-        audio: state.micDeviceId ? { deviceId: { exact: state.micDeviceId } } : true,
+        audio: state.micDeviceId
+          ? { deviceId: { exact: state.micDeviceId } }
+          : true,
       };
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       localStream.current = stream;
       stopLevel.current = watchLevel(stream, (micLevel) => patch({ micLevel }));
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm;codecs=opus" });
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: "audio/webm;codecs=opus",
+      });
       const chunks: Blob[] = [];
       mediaRecorder.ondataavailable = (ev) => {
         if (ev.data.size) chunks.push(ev.data);
@@ -342,7 +480,11 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
         if (!state.attemptId || blob.size < 1000) return;
         const attemptId = state.attemptId;
         void withBusy(async () => {
-          const turn = await telephonyApi.utterance(attemptId, blob, newActionId());
+          const turn = await telephonyApi.utterance(
+            attemptId,
+            blob,
+            newActionId(),
+          );
           applyTurn(turn);
         });
       };
@@ -350,13 +492,28 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
       mediaRecorder.start();
       patch({ recording: true, error: null });
     } catch (err) {
-      patch({ error: err instanceof Error && err.name === "NotAllowedError" ? "Нет доступа к микрофону: разрешите его в браузере." : errorMessage(err) });
+      patch({
+        error:
+          err instanceof Error && err.name === "NotAllowedError"
+            ? "Нет доступа к микрофону: разрешите его в браузере."
+            : errorMessage(err),
+      });
     }
-  }, [state.mode, state.status, state.micDeviceId, state.attemptId, patch, withBusy, applyTurn, stopLocalStream]);
+  }, [
+    state.mode,
+    state.status,
+    state.micDeviceId,
+    state.attemptId,
+    patch,
+    withBusy,
+    applyTurn,
+    stopLocalStream,
+  ]);
 
   const stopRecording = useCallback(async () => {
     const mediaRecorder = recorder.current;
-    if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop();
+    if (mediaRecorder && mediaRecorder.state !== "inactive")
+      mediaRecorder.stop();
   }, []);
 
   const sayText = useCallback(
@@ -386,8 +543,25 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
             sayText,
           }
         : null,
-    [isStudent, state, answer, hangup, noContact, callDropped, setMicDevice, refreshDevices, dismiss, startRecording, stopRecording, sayText],
+    [
+      isStudent,
+      state,
+      answer,
+      hangup,
+      noContact,
+      callDropped,
+      setMicDevice,
+      refreshDevices,
+      dismiss,
+      startRecording,
+      stopRecording,
+      sayText,
+    ],
   );
 
-  return <SoftphoneContext.Provider value={value}>{children}</SoftphoneContext.Provider>;
+  return (
+    <SoftphoneContext.Provider value={value}>
+      {children}
+    </SoftphoneContext.Provider>
+  );
 }

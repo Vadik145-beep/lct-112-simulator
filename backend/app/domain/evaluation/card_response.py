@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from app.domain.evaluation import data_check
+from app.domain.evaluation import data_check, service_call
 from app.domain.evaluation import status_machine as sm
 from app.domain.evaluation.detectors import CARD_DETECTORS, CardContext, run_detectors
 from app.domain.evaluation.result import (
@@ -50,6 +50,7 @@ DEFAULT_WEIGHTS: dict[str, int] = {
     "typical_errors": 10,
     "grammar": 5,
     data_check.KEY: 20,
+    service_call.KEY: 15,
 }
 TITLES = {
     "decision": "Решение",
@@ -59,16 +60,26 @@ TITLES = {
     "typical_errors": "Типичные ошибки",
     "grammar": "Грамотность",
     data_check.KEY: data_check.TITLE,
+    service_call.KEY: service_call.TITLE,
 }
 
 
 def applicable_components(scenario: CardResponseScenario | Mapping | None) -> list[str]:
-    """Components that apply to the scenario: «Проверка данных» only with planted errors."""
+    """Components that apply to the scenario: «Проверка данных» only with planted errors,
+    «Звонки в службы» only with reference service calls (issues #35, #36)."""
     if isinstance(scenario, CardResponseScenario):
         has_errors = bool(scenario.injected_errors)
+        has_calls = bool(scenario.reference.service_calls)
     else:
-        has_errors = bool((scenario or {}).get("injected_errors"))
-    return [k for k in DEFAULT_WEIGHTS if has_errors or k != data_check.KEY]
+        body = scenario or {}
+        has_errors = bool(body.get("injected_errors"))
+        has_calls = bool((body.get("reference") or {}).get("service_calls"))
+    skip = set()
+    if not has_errors:
+        skip.add(data_check.KEY)
+    if not has_calls:
+        skip.add(service_call.KEY)
+    return [k for k in DEFAULT_WEIGHTS if k not in skip]
 
 
 NO_REJECT_SERVICES = frozenset({"103"})
@@ -310,6 +321,10 @@ def evaluate_card_response(
     if data_check.KEY in maxima:
         components.insert(
             4, data_check.data_check_component(scenario, attempt, maxima[data_check.KEY])
+        )
+    if service_call.KEY in maxima:
+        components.insert(
+            -2, service_call.service_call_component(scenario, attempt, maxima[service_call.KEY])
         )
     for component in components:
         if component.max == 0:

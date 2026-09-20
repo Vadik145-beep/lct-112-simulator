@@ -13,12 +13,19 @@ the trainee answers:
 
 Events of the call (``call.ringing``, ``call.answered``, ``call.ended``) and every dialog turn
 go into the session log like everything else, so the panel and the monitoring see them.
+
+A dispatcher's call to a service officer (issue #36) uses the same legs the other way round:
+``dial_service`` rings the trainee's phones from the officer's number (``Local/s@service-out``,
+header ``X-Service-Call`` so the softphone answers at once), and after the answer the officer
+greets and the same pipeline (snoop → STT → ``officer.say`` → voice) runs on the call's own
+record in ``attempts.service_calls``.
 """
 
 from __future__ import annotations
 
 import asyncio
 import contextlib
+import hashlib
 import time
 import uuid
 from collections.abc import Awaitable, Callable
@@ -30,8 +37,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import get_settings
 from app.db import SessionLocal
 from app.dialog import call as call_state
+from app.dialog import officer
 from app.dialog import service as dialog
-from app.domain.evaluation.schemas import CallIntakeScenario
+from app.domain.evaluation.schemas import CallIntakeScenario, CardResponseScenario
 from app.events import get_redis, publish_events
 from app.logging import get_logger
 from app.models import (
@@ -43,6 +51,7 @@ from app.models import (
     CALL_ENDED,
     CALL_IDLE,
     MODE_CALL_INTAKE,
+    MODE_CARD_RESPONSE,
     SESSION_RUNNING,
     Attempt,
     ScenarioVersion,
@@ -59,8 +68,10 @@ log = get_logger(__name__)
 
 # Dialplan entry point and the channel variables it reads (deploy/asterisk/extensions.conf).
 DIAL_ENDPOINT = "Local/s@trainer-out/n"
+SERVICE_DIAL_ENDPOINT = "Local/s@service-out/n"
 VAR_LOGIN = "__STU_LOGIN"
 VAR_ATTEMPT = "__ATTEMPT_ID"
+VAR_SERVICE_CALL = "__SERVICE_CALL_ID"
 VAR_RING_TIMEOUT = "__RING_TIMEOUT"
 VAR_CALLER_NAME = "__CALLER_NAME"
 VAR_CALLER_NUM = "__CALLER_NUM"
@@ -104,10 +115,18 @@ class Call:
     started_at: float = field(default_factory=time.monotonic)
     # Latency of every reply: seconds from the end of the phrase to the start of playback.
     reply_latencies: list[float] = field(default_factory=list)
+    # Set for a dispatcher's call to a service officer (issue #36); None for a 112 call.
+    service_call_id: str | None = None
+    service: str | None = None
+    service_title: str = ""
 
     @property
     def key(self) -> str:
-        return self.attempt_id.hex
+        return self.service_call_id or self.attempt_id.hex
+
+    @property
+    def to_officer(self) -> bool:
+        return self.service_call_id is not None
 
 
 @dataclass
@@ -127,6 +146,33 @@ async def load_attempt(session: AsyncSession, attempt_id: uuid.UUID) -> LoadedAt
     return LoadedAttempt(attempt, ts, card.version, CallIntakeScenario.model_validate(card.body))
 
 
+@dataclass
+class LoadedCardAttempt:
+    attempt: Attempt
+    ts: TrainingSession
+    version: ScenarioVersion
+    scenario: CardResponseScenario
+
+
+async def load_card_attempt(
+    session: AsyncSession, attempt_id: uuid.UUID
+) -> LoadedCardAttempt | None:
+    attempt = await session.get(Attempt, attempt_id)
+    if attempt is None or attempt.mode != MODE_CARD_RESPONSE:
+        return None
+    ts = await session.get(TrainingSession, attempt.session_id)
+    card = await training.load_scenario_card(session, attempt.scenario_id, attempt.scenario_version)
+    return LoadedCardAttempt(
+        attempt, ts, card.version, CardResponseScenario.model_validate(card.body)
+    )
+
+
+def service_number(service: str) -> str:
+    """A stable three-digit «extension» of a service's officer for the caller id."""
+    digest = hashlib.sha1(service.encode()).hexdigest()  # noqa: S324 - not security
+    return str(200 + int(digest[:4], 16) % 700)
+
+
 class CallManager:
     def __init__(self, ari: AriClient) -> None:
         self.ari = ari
@@ -142,6 +188,9 @@ class CallManager:
 
     def call_for_attempt(self, attempt_id: uuid.UUID) -> Call | None:
         return self.calls.get(attempt_id.hex)
+
+    def call_for_service_call(self, call_id: str) -> Call | None:
+        return self.calls.get(call_id)
 
     def _call_for_channel(self, channel_id: str | None) -> Call | None:
         return self._by_channel.get(channel_id or "")
@@ -253,6 +302,70 @@ class CallManager:
         await self._end(call, reason)
         return True
 
+    async def dial_service(
+        self, attempt_id: uuid.UUID, call_id: str, service: str, service_title: str
+    ) -> bool:
+        """Rings the trainee's phones from the officer's number for a service call the
+        dispatcher started from the card (issue #36). Returns False when nothing could be
+        dialled (the API then answers in text)."""
+        if call_id in self.calls:
+            return True
+        async with SessionLocal() as session:
+            loaded = await load_card_attempt(session, attempt_id)
+            if loaded is None or loaded.attempt.state not in ACTIVE_ATTEMPT_STATES:
+                return False
+            user = await session.get(User, loaded.attempt.student_id)
+            if user is None:
+                return False
+            account, created = await sip.ensure_account(session, user)
+            config = await telephony_settings.load(session)
+            await session.commit()
+            timeout = config.ring_timeout_seconds
+        if created and self.sync_endpoints is not None:
+            await self.sync_endpoints()
+        call = Call(
+            attempt_id=attempt_id,
+            session_id=loaded.attempt.session_id,
+            student_id=loaded.attempt.student_id,
+            login=account.login,
+            channel_id=f"svc-{call_id}",
+            service_call_id=call_id,
+            service=service,
+            service_title=service_title,
+        )
+        self.calls[call.key] = call
+        self._by_channel[call.channel_id] = call
+        try:
+            await self.ari.create_channel(
+                SERVICE_DIAL_ENDPOINT,
+                call.channel_id,
+                app_args=f"service,{call.key}",
+                formats=CHANNEL_FORMAT,
+                variables={
+                    VAR_LOGIN: account.login,
+                    VAR_ATTEMPT: str(attempt_id),
+                    VAR_SERVICE_CALL: call_id,
+                    VAR_RING_TIMEOUT: str(timeout),
+                    VAR_CALLER_NAME: service_title or service,
+                    VAR_CALLER_NUM: service_number(service),
+                },
+            )
+            await self.ari.dial(call.channel_id, ring_seconds=timeout)
+        except AriError as exc:
+            log.warning("service dial failed", call=call_id, error=str(exc))
+            self.calls.pop(call.key, None)
+            self._by_channel.pop(call.channel_id, None)
+            return False
+        log.info("dialling service", call=call_id, service=service, login=account.login)
+        return True
+
+    async def hangup_service_call(self, call_id: str, reason: str = CALL_END_HANGUP) -> bool:
+        call = self.call_for_service_call(call_id)
+        if call is None:
+            return False
+        await self._end(call, reason, already_stored=True)
+        return True
+
     # ------------------------------------------------------------ events
 
     async def handle_event(self, event: dict) -> None:
@@ -345,6 +458,9 @@ class CallManager:
             await self._end(call, CALL_END_FAILED)
             return
         call.pipeline = asyncio.create_task(self._pipeline(call))
+        if call.to_officer:
+            await self._officer_answered(call)
+            return
         # Then the state and the opening (its voice file is cached per scenario version).
         async with SessionLocal() as session:
             loaded = await load_attempt(session, call.attempt_id)
@@ -360,6 +476,34 @@ class CallManager:
         await publish_events(events)
         if opening.get("audio"):
             await self._play_reply(call, opening["audio"])
+
+    async def _officer_answered(self, call: Call) -> None:
+        """The trainee picked up the service call: the officer greets (issue #36)."""
+        assert call.service_call_id is not None
+        async with SessionLocal() as session:
+            loaded = await load_card_attempt(session, call.attempt_id)
+            if loaded is None:
+                await self._end(call, CALL_END_FAILED)
+                return
+            greeting, events = await officer.answer(
+                session,
+                loaded.attempt,
+                loaded.ts,
+                loaded.version,
+                loaded.scenario,
+                call.service_call_id,
+            )
+            if call.recording_name:
+                officer.set_recording(
+                    loaded.attempt,
+                    call.service_call_id,
+                    f"{call.recording_name}.{RECORDING_FORMAT}",
+                )
+            await session.commit()
+        await publish_events(events)
+        turns = greeting.get("dialog") or []
+        if turns and turns[0].get("audio"):
+            await self._play_reply(call, turns[0]["audio"])
 
     async def _pipeline(self, call: Call) -> None:
         assert call.receiver is not None
@@ -378,6 +522,9 @@ class CallManager:
             await self._end(call, CALL_END_FAILED)
 
     async def _on_phrase(self, call: Call, pcm: bytes) -> None:
+        if call.to_officer:
+            await self._on_dispatcher_phrase(call, pcm)
+            return
         heard_at = time.monotonic()
         wav = media.pcm_to_wav(pcm)
         async with SessionLocal() as session:
@@ -418,6 +565,49 @@ class CallManager:
             await self._play_reply(call, audio)
         if result.call_ended:
             await self._end(call, CALL_END_CALLER_HANGUP, already_stored=True)
+
+    async def _on_dispatcher_phrase(self, call: Call, pcm: bytes) -> None:
+        """A phrase of the dispatcher on a service call: recognised, answered by the officer."""
+        assert call.service_call_id is not None
+        heard_at = time.monotonic()
+        wav = media.pcm_to_wav(pcm)
+        async with SessionLocal() as session:
+            loaded = await load_card_attempt(session, call.attempt_id)
+            if loaded is None:
+                return
+            record = officer.find_call(loaded.attempt, call.service_call_id)
+            if record.get("ended_at"):
+                return
+            address = loaded.scenario.card.address
+            hints = [h for h in (address.street, address.district, call.service_title) if h]
+            transcript = await get_stt_provider().transcribe(wav, "phrase.wav", hints)
+            if not transcript.available or not transcript.text:
+                return
+            result = await officer.say(
+                session,
+                loaded.attempt,
+                loaded.ts,
+                loaded.version,
+                loaded.scenario,
+                call.service_call_id,
+                transcript.text,
+                action_id=f"voice-{uuid.uuid4().hex[:12]}",
+                heard=True,
+            )
+            await session.commit()
+        await publish_events(result.events)
+        log.info(
+            "dispatcher phrase",
+            call=call.service_call_id,
+            heard=transcript.text,
+            reply=result.officer.get("text"),
+            stt_ms=transcript.processing_ms,
+            dialog_ms=result.latency_ms,
+        )
+        audio = result.officer.get("audio")
+        if audio:
+            call.reply_latencies.append(time.monotonic() - heard_at)
+            await self._play_reply(call, audio)
 
     async def _play_reply(self, call: Call, relative: str) -> None:
         source = dialog.audio_source_file(relative)
@@ -491,7 +681,11 @@ class CallManager:
             attempt = await session.get(Attempt, call.attempt_id)
             if attempt is None:
                 return
-            events = await call_state.end(session, attempt, reason)
+            if call.to_officer:
+                assert call.service_call_id is not None
+                _, events = await officer.end(session, attempt, call.service_call_id, reason)
+            else:
+                events = await call_state.end(session, attempt, reason)
             await session.commit()
         await publish_events(events)
 

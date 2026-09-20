@@ -79,8 +79,55 @@ def perfect_card_attempt(scenario: CardResponseScenario) -> CardResponseAttempt:
         for i, e in enumerate(scenario.injected_errors)
     ]
     return CardResponseAttempt(
-        issued_at=at(0), received_at=at(5), status_log=status_log(*steps), flagged_fields=flags
+        issued_at=at(0),
+        received_at=at(5),
+        status_log=status_log(*steps),
+        flagged_fields=flags,
+        service_calls=perfect_service_calls(scenario),
     )
+
+
+def perfect_service_calls(scenario: CardResponseScenario) -> list[dict]:
+    """Calls to every officer of the reference with all required facts, inside the norm
+    (issue #36); the address is named as the card has it."""
+    card = scenario.card
+    calls = []
+    for i, ref in enumerate(scenario.reference.service_calls):
+        start = 40 + i * 100
+        address = f"{card.address.street}, дом {card.address.house}"
+        if card.address.building:
+            address += f", корпус {card.address.building}"
+        phrases = {
+            "address": f"Передаю карточку, адрес: {address}.",
+            "incident_type": f"Происшествие: {card.description}",
+            "injured": "Пострадавшие есть." if card.flags.get("injured") else "Пострадавших нет.",
+            "order_number": "Наряд 14-217 направлен.",
+            "access": f"Код домофона {card.address.code or '12К'}, вас встретит заявитель.",
+        }
+        dialog = [{"role": "caller", "text": "Дежурный, слушаю.", "topics": [], "at": at(start)}]
+        for j, fact in enumerate(ref.required_facts):
+            dialog.append(
+                {
+                    "role": "operator",
+                    "text": phrases[fact],
+                    "topics": [],
+                    "at": at(start + 2 + j * 4),
+                }
+            )
+            dialog.append(
+                {"role": "caller", "text": "Принял.", "topics": [], "at": at(start + 3 + j * 4)}
+            )
+        calls.append(
+            {
+                "service": ref.service,
+                "started_at": at(start),
+                "answered": True,
+                "ended_at": at(start + 60),
+                "dialog": dialog,
+                "facts_passed": list(ref.required_facts),
+            }
+        )
+    return calls
 
 
 def card_attempt(*steps: dict, issued_at: datetime | None = None) -> CardResponseAttempt:

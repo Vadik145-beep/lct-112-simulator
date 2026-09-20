@@ -8,12 +8,15 @@ import type { IncomingRTCSessionEvent } from "jssip/lib/UA";
  * microphone level and WebRTC statistics. One instance per signed-in trainee.
  */
 
-export type RegistrationState = "disconnected" | "connecting" | "ready" | "failed";
+export type RegistrationState =
+  "disconnected" | "connecting" | "ready" | "failed";
 
 export interface IncomingCall {
   attemptId: string | null; // from the X-Attempt-Id header of the INVITE
   callerNumber: string;
   callerName: string;
+  /** A call the dispatcher started to a service officer (issue #36): X-Service-Call. */
+  serviceCallId: string | null;
 }
 
 export interface CallStats {
@@ -62,8 +65,14 @@ export function storeMicDevice(deviceId: string | null) {
 }
 
 /** Reads the microphone level of a stream through an analyser; call `stop` when done. */
-export function watchLevel(stream: MediaStream, onLevel: (level: number) => void): () => void {
-  const AudioContextCtor = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+export function watchLevel(
+  stream: MediaStream,
+  onLevel: (level: number) => void,
+): () => void {
+  const AudioContextCtor =
+    window.AudioContext ??
+    (window as unknown as { webkitAudioContext?: typeof AudioContext })
+      .webkitAudioContext;
   if (!AudioContextCtor) return () => {};
   const context = new AudioContextCtor();
   const source = context.createMediaStreamSource(stream);
@@ -88,24 +97,40 @@ export function watchLevel(stream: MediaStream, onLevel: (level: number) => void
 }
 
 export async function readStats(pc: RTCPeerConnection): Promise<CallStats> {
-  const result: CallStats = { rttMs: null, jitterMs: null, packetsLost: null, codec: null };
+  const result: CallStats = {
+    rttMs: null,
+    jitterMs: null,
+    packetsLost: null,
+    codec: null,
+  };
   const report = await pc.getStats();
   const codecs = new Map<string, string>();
   report.forEach((entry) => {
-    if (entry.type === "codec") codecs.set(entry.id, (entry as RTCStats & { mimeType?: string }).mimeType ?? "");
+    if (entry.type === "codec")
+      codecs.set(
+        entry.id,
+        (entry as RTCStats & { mimeType?: string }).mimeType ?? "",
+      );
   });
   report.forEach((entry) => {
     if (entry.type === "candidate-pair") {
       const pair = entry as RTCIceCandidatePairStats;
-      if (pair.state === "succeeded" && pair.currentRoundTripTime !== undefined) {
+      if (
+        pair.state === "succeeded" &&
+        pair.currentRoundTripTime !== undefined
+      ) {
         result.rttMs = Math.round(pair.currentRoundTripTime * 1000);
       }
     }
     if (entry.type === "inbound-rtp") {
       const inbound = entry as RTCInboundRtpStreamStats & { codecId?: string };
-      if (inbound.jitter !== undefined) result.jitterMs = Math.round(inbound.jitter * 1000);
-      if (inbound.packetsLost !== undefined) result.packetsLost = inbound.packetsLost;
-      if (inbound.codecId) result.codec = (codecs.get(inbound.codecId) ?? "").replace("audio/", "") || null;
+      if (inbound.jitter !== undefined)
+        result.jitterMs = Math.round(inbound.jitter * 1000);
+      if (inbound.packetsLost !== undefined)
+        result.packetsLost = inbound.packetsLost;
+      if (inbound.codecId)
+        result.codec =
+          (codecs.get(inbound.codecId) ?? "").replace("audio/", "") || null;
     }
   });
   return result;
@@ -131,8 +156,12 @@ export class SipPhone {
     this.listeners[event] = handler;
   }
 
-  private emit<K extends keyof SipPhoneEvents>(event: K, ...args: Parameters<SipPhoneEvents[K]>) {
-    const handler = this.listeners[event] as ((...a: Parameters<SipPhoneEvents[K]>) => void) | undefined;
+  private emit<K extends keyof SipPhoneEvents>(
+    event: K,
+    ...args: Parameters<SipPhoneEvents[K]>
+  ) {
+    const handler = this.listeners[event] as
+      ((...a: Parameters<SipPhoneEvents[K]>) => void) | undefined;
     handler?.(...args);
   }
 
@@ -193,21 +222,29 @@ export class SipPhone {
       attemptId: e.request.getHeader("X-Attempt-Id") ?? null,
       callerNumber: identity?.uri?.user ?? "",
       callerName: identity?.display_name ?? "",
+      serviceCallId: e.request.getHeader("X-Service-Call") ?? null,
     };
-    session.on("peerconnection", (data: { peerconnection: RTCPeerConnection }) => {
-      data.peerconnection.addEventListener("track", (ev) => {
-        if (ev.streams[0]) this.audio.srcObject = ev.streams[0];
-        else this.audio.srcObject = new MediaStream([ev.track]);
-        void this.audio.play().catch(() => {});
-      });
-    });
+    session.on(
+      "peerconnection",
+      (data: { peerconnection: RTCPeerConnection }) => {
+        data.peerconnection.addEventListener("track", (ev) => {
+          if (ev.streams[0]) this.audio.srcObject = ev.streams[0];
+          else this.audio.srcObject = new MediaStream([ev.track]);
+          void this.audio.play().catch(() => {});
+        });
+      },
+    );
     session.on("confirmed", () => {
       this.startLocalWatch();
       this.emit("talking");
     });
     session.on("accepted", () => this.startLocalWatch());
-    session.on("ended", (data: { cause?: string }) => this.onEnded(data.cause ?? "ended"));
-    session.on("failed", (data: { cause?: string }) => this.onEnded(data.cause ?? "failed"));
+    session.on("ended", (data: { cause?: string }) =>
+      this.onEnded(data.cause ?? "ended"),
+    );
+    session.on("failed", (data: { cause?: string }) =>
+      this.onEnded(data.cause ?? "failed"),
+    );
     this.emit("incoming", call);
   }
 
@@ -225,7 +262,10 @@ export class SipPhone {
     session.answer({
       mediaConstraints: { audio, video: false },
       pcConfig: { iceServers: [] },
-      rtcAnswerConstraints: { offerToReceiveAudio: true, offerToReceiveVideo: false },
+      rtcAnswerConstraints: {
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: false,
+      },
     });
   }
 
@@ -240,7 +280,9 @@ export class SipPhone {
     if (!pc) return;
     const track = pc.getSenders().find((s) => s.track?.kind === "audio")?.track;
     if (track && !this.stopLevel) {
-      this.stopLevel = watchLevel(new MediaStream([track]), (level) => this.emit("level", level));
+      this.stopLevel = watchLevel(new MediaStream([track]), (level) =>
+        this.emit("level", level),
+      );
     }
     if (!this.statsTimer) {
       this.statsTimer = setInterval(() => {

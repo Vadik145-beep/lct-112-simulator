@@ -666,6 +666,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/attempts/{attempt_id}/service-call": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Service Call
+         * @description ����������� a service from the card: one call at a time, only while the card is open.
+         */
+        post: operations["start_service_call_api_attempts__attempt_id__service_call_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/service-call/{call_id}/say": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Say To Officer
+         * @description A phrase of the dispatcher typed in the panel (the fallback of the voice path).
+         */
+        post: operations["say_to_officer_api_attempts__attempt_id__service_call__call_id__say_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/service-call/{call_id}/end": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * End Service Call
+         * @description �����������: the dispatcher hangs up; the transcript and the facts stay on the card.
+         */
+        post: operations["end_service_call_api_attempts__attempt_id__service_call__call_id__end_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/service-call/{call_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Service Call
+         * @description The call as it is now (the panel polls it during a SIP call for the transcript).
+         */
+        get: operations["get_service_call_api_attempts__attempt_id__service_call__call_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/scenarios/options": {
         parameters: {
             query?: never;
@@ -2167,6 +2247,16 @@ export interface components {
              * @default []
              */
             flagged_fields: components["schemas"]["FlaggedFieldOut"][];
+            /**
+             * Service Calls
+             * @default []
+             */
+            service_calls: components["schemas"]["ServiceCallOut"][];
+            /**
+             * Service Calls Required
+             * @default []
+             */
+            service_calls_required: string[];
             /** Transitions */
             transitions: components["schemas"]["TransitionOut"][];
             /** Reject Reasons */
@@ -4001,6 +4091,103 @@ export interface components {
                 [key: string]: unknown;
             };
         };
+        /**
+         * ServiceCallOut
+         * @description A call of the dispatcher to a service officer (issue #36).
+         */
+        ServiceCallOut: {
+            /** Id */
+            id: string;
+            /** Service */
+            service: string;
+            /** Service Title */
+            service_title: string;
+            /**
+             * Started At
+             * Format: date-time
+             */
+            started_at: string;
+            /** Answered */
+            answered: boolean;
+            /** Answered At */
+            answered_at: string | null;
+            /** Ended At */
+            ended_at: string | null;
+            /** End Reason */
+            end_reason: string | null;
+            /** Telephony */
+            telephony: boolean;
+            /** Seconds */
+            seconds: number | null;
+            /** Facts Passed */
+            facts_passed: string[];
+            /** Facts Required */
+            facts_required: string[];
+            /** Recording Available */
+            recording_available: boolean;
+            /** Turns */
+            turns: components["schemas"]["ServiceCallTurnOut"][];
+        };
+        /** ServiceCallRequest */
+        ServiceCallRequest: {
+            /** Service */
+            service: string;
+        };
+        /** ServiceCallResponse */
+        ServiceCallResponse: {
+            call: components["schemas"]["ServiceCallOut"];
+            attempt: components["schemas"]["AttemptOut"];
+            /**
+             * Pending Reply
+             * @default false
+             */
+            pending_reply: boolean;
+            /**
+             * Latency Ms
+             * @default 0
+             */
+            latency_ms: number;
+            /**
+             * Applied
+             * @default true
+             */
+            applied: boolean;
+        };
+        /** ServiceCallSayRequest */
+        ServiceCallSayRequest: {
+            /** Text */
+            text: string;
+            /** Action Id */
+            action_id?: string | null;
+        };
+        /** ServiceCallTurnOut */
+        ServiceCallTurnOut: {
+            /** Index */
+            index: number;
+            /** Role */
+            role: string;
+            /** Text */
+            text: string;
+            /**
+             * Topics
+             * @default []
+             */
+            topics: string[];
+            /** At */
+            at?: string | null;
+            /** Audio Url */
+            audio_url?: string | null;
+            /**
+             * Heard
+             * @default false
+             */
+            heard: boolean;
+            /**
+             * Generated
+             * @default false
+             */
+            generated: boolean;
+        };
         /** ServiceInfo */
         ServiceInfo: {
             /** Code */
@@ -5671,6 +5858,143 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_service_call_api_attempts__attempt_id__service_call_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServiceCallRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceCallResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    say_to_officer_api_attempts__attempt_id__service_call__call_id__say_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+                call_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServiceCallSayRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceCallResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    end_service_call_api_attempts__attempt_id__service_call__call_id__end_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+                call_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceCallResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_service_call_api_attempts__attempt_id__service_call__call_id__get: {
+        parameters: {
+            query?: {
+                after?: number | null;
+            };
+            header?: never;
+            path: {
+                attempt_id: string;
+                call_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceCallResponse"];
+                };
             };
             /** @description Validation Error */
             422: {

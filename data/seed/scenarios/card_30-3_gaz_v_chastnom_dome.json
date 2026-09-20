@@ -71,6 +71,17 @@
     ],
     "critical_errors": [
       "late_primary"
+    ],
+    "service_calls": [
+      {
+        "service": "mosgaz",
+        "required_facts": [
+          "address",
+          "incident_type",
+          "injured",
+          "order_number"
+        ]
+      }
     ]
   }
 }

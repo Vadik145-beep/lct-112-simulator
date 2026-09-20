@@ -55,6 +55,7 @@
     "critical_errors": [
       "wrong_accept_unfixed",
       "late_primary"
-    ]
+    ],
+    "service_calls": []
   }
 }

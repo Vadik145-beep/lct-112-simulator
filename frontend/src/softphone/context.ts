@@ -3,7 +3,8 @@ import { createContext, useContext } from "react";
 import type { CallStats, RegistrationState } from "@/softphone/sip-phone";
 
 /** Panel states (plan wave 6): не подключён → готов → входящий → разговор → завершён. */
-export type CallStatus = "disconnected" | "ready" | "incoming" | "talking" | "ended";
+export type CallStatus =
+  "disconnected" | "ready" | "incoming" | "talking" | "ended";
 
 export interface CallerLine {
   text: string;
@@ -19,6 +20,8 @@ export interface SoftphoneState {
   registrationDetail: string | null;
   attemptId: string | null;
   sessionId: string | null;
+  /** Set while the phone carries a call to a service officer (issue #36); the card shows it. */
+  serviceCallId: string | null;
   callerNumber: string;
   callerName: string;
   scenarioTitle: string;

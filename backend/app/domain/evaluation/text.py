@@ -7,7 +7,7 @@ from collections.abc import Iterable
 
 from rapidfuzz import fuzz
 
-from app.domain.reference_data import CALLER_TOPICS
+from app.domain.reference_data import CALLER_TOPICS, SERVICE_CALL_FACTS
 
 _PUNCT = re.compile(r"[^\w\s]", re.UNICODE)
 _SPACES = re.compile(r"\s+")
@@ -128,17 +128,30 @@ _TOPIC_KEYWORDS: list[tuple[str, list[tuple[str, bool]]]] = [
     for t in CALLER_TOPICS
     if t["keywords"]
 ]
+# The same table for the facts a dispatcher passes to a service officer (issue #36).
+SERVICE_FACT_KEYWORDS: list[tuple[str, list[tuple[str, bool]]]] = [
+    (f["code"], [(normalize_text(k), k.endswith(" ")) for k in f["keywords"]])
+    for f in SERVICE_CALL_FACTS
+]
 
 
-def detect_topics(text: str) -> list[str]:
-    """Topics a phrase touches, by the keyword lists of ``caller_topics``. Used when the
-    dialog engine did not label a turn. Order follows ``caller_topics.order``."""
+def detect_service_facts(text: str) -> list[str]:
+    """Facts of a service call the dispatcher's phrase mentions (by keywords)."""
+    return detect_topics(text, SERVICE_FACT_KEYWORDS)
+
+
+def detect_topics(
+    text: str, table: list[tuple[str, list[tuple[str, bool]]]] | None = None
+) -> list[str]:
+    """Topics a phrase touches, by the keyword lists of ``caller_topics`` (or of another
+    table, e.g. the facts of a service call). Used when the dialog engine did not label a
+    turn. Order follows the table's ``order``."""
     normalized = normalize_text(text)
     if not normalized:
         return []
     padded = f" {normalized} "
     found = []
-    for code, keywords in _TOPIC_KEYWORDS:
+    for code, keywords in table if table is not None else _TOPIC_KEYWORDS:
         for keyword, whole_word in keywords:
             # Keywords are stems («пострадавш») or phrases; match at a word start.
             needle = f" {keyword} " if whole_word else f" {keyword}"

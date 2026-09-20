@@ -349,6 +349,23 @@ def _shown(value: str, label: str | None) -> str:
     return f"«{label}»" if label else f"«{value}»"
 
 
+def service_not_informed(ctx: CardContext) -> ErrorItem | None:
+    """The card is accepted, but a required service officer was never reached (issue #36)."""
+    required = ctx.scenario.reference.service_calls
+    if not required or ctx.final_primary is None or ctx.final_primary.status != sm.ACCEPTED:
+        return None
+    reached = {c.service for c in ctx.attempt.service_calls if c.answered}
+    missing = [r.service for r in required if r.service not in reached]
+    if not missing:
+        return None
+    return _item(
+        "service_not_informed",
+        "Карточка принята, но в службу по телефону не позвонили: "
+        + ", ".join(f"«{s}»" for s in missing)
+        + ". Руководителю службы передаются адрес, тип происшествия, пострадавшие и номер наряда.",
+    )
+
+
 CARD_DETECTORS: dict[str, Callable[[CardContext], ErrorItem | None]] = {
     "no_status": no_status,
     "late_primary": late_primary,
@@ -363,6 +380,7 @@ CARD_DETECTORS: dict[str, Callable[[CardContext], ErrorItem | None]] = {
     "wrong_final_status": wrong_final_status,
     "error_missed": error_missed,
     "false_alarm": false_alarm,
+    "service_not_informed": service_not_informed,
 }
 
 
