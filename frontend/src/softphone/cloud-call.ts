@@ -60,7 +60,11 @@ export class CloudCall {
     vapi.on("local-volume-level", (level: number) => this.emit("level", Math.min(1, level)));
     vapi.on("call-start-failed", (event) => this.emit("failed", event.error || event.stage));
     vapi.on("error", (error: unknown) => {
-      if (!this.live) this.emit("failed", describe(error));
+      // The SDK reports non-fatal things here too (the Krisp noise filter could not load,
+      // the level observer): the call goes on without them. Only a failure before the call
+      // is up, and not about audio processing, means the cloud is unavailable.
+      if (this.live || isAudioProcessingError(error)) return;
+      this.emit("failed", describe(error));
     });
     try {
       const call = await vapi.start(keys.assistant_id, {
@@ -70,6 +74,11 @@ export class CloudCall {
     } catch (error) {
       this.emit("failed", describe(error));
       throw error;
+    }
+    // Joined: the media flows; "call-start" (the assistant is listening) may come later.
+    if (!this.live && !this.stopped) {
+      this.live = true;
+      this.emit("started");
     }
   }
 
@@ -94,6 +103,15 @@ export class CloudCall {
     }
     vapi.removeAllListeners();
   }
+}
+
+function isAudioProcessingError(error: unknown): boolean {
+  const type = (error as { type?: string } | null)?.type ?? "";
+  return (
+    type.startsWith("audio-process") ||
+    type.startsWith("local-audio-level") ||
+    type === "audio-processor-error"
+  );
 }
 
 function describe(error: unknown): string {
