@@ -62,14 +62,16 @@ export function DialogPanel({
   const error = say.error ?? askTopic.error ?? utterance.error;
 
   // Voice of the caller: the newest reply with a file plays once, after the operator's
-  // gesture (answering, sending) so autoplay is allowed.
+  // gesture (answering, sending) so autoplay is allowed. Not when the sound comes another
+  // way: the SIP call, the softphone panel (it plays what it gets from the API) or the
+  // cloud caller speaking in the browser — the phrase would be heard twice.
   useEffect(() => {
     const last = dialog.turns[dialog.turns.length - 1];
     if (!last || last.role !== "caller" || last.index <= played.current) return;
     played.current = last.index;
-    if (!last.audio_url || telephony) return;
+    if (!last.audio_url || telephony || !input || dialog.mode === "cloud") return;
     void play(last.audio_url);
-  }, [dialog.turns, telephony]);
+  }, [dialog.turns, dialog.mode, telephony, input]);
 
   useEffect(() => {
     log.current?.lastElementChild?.scrollIntoView({ block: "nearest" });
