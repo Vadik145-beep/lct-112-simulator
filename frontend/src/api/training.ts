@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef } from "react";
 
 import { api, errorMessage } from "@/api/client";
+import { getAccessToken } from "@/api/token";
 import type { components } from "@/api/schema";
 
 export type AssignmentOut = components["schemas"]["AssignmentOut"];
@@ -224,6 +225,47 @@ export function useSayToOfficer(attemptId: string) {
           body: { text, action_id: actionId },
         }),
       ),
+    onSuccess: (data) =>
+      client.setQueryData(attemptKey(attemptId), data.attempt),
+  });
+}
+
+/** A recorded phrase of the dispatcher → speech recognition → the officer's reply (no telephony). */
+export function useSpeakToOfficer(attemptId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      callId,
+      blob,
+      actionId,
+    }: {
+      callId: string;
+      blob: Blob;
+      actionId: string;
+    }) => {
+      const form = new FormData();
+      form.append("file", blob, blob.type.includes("ogg") ? "q.ogg" : "q.webm");
+      form.append("action_id", actionId);
+      const res = await fetch(
+        `/api/attempts/${attemptId}/service-call/${callId}/utterance`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${getAccessToken() ?? ""}` },
+          body: form,
+        },
+      );
+      const json = (await res.json().catch(() => null)) as
+        ServiceCallResponse | { error?: unknown } | null;
+      if (!res.ok || !json || !("call" in json)) {
+        const failure = json && "error" in json ? json : null;
+        throw new RequestError(
+          errorMessage(failure),
+          res.status,
+          errorCode(failure),
+        );
+      }
+      return json;
+    },
     onSuccess: (data) =>
       client.setQueryData(attemptKey(attemptId), data.attempt),
   });

@@ -5,12 +5,14 @@ and the review data; access rules."""
 from __future__ import annotations
 
 import uuid
+from typing import ClassVar
 
 import pytest
 from httpx import AsyncClient
 
 from app.db import SessionLocal
 from app.models import MODE_CARD_RESPONSE, Attempt
+from app.providers.stt import Transcript
 from tests.api.conftest import DATA_DIR
 from tests.api.test_dialog import make_attempt
 from tests.conftest import bearer, login
@@ -194,3 +196,73 @@ async def test_service_call_access_and_validation(client: AsyncClient) -> None:
         stored = await session.get(Attempt, attempt_id)
         assert stored.service_calls[0]["id"] == call_id
         assert stored.dialog == []
+
+
+async def test_utterance_without_stt_says_to_type(client: AsyncClient) -> None:
+    attempt_id = await make_attempt(CARD, mode=MODE_CARD_RESPONSE, dialog_mode="buttons")
+    token = await login(client, "student1")
+    started = (await start(client, token, attempt_id)).json()
+    assert started["stt_available"] is False
+    call_id = started["call"]["id"]
+    r = await client.post(
+        f"/api/attempts/{attempt_id}/service-call/{call_id}/utterance",
+        headers=bearer(token),
+        files={"file": ("q.wav", b"RIFF....WAVE", "audio/wav")},
+    )
+    assert r.status_code == 503
+    assert "текстом" in r.json()["error"]["message"]
+
+
+async def test_utterance_with_recognized_speech(client: AsyncClient, monkeypatch) -> None:
+    class FakeSTT:
+        method = "whisper"
+        hints: ClassVar[list[str]] = []
+
+        async def transcribe(self, audio, filename="audio.wav", hints=()):
+            FakeSTT.hints = list(hints)
+            return Transcript(
+                "Улица Молостовых, дом 10, корпус 1, пострадавших нет", "whisper", 1.5, 300
+            )
+
+    monkeypatch.setattr("app.telephony.service_calls.get_stt_provider", lambda: FakeSTT())
+    attempt_id = await make_attempt(CARD, mode=MODE_CARD_RESPONSE, dialog_mode="buttons")
+    token = await login(client, "student1")
+    started = (await start(client, token, attempt_id)).json()
+    assert started["stt_available"] is True
+    call_id = started["call"]["id"]
+    r = await client.post(
+        f"/api/attempts/{attempt_id}/service-call/{call_id}/utterance",
+        headers=bearer(token),
+        files={"file": ("q.webm", b"\x1aE\xdf\xa3....", "audio/webm")},
+        data={"action_id": "u-1"},
+    )
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["heard_text"].startswith("Улица Молостовых")
+    assert "улица Молостовых" in FakeSTT.hints and "район Ивановское" in FakeSTT.hints
+    dispatcher = [t for t in body["call"]["turns"] if t["role"] == "operator"]
+    assert dispatcher[-1]["heard"] is True
+    assert set(body["call"]["facts_passed"]) == {"address", "injured"}
+    # A retry with the same action id does not ask the officer twice.
+    r = await client.post(
+        f"/api/attempts/{attempt_id}/service-call/{call_id}/utterance",
+        headers=bearer(token),
+        files={"file": ("q.webm", b"\x1aE\xdf\xa3....", "audio/webm")},
+        data={"action_id": "u-1"},
+    )
+    assert r.status_code == 200 and r.json()["applied"] is False
+    assert len(r.json()["call"]["turns"]) == 3
+    # Empty audio and a closed call are refused.
+    r = await client.post(
+        f"/api/attempts/{attempt_id}/service-call/{call_id}/utterance",
+        headers=bearer(token),
+        files={"file": ("q.wav", b"", "audio/wav")},
+    )
+    assert r.status_code == 422
+    await end(client, token, attempt_id, call_id)
+    r = await client.post(
+        f"/api/attempts/{attempt_id}/service-call/{call_id}/utterance",
+        headers=bearer(token),
+        files={"file": ("q.wav", b"RIFF....WAVE", "audio/wav")},
+    )
+    assert r.status_code == 409
