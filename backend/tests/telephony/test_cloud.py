@@ -563,7 +563,7 @@ def test_voice_follows_the_scenario(cloud_settings: None, monkeypatch: pytest.Mo
     # has his own voice.
     elderly_woman = voice_config(scenario("ru_female_2", "elderly_panicked"))
     assert elderly_woman["voiceId"] == "female-voice"
-    assert elderly_woman["speed"] == 1.0 and elderly_woman["stability"] == STABILITY_AGITATED
+    assert elderly_woman["speed"] == 1.12 and elderly_woman["stability"] == STABILITY_AGITATED
     assert voice_config(scenario("ru_male_3", "elderly_calm"))["voiceId"] == "elder-voice"
     # No male voice configured: the default; a panicked persona wavers, hurries, is styled.
     panicked_man = voice_config(scenario("ru_male_4", "victim_panicked"))
