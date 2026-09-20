@@ -115,8 +115,10 @@ class Settings(BaseSettings):
     cloud_voice_voice_id_elder_female: str | None = None
     cloud_voice_voice_id_young: str | None = None
     cloud_voice_voice_model: str = "eleven_multilingual_v2"
-    cloud_voice_transcriber_provider: str = "deepgram"
-    cloud_voice_transcriber_model: str = "nova-2"
+    # Soniox stt-rt-v5: the best Russian accuracy of the providers tried (plan/track-c-cloud.md);
+    # deepgram/nova-2 is the fallback choice.
+    cloud_voice_transcriber_provider: str = "soniox"
+    cloud_voice_transcriber_model: str = "stt-rt-v5"
     cloud_voice_language: str = "ru"
     # Longest cloud call in seconds (Vapi ends it) and seconds of silence before it hangs up.
     cloud_voice_max_seconds: int = 900

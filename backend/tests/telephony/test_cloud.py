@@ -356,7 +356,7 @@ async def test_assistant_request_answers_with_the_scenario(
     assert "ЗАЯВИТЕЛЯ" in prompt and "бросаешь трубку" in prompt
     assert assistant["server"]["url"] == f"{PUBLIC_URL}{WEBHOOK_PATH}"
     assert assistant["server"]["headers"][SECRET_HEADER] == webhook_secret()
-    assert assistant["transcriber"]["language"] == "ru"
+    assert assistant["transcriber"]["languages"] == ["ru"]
     assert "transcript" in assistant["serverMessages"]
     # The Vapi call id is remembered: later messages need no token.
     assert call.vapi_call_id == f"vapi-{call.key}"
@@ -487,7 +487,7 @@ async def test_token_is_found_in_sip_uri_and_template_variables(
 # ---------------------------------------------------------------- the assistant and the client
 
 
-def test_caller_prompt_and_assistant(cloud_settings: None):
+def test_caller_prompt_and_assistant(cloud_settings: None, monkeypatch: pytest.MonkeyPatch):
     from app.domain.evaluation.schemas import CallIntakeScenario
 
     scenario = CallIntakeScenario.model_validate(
@@ -515,6 +515,17 @@ def test_caller_prompt_and_assistant(cloud_settings: None):
     assert assistant["artifactPlan"] == {"recordingEnabled": False}
     assert assistant["endCallFunctionEnabled"] is True
     assert "speech-update" in assistant["serverMessages"]
+    assert assistant["transcriber"] == {
+        "provider": "soniox",
+        "model": "stt-rt-v5",
+        "languages": ["ru"],
+    }
+    from app.telephony.vapi import transcriber_config
+
+    settings = get_settings()
+    monkeypatch.setattr(settings, "cloud_voice_transcriber_provider", "deepgram")
+    monkeypatch.setattr(settings, "cloud_voice_transcriber_model", "nova-2")
+    assert transcriber_config() == {"provider": "deepgram", "model": "nova-2", "language": "ru"}
     assert build_assistant(scenario, recording=True)["artifactPlan"] == {"recordingEnabled": True}
 
 
