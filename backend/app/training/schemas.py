@@ -292,6 +292,10 @@ class ServiceCallResponse(BaseModel):
     pending_reply: bool = False
     latency_ms: int = 0
     applied: bool = True
+    # The browser microphone can be used (the stt service answers); False = text only.
+    stt_available: bool = False
+    # What speech recognition understood (utterance only).
+    heard_text: str | None = None
 
 
 class FlagFieldRequest(BaseModel):

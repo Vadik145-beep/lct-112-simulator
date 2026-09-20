@@ -1,4 +1,4 @@
-import { Phone, PhoneOff, Send } from "lucide-react";
+import { Circle, Mic, Phone, PhoneOff, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { getAccessToken } from "@/api/token";
@@ -21,25 +21,43 @@ import { cn } from "@/lib/utils";
 export function ServiceCallPanel({
   call,
   telephony,
+  sttAvailable,
   pending,
   error,
   onSay,
+  onSpeak,
   onEnd,
 }: {
   call: ServiceCallOut;
   /** The voice goes through the softphone: no replies played here. */
   telephony: boolean;
+  /** The stt service answers: the browser microphone can be used instead of typing. */
+  sttAvailable: boolean;
   pending: boolean;
   error: string | null;
   onSay: (text: string, actionId: string) => void;
+  onSpeak: (blob: Blob, actionId: string) => void;
   onEnd: () => void;
 }) {
   const [text, setText] = useState("");
+  const [recording, setRecording] = useState(false);
   const audio = useRef<HTMLAudioElement | null>(null);
+  const recorder = useRef<MediaRecorder | null>(null);
+  const chunks = useRef<Blob[]>([]);
   const played = useRef(-1);
   const log = useRef<HTMLOListElement>(null);
   const actionId = useRef<string | null>(null);
   const open = call.ended_at === null;
+  const canSpeak =
+    sttAvailable && !telephony && typeof MediaRecorder !== "undefined";
+
+  // A call that ends while the microphone is on: stop the recorder, drop the recording.
+  useEffect(() => {
+    if (!open && recorder.current) {
+      chunks.current = [];
+      recorder.current.stop();
+    }
+  }, [open]);
 
   // The officer's newest reply plays once (browser mode only).
   useEffect(() => {
@@ -64,6 +82,44 @@ export function ServiceCallPanel({
     actionId.current = actionId.current ?? newActionId();
     onSay(phrase, actionId.current);
     setText("");
+  }
+
+  // Push to talk as in the 112 operator's card: press, speak, press again to send.
+  async function toggleMic() {
+    if (recording) {
+      recorder.current?.stop();
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+        ? "audio/webm;codecs=opus"
+        : "";
+      const rec = new MediaRecorder(
+        stream,
+        mime ? { mimeType: mime } : undefined,
+      );
+      chunks.current = [];
+      rec.ondataavailable = (e) => chunks.current.push(e.data);
+      rec.onstop = () => {
+        stream.getTracks().forEach((t) => t.stop());
+        recorder.current = null;
+        setRecording(false);
+        const blob = new Blob(chunks.current, {
+          type: rec.mimeType || "audio/webm",
+        });
+        chunks.current = [];
+        if (blob.size > 0 && open) {
+          actionId.current = actionId.current ?? newActionId();
+          onSpeak(blob, actionId.current);
+        }
+      };
+      recorder.current = rec;
+      rec.start();
+      setRecording(true);
+    } catch {
+      setRecording(false);
+    }
   }
 
   async function play(url: string) {
@@ -184,7 +240,40 @@ export function ServiceCallPanel({
           >
             <Send className="size-3.5" aria-hidden />
           </button>
+          {canSpeak && (
+            <button
+              type="button"
+              aria-label={
+                recording ? "Закончить говорить" : "Говорить в микрофон"
+              }
+              aria-pressed={recording}
+              title={
+                recording
+                  ? "Нажмите, чтобы отправить сказанное"
+                  : "Сказать дежурному голосом"
+              }
+              disabled={pending}
+              onClick={() => void toggleMic()}
+              className={cn(
+                "flex size-7 items-center justify-center rounded-sm border disabled:opacity-50",
+                recording
+                  ? "border-[var(--arm-orange)] bg-[var(--arm-orange)] text-white"
+                  : "border-[#a9adb2] bg-white text-[var(--arm-text)] hover:bg-[var(--arm-panel-2)]",
+              )}
+            >
+              {recording ? (
+                <Circle className="size-3.5 fill-current" aria-hidden />
+              ) : (
+                <Mic className="size-3.5" aria-hidden />
+              )}
+            </button>
+          )}
         </form>
+      )}
+      {open && call.answered && !telephony && !sttAvailable && (
+        <span className="text-[10px] text-[var(--arm-text-muted)]">
+          Распознавание речи недоступно: пишите дежурному текстом.
+        </span>
       )}
       {open && (
         <button
