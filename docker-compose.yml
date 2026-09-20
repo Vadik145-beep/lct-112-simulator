@@ -262,6 +262,8 @@ services:
       STT_MODEL_DIR: /models/stt/${STT_MODEL:-faster-whisper-base}
       STT_COMPUTE_TYPE: ${STT_COMPUTE_TYPE:-int8}
       STT_THREADS: ${LLM_THREADS:-4}
+      # Diagnostics: keep uploads the recognizer heard nothing in (empty = off).
+      STT_DUMP_DIR: ${STT_DUMP_DIR:-}
     ports:
       - "${STT_PORT:-9000}:9000"
     volumes:
