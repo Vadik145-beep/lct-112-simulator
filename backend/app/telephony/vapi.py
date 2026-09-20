@@ -141,6 +141,21 @@ def voice_config(scenario: CallIntakeScenario, settings: Settings | None = None)
     return voice
 
 
+def transcriber_config(settings: Settings | None = None) -> dict[str, Any]:
+    """The transcriber of the caller's side. Soniox takes a list of languages, the other
+    providers a single language code."""
+    s = settings or get_settings()
+    config: dict[str, Any] = {
+        "provider": s.cloud_voice_transcriber_provider,
+        "model": s.cloud_voice_transcriber_model,
+    }
+    if s.cloud_voice_transcriber_provider == "soniox":
+        config["languages"] = [s.cloud_voice_language]
+    else:
+        config["language"] = s.cloud_voice_language
+    return config
+
+
 def build_assistant(
     scenario: CallIntakeScenario, settings: Settings | None = None, *, recording: bool = False
 ) -> dict[str, Any]:
@@ -152,11 +167,7 @@ def build_assistant(
         "name": f"trainer-{scenario.ticket_ref or 'call'}"[:40],
         "firstMessage": scenario.caller.opening,
         "firstMessageMode": "assistant-speaks-first",
-        "transcriber": {
-            "provider": s.cloud_voice_transcriber_provider,
-            "model": s.cloud_voice_transcriber_model,
-            "language": s.cloud_voice_language,
-        },
+        "transcriber": transcriber_config(s),
         "model": {
             "provider": s.cloud_voice_model_provider,
             "model": s.cloud_voice_model,
