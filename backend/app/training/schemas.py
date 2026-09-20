@@ -220,6 +220,10 @@ class AttemptOut(BaseModel):
     status_log: list[StatusLogEntryOut]
     # Fields flagged as operator mistakes while checking the card (issue #35).
     flagged_fields: list[FlaggedFieldOut] = []
+    # Calls to service officers (issue #36), oldest first; the open one has no ended_at.
+    service_calls: list[ServiceCallOut] = []
+    # Services the reference expects a call to (empty = calls are not evaluated).
+    service_calls_required: list[str] = []
     transitions: list[TransitionOut]
     reject_reasons: list[RejectReasonOut]
     # Reference solution, visible after the card is closed (PRD 11: «эталон после завершения»).
@@ -241,6 +245,53 @@ class StatusRequest(BaseModel):
     reject_reason: str | None = Field(default=None, max_length=32)
     # Client-generated id of the action; a retry with the same id is applied once.
     action_id: str | None = Field(default=None, max_length=64)
+
+
+class ServiceCallTurnOut(BaseModel):
+    index: int
+    role: str  # operator = the dispatcher, caller = the officer
+    text: str
+    topics: list[str] = []
+    at: datetime | None = None
+    audio_url: str | None = None
+    heard: bool = False
+    generated: bool = False
+
+
+class ServiceCallOut(BaseModel):
+    """A call of the dispatcher to a service officer (issue #36)."""
+
+    id: str
+    service: str
+    service_title: str
+    started_at: datetime
+    answered: bool
+    answered_at: datetime | None
+    ended_at: datetime | None
+    end_reason: str | None
+    telephony: bool
+    seconds: float | None
+    facts_passed: list[str]
+    facts_required: list[str]
+    recording_available: bool
+    turns: list[ServiceCallTurnOut]
+
+
+class ServiceCallRequest(BaseModel):
+    service: str = Field(min_length=1, max_length=32)
+
+
+class ServiceCallSayRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=1000)
+    action_id: str | None = Field(default=None, max_length=64)
+
+
+class ServiceCallResponse(BaseModel):
+    call: ServiceCallOut
+    attempt: AttemptOut
+    pending_reply: bool = False
+    latency_ms: int = 0
+    applied: bool = True
 
 
 class FlagFieldRequest(BaseModel):
