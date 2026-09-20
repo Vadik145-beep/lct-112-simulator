@@ -116,6 +116,20 @@ class QueuePreviewIn(BaseModel):
     service_profile: list[str] = Field(default_factory=list)
 
 
+class SessionGenerateIn(BaseModel):
+    """«Generate for the lesson» (ТЗ, «Настройка учебной среды»): how many scenarios to draft
+    under the lesson's incident groups, difficulty and services. Default: one per selected
+    group (three when no group is selected), at most ten per job."""
+
+    count: int | None = Field(default=None, ge=1, le=10)
+
+
+class SessionGenerateOut(BaseModel):
+    job_id: str
+    count: int
+    groups: list[str]
+
+
 class QueuePreviewOut(BaseModel):
     total: int
     # True when nothing matched at the chosen difficulty and harder cards will be used.

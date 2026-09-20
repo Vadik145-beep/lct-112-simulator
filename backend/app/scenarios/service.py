@@ -11,7 +11,9 @@ file voiced at approval instead of synthesizing.
 from __future__ import annotations
 
 import asyncio
+import random
 import uuid
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -921,25 +923,79 @@ def _generation_meta(
     }
 
 
-async def generate_from_phrase(
-    job_id: str, request: GenerationRequest, owner_id: uuid.UUID
-) -> None:
-    """Job body: generates a scenario (or both kinds) and stores it as ``generated``/``review``."""
+def generate_from_phrase(job_id: str, request: GenerationRequest, owner_id: uuid.UUID) -> None:
+    """Job: a scenario (or both kinds) from the teacher's phrase, stored «на проверке»."""
+    kinds = [request.kind] if request.kind else ["call_intake", "card_response"]
+    generate_batch(
+        job_id,
+        [GenerationRequest(**{**request.__dict__, "kind": kind}) for kind in kinds],
+        owner_id,
+    )
+
+
+def plan_for_groups(
+    refs: ReferenceCodes,
+    *,
+    kind: str,
+    groups: Sequence[str],
+    titles: Mapping[str, str],
+    difficulty: int,
+    service_profile: Sequence[str],
+    count: int,
+    rng: random.Random | None = None,
+) -> list[GenerationRequest]:
+    """Requests for a lesson without approved cards (ТЗ, «Настройка учебной среды»: the
+    teacher picks the categories, the system generates the scenarios and references).
+    ``count`` requests go round-robin over ``groups``; each takes a random incident type of
+    its group (within the lesson's services for the response mode), and the phrase names
+    that type so both the model and the template land on it."""
+    rng = rng or random.Random()  # noqa: S311 — variety, not security
+    by_group: dict[str, list[dict]] = {}
+    for row in refs.incident_types.values():
+        by_group.setdefault(str(row["group_code"]), []).append(row)
+    requests: list[GenerationRequest] = []
+    for index in range(count):
+        group = str(groups[index % len(groups)])
+        rows = by_group.get(group, [])
+        if kind != "call_intake" and service_profile:
+            rows = [r for r in rows if r.get("main_service") in service_profile] or rows
+        if not rows:
+            continue
+        row = rng.choice(rows)
+        phrase = f"{row['final_title']} ({titles.get(group, 'группа ' + group)})"
+        requests.append(
+            GenerationRequest(
+                kind=kind,
+                phrase=phrase[:500],
+                incident_type=str(row["code"]),
+                incident_group=group,
+                difficulty=difficulty,
+            )
+        )
+    return requests
+
+
+def generate_batch(job_id: str, requests: Sequence[GenerationRequest], owner_id: uuid.UUID) -> None:
+    """Job body shared by «generate by phrase» and «generate for a lesson»: one scenario per
+    request, each stored as ``generated``/``review`` for the teacher to approve. A request
+    the provider cannot serve fails the whole job (the template never fails), so a partial
+    batch is still committed only when every scenario is there."""
 
     async def work(handle: jobs.JobHandle) -> dict:
         provider = get_generation_provider()
-        kinds = [request.kind] if request.kind else ["call_intake", "card_response"]
         created: list[dict] = []
+        total = max(1, len(requests))
         async with SessionLocal() as session:
             refs = await load_refs(session)
             owner = await session.get(User, owner_id)
-            ctx = await _generation_context(session, refs, request.phrase or "")
-            for index, kind in enumerate(kinds):
-                label = "приём вызова" if kind == "call_intake" else "реагирование"
-                await handle.progress(10 + index * 40, f"Генерируем сценарий: {label}")
-                result = await provider.generate(
-                    GenerationRequest(**{**request.__dict__, "kind": kind}), ctx
+            for index, request in enumerate(requests):
+                label = "приём вызова" if request.kind == "call_intake" else "реагирование"
+                await handle.progress(
+                    5 + int(index * 90 / total),
+                    f"Генерируем сценарий {index + 1} из {total}: {label}",
                 )
+                ctx = await _generation_context(session, refs, request.phrase or "")
+                result = await provider.generate(request, ctx)
                 loaded = await create(
                     session,
                     result.body,
@@ -956,12 +1012,14 @@ async def generate_from_phrase(
                     actor_role=owner.role if owner else None,
                     entity="scenario",
                     entity_id=str(loaded.scenario.id),
-                    details={"method": result.method, "kind": kind},
+                    details={"method": result.method, "kind": request.kind},
                 )
                 created.append(
                     {
                         "scenario_id": str(loaded.scenario.id),
-                        "kind": kind,
+                        "kind": request.kind,
+                        "title": loaded.scenario.title,
+                        "incident_group": request.incident_group,
                         "method": result.method,
                         "note": result.note,
                     }
