@@ -297,6 +297,13 @@
           },
           "title": "Critical Errors",
           "type": "array"
+        },
+        "service_calls": {
+          "items": {
+            "$ref": "#/$defs/ServiceCallRef"
+          },
+          "title": "Service Calls",
+          "type": "array"
         }
       },
       "required": [
@@ -406,6 +413,85 @@
       ],
       "title": "ReferenceStep",
       "type": "object"
+    },
+    "ServiceCallRef": {
+      "description": "A call the dispatcher must make to a service (issue #36, customer: «звено Б → В»):\nwhich service, which facts of the card must be passed, and how long the call may take.",
+      "properties": {
+        "service": {
+          "title": "Service",
+          "type": "string"
+        },
+        "required_facts": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Required Facts",
+          "type": "array"
+        },
+        "norm_seconds": {
+          "default": 120,
+          "title": "Norm Seconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "service"
+      ],
+      "title": "ServiceCallRef",
+      "type": "object"
+    },
+    "ServiceReply": {
+      "description": "A reply of a service officer (issue #36): which service says it; empty = any.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "integer"
+        },
+        "topic": {
+          "title": "Topic",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "audio": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Audio"
+        },
+        "approved": {
+          "default": false,
+          "title": "Approved",
+          "type": "boolean"
+        },
+        "service": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Service"
+        }
+      },
+      "required": [
+        "id",
+        "topic",
+        "text"
+      ],
+      "title": "ServiceReply",
+      "type": "object"
     }
   },
   "properties": {
@@ -467,6 +553,13 @@
         "$ref": "#/$defs/InjectedError"
       },
       "title": "Injected Errors",
+      "type": "array"
+    },
+    "service_replies": {
+      "items": {
+        "$ref": "#/$defs/ServiceReply"
+      },
+      "title": "Service Replies",
       "type": "array"
     }
   },

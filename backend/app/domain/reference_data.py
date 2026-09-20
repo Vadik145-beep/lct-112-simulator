@@ -313,6 +313,17 @@ TYPICAL_ERRORS: list[dict] = [
         "неверный: лишняя правка задерживает реагирование.",
     },
     {
+        "code": "service_not_informed",
+        "title": "Служба не оповещена по телефону",
+        "description": "Карточка принята, а руководителю службы диспетчер так и не позвонил: "
+        "информация о происшествии до бригады не дошла.",
+        "mode": "card_response",
+        "penalty": 6,
+        "memo_ref": "ответ заказчика 20.09.2026 (звено Б → В)",
+        "example": "Нет отопления в доме, карточка принята, наряд проставлен, но дежурному "
+        "тепловых сетей никто не позвонил — бригада не выехала.",
+    },
+    {
         "code": "address_not_asked",
         "title": "Адрес не уточнён до отбоя",
         "description": "Разговор завершён, а точный адрес происшествия не выяснен.",
@@ -340,6 +351,88 @@ TYPICAL_ERRORS: list[dict] = [
         "memo_ref": "билеты, ситуации 1-3, 4-2, 7-2",
         "example": "Волгоградская обл., г. Волжский, ул. Карла Маркса.",
     },
+]
+
+# Facts the dispatcher passes to a service officer on the phone (issue #36, «звено Б → В»),
+# with the keywords that show a fact in the dispatcher's phrase; ``address`` also needs the
+# street and the house of the card named. The officer's replies use the same codes as topics,
+# plus «greeting», «confirm», «repeat» and «unknown».
+SERVICE_CALL_FACTS: list[dict] = [
+    {
+        "code": "address",
+        "title": "Адрес",
+        "keywords": ["адрес", "улиц", "проспект", "переул", "шоссе", "бульвар", "дом ", "д "],
+        "order": 1,
+    },
+    {
+        "code": "incident_type",
+        "title": "Тип происшествия",
+        "keywords": [
+            "происшеств",
+            "случил",
+            "тип",
+            "течь",
+            "прорыв",
+            "затопл",
+            "нет отоплен",
+            "нет воды",
+            "нет света",
+            "нет электр",
+            "запах газа",
+            "утечк",
+            "пожар",
+            "задымлен",
+            "горит",
+            "дтп",
+            "провал",
+            "обрыв",
+            "авари",
+            "сработал",
+            "сигнализац",
+            "застрял",
+            "лифт",
+            "канализац",
+            "отключен",
+        ],
+        "order": 2,
+    },
+    {
+        "code": "injured",
+        "title": "Пострадавшие",
+        "keywords": ["пострадавш", "пострадал", "ранен", "жертв", "травм", "без пострадавших"],
+        "order": 3,
+    },
+    {
+        "code": "order_number",
+        "title": "Номер наряда",
+        "keywords": ["наряд", "номер наряда", "заявк", "номер заявки"],
+        "order": 4,
+    },
+    {
+        "code": "access",
+        "title": "Доступ на объект",
+        "keywords": [
+            "доступ",
+            "домофон",
+            "код подъезда",
+            "код ",
+            "ключ",
+            "встрет",
+            "открыт",
+            "пропуск",
+            "калитк",
+            "шлагбаум",
+        ],
+        "order": 5,
+    },
+]
+
+OFFICER_TOPICS: list[dict] = [
+    {"code": "greeting", "title": "Приветствие", "order": 0},
+    *[{"code": f["code"], "title": f["title"], "order": f["order"]} for f in SERVICE_CALL_FACTS],
+    {"code": "confirm", "title": "Подтверждение приёма", "order": 6},
+    {"code": "repeat", "title": "Просьба повторить", "order": 7},
+    {"code": "unknown", "title": "Вне темы", "order": 8},
 ]
 
 # Topics a dispatcher must clarify with the caller; keywords help the dialog engine to map a

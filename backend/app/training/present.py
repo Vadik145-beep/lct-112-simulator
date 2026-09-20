@@ -36,6 +36,8 @@ from app.training.schemas import (
     IntakeOut,
     JournalItem,
     RejectReasonOut,
+    ServiceCallOut,
+    ServiceCallTurnOut,
     ServiceInfo,
     ServiceStatusOut,
     SessionInfo,
@@ -356,6 +358,55 @@ def status_log_out(attempt: Attempt, lookups: Lookups) -> list[StatusLogEntryOut
     return result
 
 
+def service_call_out(attempt: Attempt, body: dict, call: dict, lookups: Lookups) -> ServiceCallOut:
+    service = lookups.services.get(call.get("service") or "")
+    required = next(
+        (
+            list(c.get("required_facts") or [])
+            for c in (body.get("reference") or {}).get("service_calls") or []
+            if c.get("service") == call.get("service")
+        ),
+        [],
+    )
+    started = datetime.fromisoformat(call["started_at"])
+    ended = datetime.fromisoformat(call["ended_at"]) if call.get("ended_at") else None
+    turns = call.get("dialog") or []
+    return ServiceCallOut(
+        id=call["id"],
+        service=call["service"],
+        service_title=service.title if service else call.get("service_title") or call["service"],
+        started_at=started,
+        answered=bool(call.get("answered")),
+        answered_at=datetime.fromisoformat(call["answered_at"])
+        if call.get("answered_at")
+        else None,
+        ended_at=ended,
+        end_reason=call.get("end_reason"),
+        telephony=bool(call.get("telephony")),
+        seconds=round((ended - started).total_seconds(), 1) if ended else None,
+        facts_passed=list(call.get("facts_passed") or []),
+        facts_required=required,
+        recording_available=bool(call.get("recording_path")),
+        turns=[
+            ServiceCallTurnOut(
+                index=i,
+                role=t["role"],
+                text=t["text"],
+                topics=list(t.get("topics") or []),
+                at=datetime.fromisoformat(t["at"]) if t.get("at") else None,
+                audio_url=f"/api/media/{t['audio']}" if t.get("audio") else None,
+                heard=bool(t.get("heard")),
+                generated=bool(t.get("generated")),
+            )
+            for i, t in enumerate(turns)
+        ],
+    )
+
+
+def service_calls_out(attempt: Attempt, body: dict, lookups: Lookups) -> list[ServiceCallOut]:
+    return [service_call_out(attempt, body, c, lookups) for c in attempt.service_calls or []]
+
+
 def caller_phone(attempt: Attempt, body: dict) -> str:
     """АОН of the call: the scenario's phone when it has one, otherwise a stable number
     derived from the attempt so the panel never shows an empty АОН."""
@@ -429,6 +480,10 @@ def attempt_out(
                 at=datetime.fromisoformat(f["at"]),
             )
             for f in attempt.flagged_fields or []
+        ],
+        service_calls=service_calls_out(attempt, body, lookups),
+        service_calls_required=[
+            c.get("service") for c in (body.get("reference") or {}).get("service_calls") or []
         ],
         transitions=[TransitionOut(**t.__dict__) for t in transitions],
         reject_reasons=[

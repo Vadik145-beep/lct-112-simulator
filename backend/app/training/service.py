@@ -471,6 +471,7 @@ async def set_status(
     if attempt.card_status != before_card_status:
         events.append(await _card_status_event(session, attempt))
     if rule["is_final"]:
+        events.extend(await _end_service_calls(session, attempt))
         events.append(await _submitted_event(session, attempt))
         events.append(await evaluate_and_store(session, attempt, ts, card.body))
     # The next card is not issued here: its 30 s run from «Добавлена», so it appears when
@@ -558,10 +559,18 @@ async def finish_attempt(
         events += await open_attempt(session, attempt, ts)
     attempt.state = ATTEMPT_FINISHED
     attempt.submitted_at = utcnow()
+    events.extend(await _end_service_calls(session, attempt))
     events.append(await _submitted_event(session, attempt))
     card = await load_scenario_card(session, attempt.scenario_id, attempt.scenario_version)
     events.append(await evaluate_and_store(session, attempt, ts, card.body))
     return StatusChange(changed=True, events=events, issued=[])
+
+
+async def _end_service_calls(session: AsyncSession, attempt: Attempt) -> list[SessionEvent]:
+    """Closing the card ends a call to a service officer still in progress (issue #36)."""
+    from app.dialog import officer  # the officer dialog imports this module
+
+    return await officer.end_open_calls(session, attempt)
 
 
 async def _card_status_event(session: AsyncSession, attempt: Attempt) -> SessionEvent:
@@ -607,6 +616,25 @@ def evaluation_input(attempt: Attempt) -> dict:
         "flagged_fields": [
             {"field": f["field"], "corrected_value": f["corrected_value"], "at": f["at"]}
             for f in attempt.flagged_fields or []
+        ],
+        "service_calls": [
+            {
+                "service": c["service"],
+                "started_at": c["started_at"],
+                "answered": bool(c.get("answered")),
+                "ended_at": c.get("ended_at"),
+                "dialog": [
+                    {
+                        "role": t["role"],
+                        "text": t["text"],
+                        "topics": list(t.get("topics") or []),
+                        "at": t.get("at"),
+                    }
+                    for t in c.get("dialog") or []
+                ],
+                "facts_passed": list(c.get("facts_passed") or []),
+            }
+            for c in attempt.service_calls or []
         ],
     }
 

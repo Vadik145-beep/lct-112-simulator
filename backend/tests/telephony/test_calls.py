@@ -9,7 +9,6 @@ import asyncio
 import math
 import struct
 import uuid
-from collections.abc import AsyncIterator
 from pathlib import Path
 
 import numpy as np
@@ -56,34 +55,6 @@ class FakeStt:
     async def transcribe(self, audio: bytes, filename: str = "audio.wav", hints=()) -> Transcript:
         self.calls += 1
         return Transcript(self.text, "whisper", processing_ms=1)
-
-
-@pytest.fixture
-async def fake_ari() -> AsyncIterator[FakeAri]:
-    fake = FakeAri()
-    await fake.start()
-    yield fake
-    await fake.stop()
-
-
-@pytest.fixture
-async def manager(fake_ari: FakeAri, monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[CallManager]:
-    settings = get_settings()
-    monkeypatch.setattr(settings, "telephony_media_host", "127.0.0.1")
-    monkeypatch.setattr(settings, "telephony_media_port_start", 13000)
-    monkeypatch.setattr(settings, "telephony_media_port_end", 13010)
-    monkeypatch.setattr(settings, "vad_model_path", None)
-    ari = AriClient(f"http://127.0.0.1:{fake_ari.port}/ari", "trainer", "trainer", "trainer")
-    manager = CallManager(ari)
-    stop = asyncio.Event()
-    task = asyncio.create_task(ari.run_events(manager.handle_event, stop))
-    await fake_ari.wait_for_client()
-    yield manager
-    stop.set()
-    await manager.shutdown()
-    task.cancel()
-    await asyncio.gather(task, return_exceptions=True)
-    await ari.aclose()
 
 
 async def load(attempt_id: uuid.UUID) -> Attempt:

@@ -213,6 +213,8 @@ class Attempt(Base):
     # corrected_value, at, action_id.
     flagged_fields: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
     dialog: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
+    # Calls of the dispatcher to service officers (issue #36): see app.dialog.officer.
+    service_calls: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
     recording_path: Mapped[str | None] = mapped_column(String(500))
     call_state: Mapped[str] = mapped_column(String(16), nullable=False, default=CALL_IDLE)
     call_ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

@@ -86,6 +86,21 @@ class ReferenceStep(BaseModel):
     comment_example: str | None = None  # a comment is expected; the text is a reference
 
 
+SERVICE_CALL_FACTS = ("address", "incident_type", "injured", "order_number", "access")
+DEFAULT_SERVICE_CALL_NORM_SECONDS = 120
+
+
+class ServiceCallRef(BaseModel):
+    """A call the dispatcher must make to a service (issue #36, customer: «звено Б → В»):
+    which service, which facts of the card must be passed, and how long the call may take."""
+
+    model_config = SCENARIO
+
+    service: str
+    required_facts: list[str] = Field(default_factory=lambda: list(SERVICE_CALL_FACTS[:4]))
+    norm_seconds: int = DEFAULT_SERVICE_CALL_NORM_SECONDS
+
+
 class CardResponseReference(BaseModel):
     model_config = SCENARIO
 
@@ -93,6 +108,8 @@ class CardResponseReference(BaseModel):
     reject_reason: str | None = None  # code from REJECT_REASONS when decision is reject
     status_chain: list[ReferenceStep]
     critical_errors: list[str] = Field(default_factory=list)
+    # Calls to service officers the dispatcher is expected to make (empty = not evaluated).
+    service_calls: list[ServiceCallRef] = Field(default_factory=list)
 
 
 class InjectedError(BaseModel):
@@ -129,6 +146,9 @@ class CardResponseScenario(BaseModel):
     reference: CardResponseReference
     # Planted operator mistakes; the card keeps the wrong values, the truth lives only here.
     injected_errors: list[InjectedError] = Field(default_factory=list)
+    # Replies of the service officers (issue #36), on top of the built-in ones per service;
+    # generated ones wait for the teacher like the caller's (``approved``).
+    service_replies: list[ServiceReply] = Field(default_factory=list)
 
 
 class StatusEntry(BaseModel):
@@ -153,6 +173,20 @@ class FlaggedField(BaseModel):
     at: datetime
 
 
+class ServiceCallLog(BaseModel):
+    """One call of the dispatcher to a service officer (``attempts.service_calls[]``)."""
+
+    model_config = STRICT
+
+    service: str
+    started_at: datetime
+    answered: bool = False
+    ended_at: datetime | None = None
+    dialog: list[DialogTurn] = Field(default_factory=list)
+    # Facts the live dialog counted as passed; the engine recomputes them from the turns.
+    facts_passed: list[str] = Field(default_factory=list)
+
+
 class CardResponseAttempt(BaseModel):
     model_config = STRICT
 
@@ -160,6 +194,7 @@ class CardResponseAttempt(BaseModel):
     received_at: datetime | None = None  # «Получена службой»
     status_log: list[StatusEntry] = Field(default_factory=list)
     flagged_fields: list[FlaggedField] = Field(default_factory=list)
+    service_calls: list[ServiceCallLog] = Field(default_factory=list)
 
 
 # --- call_intake -----------------------------------------------------------------------------
@@ -186,6 +221,12 @@ class Reply(BaseModel):
     text: str
     audio: str | None = None
     approved: bool = False
+
+
+class ServiceReply(Reply):
+    """A reply of a service officer (issue #36): which service says it; empty = any."""
+
+    service: str | None = None
 
 
 class ReferenceCard(BaseModel):
@@ -216,8 +257,10 @@ class CallIntakeScenario(BaseModel):
 
 
 class DialogTurn(BaseModel):
-    """One row of ``attempts.dialog``; ``topics`` come from the dialog engine when it knows
-    them, otherwise the evaluation infers them from the text by keywords."""
+    """One row of ``attempts.dialog`` (or of a service call's dialog); ``topics`` come from
+    the dialog engine when it knows them, otherwise the evaluation infers them from the text
+    by keywords. In a service call the dispatcher is the ``operator`` and the officer the
+    ``caller`` side, so the same engine serves both."""
 
     model_config = STRICT
 
