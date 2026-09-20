@@ -15,13 +15,32 @@ import { cn } from "@/lib/utils";
  * A call of the dispatcher to a service officer (issue #36, «звено Б → В»): the transcript,
  * the facts passed so far, a text field (the fallback of the voice path) and «Завершить».
  * With telephony the voice goes through the softphone (it answers the officer's call by
- * itself); without it the officer's replies play here.
+ * itself); without it the officer's replies play here and the dispatcher may speak into the
+ * browser microphone (issue #60).
  */
+
+// A shorter recording is a slip on the button, not a phrase.
+const MIN_RECORDING_SECONDS = 0.6;
+
+/** The microphone chosen in the softphone settings; the system default when it is gone. */
+async function openMicrophone(deviceId: string | null): Promise<MediaStream> {
+  if (deviceId) {
+    try {
+      return await navigator.mediaDevices.getUserMedia({
+        audio: { deviceId: { exact: deviceId } },
+      });
+    } catch {
+      /* the chosen device is unplugged: fall back to the default one */
+    }
+  }
+  return navigator.mediaDevices.getUserMedia({ audio: true });
+}
 
 export function ServiceCallPanel({
   call,
   telephony,
   sttAvailable,
+  micDeviceId,
   pending,
   error,
   onSay,
@@ -33,6 +52,8 @@ export function ServiceCallPanel({
   telephony: boolean;
   /** The stt service answers: the browser microphone can be used instead of typing. */
   sttAvailable: boolean;
+  /** The microphone chosen in the softphone settings (null = the system default). */
+  micDeviceId: string | null;
   pending: boolean;
   error: string | null;
   onSay: (text: string, actionId: string) => void;
@@ -41,6 +62,8 @@ export function ServiceCallPanel({
 }) {
   const [text, setText] = useState("");
   const [recording, setRecording] = useState(false);
+  const [recordedFor, setRecordedFor] = useState(0);
+  const [micNote, setMicNote] = useState<string | null>(null);
   const audio = useRef<HTMLAudioElement | null>(null);
   const recorder = useRef<MediaRecorder | null>(null);
   const chunks = useRef<Blob[]>([]);
@@ -58,6 +81,18 @@ export function ServiceCallPanel({
       recorder.current.stop();
     }
   }, [open]);
+
+  // Seconds of the current recording, shown next to the button.
+  useEffect(() => {
+    if (!recording) return;
+    const startedAt = Date.now();
+    setRecordedFor(0);
+    const timer = setInterval(
+      () => setRecordedFor((Date.now() - startedAt) / 1000),
+      250,
+    );
+    return () => clearInterval(timer);
+  }, [recording]);
 
   // The officer's newest reply plays once (browser mode only).
   useEffect(() => {
@@ -90,8 +125,9 @@ export function ServiceCallPanel({
       recorder.current?.stop();
       return;
     }
+    setMicNote(null);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await openMicrophone(micDeviceId);
       const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
         ? "audio/webm;codecs=opus"
         : "";
@@ -99,6 +135,7 @@ export function ServiceCallPanel({
         stream,
         mime ? { mimeType: mime } : undefined,
       );
+      const startedAt = Date.now();
       chunks.current = [];
       rec.ondataavailable = (e) => chunks.current.push(e.data);
       rec.onstop = () => {
@@ -109,6 +146,13 @@ export function ServiceCallPanel({
           type: rec.mimeType || "audio/webm",
         });
         chunks.current = [];
+        const seconds = (Date.now() - startedAt) / 1000;
+        if (seconds < MIN_RECORDING_SECONDS) {
+          setMicNote(
+            "Слишком короткая запись: нажмите микрофон, скажите фразу, нажмите ещё раз.",
+          );
+          return;
+        }
         if (blob.size > 0 && open) {
           actionId.current = actionId.current ?? newActionId();
           onSpeak(blob, actionId.current);
@@ -119,6 +163,9 @@ export function ServiceCallPanel({
       setRecording(true);
     } catch {
       setRecording(false);
+      setMicNote(
+        "Микрофон недоступен: разрешите доступ в браузере или выберите другое устройство.",
+      );
     }
   }
 
@@ -270,6 +317,17 @@ export function ServiceCallPanel({
           )}
         </form>
       )}
+      {recording && (
+        <span className="text-[10px] text-[var(--arm-orange)]" role="status">
+          Идёт запись, {recordedFor.toFixed(0)} с. Нажмите микрофон ещё раз,
+          чтобы отправить.
+        </span>
+      )}
+      {micNote && !recording && (
+        <span className="text-[10px] text-[var(--arm-red)]" role="alert">
+          {micNote}
+        </span>
+      )}
       {open && call.answered && !telephony && !sttAvailable && (
         <span className="text-[10px] text-[var(--arm-text-muted)]">
           Распознавание речи недоступно: пишите дежурному текстом.
@@ -290,7 +348,7 @@ export function ServiceCallPanel({
           {END_REASON_TITLES[call.end_reason] ?? call.end_reason}
         </span>
       )}
-      {error && (
+      {error && !recording && (
         <span role="alert" className="text-[var(--arm-red)]">
           {error}
         </span>

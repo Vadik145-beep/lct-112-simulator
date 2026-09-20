@@ -196,7 +196,17 @@ async def speak_to_officer(
             "Распознавание речи недоступно: сервис stt не запущен. Введите фразу текстом.",
         )
     if not transcript.text:
-        raise ApiError(422, "nothing_recognized", "Речь не распознана: повторите громче.")
+        heard = (
+            f"записано {transcript.duration_seconds:.1f} с, речи в записи нет"
+            if transcript.duration_seconds
+            else "запись пустая"
+        )
+        raise ApiError(
+            422,
+            "nothing_recognized",
+            f"Речь не распознана ({heard}). Проверьте, что выбран рабочий микрофон, "
+            "и скажите фразу ещё раз громче.",
+        )
     result = await officer.say(
         session,
         attempt,
