@@ -1,0 +1,85 @@
+{
+  "kind": "card_response",
+  "title": "Течь стояка в подъезде: в карточке есть пострадавшие",
+  "ticket_ref": null,
+  "service": "gkh",
+  "difficulty": 3,
+  "norm_seconds": 30,
+  "card": {
+    "number": "38260451",
+    "incident_type": "14.2.3.0",
+    "signs": [
+      "Прорыв воды (холодной, горячей воды, в т.ч. системы отопления)",
+      "Дом многоквартирный квартира подъезд подвал"
+    ],
+    "flags": {
+      "injured": true,
+      "no_access": false,
+      "threat": false
+    },
+    "address": {
+      "street": "улица Героев Панфиловцев",
+      "house": "27",
+      "building": "1",
+      "entrance": "2",
+      "floor": "4",
+      "okrug": "СЗАО",
+      "district": "район Северное Тушино"
+    },
+    "caller": {
+      "name": "Лебедева Ольга Викторовна",
+      "role": "жилец",
+      "phone": "+7 916 318-40-72"
+    },
+    "description": "В подъезде 2 на 4 этаже течёт стояк горячей воды, вода идёт по стене на 3 этаж, в квартирах сухо. Пострадавших нет, никто не обращался.",
+    "notified": [
+      {
+        "service": "gkh",
+        "status": "Добавлена"
+      },
+      {
+        "service": "territorial_oiv",
+        "status": "Получена службой"
+      }
+    ]
+  },
+  "reference": {
+    "decision": "accept",
+    "reject_reason": null,
+    "status_chain": [
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "response_started",
+        "order_number": true,
+        "comment_example": "Направлен дежурный сантехник ОДС-7, наряд ЖКХ-131"
+      },
+      {
+        "status": "arrived"
+      },
+      {
+        "status": "works_started",
+        "comment_example": "Перекрыт стояк горячей воды по подъезду, устранение течи"
+      },
+      {
+        "status": "works_done",
+        "comment_example": "Заменён участок стояка, горячая вода подана, подъезд осушен"
+      }
+    ],
+    "critical_errors": [
+      "late_primary",
+      "progress_missing"
+    ]
+  },
+  "injected_errors": [
+    {
+      "field": "flags.injured",
+      "wrong_value": "true",
+      "correct_value": "false",
+      "hint_level": 1,
+      "wrong_label": "да",
+      "correct_label": "нет"
+    }
+  ]
+}
