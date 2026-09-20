@@ -510,6 +510,7 @@ def test_caller_prompt_and_assistant(cloud_settings: None, monkeypatch: pytest.M
     assert "бросаешь трубку" not in prompt
     # The emotional state follows the persona and asks for expressive, punctuated speech.
     assert "Ты в панике" in prompt and "многоточи" in prompt
+    assert "словами, а не цифрами" in prompt
     from app.telephony.vapi import caller_state
 
     assert caller_state("elderly_calm") == "calm" and caller_state("mother_anxious") == "anxious"
