@@ -19,6 +19,7 @@ export interface MonitorState {
 export const STAGE_TITLES: Record<string, string> = {
   viewing: "смотрит карточку",
   editing_status: "проставляет статус",
+  checking_data: "проверяет данные карточки",
   talking: "говорит с заявителем",
   filling_card: "заполняет карточку 112",
   ringing: "входящий вызов",

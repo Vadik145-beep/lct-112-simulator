@@ -95,6 +95,26 @@ class CardResponseReference(BaseModel):
     critical_errors: list[str] = Field(default_factory=list)
 
 
+class InjectedError(BaseModel):
+    """A mistake of the 112 operator planted in the card (issue #35): the card shows
+    ``wrong_value``, the dispatcher is expected to flag the field and name ``correct_value``.
+    ``field`` is a path into the card: ``address.house``, ``address.street``,
+    ``incident_type``, ``flags.injured``, ``services``, ``caller.phone``, ``description``.
+    For ``services`` the values are ``+code`` (a service that should not be notified) or
+    ``-code`` (a service that is missing) — the wrong value describes what the card shows,
+    the correct one what to do about it."""
+
+    model_config = SCENARIO
+
+    field: str
+    wrong_value: str
+    correct_value: str
+    hint_level: int = 2  # 1 obvious, 2 noticeable, 3 subtle
+    # Human-readable forms for the review (an incident type code → its title).
+    wrong_label: str | None = None
+    correct_label: str | None = None
+
+
 class CardResponseScenario(BaseModel):
     model_config = SCENARIO
 
@@ -107,6 +127,8 @@ class CardResponseScenario(BaseModel):
     duplicate_of: str | None = None  # number of the earlier card (duplicate scenarios)
     card: Card
     reference: CardResponseReference
+    # Planted operator mistakes; the card keeps the wrong values, the truth lives only here.
+    injected_errors: list[InjectedError] = Field(default_factory=list)
 
 
 class StatusEntry(BaseModel):
@@ -121,12 +143,23 @@ class StatusEntry(BaseModel):
     reject_reason: str | None = None  # code chosen in the drop-down for «Не принята» / «Отказ»
 
 
+class FlaggedField(BaseModel):
+    """A card field the dispatcher marked as wrong, with the value they consider right."""
+
+    model_config = STRICT
+
+    field: str
+    corrected_value: str
+    at: datetime
+
+
 class CardResponseAttempt(BaseModel):
     model_config = STRICT
 
     issued_at: datetime  # «Добавлена»: the 30 seconds count from here
     received_at: datetime | None = None  # «Получена службой»
     status_log: list[StatusEntry] = Field(default_factory=list)
+    flagged_fields: list[FlaggedField] = Field(default_factory=list)
 
 
 # --- call_intake -----------------------------------------------------------------------------

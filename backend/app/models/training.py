@@ -209,6 +209,9 @@ class Attempt(Base):
     result: Mapped[dict | None] = mapped_column(JSONB)
     # [{status, order_number, comment, reject_reason, at, by, action_id}] in order.
     status_log: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
+    # Card fields the dispatcher flagged as operator mistakes (issue #35): field,
+    # corrected_value, at, action_id.
+    flagged_fields: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
     dialog: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
     recording_path: Mapped[str | None] = mapped_column(String(500))
     call_state: Mapped[str] = mapped_column(String(16), nullable=False, default=CALL_IDLE)

@@ -128,7 +128,7 @@ async def load_refs(session: AsyncSession) -> ReferenceCodes:
 
 async def load_catalogue(session: AsyncSession) -> dict[str, ServiceInfo]:
     rows = (await session.scalars(select(Service))).all()
-    return {s.code: ServiceInfo(s.code, s.via_arm112) for s in rows}
+    return {s.code: ServiceInfo(s.code, s.via_arm112, s.title) for s in rows}
 
 
 async def ticket_by_ref(session: AsyncSession, ref: str | None) -> Ticket | None:
@@ -1055,6 +1055,7 @@ def _carry_approved(old: dict, new: dict) -> dict:
                 old.get("reference"),
                 old.get("service"),
             )
+            merged["injected_errors"] = old.get("injected_errors") or []
     return merged
 
 

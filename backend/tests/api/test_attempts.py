@@ -15,6 +15,7 @@ from app.models import (
     Attempt,
     Group,
     Scenario,
+    ScenarioVersion,
     SessionEvent,
     TrainingSession,
     User,
@@ -356,6 +357,142 @@ async def test_late_primary_status_marks_not_notified(
     assert r.status_code == 200
     assert r.json()["attempt"]["card_status"] == "registered"
     assert r.json()["attempt"]["primary_status_at"] is not None
+
+
+async def plant_house_error(session_id: uuid.UUID, attempt_id: str) -> None:
+    """Turns the scenario of the attempt into a card with a wrong house (issue #35): the card
+    shows «23», the description and ``injected_errors`` know it is «21»."""
+    async with SessionLocal() as session:
+        attempt = await session.get(Attempt, uuid.UUID(attempt_id))
+        version = await session.scalar(
+            select(ScenarioVersion).where(
+                ScenarioVersion.scenario_id == attempt.scenario_id,
+                ScenarioVersion.version == attempt.scenario_version,
+            )
+        )
+        body = dict(version.body)
+        card = dict(body["card"])
+        address = dict(card["address"])
+        house = address["house"]
+        address["house"] = "23"
+        card["address"] = address
+        card["description"] = f"{card['description']} Заявитель называет дом {house}."
+        body["card"] = card
+        body["injected_errors"] = [
+            {"field": "address.house", "wrong_value": "23", "correct_value": house}
+        ]
+        version.body = body
+        await session.commit()
+
+
+async def test_flag_field_is_stored_scored_and_closed_with_the_card(client: AsyncClient) -> None:
+    session_id = await make_session(scenario_keys=["card_2-1_zadymlenie_musoroprovoda"])
+    token = await login(client, "student1")
+    item = (await journal(client, token, session_id))["items"][0]
+    attempt_id = item["attempt_id"]
+    await plant_house_error(session_id, attempt_id)
+
+    # Unknown field and empty value are refused; a flag on a fresh card also opens it.
+    r = await client.post(
+        f"/api/attempts/{attempt_id}/flag-field",
+        headers=bearer(token),
+        json={"field": "caller.email", "corrected_value": "x"},
+    )
+    assert r.status_code == 422 and r.json()["error"]["code"] == "unknown_field"
+    r = await client.post(
+        f"/api/attempts/{attempt_id}/flag-field",
+        headers=bearer(token),
+        json={"field": "address.house", "corrected_value": "   "},
+    )
+    assert r.status_code == 422
+    r = await client.post(
+        f"/api/attempts/{attempt_id}/flag-field",
+        headers=bearer(token),
+        json={"field": "address.house", "corrected_value": "20", "action_id": "f-1"},
+    )
+    assert r.status_code == 200, r.text
+    data = r.json()
+    assert data["applied"] is True
+    assert data["attempt"]["received_at"] is not None
+    assert [f["field"] for f in data["attempt"]["flagged_fields"]] == ["address.house"]
+    assert data["attempt"]["flagged_fields"][0]["title"] == "Дом"
+    assert data["attempt"]["card"]["address"]["house"] == "23"  # the card keeps the wrong value
+
+    # A retry with the same action id changes nothing; a new flag on the field replaces it.
+    r = await client.post(
+        f"/api/attempts/{attempt_id}/flag-field",
+        headers=bearer(token),
+        json={"field": "address.house", "corrected_value": "20", "action_id": "f-1"},
+    )
+    assert r.json()["applied"] is False
+    r = await client.post(
+        f"/api/attempts/{attempt_id}/flag-field",
+        headers=bearer(token),
+        json={"field": "address.house", "corrected_value": "21"},
+    )
+    assert [f["corrected_value"] for f in r.json()["attempt"]["flagged_fields"]] == ["21"]
+
+    # A flag on a right field can be removed again.
+    r = await client.post(
+        f"/api/attempts/{attempt_id}/flag-field",
+        headers=bearer(token),
+        json={"field": "caller.phone", "corrected_value": "+7 916 000-00-00"},
+    )
+    assert len(r.json()["attempt"]["flagged_fields"]) == 2
+    r = await client.delete(
+        f"/api/attempts/{attempt_id}/flag-field",
+        headers=bearer(token),
+        params={"field": "caller.phone"},
+    )
+    assert r.status_code == 200 and r.json()["applied"] is True
+    assert len(r.json()["attempt"]["flagged_fields"]) == 1
+
+    # The monitoring saw the check as attempt.progress with the flagged fields.
+    async with SessionLocal() as session:
+        events = list(
+            await session.scalars(
+                select(SessionEvent).where(
+                    SessionEvent.session_id == session_id, SessionEvent.type == "attempt.progress"
+                )
+            )
+        )
+    assert events and events[-1].payload["stage"] == "checking_data"
+    assert events[-1].payload["flagged_fields"] == ["address.house"]
+
+    # Closing the card scores «Проверка данных» at the maximum; flags are frozen after.
+    for body in (
+        {"status": "accepted"},
+        {"status": "response_started", "order_number": "14-217", "comment": "Направлен слесарь"},
+        {"status": "arrived"},
+        {"status": "works_started", "comment": "Мусоропровод вскрыт"},
+        {"status": "works_done", "comment": "Задымление устранено, пострадавших нет"},
+    ):
+        r = await set_status(client, token, attempt_id, **body)
+        assert r.status_code == 200, r.text
+    evaluation = r.json()["attempt"]["evaluation"]
+    check = evaluation["components"]["data_check"]
+    assert check["score"] == check["max"] > 0
+    assert check["items"][0]["verdict"] == "found"
+    assert not {e["code"] for e in evaluation["errors"]} & {"error_missed", "false_alarm"}
+    r = await client.post(
+        f"/api/attempts/{attempt_id}/flag-field",
+        headers=bearer(token),
+        json={"field": "address.street", "corrected_value": "другая"},
+    )
+    assert r.status_code == 409
+
+
+async def test_flag_field_only_by_the_owner(client: AsyncClient) -> None:
+    session_id = await make_session(scenario_keys=["card_2-1_zadymlenie_musoroprovoda"])
+    token = await login(client, "student1")
+    attempt_id = (await journal(client, token, session_id))["items"][0]["attempt_id"]
+    other = await login(client, "student2")
+    r = await client.post(
+        f"/api/attempts/{attempt_id}/flag-field",
+        headers=bearer(other),
+        json={"field": "address.house", "corrected_value": "1"},
+    )
+    assert r.status_code in (403, 404)
 
 
 async def test_finish_without_final_status(client: AsyncClient) -> None:

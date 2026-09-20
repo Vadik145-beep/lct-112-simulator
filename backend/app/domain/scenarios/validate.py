@@ -14,7 +14,8 @@ from dataclasses import dataclass, field
 
 from pydantic import ValidationError
 
-from app.domain.evaluation.schemas import parse_scenario
+from app.domain.evaluation.data_check import FIELD_TITLES, values_match
+from app.domain.evaluation.schemas import CardResponseScenario, parse_scenario
 from app.domain.reference_data import REJECT_REASONS, RESPONSE_STATUSES
 from app.domain.scenarios.generated import TOPIC_CODES
 from app.domain.scenarios.personas import NOISE_CODES, PERSONA_BY_CODE
@@ -79,6 +80,7 @@ def check_body(body: Mapping, refs: ReferenceCodes) -> list[str]:
         bad_statuses = sorted({s.status for s in reference.status_chain} - STATUS_CODES)
         if bad_statuses:
             problems.append(f"Неизвестные статусы в эталоне: {', '.join(bad_statuses)}.")
+        problems += _check_injected_errors(scenario, refs)
 
     if type_code not in refs.incident_types:
         problems.append(f"Тип происшествия {type_code} отсутствует в классификаторе.")
@@ -91,6 +93,53 @@ def check_body(body: Mapping, refs: ReferenceCodes) -> list[str]:
     if scenario.ticket_ref and refs.tickets and scenario.ticket_ref not in refs.tickets:
         problems.append(f"Билет {scenario.ticket_ref} не найден.")
     return problems
+
+
+def _check_injected_errors(scenario: CardResponseScenario, refs: ReferenceCodes) -> list[str]:
+    """Planted operator mistakes (issue #35): known fields, a real difference, codes that
+    exist, and the card indeed showing the wrong value."""
+    problems: list[str] = []
+    seen: set[str] = set()
+    for error in scenario.injected_errors:
+        if error.field not in FIELD_TITLES:
+            problems.append(f"Неизвестное поле заложенной ошибки: {error.field}.")
+            continue
+        if error.field in seen:
+            problems.append(f"Поле {error.field} заложено как ошибка дважды.")
+        seen.add(error.field)
+        if values_match(error.field, error.correct_value, error.wrong_value, error.correct_label):
+            problems.append(
+                f"Заложенная ошибка в поле {error.field} не отличается от верного значения."
+            )
+        if error.field == "incident_type" and error.correct_value not in refs.incident_types:
+            problems.append(f"Верный тип {error.correct_value} отсутствует в классификаторе.")
+        if error.field == "services":
+            code = error.correct_value.lstrip("+-")
+            if code not in refs.services:
+                problems.append(f"Неизвестная служба в заложенной ошибке: {code}.")
+        shown = _card_value(scenario, error.field)
+        if shown is not None and not values_match(error.field, error.wrong_value, shown):
+            problems.append(
+                f"В карточке поле {error.field} = «{shown}», а заложенная ошибка ожидает "
+                f"«{error.wrong_value}»."
+            )
+    return problems
+
+
+def _card_value(scenario: CardResponseScenario, field: str) -> str | None:
+    """What the card shows in the field, in the notation of ``InjectedError`` values."""
+    card = scenario.card
+    if field.startswith("address."):
+        return getattr(card.address, field.split(".", 1)[1], None) or ""
+    if field.startswith("flags."):
+        return "true" if card.flags.get(field.split(".", 1)[1]) else "false"
+    if field.startswith("caller."):
+        return getattr(card.caller, field.split(".", 1)[1], None) or ""
+    if field == "incident_type":
+        return card.incident_type
+    if field == "description":
+        return card.description
+    return None  # services: «+code» / «-code» describe an action, not a value
 
 
 def fill_from_reference(body: dict, refs: ReferenceCodes) -> dict:
@@ -133,6 +182,7 @@ def _reference_part(body: Mapping) -> dict:
         "card": body.get("card"),
         "reference": body.get("reference"),
         "service": body.get("service"),
+        "injected_errors": body.get("injected_errors") or [],
     }
 
 

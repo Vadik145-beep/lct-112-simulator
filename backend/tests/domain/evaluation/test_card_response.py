@@ -281,13 +281,50 @@ def test_session_weights_scale_the_maximums() -> None:
     assert result.total == round((0 + 20 + 0 + 0 + 4) / 100 * 100)
 
 
-def test_weights_must_sum_to_100_and_be_known() -> None:
+def test_weights_are_normalized_and_must_be_known() -> None:
+    """Issue #35: the sum is no longer fixed at 100 — the applicable components are normalized
+    to 100 proportionally; only an all-zero set and unknown keys are rejected."""
     scenario = card_scenario()
     attempt = perfect_card_attempt(scenario)
-    with pytest.raises(ValueError, match="сумма весов"):
-        evaluate_card_response(scenario, attempt, weights={"grammar": 0})
+    result = evaluate_card_response(scenario, attempt, weights={"grammar": 0}, grammar=grammar_ok())
+    assert result.components["grammar"].status == "disabled"
+    assert sum(c.max for c in result.components.values()) == 100
+    assert result.components["decision"].max == 33  # 30 of 95 → 31, the remainder 2 on top
+    zeros = dict.fromkeys(
+        ("decision", "time", "status_chain", "comments", "typical_errors", "grammar"), 0
+    )
+    with pytest.raises(ValueError, match="больше нуля"):
+        evaluate_card_response(scenario, attempt, weights=zeros)
     with pytest.raises(ValueError, match="неизвестные составляющие"):
         evaluate_card_response(scenario, attempt, weights={"speed": 0})
+
+
+def test_classic_six_weights_score_as_before_without_planted_errors() -> None:
+    """Regression for issue #35: a lesson with the six classic weights and a card without
+    ``injected_errors`` gets the same maxima and total as before «Проверка данных» existed."""
+    scenario = card_scenario()
+    assert scenario.injected_errors == []
+    attempt = card_attempt(
+        {"status": "received"},
+        {"status": "accepted", "at": at(45)},
+        {"status": "response_started", "order_number": "14-217", "comment": "Направлен слесарь"},
+        {"status": "arrived"},
+        {"status": "works_started", "comment": "Мусоропровод вскрыт, тлеющий мусор удалён"},
+        {"status": "works_done", "comment": "Задымление устранено, ствол промыт, пострадавших нет"},
+    )
+    classic = {
+        "decision": 30,
+        "time": 20,
+        "status_chain": 20,
+        "comments": 15,
+        "typical_errors": 10,
+        "grammar": 5,
+    }
+    result = evaluate_card_response(scenario, attempt, weights=classic, grammar=grammar_ok())
+    assert "data_check" not in result.components
+    assert {k: c.max for k, c in result.components.items()} == classic
+    assert result.total == 86  # as in test_languagetool_down_renormalizes_the_total
+    assert evaluate_card_response(scenario, attempt, grammar=grammar_ok()).total == 86
 
 
 def test_pass_threshold_is_applied() -> None:

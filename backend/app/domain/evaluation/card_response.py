@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
+from app.domain.evaluation import data_check
 from app.domain.evaluation import status_machine as sm
 from app.domain.evaluation.detectors import CARD_DETECTORS, CardContext, run_detectors
 from app.domain.evaluation.result import (
@@ -36,6 +37,9 @@ from app.providers.embeddings import EmbeddingProvider, TfidfEmbedding
 from app.providers.grammar import GrammarResult
 
 MODE = "card_response"
+# The six classic components sum to 100 on their own; «Проверка данных» (issue #35) exists only
+# for cards with planted operator mistakes and is normalized in with the rest (see
+# ``apply_weights``), so a card without them scores exactly as before.
 DEFAULT_WEIGHTS: dict[str, int] = {
     "decision": 30,
     "time": 20,
@@ -43,6 +47,7 @@ DEFAULT_WEIGHTS: dict[str, int] = {
     "comments": 15,
     "typical_errors": 10,
     "grammar": 5,
+    data_check.KEY: 20,
 }
 TITLES = {
     "decision": "Решение",
@@ -51,7 +56,19 @@ TITLES = {
     "comments": "Комментарии и наряд",
     "typical_errors": "Типичные ошибки",
     "grammar": "Грамотность",
+    data_check.KEY: data_check.TITLE,
 }
+
+
+def applicable_components(scenario: CardResponseScenario | Mapping | None) -> list[str]:
+    """Components that apply to the scenario: «Проверка данных» only with planted errors."""
+    if isinstance(scenario, CardResponseScenario):
+        has_errors = bool(scenario.injected_errors)
+    else:
+        has_errors = bool((scenario or {}).get("injected_errors"))
+    return [k for k in DEFAULT_WEIGHTS if has_errors or k != data_check.KEY]
+
+
 NO_REJECT_SERVICES = frozenset({"103"})
 REJECT_REASON_TITLES = {r["code"]: r["title"] for r in REJECT_REASONS}
 # How a reason is phrased in a free-text comment when the drop-down was not used.
@@ -267,7 +284,7 @@ def evaluate_card_response(
     pass_threshold: int = DEFAULT_PASS_THRESHOLD,
     no_reject: bool | None = None,
 ) -> EvaluationResult:
-    maxima = apply_weights(DEFAULT_WEIGHTS, weights)
+    maxima = apply_weights(DEFAULT_WEIGHTS, weights, applicable_components(scenario))
     embeddings = embeddings or TfidfEmbedding()
     if no_reject is None:
         no_reject = scenario.service in NO_REJECT_SERVICES
@@ -288,6 +305,10 @@ def evaluate_card_response(
         _typical_errors(errors, maxima["typical_errors"]),
         _grammar(grammar, maxima["grammar"]),
     ]
+    if data_check.KEY in maxima:
+        components.insert(
+            4, data_check.data_check_component(scenario, attempt, maxima[data_check.KEY])
+        )
     for component in components:
         if component.max == 0:
             component.status = "disabled"

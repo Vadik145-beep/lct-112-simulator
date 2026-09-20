@@ -73,7 +73,14 @@ def perfect_card_attempt(scenario: CardResponseScenario) -> CardResponseAttempt:
         if ref.status in {"rejected", "works_refused"}:
             step["reject_reason"] = scenario.reference.reject_reason
         steps.append(step)
-    return CardResponseAttempt(issued_at=at(0), received_at=at(5), status_log=status_log(*steps))
+    # A perfect dispatcher also finds every planted operator mistake (issue #35).
+    flags = [
+        {"field": e.field, "corrected_value": e.correct_value, "at": at(10 + i)}
+        for i, e in enumerate(scenario.injected_errors)
+    ]
+    return CardResponseAttempt(
+        issued_at=at(0), received_at=at(5), status_log=status_log(*steps), flagged_fields=flags
+    )
 
 
 def card_attempt(*steps: dict, issued_at: datetime | None = None) -> CardResponseAttempt:

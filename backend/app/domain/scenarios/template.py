@@ -46,6 +46,7 @@ TRAP_BEHAVIOUR: dict[str, str] = {
 class ServiceInfo:
     code: str
     via_arm112: bool
+    title: str = ""
 
 
 # --- helpers ---------------------------------------------------------------------------------

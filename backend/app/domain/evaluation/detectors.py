@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 
 from rapidfuzz import fuzz
 
+from app.domain.evaluation import data_check
 from app.domain.evaluation import status_machine as sm
 from app.domain.evaluation.result import ErrorItem
 from app.domain.evaluation.schemas import (
@@ -314,6 +315,40 @@ def wrong_final_status(ctx: CardContext) -> ErrorItem | None:
     return None
 
 
+def error_missed(ctx: CardContext) -> ErrorItem | None:
+    """A planted operator mistake the dispatcher did not flag (issue #35)."""
+    outcome = data_check.check(ctx.scenario, ctx.attempt)
+    if not outcome.missed:
+        return None
+    fields = ", ".join(
+        f"«{data_check.field_title(e.field)}»: в карточке {_shown(e.wrong_value, e.wrong_label)}, "
+        f"верно {_shown(e.correct_value, e.correct_label)}"
+        for e in outcome.missed
+    )
+    return _item(
+        "error_missed",
+        "В карточке есть ошибка оператора 112, которую следовало найти и отметить: "
+        f"{fields}. Данные карточки проверяются до принятия решения: по ним выезжает наряд.",
+    )
+
+
+def false_alarm(ctx: CardContext) -> ErrorItem | None:
+    """The dispatcher flagged a field that was right (issue #35)."""
+    outcome = data_check.check(ctx.scenario, ctx.attempt)
+    if not outcome.false_alarms:
+        return None
+    fields = ", ".join(f"«{data_check.field_title(f.field)}»" for f in outcome.false_alarms)
+    return _item(
+        "false_alarm",
+        f"Отмечено как ошибка верное поле: {fields}. Прежде чем править карточку, сверьте "
+        "поле с описанием со слов заявителя.",
+    )
+
+
+def _shown(value: str, label: str | None) -> str:
+    return f"«{label}»" if label else f"«{value}»"
+
+
 CARD_DETECTORS: dict[str, Callable[[CardContext], ErrorItem | None]] = {
     "no_status": no_status,
     "late_primary": late_primary,
@@ -326,6 +361,8 @@ CARD_DETECTORS: dict[str, Callable[[CardContext], ErrorItem | None]] = {
     "duplicate_accepted": duplicate_accepted,
     "wrong_accept_unfixed": wrong_accept_unfixed,
     "wrong_final_status": wrong_final_status,
+    "error_missed": error_missed,
+    "false_alarm": false_alarm,
 }
 
 

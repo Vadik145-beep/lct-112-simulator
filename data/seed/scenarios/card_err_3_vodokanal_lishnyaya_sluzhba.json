@@ -1,0 +1,92 @@
+{
+  "kind": "card_response",
+  "title": "Вода из колодца во дворе: в карточке лишняя служба",
+  "ticket_ref": null,
+  "service": "mosvodokanal",
+  "difficulty": 3,
+  "norm_seconds": 30,
+  "card": {
+    "number": "38260453",
+    "incident_type": "14.2.6.3",
+    "signs": [
+      "Прорыв воды (холодной, горячей воды, в т.ч. системы отопления)",
+      "Двор тротуар газон",
+      "из колодца (люка)"
+    ],
+    "flags": {
+      "injured": false,
+      "no_access": false,
+      "threat": false
+    },
+    "address": {
+      "street": "улица Академика Волгина",
+      "house": "14",
+      "building": "2",
+      "okrug": "ЮЗАО",
+      "district": "район Коньково"
+    },
+    "caller": {
+      "name": "Захаров Игорь Павлович",
+      "role": "очевидец",
+      "phone": "+7 916 771-05-38"
+    },
+    "description": "Во дворе дома 14 к. 2 из канализационного колодца на газоне идёт холодная вода, залит тротуар и часть проезда. Лифты, газ и электричество не затронуты. Пострадавших нет.",
+    "notified": [
+      {
+        "service": "moslift",
+        "status": "Получена службой"
+      },
+      {
+        "service": "gkh",
+        "status": "Получена службой"
+      },
+      {
+        "service": "mosvodokanal",
+        "status": "Добавлена"
+      },
+      {
+        "service": "codd",
+        "status": "Получена службой"
+      }
+    ]
+  },
+  "reference": {
+    "decision": "accept",
+    "reject_reason": null,
+    "status_chain": [
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "response_started",
+        "order_number": true,
+        "comment_example": "Направлена аварийная бригада, наряд МВК-2058"
+      },
+      {
+        "status": "arrived"
+      },
+      {
+        "status": "works_started",
+        "comment_example": "Отключение участка водопровода, откачка воды из колодца"
+      },
+      {
+        "status": "works_done",
+        "comment_example": "Заменена задвижка, водоснабжение восстановлено, двор осушен"
+      }
+    ],
+    "critical_errors": [
+      "late_primary",
+      "progress_missing"
+    ]
+  },
+  "injected_errors": [
+    {
+      "field": "services",
+      "wrong_value": "+moslift",
+      "correct_value": "-moslift",
+      "hint_level": 1,
+      "wrong_label": "Мослифт",
+      "correct_label": "Мослифт"
+    }
+  ]
+}

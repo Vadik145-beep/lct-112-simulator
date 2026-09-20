@@ -19,6 +19,7 @@ from app.analytics import ratings
 from app.domain.analytics.adaptive import order_queue
 from app.domain.evaluation import evaluate_attempt
 from app.domain.evaluation import status_machine as machine
+from app.domain.evaluation.data_check import FIELD_TITLES
 from app.errors import ApiError
 from app.events import append_event
 from app.models import (
@@ -477,6 +478,75 @@ async def set_status(
     return StatusChange(changed=True, events=events, issued=[])
 
 
+async def flag_field(
+    session: AsyncSession,
+    attempt: Attempt,
+    ts: TrainingSession,
+    *,
+    field: str,
+    corrected_value: str,
+    action_id: str | None,
+) -> StatusChange:
+    """«Отметить ошибку»: the dispatcher marks a field of the card as an operator mistake and
+    names the right value (issue #35). One flag per field: a second flag replaces the value.
+    Idempotent by ``action_id``. Allowed until the card is closed."""
+    if action_id and any(f.get("action_id") == action_id for f in attempt.flagged_fields):
+        return StatusChange(changed=False, events=[], issued=[])
+    if attempt.state in CLOSED_STATES:
+        raise ApiError(
+            409, "card_closed", "Работа с карточкой завершена: отметить ошибку уже нельзя."
+        )
+    if field not in FIELD_TITLES:
+        raise ApiError(422, "unknown_field", f"В карточке нет поля «{field}».")
+    value = corrected_value.strip()
+    if not value:
+        raise ApiError(422, "empty_value", "Укажите, каким должно быть верное значение поля.")
+    events: list[SessionEvent] = []
+    if attempt.state == ATTEMPT_ISSUED:
+        events += await open_attempt(session, attempt, ts)
+    now = utcnow()
+    kept = [f for f in attempt.flagged_fields if f.get("field") != field]
+    attempt.flagged_fields = [
+        *kept,
+        {"field": field, "corrected_value": value, "at": now.isoformat(), "action_id": action_id},
+    ]
+    flag_modified(attempt, "flagged_fields")
+    events.append(await _flag_event(session, attempt, ts))
+    return StatusChange(changed=True, events=events, issued=[])
+
+
+async def unflag_field(
+    session: AsyncSession, attempt: Attempt, ts: TrainingSession, *, field: str
+) -> StatusChange:
+    """Removes the flag from a field (until the card is closed)."""
+    if attempt.state in CLOSED_STATES:
+        raise ApiError(
+            409, "card_closed", "Работа с карточкой завершена: снять отметку уже нельзя."
+        )
+    kept = [f for f in attempt.flagged_fields if f.get("field") != field]
+    if len(kept) == len(attempt.flagged_fields):
+        return StatusChange(changed=False, events=[], issued=[])
+    attempt.flagged_fields = kept
+    flag_modified(attempt, "flagged_fields")
+    return StatusChange(changed=True, events=[await _flag_event(session, attempt, ts)], issued=[])
+
+
+async def _flag_event(session: AsyncSession, attempt: Attempt, ts: TrainingSession) -> SessionEvent:
+    """The teacher's monitoring learns that the trainee is checking the data of the card:
+    ``attempt.progress`` as for the other actions, with the flagged fields."""
+    return await append_event(
+        session,
+        session_id=ts.id,
+        type_="attempt.progress",
+        student_id=attempt.student_id,
+        payload={
+            "attempt_id": attempt.id,
+            "stage": "checking_data",
+            "flagged_fields": [f["field"] for f in attempt.flagged_fields],
+        },
+    )
+
+
 async def finish_attempt(
     session: AsyncSession, attempt: Attempt, ts: TrainingSession, student: User
 ) -> StatusChange:
@@ -533,6 +603,10 @@ def evaluation_input(attempt: Attempt) -> dict:
             }
             for e in attempt.status_log
             if e.get("by") != BY_SYSTEM
+        ],
+        "flagged_fields": [
+            {"field": f["field"], "corrected_value": f["corrected_value"], "at": f["at"]}
+            for f in attempt.flagged_fields or []
         ],
     }
 

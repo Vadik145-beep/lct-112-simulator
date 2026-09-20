@@ -319,8 +319,28 @@ function CardFacts({ scenario }: { scenario: ScenarioOut }) {
           <FactRow title="Служба обучающегося" value={scenario.service_code ?? ""} />
         </dl>
         <p className="mt-3 text-muted-foreground">Оповещены: {scenario.services.map((s) => s.title).join(", ") || "—"}</p>
+        <PlantedErrors body={scenario.body} />
       </CardContent>
     </Card>
+  );
+}
+
+/** Operator mistakes planted in the card (issue #35); the trainee never sees this list. */
+function PlantedErrors({ body }: { body: Body }) {
+  const errors = (body.injected_errors as Body[] | undefined) ?? [];
+  if (errors.length === 0) return null;
+  return (
+    <div className="mt-3" data-testid="planted-errors">
+      <p className="font-medium">Заложенные ошибки оператора 112 ({errors.length})</p>
+      <ul className="mt-1 list-disc space-y-0.5 pl-5 text-muted-foreground">
+        {errors.map((e, i) => (
+          <li key={i}>
+            {str(e.field)}: в карточке «{str(e.wrong_label || e.wrong_value)}», верно «{str(e.correct_label || e.correct_value)}»
+            {e.hint_level ? ` · заметность ${str(e.hint_level)}` : ""}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

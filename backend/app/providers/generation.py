@@ -23,7 +23,7 @@ from typing import Any, Protocol
 from pydantic import BaseModel, ValidationError
 
 from app.config import get_settings
-from app.domain.scenarios import template
+from app.domain.scenarios import distort, template
 from app.domain.scenarios.classify import rank_types
 from app.domain.scenarios.facts import TicketFacts, parse_ticket
 from app.domain.scenarios.generated import (
@@ -80,6 +80,15 @@ class GenerationContext:
     catalogue: Mapping[str, template.ServiceInfo]
     memo_chunks: Sequence[Chunk] = ()
     similar_tickets: Sequence[Chunk] = ()
+    # Street names for look-alike street mistakes (issue #35); empty = that kind is skipped.
+    streets: Sequence[str] = ()
+
+
+def plant_mistakes(body: dict, ctx: GenerationContext) -> dict:
+    """Operator mistakes for a card by its difficulty (issue #35, ``distort``)."""
+    return distort.inject_by_difficulty(
+        body, type_rows=ctx.type_rows, catalogue=ctx.catalogue, streets=ctx.streets
+    )
 
 
 @dataclass
@@ -187,6 +196,7 @@ class TemplateGeneration:
                 catalogue=ctx.catalogue,
                 difficulty=request.difficulty,
             )
+            body = plant_mistakes(body, ctx)
         return GenerationResult(
             body=body, method=self.method, latency_ms=round((time.perf_counter() - started) * 1000)
         )
@@ -460,7 +470,10 @@ class LlmGeneration:
             body = (
                 call_intake_body(generated, row, request)  # type: ignore[arg-type]
                 if request.kind == "call_intake"
-                else card_response_body(generated, row, request, ctx)  # type: ignore[arg-type]
+                else plant_mistakes(
+                    card_response_body(generated, row, request, ctx),  # type: ignore[arg-type]
+                    ctx,
+                )
             )
             return GenerationResult(
                 body=body,

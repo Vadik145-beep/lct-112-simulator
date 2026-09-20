@@ -9,7 +9,7 @@ with weight 0 is ``disabled`` and excluded the same way.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from dataclasses import asdict, dataclass, field
 from typing import Any, Literal
 
@@ -61,10 +61,22 @@ class EvaluationResult:
         }
 
 
-def apply_weights(defaults: Mapping[str, int], weights: Mapping[str, int] | None) -> dict[str, int]:
-    """Maximums per component for a training session. ``weights`` overrides the defaults; the
-    result must sum to 100 (a session with other sums is rejected when it is created)."""
-    result = dict(defaults)
+def apply_weights(
+    defaults: Mapping[str, int],
+    weights: Mapping[str, int] | None,
+    applicable: Iterable[str] | None = None,
+) -> dict[str, int]:
+    """Maximums per component for a training session.
+
+    The set of components depends on the scenario (``applicable``: for example ``data_check``
+    exists only when the card carries planted errors); the components that do not apply are
+    dropped, ``weights`` of the session override the defaults of the remaining ones, and the
+    result is normalized to 100 proportionally (integers; the rounding remainder goes to the
+    heaviest component). The weights must sum to more than zero. A lesson created with the
+    six classic weights therefore scores exactly as before on a card without planted errors:
+    their sum is already 100."""
+    keep = set(defaults) if applicable is None else set(applicable)
+    result = {k: int(v) for k, v in defaults.items() if k in keep}
     if weights:
         unknown = set(weights) - set(defaults)
         if unknown:
@@ -72,10 +84,25 @@ def apply_weights(defaults: Mapping[str, int], weights: Mapping[str, int] | None
         for key, value in weights.items():
             if value < 0:
                 raise ValueError(f"вес составляющей «{key}» не может быть отрицательным")
-            result[key] = int(value)
-    if sum(result.values()) != 100:
-        raise ValueError(f"сумма весов должна быть 100, получено {sum(result.values())}")
-    return result
+            if key in result:
+                result[key] = int(value)
+    return normalize_weights(result)
+
+
+def normalize_weights(weights: Mapping[str, int]) -> dict[str, int]:
+    """Scales the weights to a total of 100 keeping the proportions: integer parts first, the
+    remainder to the heaviest component (ties: the first in order)."""
+    total = sum(weights.values())
+    if total <= 0:
+        raise ValueError("сумма весов должна быть больше нуля")
+    if total == 100:
+        return dict(weights)
+    scaled = {k: v * 100 // total for k, v in weights.items()}
+    remainder = 100 - sum(scaled.values())
+    if remainder:
+        heaviest = max(weights, key=lambda k: weights[k])
+        scaled[heaviest] += remainder
+    return scaled
 
 
 def scale(max_points: float, fraction: float) -> float:

@@ -1,0 +1,84 @@
+{
+  "kind": "card_response",
+  "title": "Нет отопления в доме: в карточке соседний дом",
+  "ticket_ref": null,
+  "service": "moek",
+  "difficulty": 3,
+  "norm_seconds": 30,
+  "card": {
+    "number": "38260452",
+    "incident_type": "14.1.4.0",
+    "signs": [
+      "Массовое отключение (Несколько домов квартал район округ)",
+      "Нет отопления"
+    ],
+    "flags": {
+      "injured": false,
+      "no_access": false,
+      "threat": false
+    },
+    "address": {
+      "street": "Зелёный проспект",
+      "house": "19",
+      "okrug": "ВАО",
+      "district": "район Перово"
+    },
+    "caller": {
+      "name": "Орлова Наталья Сергеевна",
+      "role": "старшая по дому",
+      "phone": "+7 916 224-90-15"
+    },
+    "description": "С утра холодные батареи во всех подъездах дома 17 по Зелёному проспекту, горячая вода есть. Соседние дома 15 и 19 с теплом. Пострадавших нет.",
+    "notified": [
+      {
+        "service": "gkh",
+        "status": "Получена службой"
+      },
+      {
+        "service": "moek",
+        "status": "Добавлена"
+      },
+      {
+        "service": "territorial_oiv",
+        "status": "Получена службой"
+      }
+    ]
+  },
+  "reference": {
+    "decision": "accept",
+    "reject_reason": null,
+    "status_chain": [
+      {
+        "status": "accepted"
+      },
+      {
+        "status": "response_started",
+        "order_number": true,
+        "comment_example": "Направлена аварийная бригада тепловых сетей, наряд МОЭК-4127"
+      },
+      {
+        "status": "arrived"
+      },
+      {
+        "status": "works_started",
+        "comment_example": "Проверка ИТП дома 17, запуск циркуляции"
+      },
+      {
+        "status": "works_done",
+        "comment_example": "Заменён насос в ИТП, отопление в доме 17 восстановлено"
+      }
+    ],
+    "critical_errors": [
+      "late_primary",
+      "progress_missing"
+    ]
+  },
+  "injected_errors": [
+    {
+      "field": "address.house",
+      "wrong_value": "19",
+      "correct_value": "17",
+      "hint_level": 3
+    }
+  ]
+}
