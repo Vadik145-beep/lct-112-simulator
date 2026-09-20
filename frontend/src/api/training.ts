@@ -42,7 +42,9 @@ function errorCode(error: unknown): string | null {
   return null;
 }
 
-export async function unwrap<T>(call: Promise<{ data?: T; error?: unknown; response: Response }>): Promise<T> {
+export async function unwrap<T>(
+  call: Promise<{ data?: T; error?: unknown; response: Response }>,
+): Promise<T> {
   let result: { data?: T; error?: unknown; response: Response };
   try {
     result = await call;
@@ -50,13 +52,19 @@ export async function unwrap<T>(call: Promise<{ data?: T; error?: unknown; respo
     throw new NetworkError();
   }
   if (result.data === undefined) {
-    throw new RequestError(errorMessage(result.error), result.response.status, errorCode(result.error));
+    throw new RequestError(
+      errorMessage(result.error),
+      result.response.status,
+      errorCode(result.error),
+    );
   }
   return result.data;
 }
 
-export const journalKey = (sessionId: string) => ["journal", sessionId] as const;
-export const attemptKey = (attemptId: string) => ["attempt", attemptId] as const;
+export const journalKey = (sessionId: string) =>
+  ["journal", sessionId] as const;
+export const attemptKey = (attemptId: string) =>
+  ["attempt", attemptId] as const;
 
 // «Мои задания» has no WebSocket of its own: a lesson the teacher starts shows up on
 // the next poll.
@@ -76,7 +84,10 @@ export function useJournal(sessionId: string, page: number, perPage: number) {
     queryFn: () =>
       unwrap(
         api.GET("/api/sessions/{session_id}/journal", {
-          params: { path: { session_id: sessionId }, query: { page, per_page: perPage } },
+          params: {
+            path: { session_id: sessionId },
+            query: { page, per_page: perPage },
+          },
         }),
       ),
     placeholderData: (previous) => previous,
@@ -87,7 +98,11 @@ export function useAttempt(attemptId: string) {
   return useQuery({
     queryKey: attemptKey(attemptId),
     queryFn: () =>
-      unwrap(api.GET("/api/attempts/{attempt_id}", { params: { path: { attempt_id: attemptId } } })),
+      unwrap(
+        api.GET("/api/attempts/{attempt_id}", {
+          params: { path: { attempt_id: attemptId } },
+        }),
+      ),
   });
 }
 
@@ -95,7 +110,11 @@ export function useOpenAttempt(attemptId: string) {
   const client = useQueryClient();
   return useMutation({
     mutationFn: () =>
-      unwrap(api.POST("/api/attempts/{attempt_id}/open", { params: { path: { attempt_id: attemptId } } })),
+      unwrap(
+        api.POST("/api/attempts/{attempt_id}/open", {
+          params: { path: { attempt_id: attemptId } },
+        }),
+      ),
     onSuccess: (data) => client.setQueryData(attemptKey(attemptId), data),
   });
 }
@@ -112,7 +131,9 @@ export function useSetStatus(attemptId: string) {
       ),
     onSuccess: (data) => {
       client.setQueryData(attemptKey(attemptId), data.attempt);
-      void client.invalidateQueries({ queryKey: journalKey(data.attempt.session.id) });
+      void client.invalidateQueries({
+        queryKey: journalKey(data.attempt.session.id),
+      });
     },
   });
 }
@@ -122,11 +143,15 @@ export function useFinishAttempt(attemptId: string) {
   return useMutation({
     mutationFn: () =>
       unwrap(
-        api.POST("/api/attempts/{attempt_id}/finish", { params: { path: { attempt_id: attemptId } } }),
+        api.POST("/api/attempts/{attempt_id}/finish", {
+          params: { path: { attempt_id: attemptId } },
+        }),
       ),
     onSuccess: (data) => {
       client.setQueryData(attemptKey(attemptId), data.attempt);
-      void client.invalidateQueries({ queryKey: journalKey(data.attempt.session.id) });
+      void client.invalidateQueries({
+        queryKey: journalKey(data.attempt.session.id),
+      });
     },
   });
 }
@@ -144,7 +169,8 @@ export function useFlagField(attemptId: string) {
           body,
         }),
       ),
-    onSuccess: (data) => client.setQueryData(attemptKey(attemptId), data.attempt),
+    onSuccess: (data) =>
+      client.setQueryData(attemptKey(attemptId), data.attempt),
   });
 }
 
@@ -157,7 +183,63 @@ export function useUnflagField(attemptId: string) {
           params: { path: { attempt_id: attemptId }, query: { field } },
         }),
       ),
-    onSuccess: (data) => client.setQueryData(attemptKey(attemptId), data.attempt),
+    onSuccess: (data) =>
+      client.setQueryData(attemptKey(attemptId), data.attempt),
+  });
+}
+
+export type ServiceCallResponse = components["schemas"]["ServiceCallResponse"];
+
+/** «Позвонить» a service officer from the card (issue #36). */
+export function useStartServiceCall(attemptId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (service: string) =>
+      unwrap(
+        api.POST("/api/attempts/{attempt_id}/service-call", {
+          params: { path: { attempt_id: attemptId } },
+          body: { service },
+        }),
+      ),
+    onSuccess: (data) =>
+      client.setQueryData(attemptKey(attemptId), data.attempt),
+  });
+}
+
+export function useSayToOfficer(attemptId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      callId,
+      text,
+      actionId,
+    }: {
+      callId: string;
+      text: string;
+      actionId: string;
+    }) =>
+      unwrap(
+        api.POST("/api/attempts/{attempt_id}/service-call/{call_id}/say", {
+          params: { path: { attempt_id: attemptId, call_id: callId } },
+          body: { text, action_id: actionId },
+        }),
+      ),
+    onSuccess: (data) =>
+      client.setQueryData(attemptKey(attemptId), data.attempt),
+  });
+}
+
+export function useEndServiceCall(attemptId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (callId: string) =>
+      unwrap(
+        api.POST("/api/attempts/{attempt_id}/service-call/{call_id}/end", {
+          params: { path: { attempt_id: attemptId, call_id: callId } },
+        }),
+      ),
+    onSuccess: (data) =>
+      client.setQueryData(attemptKey(attemptId), data.attempt),
   });
 }
 
@@ -202,7 +284,8 @@ export function useReferenceSearch(query: string) {
   const q = query.trim();
   return useQuery({
     queryKey: ["reference-search", q],
-    queryFn: () => unwrap(api.GET("/api/reference/search", { params: { query: { q } } })),
+    queryFn: () =>
+      unwrap(api.GET("/api/reference/search", { params: { query: { q } } })),
     enabled: q.length >= 2,
     placeholderData: (previous) => previous,
   });

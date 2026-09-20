@@ -383,7 +383,7 @@ function ToScenarioButton({ attemptId }: { attemptId: string }) {
 }
 
 /** Media endpoints need the bearer token, which <audio src> cannot send: fetched on demand. */
-function TokenAudio({ url, label, className }: { url: string; label: string; className?: string }) {
+export function TokenAudio({ url, label, className }: { url: string; label: string; className?: string }) {
   const [src, setSrc] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
   if (src) return <audio controls autoPlay src={src} className={className} aria-label={label} />;
