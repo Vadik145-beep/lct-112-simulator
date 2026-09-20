@@ -27,6 +27,7 @@
 | 12 | Сдача: стенд, презентация, видео, тег | 27-29.09 | [wave-12.md](wave-12.md) |
 | G | Живой диалог на GPU-узле (трек Константина) | после волны 7 | [track-g-live.md](track-g-live.md) |
 | K | Стенд, телефон, грант, презентация (трек Константина) | всё время | [track-k-konstantin.md](track-k-konstantin.md) |
+| C | Облачный голос заявителя через Vapi (демо вне закрытого контура) | 19-20.09 | [track-c-vapi.md](track-c-vapi.md) |
 
 Готовые промпты для каждой волны: [PROMPTS.md](PROMPTS.md).
 Текущее состояние: [../docs/PROGRESS.md](../docs/PROGRESS.md).

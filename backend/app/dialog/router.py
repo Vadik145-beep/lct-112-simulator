@@ -72,11 +72,17 @@ async def _dialog_out(
     covered = dialog.covered_topics(attempt)
     required = set(scenario.required_topics)
     provider = dialog.provider_for(ts)
+    # With the cloud voice (plan/track-c-vapi.md) the lesson's mode does not apply: the
+    # caller lives in Vapi, and no reply of the call is a keyword fallback.
+    from app.telephony.service import cloud_active
+
+    cloud = cloud_active()
+    mode = dialog.EXTERNAL_METHOD if cloud else provider.mode
     return DialogOut(
         attempt_id=str(attempt.id),
-        mode=provider.mode,
-        requested_mode=ts.dialog_mode or get_settings().dialog_mode,
-        fallback_replies=dialog.fallback_replies(attempt, provider.mode),
+        mode=mode,
+        requested_mode=mode if cloud else (ts.dialog_mode or get_settings().dialog_mode),
+        fallback_replies=0 if cloud else dialog.fallback_replies(attempt, provider.mode),
         stt_available=dialog.stt_available(),
         tts_available=dialog.tts_available(),
         answered_at=attempt.answered_at,

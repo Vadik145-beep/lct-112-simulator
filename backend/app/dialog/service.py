@@ -27,6 +27,7 @@ from sqlalchemy.orm.attributes import flag_modified
 from app.config import get_settings
 from app.dialog import call
 from app.domain.evaluation.schemas import CallIntakeScenario, DialogTurn
+from app.domain.evaluation.text import detect_topics, normalize_text
 from app.domain.reference_data import CALLER_TOPICS
 from app.errors import ApiError
 from app.events import append_event
@@ -49,6 +50,7 @@ from app.models import (
 )
 from app.providers.dialog import (
     FALLBACK_METHODS,
+    SERVICE_TOPICS,
     TOPIC_CODES,
     CallerReply,
     DialogContext,
@@ -285,6 +287,65 @@ _TOPIC_TITLES = {t["code"]: t["title"] for t in CALLER_TOPICS}
 def topic_question(topic: str) -> str:
     """Text stored for a topic button press, so the transcript reads as a conversation."""
     return f"[{_TOPIC_TITLES.get(topic, topic)}]"
+
+
+# ---------------------------------------------------------------- cloud voice (track C)
+
+EXTERNAL_METHOD = "cloud"
+
+
+def _is_opening(attempt: Attempt, role: str, text: str) -> bool:
+    """The cloud provider reports the opening it spoke first; turn 0 already holds it."""
+    if role != "caller" or len(attempt.dialog) != 1:
+        return False
+    return normalize_text(text) == normalize_text(attempt.dialog[0].get("text", ""))
+
+
+async def external_turn(
+    session: AsyncSession,
+    attempt: Attempt,
+    ts: TrainingSession,
+    scenario: CallIntakeScenario,
+    role: str,
+    text: str,
+    *,
+    now: datetime | None = None,
+) -> tuple[dict | None, list[SessionEvent]]:
+    """One turn heard from the cloud voice provider (plan/track-c-vapi.md): the operator's
+    phrase or the caller's reply as the provider transcribed it. Topics come from keywords;
+    the evaluation engine reads them like any other turn."""
+    if role not in ("operator", "caller"):
+        raise ValueError(f"unknown dialog role: {role!r}")
+    text = text.strip()
+    if not text:
+        return None, []
+    now = now or training.utcnow()
+    _ensure_opening(attempt, scenario, now)
+    if _is_opening(attempt, role, text):
+        return attempt.dialog[0], []
+    topics = [t for t in detect_topics(text) if t not in SERVICE_TOPICS]
+    turn = _turn(role, text, topics, now, method=EXTERNAL_METHOD, heard=role == "operator")
+    attempt.dialog = [*attempt.dialog, turn]
+    flag_modified(attempt, "dialog")
+    await session.flush()
+    event = await append_event(
+        session,
+        session_id=ts.id,
+        type_=EVENT_DIALOG_TURN,
+        student_id=attempt.student_id,
+        payload={
+            "attempt_id": attempt.id,
+            "turns": len(attempt.dialog),
+            "operator": turn if role == "operator" else None,
+            "caller": turn if role == "caller" else None,
+            "pending_reply": False,
+        },
+    )
+    return turn, [event]
+
+
+def external_turns(attempt: Attempt) -> list[dict]:
+    return [t for t in attempt.dialog if t.get("method") == EXTERNAL_METHOD]
 
 
 def covered_topics(attempt: Attempt) -> set[str]:

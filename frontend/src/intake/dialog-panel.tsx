@@ -15,6 +15,7 @@ const DIALOG_MODE_TITLES: Record<string, string> = {
   generate: "Свободная генерация",
   buttons: "Кнопки тем",
   live: "Живой режим",
+  cloud: "Облачный голос",
 };
 
 /**
