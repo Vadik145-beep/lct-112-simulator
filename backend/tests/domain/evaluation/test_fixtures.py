@@ -1,5 +1,6 @@
-"""The 10 reference scenarios in data/seed/scenarios: valid, consistent with the classifier
-and the memo, and a perfect attempt against each scores 100."""
+"""The reference scenarios in data/seed/scenarios: both kinds are present, every file is
+valid and consistent with the classifier and the memo, and a perfect attempt against each
+scores 100. The number of files is not fixed: the seed grows with the dataset."""
 
 from __future__ import annotations
 
@@ -34,16 +35,18 @@ ERROR_CODES = {e["code"] for e in TYPICAL_ERRORS}
 REASONS = {r["code"] for r in REJECT_REASONS}
 
 
-def test_five_scenarios_of_each_kind() -> None:
-    kinds = [parse_scenario(json.loads(f.read_text(encoding="utf-8"))).kind for f in FILES]
-    assert kinds.count("card_response") == 5
-    assert kinds.count("call_intake") == 10
+def test_both_kinds_present_and_every_file_parses() -> None:
+    assert FILES, "в data/seed/scenarios нет ни одного сценария"
+    kinds = {parse_scenario(json.loads(f.read_text(encoding="utf-8"))).kind for f in FILES}
+    assert kinds == {"card_response", "call_intake"}
 
 
 @pytest.mark.parametrize("path", FILES, ids=[f.stem for f in FILES])
 def test_scenario_is_consistent_with_the_reference_data(path: Path) -> None:
     scenario = parse_scenario(json.loads(path.read_text(encoding="utf-8")))
-    assert scenario.ticket_ref, "каждый эталон построен из билета"
+    if isinstance(scenario, CallIntakeScenario):
+        assert scenario.ticket_ref, "каждый звонок построен из билета"
+    # Cards of the utility services are authored, not built from tickets: ticket_ref may be empty.
     if isinstance(scenario, CardResponseScenario):
         assert scenario.service in SERVICES
         assert scenario.card.incident_type in TYPES
