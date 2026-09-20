@@ -1044,6 +1044,9 @@ function CardView({
             )}
             sttAvailable={sttAvailable}
             micDeviceId={softphone?.micDeviceId ?? null}
+            devices={softphone?.devices ?? []}
+            onMicDevice={(id) => softphone?.setMicDevice(id)}
+            onMicOpened={() => void softphone?.refreshDevices()}
             pending={callBusy}
             error={callError ? callError.message : null}
             onSay={(text, actionId) =>
