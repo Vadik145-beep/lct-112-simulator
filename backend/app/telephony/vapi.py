@@ -44,12 +44,12 @@ VOICE_SETTING = {
 # ElevenLabs voice settings by the caller's state: low stability and a high style weight
 # make the delivery waver and break, a calmer caller keeps a steadier tone (still tense: it
 # is a 112 call). ``speed`` > 1 hurries the panicked, the elderly speak slower.
-# ElevenLabs caps ``speed`` at 1.2; the library voices read slowly, so everyone is near it.
+# ElevenLabs allows ``speed`` 0.7–1.2; tuned by ear on the stand (flash v2.5, 20.09.2026).
 VOICE_SETTINGS = {
-    "panic": {"stability": 0.2, "similarityBoost": 0.7, "style": 0.65, "speed": 1.2},
-    "anxious": {"stability": 0.3, "similarityBoost": 0.7, "style": 0.5, "speed": 1.2},
-    "angry": {"stability": 0.25, "similarityBoost": 0.7, "style": 0.6, "speed": 1.2},
-    "calm": {"stability": 0.45, "similarityBoost": 0.75, "style": 0.3, "speed": 1.15},
+    "panic": {"stability": 0.2, "similarityBoost": 0.7, "style": 0.65, "speed": 1.08},
+    "anxious": {"stability": 0.3, "similarityBoost": 0.7, "style": 0.5, "speed": 1.08},
+    "angry": {"stability": 0.25, "similarityBoost": 0.7, "style": 0.6, "speed": 1.08},
+    "calm": {"stability": 0.45, "similarityBoost": 0.75, "style": 0.3, "speed": 1.03},
 }
 STABILITY_AGITATED = VOICE_SETTINGS["panic"]["stability"]
 STABILITY_CALM = VOICE_SETTINGS["calm"]["stability"]
