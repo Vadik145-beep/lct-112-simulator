@@ -42,6 +42,21 @@ x-backend-env: &backend-env
   ARI_PASSWORD: ${ARI_PASSWORD:-trainer}
   ASTERISK_CONFIG_DIR: /asterisk
   TELEPHONY_MEDIA_HOST: backend
+  # Cloud voice (profile cloud, plan/track-c-vapi.md): the caller is played by Vapi.
+  CLOUD_VOICE_ENABLED: ${CLOUD_VOICE_ENABLED:-false}
+  VAPI_API_KEY: ${VAPI_API_KEY:-}
+  VAPI_SIP_HOST: ${VAPI_SIP_HOST:-sip.vapi.ai}
+  VAPI_NUMBER_NAME: ${VAPI_NUMBER_NAME:-dds-trainer}
+  CLOUD_VOICE_PUBLIC_URL: ${CLOUD_VOICE_PUBLIC_URL:-}
+  CLOUD_VOICE_WEBHOOK_SECRET: ${CLOUD_VOICE_WEBHOOK_SECRET:-}
+  CLOUD_VOICE_MODEL_PROVIDER: ${CLOUD_VOICE_MODEL_PROVIDER:-openai}
+  CLOUD_VOICE_MODEL: ${CLOUD_VOICE_MODEL:-gpt-4.1}
+  CLOUD_VOICE_VOICE_PROVIDER: ${CLOUD_VOICE_VOICE_PROVIDER:-11labs}
+  CLOUD_VOICE_VOICE_ID: ${CLOUD_VOICE_VOICE_ID:-3EuKHIEZbSzrHGNmdYsx}
+  CLOUD_VOICE_VOICE_MODEL: ${CLOUD_VOICE_VOICE_MODEL:-eleven_multilingual_v2}
+  CLOUD_VOICE_TRANSCRIBER_PROVIDER: ${CLOUD_VOICE_TRANSCRIBER_PROVIDER:-deepgram}
+  CLOUD_VOICE_TRANSCRIBER_MODEL: ${CLOUD_VOICE_TRANSCRIBER_MODEL:-nova-2}
+  CLOUD_VOICE_LANGUAGE: ${CLOUD_VOICE_LANGUAGE:-ru}
 
 services:
   nginx:
@@ -54,8 +69,13 @@ services:
       - "${HTTPS_PORT:-443}:443"
     environment:
       TLS_HOSTS: ${TLS_HOSTS:-localhost,127.0.0.1}
+      # Domain with a Let's Encrypt certificate (profile cloud, plan/track-c-vapi.md);
+      # empty = only the internal certificate above.
+      PUBLIC_HOST: ${PUBLIC_HOST:-}
     volumes:
       - certs:/etc/nginx/certs
+      - letsencrypt:/etc/nginx/letsencrypt:ro
+      - certbot-www:/var/www/certbot:ro
     depends_on:
       backend:
         condition: service_healthy
@@ -306,6 +326,47 @@ services:
       retries: 5
       start_period: 20s
 
+  # ---------- Облачный голос (профиль cloud, plan/track-c-vapi.md) ----------
+  # Отдельный Asterisk с SIP-транком на Vapi: заявителя играет облако, стажёр отвечает в том же
+  # софтфоне. Сетевой псевдоним «asterisk», поэтому nginx (/ws/sip) и бэкенд (ARI_URL) не
+  # меняются; профили telephony и cloud в одном проекте вместе не поднимать. Порты SIP и RTP
+  # свои (CLOUD_*), чтобы не пересекаться с локальным контейнером.
+  asterisk-cloud:
+    build:
+      context: ./deploy
+      dockerfile: asterisk-cloud/Dockerfile
+    profiles: ["cloud"]
+    restart: unless-stopped
+    hostname: asterisk-cloud
+    networks:
+      default:
+        aliases:
+          - asterisk
+    environment:
+      ARI_PASSWORD: ${ARI_PASSWORD:-trainer}
+      TELEPHONY_EXTERNAL_IP: ${TELEPHONY_EXTERNAL_IP:-}
+      TELEPHONY_LOCAL_NET: ${TELEPHONY_LOCAL_NET:-172.16.0.0/12}
+      CLOUD_SIP_PORT: ${CLOUD_SIP_PORT:-5061}
+      CLOUD_RTP_START: ${CLOUD_RTP_START:-10200}
+      CLOUD_RTP_END: ${CLOUD_RTP_END:-10300}
+      VAPI_SIP_HOST: ${VAPI_SIP_HOST:-sip.vapi.ai}
+      TZ: ${TZ:-Europe/Moscow}
+    ports:
+      - "${CLOUD_SIP_PORT:-5061}:${CLOUD_SIP_PORT:-5061}/udp"
+      - "${CLOUD_SIP_PORT:-5061}:${CLOUD_SIP_PORT:-5061}/tcp"
+      - "${CLOUD_ARI_PORT:-8089}:8088"
+      - "${CLOUD_RTP_START:-10200}-${CLOUD_RTP_END:-10300}:${CLOUD_RTP_START:-10200}-${CLOUD_RTP_END:-10300}/udp"
+    volumes:
+      - asterisk-conf:/etc/asterisk/generated
+      - storage:/var/spool/asterisk/recording
+      - storage:/var/lib/asterisk/sounds/trainer:ro
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/healthcheck.sh"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
   # ---------- Профили следующих волн (объявлены, пока пустые) ----------
   # live: vLLM, потоковые STT/TTS, VAD — трек G.
   # monitoring: Prometheus, Grafana — фаза E.
@@ -321,3 +382,6 @@ volumes:
   backups:
   certs:
   asterisk-conf:
+  # Let's Encrypt certificate of PUBLIC_HOST and the webroot of its challenges (profile cloud).
+  letsencrypt:
+  certbot-www:

@@ -27,6 +27,55 @@ N по категории из UI нет»). От `wave-11/bugfix` `a7f2fc2`.
   (`npm run gen:api`), не разрешать руками. Остальные общие файлы (`scenarios/service.py`,
   `tests/api/test_sessions.py`, `PROGRESS.md`) сливаются сами.
 
+## Трек C: облачный голос через Vapi (в работе)
+
+План [plan/track-c-vapi.md](../plan/track-c-vapi.md), ветка `track-c/vapi` от
+`wave-11/bugfix`. Демо-режим вне закрытого контура: заявителя играет Vapi (распознавание,
+модель, голос ElevenLabs) через SIP-транк отдельного контейнера `asterisk-cloud`; локальный
+конвейер и стенд экспертизы не меняются.
+
+### Сделано
+
+- Настройки `CLOUD_VOICE_*`, `VAPI_*`, `PUBLIC_HOST`, `CLOUD_*_PORT` (`.env.example`);
+  `CLOUD_VOICE_ENABLED=true` при `ALLOW_EXTERNAL_AI=false` не даёт стартовать, как внешние модели.
+- `app/telephony/vapi.py`: клиент Vapi (SIP-номер `provider=vapi` без ассистента заводится
+  при старте и перенацеливается на адрес стенда) и сборка временного ассистента: промпт
+  заявителя из сценария (персона, поведение, факты, «бросает трубку»), первая реплика =
+  `caller.opening`, голос, распознавание на русском, `serverMessages`.
+- `app/telephony/cloud.py`: `CloudCallManager` поверх `CallManager` — стажёру звонят как
+  раньше, после ответа мост + запись + вторая нога `Local/s@vapi-out` (номер вызывающего =
+  10-значный токен звонка); ExternalMedia, VAD и локальные STT/LLM/TTS не задействованы.
+  Вебхуки: `assistant-request` → ассистент по токену, `transcript` (final) → ходы диалога,
+  `status-update: ended` / `end-of-call-report` → `call.ended` (нехватающие фразы из отчёта
+  добавляются), `hang` → лог. Обе ноги рвутся при любом окончании.
+- `POST /api/cloud/vapi/webhook` (`cloud_router.py`): 404 при выключенном режиме, 401 без
+  заголовка `X-Trainer-Secret`.
+- `dialog.external_turn`: ход «как услышано», темы по ключевым словам, метод `cloud`;
+  `DialogOut.mode = cloud` и без предупреждения о запасных ответах, подпись «Облачный голос».
+- `deploy/asterisk-cloud/` (образ на базе `deploy/asterisk`: те же шаблоны, транк `vapi`
+  из `VAPI_SIP_HOST`, диалплан `vapi-out`/`vapi-predial`, порт SIP настраиваемый), сервис
+  `asterisk-cloud` в compose (профиль `cloud`, псевдоним сети `asterisk`, порты 5061 /
+  8089 / 10200–10300).
+- nginx: маршруты вынесены в `locations.conf`; `/.well-known/acme-challenge/` на 80-м
+  порту; при `PUBLIC_HOST` и сертификате в томе `letsencrypt` entrypoint пишет второй
+  server-блок (Vapi принимает вебхуки только по HTTPS с публичным сертификатом).
+- Тесты: `tests/telephony/test_cloud.py` (12: нога Vapi и мост, отказ ноги, без номера,
+  ассистент по сценарию, транскрипт → ходы, отчёт, тишина, поиск токена, промпт, секрет,
+  клиент, `setup`), `tests/api/test_cloud_webhook.py` (4).
+
+### Проверено
+
+- На тестовом контуре стенда (`/opt/lct/test`, база 5433): 16 новых тестов зелёные;
+  `ruff`, `tsc`, `eslint` чисто.
+- Vapi API: номер `dds-trainer` с `server.headers` создаётся (проверено curl со стенда).
+
+### Осталось
+
+- Стенд: `PUBLIC_HOST=155-212-186-2.sslip.io`, сертификат Let's Encrypt (webroot через
+  nginx), `docker compose --profile ai --profile cloud up -d`, живой звонок из браузера.
+  Порты 5061/udp,tcp и 10200–10300/udp в ufw уже открыты (19.09.2026).
+- P2: набирать Vapi заранее, пока звонит софтфон; голос по `caller.voice`.
+
 ## Текущая волна
 
 Волна 11 ([plan/wave-11.md](../plan/wave-11.md), issue #12) и задачи по ответам заказчика

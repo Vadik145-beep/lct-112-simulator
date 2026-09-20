@@ -174,6 +174,9 @@ def service_number(service: str) -> str:
 
 
 class CallManager:
+    # The record of one call; the cloud manager (app.telephony.cloud) extends it.
+    call_class: type[Call] = Call
+
     def __init__(self, ari: AriClient) -> None:
         self.ari = ari
         s = get_settings()
@@ -255,7 +258,7 @@ class CallManager:
             timeout = config.ring_timeout_seconds
         if created and self.sync_endpoints is not None:
             await self.sync_endpoints()
-        call = Call(
+        call = self.call_class(
             attempt_id=attempt_id,
             session_id=loaded.attempt.session_id,
             student_id=loaded.attempt.student_id,

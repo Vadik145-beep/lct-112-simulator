@@ -22,6 +22,8 @@ from app.telephony import media, sip
 from app.telephony import settings as telephony_settings
 from app.telephony.ari import AriClient, AriError
 from app.telephony.calls import CallManager
+from app.telephony.cloud import CloudCallManager
+from app.telephony.vapi import VapiClient
 
 log = get_logger(__name__)
 
@@ -34,7 +36,16 @@ class TelephonyService:
     def __init__(self) -> None:
         s = get_settings()
         self.ari = AriClient(s.ari_url, s.ari_user, s.ari_password, s.ari_app)
-        self.calls = CallManager(self.ari)
+        self.vapi: VapiClient | None = None
+        self.cloud = s.cloud_voice_enabled
+        if self.cloud:
+            # The caller is played by Vapi (plan/track-c-vapi.md); the SIP number is set up
+            # in start(), so a missing key only disables cloud calls, not the service.
+            if s.vapi_api_key:
+                self.vapi = VapiClient(s.vapi_api_url, s.vapi_api_key)
+            self.calls: CallManager = CloudCallManager(self.ari, self.vapi)
+        else:
+            self.calls = CallManager(self.ari)
         self.calls.sync_endpoints = self.sync_endpoints
         self._stop = asyncio.Event()
         self._tasks: list[asyncio.Task] = []
@@ -45,6 +56,8 @@ class TelephonyService:
 
     async def start(self) -> None:
         await self.sync_endpoints()
+        if isinstance(self.calls, CloudCallManager):
+            await self.calls.setup()
         self._tasks = [
             asyncio.create_task(self.ari.run_events(self.calls.handle_event, self._stop)),
             asyncio.create_task(self._subscribe_events()),
@@ -62,6 +75,8 @@ class TelephonyService:
             with contextlib.suppress(asyncio.CancelledError, Exception):
                 await task
         await self.ari.aclose()
+        if self.vapi is not None:
+            await self.vapi.aclose()
 
     async def sync_endpoints(self) -> None:
         """Rewrites the PJSIP endpoints file from the users table and reloads PJSIP."""
@@ -170,6 +185,11 @@ def get_service() -> TelephonyService | None:
 def telephony_active() -> bool:
     """True when calls go through Asterisk right now (enabled and ARI is connected)."""
     return _service is not None and _service.connected
+
+
+def cloud_active() -> bool:
+    """True when the caller of live calls is played by Vapi (plan/track-c-vapi.md)."""
+    return telephony_active() and _service is not None and _service.cloud
 
 
 async def start() -> None:

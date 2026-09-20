@@ -27,6 +27,7 @@ from app.routers.reference import router as reference_router
 from app.routers.system import router as system_router
 from app.scenarios.router import router as scenarios_router
 from app.telephony import service as telephony
+from app.telephony.cloud_router import router as cloud_voice_router
 from app.telephony.router import router as telephony_router
 from app.telephony.service_calls import router as service_calls_router
 from app.training import sweeper
@@ -123,6 +124,7 @@ def create_app() -> FastAPI:
     app.include_router(teacher_router, prefix=API_PREFIX)
     app.include_router(dialog_router, prefix=API_PREFIX)
     app.include_router(telephony_router, prefix=API_PREFIX)
+    app.include_router(cloud_voice_router, prefix=API_PREFIX)
     app.include_router(intake_router, prefix=API_PREFIX)
     app.include_router(admin_router, prefix=API_PREFIX)
     app.include_router(review_router, prefix=API_PREFIX)
