@@ -254,6 +254,9 @@ class CallIntakeScenario(BaseModel):
     replies: list[Reply] = Field(default_factory=list)
     required_topics: list[str]
     reference_card: ReferenceCard
+    # Blocking rule (issue #69): the trainee must ask at least this share of the required
+    # topics, otherwise the attempt fails whatever the total. 0 disables the rule.
+    min_questions_share: float = Field(default=0.5, ge=0.0, le=1.0)
 
 
 class DialogTurn(BaseModel):
@@ -268,6 +271,9 @@ class DialogTurn(BaseModel):
     text: str
     topics: list[str] = Field(default_factory=list)
     at: datetime | None = None
+    # How the turn was produced («cloud»: transcribed by the cloud voice provider, keyword
+    # topics on free speech; local modes label a caller's reply with the topic it answers).
+    method: str | None = None
 
 
 class SubmittedCard(BaseModel):

@@ -116,7 +116,13 @@ def _turn(role: str, text: str, topics: list[str], at: datetime, **extra: object
 def dialog_input(attempt: Attempt) -> list[dict]:
     """``attempts.dialog`` as the evaluation engine expects it (PRD 9.3)."""
     return [
-        {"role": t["role"], "text": t["text"], "topics": t.get("topics", []), "at": t.get("at")}
+        {
+            "role": t["role"],
+            "text": t["text"],
+            "topics": t.get("topics", []),
+            "at": t.get("at"),
+            "method": t.get("method"),
+        }
         for t in attempt.dialog
     ]
 
