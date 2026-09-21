@@ -19,7 +19,8 @@ from app.domain.scenarios.facts import TicketFacts
 from app.domain.scenarios.personas import DEFAULT_NOISE, persona
 from app.domain.services import resolve_services
 
-DEFAULT_CALL_NORM_SECONDS = 90
+# The live АРМ-112 turns the card timer red at about a minute (screenshots of 17.09.2026).
+DEFAULT_CALL_NORM_SECONDS = 60
 DROPPED_CALL_NORM_SECONDS = 60
 CARD_NORM_SECONDS = 30
 # The card_response scenario is written for a city dispatch service; when the situation

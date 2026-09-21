@@ -3,7 +3,7 @@
   "title": "Ножевое ранение в квартире, кровотечение",
   "ticket_ref": "15-3",
   "difficulty": 3,
-  "norm_seconds": 90,
+  "norm_seconds": 60,
   "caller": {
     "persona": "victim_panicked",
     "voice": "ru_female_2",

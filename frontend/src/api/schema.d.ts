@@ -2384,11 +2384,6 @@ export interface components {
              * @default []
              */
             service_calls_required: string[];
-            /**
-             * Reports Expected
-             * @default false
-             */
-            reports_expected: boolean;
             /** Transitions */
             transitions: components["schemas"]["TransitionOut"][];
             /** Reject Reasons */
@@ -2664,6 +2659,8 @@ export interface components {
             flags?: {
                 [key: string]: boolean;
             };
+            /** Injured Count */
+            injured_count?: number | null;
             /** Services */
             services?: string[];
             address?: components["schemas"]["AddressIn"];
@@ -2698,6 +2695,8 @@ export interface components {
             };
             /** Injured */
             injured: boolean;
+            /** Injured Count */
+            injured_count?: number | null;
             /** Ambulance Refused */
             ambulance_refused: boolean;
             /** Blocked */
@@ -4325,8 +4324,7 @@ export interface components {
         };
         /**
          * ServiceCallOut
-         * @description A call on the card: the dispatcher's call to a service officer (issue #36, ``outgoing``)
-         *     or the squad leader's report to the dispatcher (``report``, customer 21.09.2026).
+         * @description A call of the dispatcher to a service officer (issue #36).
          */
         ServiceCallOut: {
             /** Id */
@@ -4335,16 +4333,6 @@ export interface components {
             service: string;
             /** Service Title */
             service_title: string;
-            /**
-             * Kind
-             * @default outgoing
-             * @enum {string}
-             */
-            kind: "outgoing" | "report";
-            /** Report Status */
-            report_status?: string | null;
-            /** Report Status Title */
-            report_status_title?: string | null;
             /**
              * Started At
              * Format: date-time

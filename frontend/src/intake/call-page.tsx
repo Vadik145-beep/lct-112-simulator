@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Bell, Link2, MessageSquare, Phone, Plus, Timer, X } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import {
@@ -37,7 +37,8 @@ const PRIMARY_FLAGS: { code: string; title: string }[] = [
   { code: "not_on_site", title: "Нет на месте / Отказ от скорой" },
   { code: "no_access", title: "Нет доступа / Заблокированные" },
 ];
-const CALLER_ROLES = ["очевидец", "пострадавший", "родственник", "прохожий", "сотрудник", "жилец", "водитель", "иное"];
+// Statuses of the caller as the instruction of the customer lists them (§5.3, «выберите статус»).
+const CALLER_ROLES = ["очевидец", "пострадавший", "родственник", "знакомый", "ребёнок", "участник"];
 
 /** The operator-112 card with the call (PRD 13.5), for a call-intake attempt. */
 export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; connectionSeq?: number }) {
@@ -137,6 +138,17 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
 
   const setCard = (patch: Partial<Card>) => update((c) => ({ card: { ...c, ...patch } }));
   const toggleFlag = (code: string) => update((c) => ({ card: { ...c, flags: { ...c.flags, [code]: !c.flags[code] } } }));
+  // «Пострадавшие» opens a small window for the count, as on the live АРМ-112 (§5.2).
+  const [askInjured, setAskInjured] = useState(false);
+  const toggleInjured = () => {
+    if (card.flags.injured) {
+      update((c) => ({ card: { ...c, flags: { ...c.flags, injured: false }, injured_count: null } }));
+      setAskInjured(false);
+    } else {
+      toggleFlag("injured");
+      setAskInjured(true);
+    }
+  };
   const addService = (code: string) => {
     setAddingService(false);
     if (!code || card.services.includes(code)) return;
@@ -144,8 +156,14 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
   };
 
   // --- saving --------------------------------------------------------------------------
+  // «Сохранить» first asks to confirm notifying the services, as the live АРМ-112 does (§8):
+  // the first press opens the strip, the second one (or Ctrl+Enter again) saves.
+  const [confirmSave, setConfirmSave] = useState(false);
+  const confirmOpen = useRef(false);
+  confirmOpen.current = confirmSave;
   const save = useCallback(() => {
     if (closed || submit.isPending) return;
+    setConfirmSave(false);
     const id = draft.submission_id ?? newId();
     setSubmissionId(id);
     submit.mutate(
@@ -165,11 +183,16 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
       const typing = target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName);
       if (e.ctrlKey && e.key === "Enter") {
         e.preventDefault();
-        save();
+        // Ctrl+Enter opens the confirmation, Ctrl+Enter again saves.
+        if (confirmOpen.current) save();
+        else setConfirmSave(true);
       } else if (e.key === "?" && !typing) {
         e.preventDefault();
         setShowHelp((v) => !v);
-      } else if (e.key === "Escape") setShowHelp(false);
+      } else if (e.key === "Escape") {
+        setShowHelp(false);
+        setConfirmSave(false);
+      }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -238,6 +261,9 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
                 className="h-7 w-44 border-b border-[#a9adb2] bg-transparent text-sm text-[var(--arm-text-muted)] focus:border-[var(--arm-blue)] focus:outline-none"
               >
                 <option value="">выберите статус</option>
+                {card.caller.role && !CALLER_ROLES.includes(card.caller.role) && (
+                  <option value={card.caller.role}>{card.caller.role}</option>
+                )}
                 {CALLER_ROLES.map((r) => (
                   <option key={r} value={r}>
                     {r}
@@ -269,10 +295,40 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
             <div className="flex items-start gap-1 bg-[var(--arm-panel)] px-2 py-2">
               <div className="flex flex-wrap gap-1" role="group" aria-label="Признаки">
                 {PRIMARY_FLAGS.map((f) => (
-                  <FlagButton key={f.code} active={Boolean(card.flags[f.code])} disabled={closed} onClick={() => toggleFlag(f.code)}>
+                  <FlagButton
+                    key={f.code}
+                    active={Boolean(card.flags[f.code])}
+                    disabled={closed}
+                    onClick={() => (f.code === "injured" ? toggleInjured() : toggleFlag(f.code))}
+                  >
                     {f.title}
+                    {f.code === "injured" && card.injured_count ? ` (${card.injured_count})` : ""}
                   </FlagButton>
                 ))}
+                {askInjured && card.flags.injured && !closed && (
+                  <div className="flex items-center gap-2 rounded-sm border border-[var(--arm-blue)] bg-white px-2 py-1 text-xs" role="dialog" aria-label="Количество пострадавших">
+                    <label htmlFor="injured-count">Количество пострадавших</label>
+                    <input
+                      id="injured-count"
+                      type="number"
+                      min={1}
+                      max={9999}
+                      autoFocus
+                      value={card.injured_count ?? ""}
+                      onChange={(e) => setCard({ injured_count: e.target.value === "" ? null : Number(e.target.value) })}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          setAskInjured(false);
+                        }
+                      }}
+                      className="h-6 w-16 border-b border-[#a9adb2] px-1 text-center focus:border-[var(--arm-blue)] focus:outline-none"
+                    />
+                    <button type="button" onClick={() => setAskInjured(false)} className="rounded-sm border border-[var(--arm-blue)] px-2 text-[var(--arm-blue)] hover:bg-[#eaf3fc]">
+                      ОК
+                    </button>
+                  </div>
+                )}
                 {extraFlags.map((f) => (
                   <FlagButton key={f.code} active={Boolean(card.flags[f.code])} disabled={closed} onClick={() => toggleFlag(f.code)} title={f.column_hint ?? undefined} small>
                     {f.title}
@@ -352,16 +408,34 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
             )}
           </div>
           <div className="ml-auto flex shrink-0 items-center gap-1 px-2">
-            <button
-              type="button"
-              onClick={save}
-              disabled={closed || submit.isPending}
-              title="Сохранить (Ctrl+Enter)"
-              className="h-9 rounded-sm bg-white px-6 text-base font-semibold text-[var(--arm-orange)] hover:bg-[#fff1ea] disabled:opacity-60"
-              data-testid="save-card"
-            >
-              {submit.isPending ? "сохраняем…" : "сохранить"}
-            </button>
+            {confirmSave && !closed ? (
+              <div className="flex items-center gap-2 rounded-sm bg-white px-3 py-1 text-sm text-[var(--arm-text)]" role="alertdialog" aria-label="Подтверждение сохранения">
+                <span>Оповестить службы и сохранить карточку?</span>
+                <button
+                  type="button"
+                  onClick={save}
+                  disabled={submit.isPending}
+                  className="h-7 rounded-sm bg-[var(--arm-orange)] px-3 font-semibold text-white hover:bg-[#d9571a] disabled:opacity-60"
+                  data-testid="confirm-save-card"
+                >
+                  {submit.isPending ? "сохраняем…" : "Оповестить и сохранить карточку"}
+                </button>
+                <button type="button" onClick={() => setConfirmSave(false)} className="h-7 rounded-sm border border-[#a9adb2] px-2 hover:bg-[var(--arm-panel)]">
+                  Вернуться к заполнению
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setConfirmSave(true)}
+                disabled={closed || submit.isPending}
+                title="Сохранить (Ctrl+Enter)"
+                className="h-9 rounded-sm bg-white px-6 text-base font-semibold text-[var(--arm-orange)] hover:bg-[#fff1ea] disabled:opacity-60"
+                data-testid="save-card"
+              >
+                {submit.isPending ? "сохраняем…" : "сохранить"}
+              </button>
+            )}
             {[Link2, Timer, Bell, MessageSquare].map((Icon, i) => (
               <span key={i} className="flex size-8 items-center justify-center rounded-sm border border-white/60" aria-hidden>
                 <Icon className="size-4" />

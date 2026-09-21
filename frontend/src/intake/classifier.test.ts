@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { ClassifierGroupOut } from "@/api/intake";
-import { groupOf, levelsOf, typeOf } from "@/intake/classifier";
+import { flattenTypes, groupOf, levelsOf, searchTypes, typeOf } from "@/intake/classifier";
 import { addressLine, EMPTY_ADDRESS, initialDraft } from "@/intake/draft";
 
 const GROUPS: ClassifierGroupOut[] = [
@@ -88,5 +88,19 @@ describe("черновик карточки", () => {
     expect(newer.card.address).toEqual(EMPTY_ADDRESS);
     localStorage.clear();
     expect(initialDraft("a1", null).card.description).toBe("");
+  });
+});
+
+describe("searchTypes", () => {
+  const all = flattenTypes(GROUPS);
+  it("finds by a part of a word in any order, ё-insensitive", () => {
+    expect(searchTypes(all, "кварт пожар").map((h) => h.node.type_code)).toEqual(["1.5.1.1"]);
+    expect(searchTypes(all, "ДЫМ").map((h) => h.node.type_code)).toEqual(["1.5.1.2"]);
+  });
+  it("returns the path of signs to apply to the survey card", () => {
+    expect(searchTypes(all, "дым")[0]?.path).toEqual(["жилой дом", "квартира", "дым"]);
+  });
+  it("ignores queries shorter than two letters", () => {
+    expect(searchTypes(all, "д")).toEqual([]);
   });
 });

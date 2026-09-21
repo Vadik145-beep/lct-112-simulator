@@ -3,7 +3,7 @@
   "title": "Задымление на платформе метро «Арбатская»",
   "ticket_ref": "9-1",
   "difficulty": 2,
-  "norm_seconds": 90,
+  "norm_seconds": 60,
   "caller": {
     "persona": "calm_commuter",
     "voice": "ru_male_3",

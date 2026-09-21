@@ -1,8 +1,7 @@
-"""Background checks of the cards in work: «Не оповещено» when the primary status is late,
-and the squad's reports to the dispatcher on their timeline (``app.training.reports``).
+"""Background check that marks cards «Не оповещено» when the primary status is late.
 
-Runs inside the API process every ``SWEEP_INTERVAL_SECONDS``; the updates are row-locked with
-``SKIP LOCKED`` so several replicas may run them at once without duplicate events.
+Runs inside the API process every ``SWEEP_INTERVAL_SECONDS``; the update is row-locked with
+``SKIP LOCKED`` so several replicas may run it at once without duplicate events.
 """
 
 from __future__ import annotations
@@ -13,7 +12,6 @@ import contextlib
 from app.db import SessionLocal
 from app.events import publish_events
 from app.logging import get_logger
-from app.training.reports import dial_reports, sweep_reports
 from app.training.service import sweep_not_notified
 
 log = get_logger(__name__)
@@ -24,12 +22,8 @@ SWEEP_INTERVAL_SECONDS = 5
 async def sweep_once() -> int:
     async with SessionLocal() as session:
         events = await sweep_not_notified(session)
-        report_events, to_dial = await sweep_reports(session)
-        events.extend(report_events)
         await session.commit()
     await publish_events(events)
-    if to_dial:
-        await publish_events(await dial_reports(to_dial))
     return len(events)
 
 

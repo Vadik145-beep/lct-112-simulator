@@ -12,11 +12,7 @@ import {
   formatTime,
   useNow,
 } from "@/emulator/time";
-import {
-  describeCall,
-  factTitle,
-  otherSide,
-} from "@/emulator/service-call-model";
+import { describeCall, factTitle } from "@/emulator/service-call-model";
 import {
   CallReview,
   TokenAudio,
@@ -368,9 +364,7 @@ function ReviewView({
           total={evaluation.total}
           passed={evaluation.passed}
           override={attempt.override}
-          reasons={evaluation.errors
-            .filter((e) => e.critical)
-            .map((e) => e.explanation)}
+          reasons={evaluation.errors.filter((e) => e.critical).map((e) => e.explanation)}
         />
       </div>
 
@@ -840,7 +834,7 @@ function ServiceCallsCard({
                   )}
                 >
                   <span className="text-xs text-muted-foreground">
-                    {t.role === "caller" ? otherSide(call) : who}:{" "}
+                    {t.role === "caller" ? "дежурный" : who}:{" "}
                   </span>
                   {t.text}
                 </li>
