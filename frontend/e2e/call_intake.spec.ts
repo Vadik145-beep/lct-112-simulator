@@ -59,7 +59,9 @@ test.describe("Волна 7: приём вызова от звонка до ра
     const { problems, foreign } = watchNetwork(page);
 
     await loginAsStudent(page);
-    await page.getByRole("link", { name: /Открыть АРМ оператора 112/ }).click();
+    // Straight to the workplace of the reset lesson: a stand with several running lessons
+    // shows several «Открыть АРМ оператора 112» links.
+    await page.goto(`/student/sessions/${sessionId}/calls`);
     // The workplace asks for a call and opens the card as soon as one rings.
     await expect(page).toHaveURL(/\/student\/attempts\/[0-9a-f-]+$/, { timeout: 15_000 });
     const attemptId = page.url().split("/").pop()!;
@@ -142,6 +144,10 @@ test.describe("Волна 7: приём вызова от звонка до ра
     await expect(page.getByRole("list", { name: "Темы" }).locator("li[data-topic=address][data-covered=true]")).toBeVisible();
     await expect(page.getByRole("list", { name: "Реплики" }).locator("li")).toHaveCount(3);
     await expect(page.getByTestId("review-services")).toContainText(/Мосгаз|mosgaz/);
+    // Issue #69: one question of seven is below the half → not passed whatever the score.
+    await expect(page.getByTestId("review-verdict")).toHaveText("Не зачтено");
+    await expect(page.locator("[data-error=questions_not_asked]")).toBeVisible();
+    await expect(page.getByTestId("review-blockers")).toContainText("из 7 обязательных вопросов");
     await page.screenshot({ path: `${SHOTS}/04-review.png`, fullPage: true });
 
     // The next call rings on the workplace page.
