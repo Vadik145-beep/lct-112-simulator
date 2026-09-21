@@ -1568,6 +1568,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/attempts/{attempt_id}/cloud-call": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Web Call
+         * @description Keys of the browser call for the attempt: the assistant of its scenario is stored in
+         *     Vapi and the caller answers in the trainee's browser. 409 when the lesson is not in the
+         *     cloud mode or the calls go through telephony; 503 when the cloud is unreachable (the
+         *     panel then continues with the microphone and the stand-by provider).
+         */
+        post: operations["start_web_call_api_attempts__attempt_id__cloud_call_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/cloud-call/failed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Web Call Failed
+         * @description The SDK could not start or lost the call: noted in the session log; the panel
+         *     continues with the microphone.
+         */
+        post: operations["web_call_failed_api_attempts__attempt_id__cloud_call_failed_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/attempts/{attempt_id}/draft": {
         parameters: {
             query?: never;
@@ -2755,6 +2799,8 @@ export interface components {
              * @default false
              */
             heard: boolean;
+            /** Latency Ms */
+            latency_ms?: number | null;
         };
         /** DraftRequest */
         DraftRequest: {
@@ -3241,6 +3287,11 @@ export interface components {
             stt: boolean;
             /** Tts */
             tts: boolean;
+            /**
+             * Cloud
+             * @default false
+             */
+            cloud: boolean;
         };
         /** MonitorCard */
         MonitorCard: {
@@ -4890,6 +4941,28 @@ export interface components {
             attempts: number;
             /** Sessions */
             sessions: number;
+        };
+        /** WebCallFailedIn */
+        WebCallFailedIn: {
+            /**
+             * Reason
+             * @default
+             */
+            reason: string;
+        };
+        /**
+         * WebCallOut
+         * @description What the browser starts the call with (Vapi Web SDK).
+         */
+        WebCallOut: {
+            /** Public Key */
+            public_key: string;
+            /** Api Url */
+            api_url: string;
+            /** Assistant Id */
+            assistant_id: string;
+            /** Token */
+            token: string;
         };
         /** WeekPointOut */
         WeekPointOut: {
@@ -7560,6 +7633,70 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["CallResponse"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_web_call_api_attempts__attempt_id__cloud_call_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebCallOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    web_call_failed_api_attempts__attempt_id__cloud_call_failed_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WebCallFailedIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

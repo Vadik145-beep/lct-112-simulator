@@ -174,6 +174,9 @@ def service_number(service: str) -> str:
 
 
 class CallManager:
+    # The record of one call; the cloud manager (app.telephony.cloud) extends it.
+    call_class: type[Call] = Call
+
     def __init__(self, ari: AriClient) -> None:
         self.ari = ari
         s = get_settings()
@@ -255,7 +258,7 @@ class CallManager:
             timeout = config.ring_timeout_seconds
         if created and self.sync_endpoints is not None:
             await self.sync_endpoints()
-        call = Call(
+        call = self.call_class(
             attempt_id=attempt_id,
             session_id=loaded.attempt.session_id,
             student_id=loaded.attempt.student_id,
@@ -435,38 +438,58 @@ class CallManager:
         log.info("answered", attempt=str(call.attempt_id))
         async with SessionLocal() as session:
             config = await telephony_settings.load(session)
+        await self._run_local(call, config)
+
+    async def _run_local(self, call: Call, config: telephony_settings.TelephonySettings) -> None:
+        """The local conversation: the bridge with the recording, the spy with the pipeline,
+        then the state and the opening. The cloud manager runs it when the cloud is off for
+        the lesson (app.telephony.cloud)."""
         # Media first (fast), so the recording and the spy start with the first second.
         try:
-            call.bridge_id = f"br-{call.key}"
-            await self.ari.create_bridge(call.bridge_id)
-            await self.ari.add_channel(call.bridge_id, call.channel_id)
-            if config.recording_enabled:
-                call.recording_name = f"{RECORDINGS_SUBDIR}/{call.key}"
-                await self.ari.record_bridge(call.bridge_id, call.recording_name, RECORDING_FORMAT)
-            call.port = self.ports.take()
-            call.receiver = await media.open_receiver("0.0.0.0", call.port)
-            call.spy_bridge_id = f"spy-{call.key}"
-            await self.ari.create_bridge(call.spy_bridge_id)
-            call.media_id = f"media-{call.key}"
-            call.snoop_id = f"snoop-{call.key}"
-            await self.ari.external_media(
-                call.media_id, self._media_host(), call.port, app_args=f"media,{call.key}"
-            )
-            await self.ari.snoop(call.channel_id, call.snoop_id, app_args=f"snoop,{call.key}")
+            await self._open_bridge(call, config)
+            await self._start_spy(call)
         except (AriError, OSError, RuntimeError) as exc:
             log.warning("call setup failed", attempt=str(call.attempt_id), error=str(exc))
             await self._end(call, CALL_END_FAILED)
             return
-        call.pipeline = asyncio.create_task(self._pipeline(call))
         if call.to_officer:
             await self._officer_answered(call)
             return
-        # Then the state and the opening (its voice file is cached per scenario version).
+        await self._speak_opening(call)
+
+    async def _open_bridge(self, call: Call, config: telephony_settings.TelephonySettings) -> None:
+        """The mixing bridge of the call with the trainee in it, recorded when configured."""
+        call.bridge_id = f"br-{call.key}"
+        await self.ari.create_bridge(call.bridge_id)
+        await self.ari.add_channel(call.bridge_id, call.channel_id)
+        if config.recording_enabled:
+            call.recording_name = f"{RECORDINGS_SUBDIR}/{call.key}"
+            await self.ari.record_bridge(call.bridge_id, call.recording_name, RECORDING_FORMAT)
+
+    async def _start_spy(self, call: Call) -> None:
+        """The snoop of the trainee's channel streamed to this process, and the pipeline
+        that turns it into phrases."""
+        call.port = self.ports.take()
+        call.receiver = await media.open_receiver("0.0.0.0", call.port)
+        call.spy_bridge_id = f"spy-{call.key}"
+        await self.ari.create_bridge(call.spy_bridge_id)
+        call.media_id = f"media-{call.key}"
+        call.snoop_id = f"snoop-{call.key}"
+        await self.ari.external_media(
+            call.media_id, self._media_host(), call.port, app_args=f"media,{call.key}"
+        )
+        await self.ari.snoop(call.channel_id, call.snoop_id, app_args=f"snoop,{call.key}")
+        call.pipeline = asyncio.create_task(self._pipeline(call))
+
+    async def _speak_opening(self, call: Call, *, play: bool = True) -> bool:
+        """The state «в разговоре» with the opening as turn 0 (idempotent), played into the
+        bridge unless the caller of the cloud says it. False when the attempt is gone."""
+        # The opening's voice file is cached per scenario version.
         async with SessionLocal() as session:
             loaded = await load_attempt(session, call.attempt_id)
             if loaded is None:
                 await self._end(call, CALL_END_FAILED)
-                return
+                return False
             opening, events = await call_state.answer(
                 session, loaded.attempt, loaded.ts, loaded.version, loaded.scenario, telephony=True
             )
@@ -474,8 +497,9 @@ class CallManager:
                 loaded.attempt.recording_path = f"{call.recording_name}.{RECORDING_FORMAT}"
             await session.commit()
         await publish_events(events)
-        if opening.get("audio"):
+        if play and opening.get("audio"):
             await self._play_reply(call, opening["audio"])
+        return True
 
     async def _officer_answered(self, call: Call) -> None:
         """The trainee picked up the service call: the officer greets (issue #36)."""

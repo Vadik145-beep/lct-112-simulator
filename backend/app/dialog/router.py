@@ -49,6 +49,7 @@ def _turn_out(index: int, turn: dict) -> DialogTurnOut:
         audio_url=f"{MEDIA_PREFIX}{audio}" if audio else None,
         generated=bool(turn.get("generated")),
         heard=bool(turn.get("heard")),
+        latency_ms=turn.get("latency_ms"),
     )
 
 
@@ -72,11 +73,14 @@ async def _dialog_out(
     covered = dialog.covered_topics(attempt)
     required = set(scenario.required_topics)
     provider = dialog.provider_for(ts)
+    # In the cloud mode (plan/track-c-vapi.md) the caller lives in Vapi; the local provider
+    # only stands in when the cloud is unreachable, and its replies count as fallbacks.
+    mode = dialog.EXTERNAL_METHOD if dialog.cloud_lesson(ts) else provider.mode
     return DialogOut(
         attempt_id=str(attempt.id),
-        mode=provider.mode,
+        mode=mode,
         requested_mode=ts.dialog_mode or get_settings().dialog_mode,
-        fallback_replies=dialog.fallback_replies(attempt, provider.mode),
+        fallback_replies=dialog.fallback_replies(attempt, mode),
         stt_available=dialog.stt_available(),
         tts_available=dialog.tts_available(),
         answered_at=attempt.answered_at,
