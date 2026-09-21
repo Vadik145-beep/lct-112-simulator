@@ -10,18 +10,41 @@ import {
 } from "@/emulator/service-call-model";
 import { formatSeconds } from "@/emulator/time";
 import { cn } from "@/lib/utils";
+import { watchLevel } from "@/softphone/sip-phone";
 
 /**
  * A call of the dispatcher to a service officer (issue #36, «звено Б → В»): the transcript,
  * the facts passed so far, a text field (the fallback of the voice path) and «Завершить».
  * With telephony the voice goes through the softphone (it answers the officer's call by
- * itself); without it the officer's replies play here.
+ * itself); without it the officer's replies play here and the dispatcher may speak into the
+ * browser microphone (issue #60).
  */
+
+// A shorter recording is a click without holding the button, not a phrase.
+const MIN_RECORDING_SECONDS = 0.6;
+
+/** The microphone chosen in the softphone settings; the system default when it is gone. */
+async function openMicrophone(deviceId: string | null): Promise<MediaStream> {
+  if (deviceId) {
+    try {
+      return await navigator.mediaDevices.getUserMedia({
+        audio: { deviceId: { exact: deviceId } },
+      });
+    } catch {
+      /* the chosen device is unplugged: fall back to the default one */
+    }
+  }
+  return navigator.mediaDevices.getUserMedia({ audio: true });
+}
 
 export function ServiceCallPanel({
   call,
   telephony,
   sttAvailable,
+  micDeviceId,
+  devices,
+  onMicDevice,
+  onMicOpened,
   pending,
   error,
   onSay,
@@ -33,6 +56,12 @@ export function ServiceCallPanel({
   telephony: boolean;
   /** The stt service answers: the browser microphone can be used instead of typing. */
   sttAvailable: boolean;
+  /** The microphone chosen in the softphone settings (null = the system default). */
+  micDeviceId: string | null;
+  /** Microphones the browser knows; the list fills in after the first permission. */
+  devices: MediaDeviceInfo[];
+  onMicDevice: (deviceId: string | null) => void;
+  onMicOpened: () => void;
   pending: boolean;
   error: string | null;
   onSay: (text: string, actionId: string) => void;
@@ -41,6 +70,10 @@ export function ServiceCallPanel({
 }) {
   const [text, setText] = useState("");
   const [recording, setRecording] = useState(false);
+  const [recordedFor, setRecordedFor] = useState(0);
+  const [micNote, setMicNote] = useState<string | null>(null);
+  const [micLevel, setMicLevel] = useState(0);
+  const stopLevel = useRef<(() => void) | null>(null);
   const audio = useRef<HTMLAudioElement | null>(null);
   const recorder = useRef<MediaRecorder | null>(null);
   const chunks = useRef<Blob[]>([]);
@@ -58,6 +91,18 @@ export function ServiceCallPanel({
       recorder.current.stop();
     }
   }, [open]);
+
+  // Seconds of the current recording, shown next to the button.
+  useEffect(() => {
+    if (!recording) return;
+    const startedAt = Date.now();
+    setRecordedFor(0);
+    const timer = setInterval(
+      () => setRecordedFor((Date.now() - startedAt) / 1000),
+      250,
+    );
+    return () => clearInterval(timer);
+  }, [recording]);
 
   // The officer's newest reply plays once (browser mode only).
   useEffect(() => {
@@ -84,14 +129,15 @@ export function ServiceCallPanel({
     setText("");
   }
 
-  // Push to talk as in the 112 operator's card: press, speak, press again to send.
-  async function toggleMic() {
-    if (recording) {
-      recorder.current?.stop();
-      return;
-    }
+  // Push to talk exactly as in the 112 operator's card: hold the button and speak, release
+  // to send. A click without holding records nothing.
+  async function startRecording() {
+    if (recorder.current || pending || !open) return;
+    setMicNote(null);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await openMicrophone(micDeviceId);
+      onMicOpened();
+      stopLevel.current = watchLevel(stream, setMicLevel);
       const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
         ? "audio/webm;codecs=opus"
         : "";
@@ -99,16 +145,27 @@ export function ServiceCallPanel({
         stream,
         mime ? { mimeType: mime } : undefined,
       );
+      const startedAt = Date.now();
       chunks.current = [];
       rec.ondataavailable = (e) => chunks.current.push(e.data);
       rec.onstop = () => {
         stream.getTracks().forEach((t) => t.stop());
+        stopLevel.current?.();
+        stopLevel.current = null;
+        setMicLevel(0);
         recorder.current = null;
         setRecording(false);
         const blob = new Blob(chunks.current, {
           type: rec.mimeType || "audio/webm",
         });
         chunks.current = [];
+        const seconds = (Date.now() - startedAt) / 1000;
+        if (seconds < MIN_RECORDING_SECONDS) {
+          setMicNote(
+            "Слишком короткая запись: удерживайте кнопку, пока говорите, и отпустите.",
+          );
+          return;
+        }
         if (blob.size > 0 && open) {
           actionId.current = actionId.current ?? newActionId();
           onSpeak(blob, actionId.current);
@@ -119,7 +176,15 @@ export function ServiceCallPanel({
       setRecording(true);
     } catch {
       setRecording(false);
+      setMicNote(
+        "Микрофон недоступен: разрешите доступ в браузере или выберите другое устройство.",
+      );
     }
+  }
+
+  function stopRecording() {
+    const rec = recorder.current;
+    if (rec && rec.state !== "inactive") rec.stop();
   }
 
   async function play(url: string) {
@@ -244,18 +309,28 @@ export function ServiceCallPanel({
             <button
               type="button"
               aria-label={
-                recording ? "Закончить говорить" : "Говорить в микрофон"
+                recording
+                  ? "Говорите, отпустите, чтобы отправить"
+                  : "Удерживайте и говорите"
               }
               aria-pressed={recording}
               title={
                 recording
-                  ? "Нажмите, чтобы отправить сказанное"
-                  : "Сказать дежурному голосом"
+                  ? "Отпустите, чтобы отправить сказанное"
+                  : "Удерживайте кнопку и говорите дежурному"
               }
               disabled={pending}
-              onClick={() => void toggleMic()}
+              onPointerDown={(e) => {
+                e.preventDefault();
+                void startRecording();
+              }}
+              onPointerUp={stopRecording}
+              onPointerLeave={stopRecording}
+              onPointerCancel={stopRecording}
+              onContextMenu={(e) => e.preventDefault()}
+              data-testid="service-call-talk"
               className={cn(
-                "flex size-7 items-center justify-center rounded-sm border disabled:opacity-50",
+                "flex h-7 select-none items-center justify-center gap-1 rounded-sm border px-2 disabled:opacity-50",
                 recording
                   ? "border-[var(--arm-orange)] bg-[var(--arm-orange)] text-white"
                   : "border-[#a9adb2] bg-white text-[var(--arm-text)] hover:bg-[var(--arm-panel-2)]",
@@ -266,9 +341,59 @@ export function ServiceCallPanel({
               ) : (
                 <Mic className="size-3.5" aria-hidden />
               )}
+              <span className="text-[10px]">
+                {recording ? "говорите" : "удерживайте"}
+              </span>
             </button>
           )}
         </form>
+      )}
+      {open && call.answered && canSpeak && devices.length > 0 && (
+        <label className="flex items-center gap-1 text-[10px] text-[var(--arm-text-muted)]">
+          <Mic className="size-3" aria-hidden />
+          <select
+            aria-label="Микрофон"
+            value={micDeviceId ?? ""}
+            onChange={(e) => onMicDevice(e.target.value || null)}
+            className="max-w-[11rem] border-b border-[#a9adb2] bg-white px-1 text-[10px] focus:outline-none"
+          >
+            <option value="">Микрофон по умолчанию</option>
+            {devices.map((d, i) => (
+              <option key={d.deviceId || i} value={d.deviceId}>
+                {d.label || `Микрофон ${i + 1}`}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      {recording && (
+        <span
+          className="flex items-center gap-2 text-[10px] text-[var(--arm-orange)]"
+          role="status"
+        >
+          <span>
+            Говорите, {recordedFor.toFixed(0)} с. Отпустите, чтобы отправить.
+          </span>
+          <span
+            className="h-1.5 w-16 overflow-hidden rounded bg-[#cfd2d4]"
+            aria-label="Уровень микрофона"
+          >
+            <span
+              className={cn(
+                "block h-full",
+                micLevel > 0.02
+                  ? "bg-[var(--arm-green)]"
+                  : "bg-[var(--arm-red)]",
+              )}
+              style={{ width: `${Math.min(100, Math.round(micLevel * 300))}%` }}
+            />
+          </span>
+        </span>
+      )}
+      {micNote && !recording && (
+        <span className="text-[10px] text-[var(--arm-red)]" role="alert">
+          {micNote}
+        </span>
       )}
       {open && call.answered && !telephony && !sttAvailable && (
         <span className="text-[10px] text-[var(--arm-text-muted)]">
@@ -290,7 +415,7 @@ export function ServiceCallPanel({
           {END_REASON_TITLES[call.end_reason] ?? call.end_reason}
         </span>
       )}
-      {error && (
+      {error && !recording && (
         <span role="alert" className="text-[var(--arm-red)]">
           {error}
         </span>

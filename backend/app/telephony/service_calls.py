@@ -24,7 +24,7 @@ from app.domain.evaluation.schemas import CardResponseScenario
 from app.errors import ApiError
 from app.events import publish_events
 from app.models import MODE_CARD_RESPONSE, Attempt, Role, TrainingSession, User
-from app.providers.stt import get_stt_provider
+from app.providers.stt import Transcript, get_stt_provider
 from app.telephony import service as telephony
 from app.training import present
 from app.training import service as training
@@ -37,6 +37,23 @@ from app.training.schemas import (
 router = APIRouter(tags=["telephony"])
 
 MAX_UTTERANCE_BYTES = 10 * 1024 * 1024
+SILENCE_PEAK = 0.01  # below this the microphone sent nothing but noise floor
+
+
+def nothing_recognized_message(transcript: Transcript) -> str:
+    """Tells a silent microphone from speech the recognizer did not catch."""
+    seconds = transcript.duration_seconds
+    if not seconds:
+        return "Речь не распознана: запись пустая. Удерживайте кнопку, пока говорите."
+    if 0 <= transcript.peak < SILENCE_PEAK:
+        return (
+            f"Записано {seconds:.1f} с, но микрофон передал тишину. Проверьте в настройках "
+            "браузера и системы, какой микрофон используется, и не выключен ли он."
+        )
+    return (
+        f"Речь не распознана (записано {seconds:.1f} с, звук есть, слов не разобрано). "
+        "Скажите фразу ещё раз громче и ближе к микрофону."
+    )
 
 
 async def _card_attempt(
@@ -196,7 +213,7 @@ async def speak_to_officer(
             "Распознавание речи недоступно: сервис stt не запущен. Введите фразу текстом.",
         )
     if not transcript.text:
-        raise ApiError(422, "nothing_recognized", "Речь не распознана: повторите громче.")
+        raise ApiError(422, "nothing_recognized", nothing_recognized_message(transcript))
     result = await officer.say(
         session,
         attempt,

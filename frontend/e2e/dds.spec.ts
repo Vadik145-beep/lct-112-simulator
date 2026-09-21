@@ -634,7 +634,7 @@ test.describe("Задача #36: звонок диспетчера в служб
     ).toBeDisabled();
 
     // The stand runs the stt service: the microphone is offered next to the text field.
-    await expect(panel.getByRole("button", { name: "Говорить в микрофон" })).toBeEnabled();
+    await expect(panel.getByRole("button", { name: "Удерживайте и говорите" })).toBeEnabled();
     const input = panel.getByLabel("Сказать дежурному");
     for (const phrase of [
       "Передаю карточку: улица Молостовых, дом 10, корпус 1",
