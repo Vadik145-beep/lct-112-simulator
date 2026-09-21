@@ -31,6 +31,8 @@ class DialogTurnOut(BaseModel):
     audio_url: str | None = None
     generated: bool = False
     heard: bool = False  # operator turn came from speech recognition
+    # Cloud voice: milliseconds from the end of the operator's phrase to the reply's first sound.
+    latency_ms: int | None = None
 
 
 class TopicOut(BaseModel):

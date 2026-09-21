@@ -222,6 +222,7 @@ async def model_availability() -> dict[str, bool]:
     results = await asyncio.gather(*(alive(url) for url in probes.values()))
     out = dict(zip(probes, results, strict=True))
     out["tts"] = tts_available()
+    out["cloud"] = s.cloud_voice_enabled
     return out
 
 

@@ -13,6 +13,8 @@ One implementation per ``DIALOG_MODE``:
                  the approved reply of that topic is played. Every other mode degrades to this
                  one when the model server is unreachable.
 * ``live``     — GPU node conveyor, track G; not implemented here, falls back to ``select``.
+* ``cloud``    — the caller is played by Vapi (plan/track-c-vapi.md) outside this module;
+                 this provider is the stand-by when the cloud is unreachable: ``select``.
 
 Leaving the role is impossible by construction in ``select`` and ``buttons`` (only approved texts
 are voiced). In ``generate`` and ``hybrid`` three layers hold the role: a guard that answers
@@ -708,6 +710,9 @@ def build_dialog_provider(
     """The provider for ``DIALOG_MODE``; without a dialog model everything is ``buttons``."""
     if mode == "live":
         log.warning("живой режим (live) реализуется на GPU-узле, трек G; используется select")
+        mode = "select"
+    if mode == "cloud":
+        # The cloud caller lives in app.telephony.cloud; here is only its fallback.
         mode = "select"
     if mode == "buttons" or dialog_model is None:
         if mode != "buttons":
