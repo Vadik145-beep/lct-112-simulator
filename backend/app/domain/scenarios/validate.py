@@ -22,7 +22,7 @@ from app.domain.evaluation.schemas import (
 )
 from app.domain.reference_data import REJECT_REASONS, RESPONSE_STATUSES
 from app.domain.scenarios.generated import TOPIC_CODES
-from app.domain.scenarios.officers import default_service_calls
+from app.domain.scenarios.officers import default_reports, default_service_calls
 from app.domain.scenarios.personas import NOISE_CODES, PERSONA_BY_CODE
 from app.domain.services import resolve_services
 from app.providers.tts import VOICES
@@ -177,6 +177,11 @@ def fill_from_reference(body: dict, refs: ReferenceCodes) -> dict:
             # Issue #36: an accepted card expects a call to the officer of the own service;
             # an explicit empty list in the editor keeps the calls out of the evaluation.
             reference["service_calls"] = default_service_calls({**body, "reference": reference})
+            body["reference"] = reference
+        if "reports" not in reference and reference:
+            # Customer, 21.09.2026: the squad reports by phone; an accepted card gets the
+            # default timeline, an explicit empty list turns the reports off.
+            reference["reports"] = default_reports({**body, "reference": reference})
             body["reference"] = reference
     return body
 

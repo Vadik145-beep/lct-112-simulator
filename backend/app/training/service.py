@@ -621,6 +621,8 @@ def evaluation_input(attempt: Attempt) -> dict:
             {
                 "service": c["service"],
                 "started_at": c["started_at"],
+                "kind": c.get("kind") or "outgoing",
+                "report_status": c.get("report_status"),
                 "answered": bool(c.get("answered")),
                 "ended_at": c.get("ended_at"),
                 "dialog": [

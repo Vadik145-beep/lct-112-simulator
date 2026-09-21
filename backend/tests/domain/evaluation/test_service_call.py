@@ -8,7 +8,13 @@ from datetime import timedelta
 from app.domain.evaluation.card_response import evaluate_card_response
 from app.domain.evaluation.schemas import CardResponseAttempt, CardResponseScenario
 from app.domain.evaluation.service_call import facts_from_dialog
-from tests.domain.evaluation.helpers import at, card_scenario, grammar_ok, perfect_card_attempt
+from tests.domain.evaluation.helpers import (
+    at,
+    card_scenario,
+    grammar_ok,
+    perfect_card_attempt,
+    perfect_report_calls,
+)
 
 REQUIRED = ["address", "incident_type", "injured", "order_number"]
 
@@ -39,6 +45,7 @@ def called(
     for i, phrase in enumerate(dispatcher_phrases):
         dialog.append(turn("operator", phrase, 31 + i * 5))
         dialog.append(turn("caller", "Принял.", 32 + i * 5))
+    # The squad's reports stay: this test is about the dispatcher's own call.
     attempt["service_calls"] = [
         {
             "service": service or scenario.service,
@@ -47,7 +54,8 @@ def called(
             "ended_at": at(30 + seconds),
             "dialog": dialog,
             "facts_passed": [],
-        }
+        },
+        *perfect_report_calls(scenario),
     ]
     return CardResponseAttempt.model_validate(attempt)
 

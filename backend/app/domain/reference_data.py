@@ -320,6 +320,30 @@ TYPICAL_ERRORS: list[dict] = [
         "тепловых сетей никто не позвонил — бригада не выехала.",
     },
     {
+        "code": "status_before_report",
+        "title": "Статус хода работ проставлен до доклада бригады",
+        "description": "«Начало реагирования», «Прибытие», «Проведение работ» или «Работы "
+        "завершены» проставлены раньше, чем старший наряда доложил об этом по телефону: "
+        "статус не отражает фактическое реагирование.",
+        "mode": "card_response",
+        "penalty": 2,
+        "memo_ref": "стр. 22, 26 (по факту получения информации); ответ заказчика 21.09.2026",
+        "example": "Карточка принята и сразу проставлены «Прибытие» и «Работы завершены», "
+        "хотя бригада ещё не выехала.",
+    },
+    {
+        "code": "report_not_reflected",
+        "title": "Доклад бригады не отражён статусом",
+        "description": "Старший наряда доложил о выезде, прибытии, работах или их завершении, "
+        "а соответствующий статус в карточке так и не проставлен (или проставлен позже "
+        "норматива на отражение доклада).",
+        "mode": "card_response",
+        "penalty": 2,
+        "memo_ref": "стр. 22, 31 (пример 6); ответ заказчика 21.09.2026",
+        "example": "Бригада доложила «на месте», диспетчер продолжил работу без «Прибытия» — "
+        "другие службы и заявитель не видят, что реагирование идёт.",
+    },
+    {
         "code": "address_not_asked",
         "title": "Адрес не уточнён до отбоя",
         "description": "Разговор завершён, а точный адрес происшествия не выяснен.",
@@ -445,12 +469,35 @@ SERVICE_CALL_FACTS: list[dict] = [
     },
 ]
 
+# The dispatcher asks the officer how the response goes («где бригада?», «выехали?»); the
+# officer answers from the squad's current state (app.domain.scenarios.officers).
+OFFICER_PROGRESS_KEYWORDS: list[str] = [
+    "как дела",
+    "как обстановка",
+    "где бригада",
+    "где наряд",
+    "выехал",
+    "выезжа",
+    "прибыл",
+    "на месте",
+    "доехал",
+    "закончил",
+    "ход работ",
+    "как работы",
+    "что там",
+    "долго ещё",
+    "долго еще",
+    "когда будете",
+]
+
 OFFICER_TOPICS: list[dict] = [
     {"code": "greeting", "title": "Приветствие", "order": 0},
     *[{"code": f["code"], "title": f["title"], "order": f["order"]} for f in SERVICE_CALL_FACTS],
-    {"code": "confirm", "title": "Подтверждение приёма", "order": 6},
-    {"code": "repeat", "title": "Просьба повторить", "order": 7},
-    {"code": "unknown", "title": "Вне темы", "order": 8},
+    {"code": "progress", "title": "Ход работ", "order": 6},
+    {"code": "report", "title": "Доклад бригады", "order": 7},
+    {"code": "confirm", "title": "Подтверждение приёма", "order": 8},
+    {"code": "repeat", "title": "Просьба повторить", "order": 9},
+    {"code": "unknown", "title": "Вне темы", "order": 10},
 ]
 
 # Topics a dispatcher must clarify with the caller; keywords help the dialog engine to map a
