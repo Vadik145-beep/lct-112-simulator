@@ -67,6 +67,7 @@ x-backend-env: &backend-env
 
 services:
   nginx:
+    image: lct112/nginx:${APP_VERSION:-latest}
     build:
       context: .
       dockerfile: deploy/nginx/Dockerfile
@@ -97,6 +98,7 @@ services:
       start_period: 20s
 
   backend:
+    image: lct112/backend:${APP_VERSION:-latest}
     build:
       context: ./backend
     restart: unless-stopped
@@ -122,6 +124,8 @@ services:
       start_period: 30s
 
   worker:
+    # The same image as backend (one build, two roles); compose builds it once.
+    image: lct112/backend:${APP_VERSION:-latest}
     build:
       context: ./backend
     restart: unless-stopped
@@ -192,6 +196,7 @@ services:
       start_period: 60s
 
   backup:
+    image: lct112/backup:${APP_VERSION:-latest}
     build:
       context: ./deploy/backup
     restart: unless-stopped
@@ -284,6 +289,7 @@ services:
       start_period: 120s
 
   stt:
+    image: lct112/stt:${APP_VERSION:-latest}
     build:
       context: ./deploy/stt
     profiles: ["ai"]
@@ -302,6 +308,7 @@ services:
   # порт SIP_PORT (udp/tcp). Звук идёт напрямую на порты RTP, поэтому они опубликованы;
   # на Docker Desktop нужен TELEPHONY_EXTERNAL_IP (адрес машины), см. .env.example.
   asterisk:
+    image: lct112/asterisk:${APP_VERSION:-latest}
     build:
       context: ./deploy/asterisk
     profiles: ["telephony"]
@@ -342,6 +349,7 @@ services:
   # меняются; профили telephony и cloud в одном проекте вместе не поднимать. Порты SIP и RTP
   # свои (CLOUD_*), чтобы не пересекаться с локальным контейнером.
   asterisk-cloud:
+    image: lct112/asterisk-cloud:${APP_VERSION:-latest}
     build:
       context: ./deploy
       dockerfile: asterisk-cloud/Dockerfile

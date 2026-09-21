@@ -9,7 +9,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, Field
 
 Kind = Literal["call_intake", "card_response"]
-ScenarioStatus = Literal["draft", "review", "approved"]
+ScenarioStatus = Literal["draft", "review", "approved", "archived"]
 
 # ---------------------------------------------------------------- reference for the forms
 
@@ -144,6 +144,10 @@ class GenerateIn(BaseModel):
 
 class ReviseIn(BaseModel):
     comment: str = Field(min_length=3, max_length=1000)
+
+
+class ScenarioRemoveOut(BaseModel):
+    result: Literal["deleted", "archived"]
 
 
 class ApproveIn(BaseModel):

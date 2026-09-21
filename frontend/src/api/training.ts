@@ -322,6 +322,23 @@ export function useProgressReporter(attemptId: string) {
   );
 }
 
+/** Methodical materials the trainee can read in full: the memo and the teacher's documents. */
+export function useMaterials() {
+  return useQuery({
+    queryKey: ["reference-materials"],
+    queryFn: () => unwrap(api.GET("/api/reference/materials")),
+    staleTime: 60_000,
+  });
+}
+
+export function useMaterial(name: string) {
+  return useQuery({
+    queryKey: ["reference-material", name],
+    queryFn: () => unwrap(api.GET("/api/reference/materials/{name}", { params: { path: { name } } })),
+    staleTime: 60_000,
+  });
+}
+
 export function useReferenceSearch(query: string) {
   const q = query.trim();
   return useQuery({

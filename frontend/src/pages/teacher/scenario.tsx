@@ -9,13 +9,14 @@ import {
   Play,
   Plus,
   RefreshCw,
+  RotateCcw,
   SpellCheck,
   Square,
   Trash2,
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import {
   useAddReply,
@@ -26,6 +27,8 @@ import {
   useGrammarCheck,
   useJob,
   usePreviewDialog,
+  useRemoveScenario,
+  useRestoreScenario,
   useReviseScenario,
   useScenario,
   useScenarioOptions,
@@ -116,7 +119,11 @@ export function TeacherScenarioPage() {
           </ul>
         </div>
       )}
-      <div className="grid gap-6 lg:grid-cols-2">
+      {/* An archived scenario is read-only: every editor below is inert until it is restored. */}
+      <div
+        className="grid gap-6 lg:grid-cols-2"
+        inert={scenario.status === "archived" || undefined}
+      >
         <div className="space-y-6">
           {scenario.kind === "call_intake" ? (
             <CallerFacts scenario={scenario} />
@@ -141,11 +148,24 @@ export function TeacherScenarioPage() {
 // ---------------------------------------------------------------- header, approval, grammar
 
 function Header({ scenario }: { scenario: ScenarioOut }) {
+  const navigate = useNavigate();
   const approve = useApproveScenario(scenario.id);
   const grammar = useGrammarCheck(scenario.id);
+  const remove = useRemoveScenario(scenario.id);
+  const restore = useRestoreScenario(scenario.id);
   const options = useScenarioOptions();
   const [issues, setIssues] = useState<GrammarIssueOut[] | null>(null);
   const [needConfirm, setNeedConfirm] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState(false);
+  const archived = scenario.status === "archived";
+
+  const doRemove = () =>
+    remove.mutate(undefined, {
+      onSuccess: (data) => {
+        setConfirmRemove(false);
+        if (data.result === "deleted") void navigate("/teacher/scenarios");
+      },
+    });
 
   const runGrammar = async () => {
     const report = await grammar.mutateAsync();
@@ -225,7 +245,30 @@ function Header({ scenario }: { scenario: ScenarioOut }) {
             )}{" "}
             Проверить грамотность
           </Button>
-          {!scenario.fully_approved && (
+          {archived ? (
+            <Button
+              variant="outline"
+              onClick={() => restore.mutate()}
+              disabled={restore.isPending}
+            >
+              {restore.isPending ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <RotateCcw />
+              )}{" "}
+              Восстановить
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              className="text-destructive"
+              onClick={() => setConfirmRemove(true)}
+              disabled={remove.isPending || confirmRemove}
+            >
+              <Trash2 /> Удалить
+            </Button>
+          )}
+          {!scenario.fully_approved && !archived && (
             <Button
               onClick={() => void doApprove(false)}
               disabled={approve.isPending || scenario.problems.length > 0}
@@ -240,6 +283,40 @@ function Header({ scenario }: { scenario: ScenarioOut }) {
           )}
         </div>
       </div>
+      {archived && (
+        <p className="text-sm text-muted-foreground" role="status">
+          Сценарий в архиве: он не предлагается занятиям и не редактируется. Разборы прошлых
+          занятий по нему открываются как раньше.
+        </p>
+      )}
+      {confirmRemove && (
+        <div
+          className="flex flex-wrap items-center gap-3 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm"
+          role="alertdialog"
+          aria-label="Удаление сценария"
+        >
+          <span>
+            Удалить сценарий «{scenario.title}»? Если по нему уже занимались, он уйдёт в архив,
+            чтобы разборы занятий остались.
+          </span>
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={doRemove}
+            disabled={remove.isPending}
+          >
+            {remove.isPending ? "Удаляем…" : "Да, удалить"}
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => setConfirmRemove(false)}>
+            Отмена
+          </Button>
+        </div>
+      )}
+      {(remove.isError || restore.isError) && (
+        <p className="text-sm text-destructive" role="alert">
+          {remove.error?.message ?? restore.error?.message}
+        </p>
+      )}
       {approve.isError && !needConfirm && (
         <p className="text-sm text-destructive" role="alert">
           {approve.error.message}

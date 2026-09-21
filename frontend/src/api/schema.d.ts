@@ -462,6 +462,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/reference/materials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Materials
+         * @description Methodical materials the trainee can read in full: the memo and the documents a
+         *     teacher uploaded to the reference (��: �������������� ���������� � ������������
+         *     ����������).
+         */
+        get: operations["list_materials_api_reference_materials_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/reference/materials/{name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Material */
+        get: operations["read_material_api_reference_materials__name__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/grammar/check": {
         parameters: {
             query?: never;
@@ -815,6 +854,28 @@ export interface paths {
         /** Update Scenario */
         put: operations["update_scenario_api_scenarios__scenario_id__put"];
         post?: never;
+        /**
+         * Remove Scenario
+         * @description Deletes a scenario, or archives it when past attempts refer to it (��: ��������
+         *     ������������ �������� without losing the history of lessons).
+         */
+        delete: operations["remove_scenario_api_scenarios__scenario_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/{scenario_id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restore Scenario */
+        post: operations["restore_scenario_api_scenarios__scenario_id__restore_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2802,6 +2863,15 @@ export interface components {
             /** Latency Ms */
             latency_ms?: number | null;
         };
+        /** DocHitOut */
+        DocHitOut: {
+            /** Name */
+            name: string;
+            /** Title */
+            title: string;
+            /** Text */
+            text: string;
+        };
         /** DraftRequest */
         DraftRequest: {
             card: components["schemas"]["CardIn"];
@@ -3261,6 +3331,39 @@ export interface components {
             login: string;
             /** Password */
             password: string;
+        };
+        /** MaterialOut */
+        MaterialOut: {
+            /** Name */
+            name: string;
+            /** Title */
+            title: string;
+            /** Builtin */
+            builtin: boolean;
+            /** Paragraphs */
+            paragraphs: number;
+            /** Size */
+            size: number;
+            /** Updated At */
+            updated_at: string | null;
+        };
+        /** MaterialParagraphOut */
+        MaterialParagraphOut: {
+            /** Page */
+            page: number | null;
+            /** Text */
+            text: string;
+        };
+        /** MaterialTextOut */
+        MaterialTextOut: {
+            /** Name */
+            name: string;
+            /** Title */
+            title: string;
+            /** Builtin */
+            builtin: boolean;
+            /** Paragraphs */
+            paragraphs: components["schemas"]["MaterialParagraphOut"][];
         };
         /** MemoHitOut */
         MemoHitOut: {
@@ -3736,6 +3839,11 @@ export interface components {
             memo: components["schemas"]["MemoHitOut"][];
             /** Types */
             types: components["schemas"]["TypeHitOut"][];
+            /**
+             * Docs
+             * @default []
+             */
+            docs: components["schemas"]["DocHitOut"][];
         };
         /** RejectReasonOut */
         RejectReasonOut: {
@@ -3790,6 +3898,29 @@ export interface components {
              * @enum {string}
              */
             voicing: "none" | "queued" | "done" | "failed";
+        };
+        /**
+         * ReportAction
+         * @description One step of the trainee on the card or in the call, for the �actions� column of the
+         *     lesson report (��: ����� �� ����������� � ����������).
+         */
+        ReportAction: {
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Seconds */
+            seconds: number;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "status" | "flag" | "call" | "question" | "card";
+            /** Title */
+            title: string;
+            /** Detail */
+            detail?: string | null;
         };
         /** ReportAttempt */
         ReportAttempt: {
@@ -3854,6 +3985,11 @@ export interface components {
              * @default []
              */
             comments: string[];
+            /**
+             * Actions
+             * @default []
+             */
+            actions: components["schemas"]["ReportAction"][];
         };
         /** ReportErrorCount */
         ReportErrorCount: {
@@ -4043,7 +4179,7 @@ export interface components {
              * Status
              * @enum {string}
              */
-            status: "draft" | "review" | "approved";
+            status: "draft" | "review" | "approved" | "archived";
             /** Source */
             source: string;
             /** Current Version */
@@ -4134,7 +4270,7 @@ export interface components {
              * Status
              * @enum {string}
              */
-            status: "draft" | "review" | "approved";
+            status: "draft" | "review" | "approved" | "archived";
             /** Source */
             source: string;
             /** Current Version */
@@ -4166,6 +4302,14 @@ export interface components {
             generation: {
                 [key: string]: unknown;
             } | null;
+        };
+        /** ScenarioRemoveOut */
+        ScenarioRemoveOut: {
+            /**
+             * Result
+             * @enum {string}
+             */
+            result: "deleted" | "archived";
         };
         /** ScenarioUpdateIn */
         ScenarioUpdateIn: {
@@ -5641,6 +5785,57 @@ export interface operations {
             };
         };
     };
+    list_materials_api_reference_materials_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaterialOut"][];
+                };
+            };
+        };
+    };
+    read_material_api_reference_materials__name__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaterialTextOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     grammar_check_api_grammar_check_post: {
         parameters: {
             query?: never;
@@ -6294,6 +6489,68 @@ export interface operations {
                 "application/json": components["schemas"]["ScenarioUpdateIn"];
             };
         };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_scenario_api_scenarios__scenario_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioRemoveOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    restore_scenario_api_scenarios__scenario_id__restore_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {
