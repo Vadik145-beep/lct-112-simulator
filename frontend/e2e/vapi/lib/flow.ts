@@ -182,7 +182,7 @@ export async function fillCard(page: Page, variant: CardVariant) {
     return;
   }
   await page.getByLabel("Фамилия и имя заявителя").fill("Трунов Олег Егорович");
-  await page.getByLabel("Статус заявителя").selectOption("жилец");
+  await page.getByLabel("Статус заявителя").selectOption("участник");
   await page.getByLabel("предоставленный").fill("916-320-12-83");
   await fillAddress(page, variant === "wrong-type-house" ? "83" : "81");
   await page.getByLabel("Описание со слов заявителя").fill(
@@ -190,7 +190,7 @@ export async function fillCard(page: Page, variant: CardVariant) {
       ? "Свист от газавой трубы в квартире, на кухне. 03 не требуеться."
       : "Свист от газовой трубы в квартире, на кухне. 03 не требуется.",
   );
-  await page.getByRole("button", { name: "добавить тип происшествия" }).click();
+  await page.getByRole("button", { name: "по группам" }).click();
   await page.getByRole("listbox", { name: "Группа происшествия" }).getByRole("button", { name: /^13\./ }).click();
   if (variant === "wrong-type-house") {
     // Верна только группа 13: «на улице → коллектор» (13.1.1.0) вместо 13.2.4.0.
@@ -229,6 +229,7 @@ export async function hangupAndSave(page: Page, log: string[], waitCallerHangup 
   }
   await page.waitForTimeout(3000);
   await page.getByTestId("save-card").click();
+  await page.getByTestId("confirm-save-card").click();
   await expect(page.getByTestId("card-score")).toBeVisible({ timeout: 180_000 });
   return Number(await page.getByTestId("card-score").textContent());
 }

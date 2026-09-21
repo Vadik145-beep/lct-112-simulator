@@ -3,7 +3,7 @@
   "title": "Не может разбудить мужа, хрипит (Красногорск, другой регион)",
   "ticket_ref": "18-2",
   "difficulty": 3,
-  "norm_seconds": 90,
+  "norm_seconds": 60,
   "caller": {
     "persona": "elderly_panicked",
     "voice": "ru_female_1",

@@ -282,7 +282,7 @@ async def seed_demo_call_session(session: AsyncSession, keys: list[str]) -> bool
             card_source="scenarios",
             scenario_ids=scenario_ids,
             difficulty=3,
-            norm_seconds=90,
+            norm_seconds=60,
             pass_threshold=70,
             hints_enabled=True,
             voice_enabled=True,

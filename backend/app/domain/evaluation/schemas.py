@@ -101,23 +101,6 @@ class ServiceCallRef(BaseModel):
     norm_seconds: int = DEFAULT_SERVICE_CALL_NORM_SECONDS
 
 
-DEFAULT_REPORT_AFTER_SECONDS = 45
-
-
-class BrigadeReport(BaseModel):
-    """A report of the squad leader to the dispatcher by phone (customer, 21.09.2026: «старший
-    группы звонит в ДДС, докладывает об обстановке и ходе работ»). The trainee is expected to
-    reflect it with ``status`` after the call. ``after_seconds`` counts from the previous
-    milestone: «Принята» for the first report, the end of the previous report call for the
-    rest."""
-
-    model_config = SCENARIO
-
-    status: str  # progress status the report stands for (response_started, arrived, …)
-    text: str  # what the squad leader says when the dispatcher picks up
-    after_seconds: int = DEFAULT_REPORT_AFTER_SECONDS
-
-
 class CardResponseReference(BaseModel):
     model_config = SCENARIO
 
@@ -127,9 +110,6 @@ class CardResponseReference(BaseModel):
     critical_errors: list[str] = Field(default_factory=list)
     # Calls to service officers the dispatcher is expected to make (empty = not evaluated).
     service_calls: list[ServiceCallRef] = Field(default_factory=list)
-    # Reports of the squad the trainee receives by phone after «Принята» (empty = the
-    # progress statuses are set on the trainee's own judgement, as before).
-    reports: list[BrigadeReport] = Field(default_factory=list)
 
 
 class InjectedError(BaseModel):
@@ -194,15 +174,12 @@ class FlaggedField(BaseModel):
 
 
 class ServiceCallLog(BaseModel):
-    """One call on the card (``attempts.service_calls[]``): the dispatcher's call to a service
-    officer (``outgoing``) or the squad leader's report to the dispatcher (``report``)."""
+    """One call of the dispatcher to a service officer (``attempts.service_calls[]``)."""
 
     model_config = STRICT
 
     service: str
     started_at: datetime
-    kind: Literal["outgoing", "report"] = "outgoing"
-    report_status: str | None = None  # the status a report stands for
     answered: bool = False
     ended_at: datetime | None = None
     dialog: list[DialogTurn] = Field(default_factory=list)
@@ -272,7 +249,7 @@ class CallIntakeScenario(BaseModel):
     title: str
     ticket_ref: str | None = None
     difficulty: int = 1
-    norm_seconds: int = 90
+    norm_seconds: int = 60
     caller: CallerProfile
     replies: list[Reply] = Field(default_factory=list)
     required_topics: list[str]
@@ -305,6 +282,7 @@ class SubmittedCard(BaseModel):
     signs_path: list[str] = Field(default_factory=list)
     incident_type: str | None = None
     flags: dict[str, bool] = Field(default_factory=dict)
+    injured_count: int | None = None  # asked when «Пострадавшие» is pressed; not scored
     services: list[str] = Field(default_factory=list)  # filled by resolve_services in the UI
     address: Address = Field(default_factory=Address)
     caller: Caller = Field(default_factory=Caller)

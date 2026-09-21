@@ -11,6 +11,8 @@ export interface Card {
   signs_path: string[];
   incident_type: string | null;
   flags: Record<string, boolean>;
+  /** Asked when «Пострадавшие» is pressed, as on the live АРМ-112. */
+  injured_count: number | null;
   services: string[];
   address: Address;
   caller: Caller;
@@ -57,6 +59,7 @@ export const EMPTY_CARD: Card = {
   signs_path: [],
   incident_type: null,
   flags: {},
+  injured_count: null,
   services: [],
   address: { ...EMPTY_ADDRESS },
   caller: { ...EMPTY_CALLER },
@@ -82,6 +85,7 @@ function normalize(card: Record<string, unknown> | null | undefined): Card {
     signs_path: string[];
     incident_type: string | null;
     flags: Record<string, boolean>;
+    injured_count: number | null;
     services: string[];
     address: Partial<Address>;
     caller: Partial<Caller>;
@@ -91,6 +95,7 @@ function normalize(card: Record<string, unknown> | null | undefined): Card {
     signs_path: c.signs_path ?? [],
     incident_type: c.incident_type ?? null,
     flags: c.flags ?? {},
+    injured_count: c.injured_count ?? null,
     services: c.services ?? [],
     address: { ...EMPTY_ADDRESS, ...(c.address ?? {}) },
     caller: { ...EMPTY_CALLER, ...(c.caller ?? {}) },

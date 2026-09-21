@@ -3,7 +3,7 @@
   "title": "Пожар в квартире на 9-м этаже, люди на балконе зовут на помощь",
   "ticket_ref": "5-1",
   "difficulty": 2,
-  "norm_seconds": 90,
+  "norm_seconds": 60,
   "caller": {
     "persona": "witness_urgent",
     "voice": "ru_male_2",

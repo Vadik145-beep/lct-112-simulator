@@ -155,9 +155,9 @@ def test_description_keywords_and_similarity() -> None:
     assert evaluate_call_intake(scenario, attempt).components["description"].score == 0
 
 
-@pytest.mark.parametrize(("seconds", "expected"), [(60, 10), (90, 10), (135, 5), (180, 0)])
+@pytest.mark.parametrize(("seconds", "expected"), [(30, 10), (60, 10), (90, 5), (120, 0)])
 def test_time_component(seconds: int, expected: int) -> None:
-    scenario = call_scenario()  # norm 90 s
+    scenario = call_scenario()  # norm 60 s
     attempt = perfect_call_attempt(scenario, seconds=seconds)
     assert evaluate_call_intake(scenario, attempt).components["time"].score == expected
 

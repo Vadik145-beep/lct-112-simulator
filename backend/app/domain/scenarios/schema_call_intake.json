@@ -401,7 +401,7 @@
       "type": "integer"
     },
     "norm_seconds": {
-      "default": 90,
+      "default": 60,
       "title": "Norm Seconds",
       "type": "integer"
     },

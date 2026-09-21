@@ -61,7 +61,7 @@ const DIALOG_MODES: { code: string; title: string; hint: string }[] = [
 // plan/track-c-vapi.md: the caller lives in Vapi; offered only where the stand enables it
 // (ALLOW_EXTERNAL_AI=true, outside the closed contour).
 const CLOUD_MODE = { code: "cloud", title: "Облачный голос", hint: "заявителя играет облачная модель с живым голосом; демо вне закрытого контура" };
-const NORM_DEFAULT = { card_response: 30, call_intake: 90 } as const;
+const NORM_DEFAULT = { card_response: 30, call_intake: 60 } as const;
 
 const selectClass =
   "flex h-9 w-full rounded-md border border-input bg-background text-foreground px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50";

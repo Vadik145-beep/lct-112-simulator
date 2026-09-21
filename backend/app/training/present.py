@@ -329,6 +329,7 @@ def card_out(attempt: Attempt, body: dict, lookups: Lookups) -> CardOut:
         incident=_incident_out(body, lookups),
         flags=flags,
         injured=flags.get(FLAG_INJURED, False),
+        injured_count=card.get("injured_count"),
         ambulance_refused=flags.get(FLAG_AMBULANCE_REFUSED, False),
         blocked=flags.get(FLAG_BLOCKED, False),
         emergency=flags.get(FLAG_EMERGENCY, False),
@@ -363,26 +364,21 @@ def status_log_out(attempt: Attempt, lookups: Lookups) -> list[StatusLogEntryOut
 
 def service_call_out(attempt: Attempt, body: dict, call: dict, lookups: Lookups) -> ServiceCallOut:
     service = lookups.services.get(call.get("service") or "")
-    # Facts are passed on the dispatcher's own calls only; a report has nothing to pass.
     required = next(
         (
             list(c.get("required_facts") or [])
             for c in (body.get("reference") or {}).get("service_calls") or []
-            if c.get("service") == call.get("service") and call.get("kind") != "report"
+            if c.get("service") == call.get("service")
         ),
         [],
     )
     started = datetime.fromisoformat(call["started_at"])
     ended = datetime.fromisoformat(call["ended_at"]) if call.get("ended_at") else None
     turns = call.get("dialog") or []
-    report_status = call.get("report_status")
     return ServiceCallOut(
         id=call["id"],
         service=call["service"],
         service_title=service.title if service else call.get("service_title") or call["service"],
-        kind=call.get("kind") or "outgoing",
-        report_status=report_status,
-        report_status_title=_status_title(report_status, lookups) if report_status else None,
         started_at=started,
         answered=bool(call.get("answered")),
         answered_at=datetime.fromisoformat(call["answered_at"])
@@ -493,7 +489,6 @@ def attempt_out(
         service_calls_required=[
             c.get("service") for c in (body.get("reference") or {}).get("service_calls") or []
         ],
-        reports_expected=bool((body.get("reference") or {}).get("reports")),
         transitions=[TransitionOut(**t.__dict__) for t in transitions],
         reject_reasons=[
             RejectReasonOut(code=r.code, title=r.title)
