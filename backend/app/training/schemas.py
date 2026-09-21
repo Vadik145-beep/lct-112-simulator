@@ -49,6 +49,7 @@ class ServiceStatusOut(BaseModel):
     status_title: str
     at: datetime | None
     is_own: bool
+    is_main: bool = False  # the incident type's main service, underlined on the АРМ-112
 
 
 class CallerOut(BaseModel):

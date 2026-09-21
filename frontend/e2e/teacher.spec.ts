@@ -42,9 +42,9 @@ async function setStatus(page: Page, status: string, opts: { orderNumber?: strin
   await page.getByRole("button", { name: "Проставить статус" }).click();
   const form = page.getByRole("form", { name: "Проставление статуса" });
   await form.getByLabel("Статус", { exact: true }).selectOption({ label: status });
-  if (opts.reason) await form.getByLabel("Причина отказа").selectOption({ label: opts.reason });
   if (opts.orderNumber) await form.getByLabel("Номер наряда").fill(opts.orderNumber);
-  if (opts.comment) await form.getByLabel("Комментарий", { exact: true }).fill(opts.comment);
+  const comment = [opts.reason, opts.comment].filter(Boolean).join(": ");
+  if (comment) await form.getByLabel("Комментарий", { exact: true }).fill(comment);
   await form.getByRole("button", { name: "Сохранить статус" }).click();
   // A final status waits for the evaluation (LanguageTool may take a few seconds when cold).
   await expect(form).toBeHidden({ timeout: 15_000 });
