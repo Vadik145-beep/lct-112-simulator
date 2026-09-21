@@ -245,4 +245,40 @@ test.describe("Волна 8: сценарии", () => {
     await page.getByRole("button", { name: "Восстановить" }).click();
     await expect(page.getByText("Утверждён", { exact: true })).toBeVisible();
   });
+
+  test("методичка преподавателя видна обучающемуся: список, чтение целиком, поиск", async ({ page, request }) => {
+    const teacher = await apiToken(request, "teacher1");
+    const headers = { Authorization: `Bearer ${teacher}` };
+    const text = [
+      "Порядок приёма карточки.",
+      "Диспетчер ставит «Принята» не позже тридцати секунд после поступления.",
+      "Комментарий к отказу называет причину и кому передана информация.",
+    ].join("\n\n");
+    const uploaded = await request.post("/api/reference/docs", {
+      headers,
+      multipart: { file: { name: "Регламент ДДС e2e.txt", mimeType: "text/plain", buffer: Buffer.from(text, "utf-8") } },
+    });
+    expect(uploaded.status(), await uploaded.text()).toBe(201);
+
+    await loginWithForm(page, "student1");
+    await expect(page).toHaveURL(/\/student/, { timeout: 30_000 });
+    await page.goto("/student/reference");
+    const materials = page.getByRole("region", { name: "Методические материалы" });
+    await expect(materials).toContainText("Работа на АРМ-112");
+    await expect(materials).toContainText("Регламент ДДС e2e");
+    await page.screenshot({ path: `${SHOTS}/09-student-materials.png`, fullPage: true });
+
+    await materials.getByRole("link", { name: /Регламент ДДС e2e/ }).click();
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Регламент ДДС e2e");
+    const article = page.getByRole("article", { name: "Текст материала" });
+    await expect(article).toContainText("не позже тридцати секунд");
+    await expect(article).toContainText("кому передана информация");
+
+    await page.goto("/student/reference?q=тридцати секунд");
+    const hits = page.locator("section", { has: page.getByText("Материалы преподавателя") });
+    await expect(hits).toContainText("не позже тридцати секунд");
+    await expect(hits.getByRole("link", { name: "Регламент ДДС e2e" })).toBeVisible();
+
+    expect((await request.delete("/api/reference/docs/Регламент ДДС e2e", { headers })).status()).toBe(204);
+  });
 });

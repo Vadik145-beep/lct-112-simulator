@@ -2,6 +2,8 @@
 reasons, typical errors, caller topics, tickets, street hints. Available to every
 signed-in user; the data comes from the organizers' dataset (wave 1)."""
 
+from datetime import datetime
+from pathlib import Path
 from typing import Annotated
 
 from fastapi import APIRouter, Query
@@ -10,6 +12,7 @@ from sqlalchemy import func, select
 
 from app.auth.deps import ActiveUser, DbSession
 from app.config import get_settings
+from app.domain import materials
 from app.domain.memo_search import MIN_QUERY_LENGTH, SEARCH_LIMIT, search_memo
 from app.domain.services import available_flags, resolve_services
 from app.errors import ApiError
@@ -27,6 +30,7 @@ from app.models import (
     Ticket,
     TypicalError,
 )
+from app.providers.rag import DOCS_SUBDIR
 
 router = APIRouter(tags=["reference"])
 
@@ -138,10 +142,38 @@ class TypeHitOut(BaseModel):
     main_service: str | None
 
 
+class DocHitOut(BaseModel):
+    name: str
+    title: str
+    text: str
+
+
 class ReferenceSearchOut(BaseModel):
     query: str
     memo: list[MemoHitOut]
     types: list[TypeHitOut]
+    docs: list[DocHitOut] = []
+
+
+class MaterialOut(BaseModel):
+    name: str
+    title: str
+    builtin: bool
+    paragraphs: int
+    size: int
+    updated_at: datetime | None
+
+
+class MaterialParagraphOut(BaseModel):
+    page: int | None
+    text: str
+
+
+class MaterialTextOut(BaseModel):
+    name: str
+    title: str
+    builtin: bool
+    paragraphs: list[MaterialParagraphOut]
 
 
 class StreetOut(BaseModel):
@@ -350,4 +382,40 @@ async def reference_search(
         query=q,
         memo=[MemoHitOut(page=h.page, text=h.text) for h in search_memo(memo_path, q)],
         types=types,
+        docs=[
+            DocHitOut(name=h.name, title=h.title, text=h.text)
+            for h in materials.search_uploaded(_docs_dir(), q, SEARCH_LIMIT)
+        ],
+    )
+
+
+def _docs_dir() -> Path:
+    folder = Path(get_settings().storage_dir) / DOCS_SUBDIR
+    folder.mkdir(parents=True, exist_ok=True)
+    return folder
+
+
+def _memo_path() -> str:
+    return f"{get_settings().data_dir}/seed/memo.txt"
+
+
+@router.get("/reference/materials", response_model=list[MaterialOut])
+async def list_materials(user: ActiveUser) -> list[MaterialOut]:
+    """Methodical materials the trainee can read in full: the memo and the documents a
+    teacher uploaded to the reference (ТЗ: «просматривать инструкции и методические
+    материалы»)."""
+    return [MaterialOut(**m.__dict__) for m in materials.list_materials(_memo_path(), _docs_dir())]
+
+
+@router.get("/reference/materials/{name}", response_model=MaterialTextOut)
+async def read_material(name: str, user: ActiveUser) -> MaterialTextOut:
+    found = materials.read_material(name, _memo_path(), _docs_dir())
+    if found is None:
+        raise ApiError(404, "not_found", "Материал не найден.")
+    material, paragraphs = found
+    return MaterialTextOut(
+        name=material.name,
+        title=material.title,
+        builtin=material.builtin,
+        paragraphs=[MaterialParagraphOut(page=p.page, text=p.text) for p in paragraphs],
     )

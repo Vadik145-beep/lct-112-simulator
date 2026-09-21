@@ -462,6 +462,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/reference/materials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Materials
+         * @description Methodical materials the trainee can read in full: the memo and the documents a
+         *     teacher uploaded to the reference (��: �������������� ���������� � ������������
+         *     ����������).
+         */
+        get: operations["list_materials_api_reference_materials_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/reference/materials/{name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Material */
+        get: operations["read_material_api_reference_materials__name__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/grammar/check": {
         parameters: {
             query?: never;
@@ -2824,6 +2863,15 @@ export interface components {
             /** Latency Ms */
             latency_ms?: number | null;
         };
+        /** DocHitOut */
+        DocHitOut: {
+            /** Name */
+            name: string;
+            /** Title */
+            title: string;
+            /** Text */
+            text: string;
+        };
         /** DraftRequest */
         DraftRequest: {
             card: components["schemas"]["CardIn"];
@@ -3283,6 +3331,39 @@ export interface components {
             login: string;
             /** Password */
             password: string;
+        };
+        /** MaterialOut */
+        MaterialOut: {
+            /** Name */
+            name: string;
+            /** Title */
+            title: string;
+            /** Builtin */
+            builtin: boolean;
+            /** Paragraphs */
+            paragraphs: number;
+            /** Size */
+            size: number;
+            /** Updated At */
+            updated_at: string | null;
+        };
+        /** MaterialParagraphOut */
+        MaterialParagraphOut: {
+            /** Page */
+            page: number | null;
+            /** Text */
+            text: string;
+        };
+        /** MaterialTextOut */
+        MaterialTextOut: {
+            /** Name */
+            name: string;
+            /** Title */
+            title: string;
+            /** Builtin */
+            builtin: boolean;
+            /** Paragraphs */
+            paragraphs: components["schemas"]["MaterialParagraphOut"][];
         };
         /** MemoHitOut */
         MemoHitOut: {
@@ -3758,6 +3839,11 @@ export interface components {
             memo: components["schemas"]["MemoHitOut"][];
             /** Types */
             types: components["schemas"]["TypeHitOut"][];
+            /**
+             * Docs
+             * @default []
+             */
+            docs: components["schemas"]["DocHitOut"][];
         };
         /** RejectReasonOut */
         RejectReasonOut: {
@@ -5686,6 +5772,57 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReferenceSearchOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_materials_api_reference_materials_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaterialOut"][];
+                };
+            };
+        };
+    };
+    read_material_api_reference_materials__name__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaterialTextOut"];
                 };
             };
             /** @description Validation Error */
