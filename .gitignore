@@ -46,6 +46,8 @@ coverage/
 backend/htmlcov/
 frontend/playwright-report/
 frontend/test-results/
+# результаты голосовых тестов с Vapi (docs/VOICE_TESTS.md): стенограммы, оценки, экраны
+frontend/e2e/vapi/out/
 # downloaded AI models at the repository root (scripts/fetch_models.sh), not app/models/
 /models/
 
