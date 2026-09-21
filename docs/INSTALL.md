@@ -94,23 +94,44 @@ docker compose --profile telephony up -d
 
 ## 6. Установка без доступа в интернет
 
-На машине с интернетом:
+Сборка образов требует интернета (пакеты Python и npm, базовые образы), поэтому поставка
+собирается на машине с интернетом и переносится в контур готовой. В контуре ничего не
+скачивается и не собирается.
+
+**На машине с интернетом** (Docker, git, около 12 ГБ на диске с моделями):
 
 ```bash
-./scripts/fetch_models.sh
-docker compose --profile ai --profile telephony pull
-docker save $(docker compose config --images) -o images.tar
-tar czf models.tar.gz models/
+./scripts/fetch_models.sh                       # один раз, ~10 ГБ
+./scripts/offline_bundle.sh --with-models       # ./offline-bundle: images.tar, source.tar, models.tar,
+                                                # organizers.tar (если есть data/organizers), install.sh,
+                                                # SHA256SUMS, VERSION
 ```
 
-Перенести `images.tar`, `models.tar.gz`, репозиторий и каталог `data/organizers/` на носитель.
-На сервере в контуре:
+Без `--with-models` поставка занимает около 2 ГБ и работает без профиля `ai` (заявитель
+отвечает утверждёнными репликами). Образы всех профилей (`ai`, `telephony`) входят всегда.
+
+**На сервере в контуре** (Docker и docker compose v2, больше ничего):
 
 ```bash
-docker load -i images.tar
-tar xzf models.tar.gz
-docker compose up -d
+./install.sh --dir /opt/lct/app                 # минимальная установка
+./install.sh --dir /opt/lct/app --profile ai --profile telephony
 ```
+
+Установщик сверяет контрольные суммы, загружает образы (`docker load`), распаковывает исходники,
+модели и материалы заказчика, создаёт `.env` из `.env.example`, если его нет, и поднимает
+систему с `--pull never --no-build`: любая попытка что-то скачать завершилась бы ошибкой, а не
+тихим обращением в сеть. При первом запуске бэкенд применяет миграции, загружает классификатор
+и создаёт пользователей. Дальше — раздел 2: поменять `SECRET_KEY` и пароли в `.env`,
+`DEMO_MODE=false` для боевой установки, перезапустить.
+
+Образы собранных сервисов имеют постоянные имена (`lct112/backend`, `lct112/nginx`,
+`lct112/backup`, `lct112/stt`, `lct112/asterisk`; тег `APP_VERSION`, по умолчанию `latest`),
+поэтому установка не зависит от имени каталога или проекта compose.
+
+Проверено 22.09.2026: поставка без моделей (1,8 ГБ образов) развёрнута на стенде в чистый
+каталог с удалёнными образами и `--pull never`; журнал Docker за время установки не содержит
+ни одного обращения к реестру; `/health` ok, страница входа 200, e2e-сценарий «полный проход»
+ДДС проходит.
 
 ## 7. Резервное копирование и восстановление
 
