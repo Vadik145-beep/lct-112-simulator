@@ -469,6 +469,13 @@
     },
     "reference_card": {
       "$ref": "#/$defs/ReferenceCard"
+    },
+    "min_questions_share": {
+      "default": 0.5,
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Min Questions Share",
+      "type": "number"
     }
   },
   "required": [

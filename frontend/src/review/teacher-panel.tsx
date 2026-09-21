@@ -13,7 +13,9 @@ import { cn } from "@/lib/utils";
 
 /** The total of the review (PRD 13.6). With a teacher's override the old value is struck
  * through and the reason is shown under the box. */
-export function ScoreBox({ total, passed, override }: { total: number; passed: boolean; override: AttemptOut["override"] }) {
+/** The total with the verdict; ``reasons`` are the critical errors that block the pass
+ * (issue #69), shown under the box so the trainee sees why the attempt failed. */
+export function ScoreBox({ total, passed, override, reasons = [] }: { total: number; passed: boolean; override: AttemptOut["override"]; reasons?: string[] }) {
   return (
     <div className="flex flex-col items-end gap-1">
       <div className={cn("flex items-center gap-4 rounded-xl border px-5 py-3", passed ? "border-success/50 bg-success/10" : "border-destructive/50 bg-destructive/10")}>
@@ -32,6 +34,13 @@ export function ScoreBox({ total, passed, override }: { total: number; passed: b
           </div>
         </div>
       </div>
+      {!passed && reasons.length > 0 && (
+        <ul className="max-w-sm space-y-0.5 text-right text-xs text-destructive" data-testid="review-blockers" aria-label="Причина незачёта">
+          {reasons.map((r) => (
+            <li key={r}>{r}</li>
+          ))}
+        </ul>
+      )}
       {override && (
         <p className="max-w-sm text-right text-xs text-muted-foreground" data-testid="review-override-reason">
           Изменено преподавателем {override.teacher_name && `(${override.teacher_name})`} {formatDateTime(override.at)}: {override.reason}

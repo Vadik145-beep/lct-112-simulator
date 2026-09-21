@@ -119,7 +119,7 @@ export function CallReview({ attempt, evaluation, teacher }: { attempt: AttemptO
             </p>
           )}
         </div>
-        <ScoreBox total={evaluation.total} passed={evaluation.passed} override={attempt.override} />
+        <ScoreBox total={evaluation.total} passed={evaluation.passed} override={attempt.override} reasons={evaluation.errors.filter((e) => e.critical).map((e) => e.explanation)} />
       </div>
 
       <section className="space-y-3">
