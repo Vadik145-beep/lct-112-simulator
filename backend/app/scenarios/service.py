@@ -39,6 +39,7 @@ from app.logging import get_logger
 from app.models import (
     MODE_CALL_INTAKE,
     SCENARIO_APPROVED,
+    SCENARIO_ARCHIVED,
     SCENARIO_DRAFT,
     SCENARIO_REVIEW,
     Attempt,
@@ -89,6 +90,7 @@ STATUSES = [
     (SCENARIO_DRAFT, "Черновик"),
     (SCENARIO_REVIEW, "На проверке"),
     (SCENARIO_APPROVED, "Утверждён"),
+    (SCENARIO_ARCHIVED, "В архиве"),
 ]
 VOICING_KEY = "scenario-voicing:{id}"
 VOICING_TTL_SECONDS = 3600
@@ -168,13 +170,21 @@ class Loaded:
     version: ScenarioVersion
 
 
-async def load(session: AsyncSession, scenario_id: uuid.UUID, *, for_write: bool = False) -> Loaded:
+async def load(
+    session: AsyncSession,
+    scenario_id: uuid.UUID,
+    *,
+    for_write: bool = False,
+    allow_archived: bool = False,
+) -> Loaded:
     query = select(Scenario).where(Scenario.id == scenario_id)
     if for_write:
         query = query.with_for_update()
     scenario = await session.scalar(query)
     if scenario is None:
         raise ApiError(404, "not_found", "Сценарий не найден.")
+    if for_write and not allow_archived and scenario.status == SCENARIO_ARCHIVED:
+        raise ApiError(409, "scenario_archived", "Сценарий в архиве: сначала восстановите его.")
     version = await session.scalar(
         select(ScenarioVersion).where(
             ScenarioVersion.scenario_id == scenario.id,
@@ -351,6 +361,9 @@ async def list_scenarios(
         query = query.where(Scenario.source == source)
     if status:
         query = query.where(Scenario.status == status)
+    else:
+        # Archived scenarios stay out of the way unless asked for explicitly.
+        query = query.where(Scenario.status != SCENARIO_ARCHIVED)
     if ticket:
         query = query.where(Scenario.ticket_ref == ticket)
     if q:
@@ -603,6 +616,57 @@ async def delete_reply(session: AsyncSession, loaded: Loaded, reply_id: int, act
         entity="scenario",
         entity_id=str(loaded.scenario.id),
         details={"reply_id": reply_id},
+    )
+
+
+# ---------------------------------------------------------------- delete, archive, restore
+
+
+async def remove(session: AsyncSession, loaded: Loaded, actor: User) -> str:
+    """Deletes a scenario nobody has trained on; archives one that attempts refer to.
+
+    Attempts keep ``scenario_id`` (RESTRICT) so reports and reviews of past lessons stay
+    readable; an archived scenario is hidden from lists, not offered to new lessons and
+    cannot be edited until restored. Returns ``"deleted"`` or ``"archived"``.
+    """
+    scenario = loaded.scenario
+    used = await session.scalar(
+        select(func.count()).select_from(Attempt).where(Attempt.scenario_id == scenario.id)
+    )
+    if used:
+        scenario.archived_from = scenario.status
+        scenario.status = SCENARIO_ARCHIVED
+        result = "archived"
+    else:
+        await session.delete(scenario)  # versions cascade
+        result = "deleted"
+    await write_audit(
+        session,
+        action=f"scenario.{result}",
+        actor_id=actor.id,
+        actor_role=actor.role,
+        entity="scenario",
+        entity_id=str(scenario.id),
+        details={"title": scenario.title, "attempts": int(used or 0)},
+    )
+    return result
+
+
+async def restore(session: AsyncSession, loaded: Loaded, actor: User) -> None:
+    """Brings an archived scenario back with the status it had before."""
+    scenario = loaded.scenario
+    if scenario.status != SCENARIO_ARCHIVED:
+        raise ApiError(409, "not_archived", "Сценарий не в архиве.")
+    scenario.status = scenario.archived_from or SCENARIO_DRAFT
+    scenario.archived_from = None
+    await write_audit(
+        session,
+        action="scenario.restore",
+        actor_id=actor.id,
+        actor_role=actor.role,
+        entity="scenario",
+        entity_id=str(scenario.id),
+        details={"status": scenario.status},
     )
 
 

@@ -815,6 +815,28 @@ export interface paths {
         /** Update Scenario */
         put: operations["update_scenario_api_scenarios__scenario_id__put"];
         post?: never;
+        /**
+         * Remove Scenario
+         * @description Deletes a scenario, or archives it when past attempts refer to it (��: ��������
+         *     ������������ �������� without losing the history of lessons).
+         */
+        delete: operations["remove_scenario_api_scenarios__scenario_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/{scenario_id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restore Scenario */
+        post: operations["restore_scenario_api_scenarios__scenario_id__restore_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4043,7 +4065,7 @@ export interface components {
              * Status
              * @enum {string}
              */
-            status: "draft" | "review" | "approved";
+            status: "draft" | "review" | "approved" | "archived";
             /** Source */
             source: string;
             /** Current Version */
@@ -4134,7 +4156,7 @@ export interface components {
              * Status
              * @enum {string}
              */
-            status: "draft" | "review" | "approved";
+            status: "draft" | "review" | "approved" | "archived";
             /** Source */
             source: string;
             /** Current Version */
@@ -4166,6 +4188,14 @@ export interface components {
             generation: {
                 [key: string]: unknown;
             } | null;
+        };
+        /** ScenarioRemoveOut */
+        ScenarioRemoveOut: {
+            /**
+             * Result
+             * @enum {string}
+             */
+            result: "deleted" | "archived";
         };
         /** ScenarioUpdateIn */
         ScenarioUpdateIn: {
@@ -6294,6 +6324,68 @@ export interface operations {
                 "application/json": components["schemas"]["ScenarioUpdateIn"];
             };
         };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_scenario_api_scenarios__scenario_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioRemoveOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    restore_scenario_api_scenarios__scenario_id__restore_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {

@@ -10,7 +10,10 @@ import wave
 
 import pytest
 from httpx import AsyncClient
+from sqlalchemy import select
 
+from app.db import SessionLocal
+from app.models import AuditLog, Scenario
 from app.scenarios import jobs
 from tests.api.conftest import DATA_DIR
 from tests.conftest import bearer, login
@@ -540,3 +543,97 @@ async def test_student_card_becomes_scenario_and_feeds_student_made_sessions(
         },
     )
     assert r.status_code == 422 and r.json()["error"]["code"] == "bad_card_source"
+
+
+# ---------------------------------------------------------------- delete, archive, restore
+
+
+async def test_unused_scenario_is_deleted_for_good(client: AsyncClient) -> None:
+    headers = await teacher(client)
+    created = await create_draft(client, headers)
+    scenario_id = created["id"]
+
+    r = await client.delete(f"/api/scenarios/{scenario_id}", headers=headers)
+    assert r.status_code == 200, r.text
+    assert r.json() == {"result": "deleted"}
+    r = await client.get(f"/api/scenarios/{scenario_id}", headers=headers)
+    assert r.status_code == 404
+    r = await client.get("/api/scenarios", headers=headers, params={"q": "Тестовый сценарий"})
+    assert scenario_id not in [i["id"] for i in r.json()["items"]]
+
+    async with SessionLocal() as session:
+        entry = await session.scalar(
+            select(AuditLog).where(
+                AuditLog.action == "scenario.deleted", AuditLog.entity_id == scenario_id
+            )
+        )
+    assert entry is not None and entry.details["attempts"] == 0
+
+
+async def test_used_scenario_is_archived_hidden_and_restorable(client: AsyncClient) -> None:
+    from tests.api.test_call_intake import GAS_PIPE, call_session, current_call
+    from tests.api.test_sessions import group_id
+
+    teacher_token = await login(client, "teacher1")
+    headers = bearer(teacher_token)
+    lesson = await call_session(client, teacher_token, GAS_PIPE)
+    student = await login(client, "student1")
+    attempt_id = (await current_call(client, student, lesson["id"]))["attempt_id"]
+    async with SessionLocal() as session:
+        scenario_id = str(
+            await session.scalar(select(Scenario.id).where(Scenario.seed_key == GAS_PIPE))
+        )
+
+    # Deleting a scenario a trainee has worked on archives it: the attempt keeps its reference.
+    r = await client.delete(f"/api/scenarios/{scenario_id}", headers=headers)
+    assert r.status_code == 200, r.text
+    assert r.json() == {"result": "archived"}
+    r = await client.get(f"/api/scenarios/{scenario_id}", headers=headers)
+    assert r.status_code == 200 and r.json()["status"] == "archived"
+    r = await client.get(f"/api/attempts/{attempt_id}", headers=bearer(student))
+    assert r.status_code == 200
+
+    # Hidden from the default list, visible under the «archived» filter.
+    listed = (await client.get("/api/scenarios", headers=headers)).json()["items"]
+    assert scenario_id not in [i["id"] for i in listed]
+    archived = (
+        await client.get("/api/scenarios", headers=headers, params={"status": "archived"})
+    ).json()["items"]
+    assert scenario_id in [i["id"] for i in archived]
+
+    # No edits while archived; a new lesson cannot queue it.
+    r = await client.put(
+        f"/api/scenarios/{scenario_id}", headers=headers, json={"body": {"title": "x"}}
+    )
+    assert r.status_code == 409 and r.json()["error"]["code"] == "scenario_archived"
+    r = await client.post(
+        "/api/sessions",
+        headers=headers,
+        json={
+            "title": "Повтор",
+            "group_id": await group_id(),
+            "mode": "call_intake",
+            "difficulty": 1,
+            "service_profile": [],
+            "norm_seconds": 90,
+            "scenario_ids": [scenario_id],
+            "dialog_mode": "select",
+            "voice_enabled": False,
+        },
+    )
+    assert r.status_code == 422 and r.json()["error"]["code"] == "unknown_scenario"
+
+    # Restore: the seed scenario is fully approved, so it comes back approved.
+    r = await client.post(f"/api/scenarios/{scenario_id}/restore", headers=headers)
+    assert r.status_code == 200, r.text
+    assert r.json()["status"] == "approved"
+    r = await client.post(f"/api/scenarios/{scenario_id}/restore", headers=headers)
+    assert r.status_code == 409 and r.json()["error"]["code"] == "not_archived"
+
+
+async def test_student_cannot_delete_scenarios(client: AsyncClient) -> None:
+    headers = await teacher(client)
+    created = await create_draft(client, headers)
+    student = bearer(await login(client, "student1"))
+    r = await client.delete(f"/api/scenarios/{created['id']}", headers=student)
+    assert r.status_code == 403
