@@ -4321,6 +4321,11 @@ export interface components {
             at: string | null;
             /** Is Own */
             is_own: boolean;
+            /**
+             * Is Main
+             * @default false
+             */
+            is_main: boolean;
         };
         /** ServiceTile */
         ServiceTile: {

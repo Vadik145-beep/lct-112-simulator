@@ -45,13 +45,9 @@ RESPONSE_STATUSES: list[dict] = [
         "is_final": False,
         "requires_comment": False,
         "requires_order_number": False,
-        "allowed_next": [
-            "response_started",
-            "arrived",
-            "works_started",
-            "works_done",
-            "works_refused",
-        ],
+        # The memo (p. 25) lists all five follow-up statuses after «Принята»; the live АРМ-112
+        # (screenshots of 17.09.2026) offers them one step at a time. We follow the live system.
+        "allowed_next": ["response_started", "works_done", "works_refused"],
         "description": "Диспетчер подтверждает факт приёма информации. Реагирование будет "
         "осуществляться. Проставляется в течение 30 секунд после направления карточки в службу.",
         "memo_page": 21,
@@ -79,7 +75,7 @@ RESPONSE_STATUSES: list[dict] = [
         "is_final": False,
         "requires_comment": False,
         "requires_order_number": True,
-        "allowed_next": ["arrived", "works_started", "works_done", "works_refused"],
+        "allowed_next": ["arrived", "works_done", "works_refused"],
         "description": "Выезд сил и средств реагирования на место происшествия. Указывается номер "
         "наряда.",
         "memo_page": 22,

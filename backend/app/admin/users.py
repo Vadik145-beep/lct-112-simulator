@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.admin.schemas import AdminUserIn, AdminUserOut, AdminUserPatch
 from app.errors import ApiError
 from app.models import Role, Service, User
-from app.security import hash_password
+from app.security import hash_password_async
 
 # Bytes of randomness of a temporary password (url-safe text, 12 characters).
 _TEMP_PASSWORD_BYTES = 9
@@ -94,7 +94,7 @@ async def create_user(session: AsyncSession, body: AdminUserIn) -> tuple[User, s
         full_name=body.full_name.strip(),
         role=body.role,
         service_code=body.service_code,
-        password_hash=hash_password(password),
+        password_hash=await hash_password_async(password),
         must_change_password=True,
     )
     session.add(user)
@@ -139,7 +139,7 @@ async def update_user(session: AsyncSession, user: User, body: AdminUserPatch, a
 
 async def reset_password(session: AsyncSession, user: User) -> str:
     password = new_temporary_password()
-    user.password_hash = hash_password(password)
+    user.password_hash = await hash_password_async(password)
     user.must_change_password = True
     user.failed_attempts = 0
     user.locked_until = None
