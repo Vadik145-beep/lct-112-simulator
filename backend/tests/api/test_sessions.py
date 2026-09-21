@@ -370,6 +370,12 @@ async def test_monitor_progress_and_finish_with_report(client: AsyncClient) -> N
     assert row["wrong_decisions"] == 1
     wrong = next(a for a in row["attempts"] if a["decision_correct"] is False)
     assert wrong["decision_expected"] == "reject" and wrong["decision_actual"] == "accept"
+    # The report lists the trainee's own steps with the time from issue; system statuses
+    # («Добавлена», «Получена службой») are not the trainee's actions.
+    actions = wrong["actions"]
+    assert [a["kind"] for a in actions] == ["status"] * len(actions) and actions
+    assert actions[0]["title"] == "Принята" and actions[0]["seconds"] >= 0
+    assert all(a["title"] not in ("Добавлена", "Получена службой") for a in actions)
     assert wrong["total"] is not None and wrong["seconds"] is not None
     assert isinstance(wrong["errors"], list)
     listed = (await client.get("/api/sessions", headers=bearer(teacher))).json()

@@ -16,6 +16,7 @@ from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.domain.evaluation.data_check import field_title
 from app.domain.evaluation.timing import seconds_between
 from app.models import (
     ACTIVE_ATTEMPT_STATES,
@@ -32,6 +33,7 @@ from app.training.teacher_schemas import (
     MonitorCard,
     MonitorOut,
     MonitorStudent,
+    ReportAction,
     ReportAttempt,
     ReportErrorCount,
     ReportOut,
@@ -96,6 +98,80 @@ def _remarks(
     return remarks
 
 
+def _iso(value: str | None) -> datetime | None:
+    return datetime.fromisoformat(value) if value else None
+
+
+def _action(start: datetime, at: datetime | None, kind: str, title: str, detail: str | None):
+    if at is None:
+        return None
+    return ReportAction(
+        at=at,
+        seconds=round(seconds_between(start, at) or 0.0, 1),
+        kind=kind,  # type: ignore[arg-type]
+        title=title,
+        detail=(detail or "").strip() or None,
+    )
+
+
+def attempt_actions(attempt: Attempt) -> list[ReportAction]:
+    """The trainee's steps in time order: statuses with comments, flagged fields, calls to
+    services, questions asked in the call and the saved card. System entries («Добавлена»,
+    «Получена службой») are skipped: they are not the trainee's actions."""
+    start = attempt.issued_at
+    actions: list[ReportAction | None] = []
+    for e in attempt.status_log:
+        if e.get("by") == training.BY_SYSTEM:
+            continue
+        parts = []
+        if e.get("order_number"):
+            parts.append(f"наряд {e['order_number']}")
+        if e.get("comment"):
+            parts.append(str(e["comment"]))
+        actions.append(
+            _action(
+                start,
+                _iso(e.get("at")),
+                "status",
+                training.status_title(e["status"]),
+                "; ".join(parts),
+            )
+        )
+    for f in attempt.flagged_fields:
+        value = f.get("corrected_value")
+        actions.append(
+            _action(
+                start,
+                _iso(f.get("at")),
+                "flag",
+                f"Отмечена ошибка: {field_title(f['field'])}",
+                f"верно: {value}" if value else None,
+            )
+        )
+    for c in attempt.service_calls:
+        facts = ", ".join(str(x) for x in c.get("facts_passed") or [])
+        actions.append(
+            _action(
+                start,
+                _iso(c.get("started_at")),
+                "call",
+                f"Звонок в службу: {c.get('service_title') or c.get('service')}",
+                f"передано: {facts}" if facts else "факты не переданы",
+            )
+        )
+    if attempt.mode == training.MODE_CALL_INTAKE:
+        for t in attempt.dialog:
+            if t.get("role") != "operator":
+                continue
+            actions.append(
+                _action(start, _iso(t.get("at")), "question", "Вопрос заявителю", t.get("text"))
+            )
+        actions.append(_action(start, attempt.submitted_at, "card", "Карточка сохранена", None))
+    present_actions = [a for a in actions if a is not None]
+    present_actions.sort(key=lambda a: a.at)
+    return present_actions
+
+
 def report_attempt(
     attempt: Attempt,
     ts: TrainingSession,
@@ -134,6 +210,7 @@ def report_attempt(
         overridden=override is not None,
         override_reason=override.reason if override else None,
         comments=[c.text for c in comments],
+        actions=attempt_actions(attempt),
     )
 
 

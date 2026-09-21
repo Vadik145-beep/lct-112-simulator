@@ -56,6 +56,7 @@ ATTEMPT_COLUMNS = [
     "Замечания",
     "Оценка изменена",
     "Причина изменения",
+    "Действия",
 ]
 
 
@@ -103,6 +104,18 @@ def _decision(code: str | None) -> str:
     return DECISION_TITLES.get(code or "", code or "")
 
 
+def _mmss(seconds: float) -> str:
+    whole = int(seconds)
+    return f"{whole // 60}:{whole % 60:02d}"
+
+
+def actions_text(a: ReportAttempt) -> list[str]:
+    """«0:41 Принята», «1:05 Начало реагирования — наряд 14-217; …» — one line per step."""
+    return [
+        f"{_mmss(x.seconds)} {x.title}" + (f" — {x.detail}" if x.detail else "") for x in a.actions
+    ]
+
+
 def attempt_row(student: ReportStudent, a: ReportAttempt, tz: ZoneInfo) -> list[str]:
     return [
         student.full_name,
@@ -123,6 +136,7 @@ def attempt_row(student: ReportStudent, a: ReportAttempt, tz: ZoneInfo) -> list[
         " | ".join(a.remarks),
         "да" if a.overridden else "",
         a.override_reason or "",
+        " | ".join(actions_text(a)),
     ]
 
 
@@ -347,12 +361,11 @@ def to_pdf(report: ReportOut) -> bytes:
                     p(time_text, small),
                     p(decision, small),
                     p("; ".join(a.errors), small),
-                    p(
-                        "<br/>".join(
-                            r.replace("&", "&amp;").replace("<", "&lt;") for r in a.remarks
-                        ),
-                        small,
-                    ),
+                    # One paragraph per line: a Paragraph escapes its text, so a «<br/>»
+                    # inside would print literally.
+                    [p(r, small) for r in a.remarks]
+                    + ([p("Действия:", small)] if a.actions else [])
+                    + [p(r, small) for r in actions_text(a)],
                 ]
             )
         table = Table(rows, colWidths=[w * mm for w in widths], repeatRows=1)
