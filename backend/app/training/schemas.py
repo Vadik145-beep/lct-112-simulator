@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -225,6 +226,9 @@ class AttemptOut(BaseModel):
     service_calls: list[ServiceCallOut] = []
     # Services the reference expects a call to (empty = calls are not evaluated).
     service_calls_required: list[str] = []
+    # The squad will report by phone after «Принята» (customer, 21.09.2026): the hints tell
+    # the trainee to wait for the reports instead of clicking the statuses through.
+    reports_expected: bool = False
     transitions: list[TransitionOut]
     reject_reasons: list[RejectReasonOut]
     # Reference solution, visible after the card is closed (PRD 11: «эталон после завершения»).
@@ -260,11 +264,15 @@ class ServiceCallTurnOut(BaseModel):
 
 
 class ServiceCallOut(BaseModel):
-    """A call of the dispatcher to a service officer (issue #36)."""
+    """A call on the card: the dispatcher's call to a service officer (issue #36, ``outgoing``)
+    or the squad leader's report to the dispatcher (``report``, customer 21.09.2026)."""
 
     id: str
     service: str
     service_title: str
+    kind: Literal["outgoing", "report"] = "outgoing"
+    report_status: str | None = None
+    report_status_title: str | None = None
     started_at: datetime
     answered: bool
     answered_at: datetime | None

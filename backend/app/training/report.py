@@ -149,13 +149,31 @@ def attempt_actions(attempt: Attempt) -> list[ReportAction]:
             )
         )
     for c in attempt.service_calls:
+        who = c.get("service_title") or c.get("service")
+        if c.get("kind") == "report":
+            # The squad's report (customer, 21.09.2026): what it announced and whether the
+            # trainee picked it up.
+            spoken = any(t.get("role") == "operator" for t in c.get("dialog") or [])
+            taken = "принят" if spoken else "не принят"
+            if c.get("end_reason") == "not_taken":
+                taken = "не принят, закрыт по времени"
+            actions.append(
+                _action(
+                    start,
+                    _iso(c.get("started_at")),
+                    "call",
+                    f"Доклад бригады: {who}",
+                    f"«{training.status_title(c.get('report_status') or '')}», {taken}",
+                )
+            )
+            continue
         facts = ", ".join(str(x) for x in c.get("facts_passed") or [])
         actions.append(
             _action(
                 start,
                 _iso(c.get("started_at")),
                 "call",
-                f"Звонок в службу: {c.get('service_title') or c.get('service')}",
+                f"Звонок в службу: {who}",
                 f"передано: {facts}" if facts else "факты не переданы",
             )
         )
