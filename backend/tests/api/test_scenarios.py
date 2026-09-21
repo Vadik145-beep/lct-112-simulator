@@ -432,11 +432,36 @@ async def test_reference_docs_roundtrip(client: AsyncClient) -> None:
         files={"file": ("x.exe", b"MZ", "application/octet-stream")},
     )
     assert r.status_code == 415
+    # The trainee reads the uploaded document in full and finds it by words (ТЗ: «просматривать
+    # инструкции и методические материалы»), next to the built-in memo.
+    student = bearer(await login(client, "student1"))
+    listed = (await client.get("/api/reference/materials", headers=student)).json()
+    assert [m["name"] for m in listed][:1] == ["memo"] and listed[0]["builtin"] is True
+    uploaded = next(m for m in listed if m["name"] == "методичка тест")
+    assert uploaded["builtin"] is False and uploaded["paragraphs"] == 3
+    r = await client.get("/api/reference/materials/методичка тест", headers=student)
+    assert r.status_code == 200, r.text
+    assert r.json()["paragraphs"][0]["text"] == "Порядок работы с карточкой происшествия."
+    memo = (await client.get("/api/reference/materials/memo", headers=student)).json()
+    assert memo["builtin"] is True and memo["paragraphs"][0]["page"] >= 1
+    r = await client.get("/api/reference/search", headers=student, params={"q": "тридцати секунд"})
+    assert [h["name"] for h in r.json()["docs"]] == ["методичка тест"]
+    assert (await client.get("/api/reference/materials/../.env", headers=student)).status_code in (
+        404,
+        422,
+    )
+    assert (
+        await client.get("/api/reference/materials/нет такого", headers=student)
+    ).status_code == 404
+
     r = await client.delete("/api/reference/docs/методичка тест", headers=headers)
     assert r.status_code == 204
     assert (
         await client.delete("/api/reference/docs/методичка тест", headers=headers)
     ).status_code == 404
+    assert "методичка тест" not in [
+        m["name"] for m in (await client.get("/api/reference/materials", headers=student)).json()
+    ]
 
 
 @pytest.fixture(autouse=True)
