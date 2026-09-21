@@ -10,7 +10,7 @@ from app.audit import write_audit
 from app.config import get_settings
 from app.errors import ApiError
 from app.models import Role, User
-from app.security import create_token, hash_password, verify_password
+from app.security import create_token, hash_password_async, verify_password_async
 
 DEMO_LOGINS: dict[Role, str] = {
     Role.student: "student1",
@@ -62,7 +62,7 @@ async def authenticate(session: AsyncSession, login: str, password: str, ip: str
             "попыток. Подождите и попробуйте снова.",
         )
 
-    if not verify_password(password, user.password_hash):
+    if not await verify_password_async(password, user.password_hash):
         user.failed_attempts += 1
         locked = user.failed_attempts >= settings.login_max_attempts
         if locked:
@@ -114,11 +114,11 @@ async def demo_login(session: AsyncSession, role: Role, ip: str | None) -> User:
 async def change_password(
     session: AsyncSession, user: User, old_password: str, new_password: str, ip: str | None
 ) -> User:
-    if not verify_password(old_password, user.password_hash):
+    if not await verify_password_async(old_password, user.password_hash):
         raise ApiError(400, "bad_old_password", "Текущий пароль указан неверно.")
     if old_password == new_password:
         raise ApiError(400, "same_password", "Новый пароль должен отличаться от текущего.")
-    user.password_hash = hash_password(new_password)
+    user.password_hash = await hash_password_async(new_password)
     user.must_change_password = False
     user.token_version += 1
     await write_audit(
