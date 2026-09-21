@@ -329,6 +329,7 @@ def card_out(attempt: Attempt, body: dict, lookups: Lookups) -> CardOut:
         incident=_incident_out(body, lookups),
         flags=flags,
         injured=flags.get(FLAG_INJURED, False),
+        injured_count=card.get("injured_count"),
         ambulance_refused=flags.get(FLAG_AMBULANCE_REFUSED, False),
         blocked=flags.get(FLAG_BLOCKED, False),
         emergency=flags.get(FLAG_EMERGENCY, False),

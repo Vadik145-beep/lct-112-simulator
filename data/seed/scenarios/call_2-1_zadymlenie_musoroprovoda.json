@@ -3,7 +3,7 @@
   "title": "Задымление мусоропровода в жилом доме",
   "ticket_ref": "2-1",
   "difficulty": 2,
-  "norm_seconds": 90,
+  "norm_seconds": 60,
   "caller": {
     "persona": "worried_resident",
     "voice": "ru_male_1",

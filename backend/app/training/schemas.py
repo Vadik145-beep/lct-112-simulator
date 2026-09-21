@@ -91,6 +91,7 @@ class CardOut(BaseModel):
     incident: IncidentOut
     flags: dict[str, bool]
     injured: bool
+    injured_count: int | None = None
     ambulance_refused: bool
     blocked: bool
     emergency: bool

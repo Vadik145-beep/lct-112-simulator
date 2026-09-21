@@ -2659,6 +2659,8 @@ export interface components {
             flags?: {
                 [key: string]: boolean;
             };
+            /** Injured Count */
+            injured_count?: number | null;
             /** Services */
             services?: string[];
             address?: components["schemas"]["AddressIn"];
@@ -2693,6 +2695,8 @@ export interface components {
             };
             /** Injured */
             injured: boolean;
+            /** Injured Count */
+            injured_count?: number | null;
             /** Ambulance Refused */
             ambulance_refused: boolean;
             /** Blocked */

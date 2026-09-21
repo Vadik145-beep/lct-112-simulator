@@ -182,6 +182,12 @@ class StreetOut(BaseModel):
     district: str
 
 
+# Rows of the classifier whose first sign is this marker exist for the services and the
+# evaluation (144 types, «Пожар: Автобаза» and the like) but are not offered on the survey card
+# of the live АРМ-112, so the tree of the operator's screen leaves them out.
+HIDDEN_FROM_OPERATOR = "Не отображается оператору 112"
+
+
 def _build_tree(types: list[IncidentType]) -> dict[str, list[ClassifierNode]]:
     """Groups types into sign1 → sign2 → sign3 nodes, keeping sheet order.
 
@@ -190,6 +196,8 @@ def _build_tree(types: list[IncidentType]) -> dict[str, list[ClassifierNode]]:
     """
     by_group: dict[str, list[ClassifierNode]] = {}
     for t in types:
+        if t.sign1 == HIDDEN_FROM_OPERATOR:
+            continue
         level = by_group.setdefault(t.group_code, [])
         path = [s for s in (t.sign1, t.sign2, t.sign3) if s]
         for i, title in enumerate(path):

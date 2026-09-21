@@ -520,7 +520,8 @@ function CardView({
               )}
             >
               <span className="inline-flex items-center gap-1">
-                Пострадавшие: <b>{card.injured ? "да" : "нет"}</b>
+                Пострадавшие:{" "}
+                <b>{card.injured ? (card.injured_count ? `да, ${card.injured_count}` : "да") : "нет"}</b>
                 <FlagButton
                   field="flags.injured"
                   flagged={flagsByField.has("flags.injured")}

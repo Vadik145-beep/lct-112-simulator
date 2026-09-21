@@ -261,7 +261,7 @@ class CallIntakeScenario(BaseModel):
     title: str
     ticket_ref: str | None = None
     difficulty: int = 1
-    norm_seconds: int = 90
+    norm_seconds: int = 60
     caller: CallerProfile
     replies: list[Reply] = Field(default_factory=list)
     required_topics: list[str]
@@ -294,6 +294,7 @@ class SubmittedCard(BaseModel):
     signs_path: list[str] = Field(default_factory=list)
     incident_type: str | None = None
     flags: dict[str, bool] = Field(default_factory=dict)
+    injured_count: int | None = None  # asked when «Пострадавшие» is pressed; not scored
     services: list[str] = Field(default_factory=list)  # filled by resolve_services in the UI
     address: Address = Field(default_factory=Address)
     caller: Caller = Field(default_factory=Caller)

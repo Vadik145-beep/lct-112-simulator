@@ -3,7 +3,7 @@
   "title": "Ребёнок упал с велосипеда (другой регион)",
   "ticket_ref": "1-3",
   "difficulty": 3,
-  "norm_seconds": 90,
+  "norm_seconds": 60,
   "caller": {
     "persona": "mother_anxious",
     "voice": "ru_female_1",
