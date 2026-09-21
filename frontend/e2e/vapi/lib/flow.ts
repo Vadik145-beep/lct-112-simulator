@@ -124,8 +124,9 @@ export async function answerCall(page: Page, sessionId: string): Promise<string>
 
 export async function say(page: Page, file: string): Promise<number> {
   const b64 = readFileSync(resolve(PHRASES, `${file}.wav`)).toString("base64");
+  // globalThis, not window: the e2e files are type-checked with the node tsconfig (no DOM lib).
   const duration = (await page.evaluate(
-    ([audio, label]) => (window as unknown as { __voice: { say: (a: string, l: string) => Promise<number> } }).__voice.say(audio, label),
+    ([audio, label]) => (globalThis as unknown as { __voice: { say: (a: string, l: string) => Promise<number> } }).__voice.say(audio, label),
     [b64, file],
   )) as number;
   await page.waitForTimeout(duration * 1000 + 500);
