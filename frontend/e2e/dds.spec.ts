@@ -82,14 +82,12 @@ async function setStatus(
   await form
     .getByLabel("Статус", { exact: true })
     .selectOption({ label: status });
-  if (opts.reason)
-    await form
-      .getByLabel("Причина отказа")
-      .selectOption({ label: opts.reason });
   if (opts.orderNumber)
     await form.getByLabel("Номер наряда").fill(opts.orderNumber);
-  if (opts.comment)
-    await form.getByLabel("Комментарий", { exact: true }).fill(opts.comment);
+  // No reason drop-down on the live АРМ-112: the reason opens the comment.
+  const comment = [opts.reason, opts.comment].filter(Boolean).join(": ");
+  if (comment)
+    await form.getByLabel("Комментарий", { exact: true }).fill(comment);
   await form.getByRole("button", { name: "Сохранить статус" }).click();
   await expect(form).toBeHidden();
 }
@@ -205,7 +203,6 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
       .selectOption({ label: "Не принята" });
     await form.getByRole("button", { name: "Сохранить статус" }).click();
     await expect(form.getByRole("alert")).toContainText("причину отказа");
-    await form.getByLabel("Причина отказа").selectOption({ label: "Дубль" });
     await form
       .getByLabel("Комментарий", { exact: true })
       .fill(
@@ -213,8 +210,12 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
       );
     await form.getByRole("button", { name: "Сохранить статус" }).click();
     await expect(form).toBeHidden();
+    // The history line is «Не принята › comment», the reason lives in the comment text.
     await expect(page.getByTestId("own-service-panel")).toContainText(
-      "Не принята: Дубль",
+      "Не принята",
+    );
+    await expect(page.getByTestId("own-service-panel")).toContainText(
+      "Дубль: реагирование по КП 38260311",
     );
     // After «Не принята» only «Принята» remains (memo page 21).
     await page.getByRole("button", { name: "Проставить статус" }).click();

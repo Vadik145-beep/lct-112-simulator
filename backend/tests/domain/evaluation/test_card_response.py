@@ -130,6 +130,9 @@ def test_corrected_decision_earns_half() -> None:
 
 
 def test_missing_status_lowers_the_chain() -> None:
+    """A log that skips «Прибытие» (possible only outside the UI: the live-style machine
+    offers statuses one step at a time). «Проведение работ» after «Начало реагирования» is
+    not allowed, so it is dropped as invalid and the chain has 3 of 5 reference statuses."""
     scenario = card_scenario()
     attempt = card_attempt(
         {"status": "received"},
@@ -140,9 +143,10 @@ def test_missing_status_lowers_the_chain() -> None:
     )
     result = evaluate_card_response(scenario, attempt)
     chain = result.components["status_chain"]
-    assert chain.score == 16  # 4 of 5 reference statuses
-    assert chain.items[0]["missing"] == ["arrived"]
+    assert chain.score == 12
+    assert chain.items[0]["missing"] == ["arrived", "works_started"]
     assert chain.items[0]["extra"] == []
+    assert "нельзя проставить «Проведение работ»" in str(chain.items)
 
 
 def test_extra_status_is_listed() -> None:

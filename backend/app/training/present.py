@@ -201,6 +201,8 @@ def _service_statuses(attempt: Attempt, body: dict, lookups: Lookups) -> list[Se
     the scenario."""
     card = body.get("card", {})
     own_code = body.get("service") or ""
+    itype = lookups.incident_types.get(str(card.get("incident_type") or ""))
+    main_code = itype.main_service if itype else None
     result: list[ServiceStatusOut] = []
     seen: set[str] = set()
 
@@ -218,6 +220,7 @@ def _service_statuses(attempt: Attempt, body: dict, lookups: Lookups) -> list[Se
                 status_title=_status_title(status, lookups),
                 at=at,
                 is_own=is_own,
+                is_main=code == main_code,
             )
         )
 

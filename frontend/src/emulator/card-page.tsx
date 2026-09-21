@@ -45,6 +45,7 @@ import { ServiceCallPanel } from "@/emulator/service-call";
 import { describeCall } from "@/emulator/service-call-model";
 import {
   acceptanceTimer,
+  formatDate,
   formatDateTime,
   formatSeconds,
   formatTime,
@@ -653,7 +654,9 @@ function CardView({
                       {entry.by === "system" ? "0" : attempt.arm.operator_no}
                     </span>
                     <span aria-hidden>›</span>
-                    <span className="font-mono">{formatTime(entry.at)}</span>
+                    <span className="font-mono">
+                      {formatDate(entry.at, true)} {formatTime(entry.at)}
+                    </span>
                     <span className="font-medium">{entry.title}</span>
                     {entry.reject_reason_title && (
                       <span>: {entry.reject_reason_title}</span>
@@ -664,9 +667,10 @@ function CardView({
                       </span>
                     )}
                     {entry.comment && (
-                      <span className="w-full pl-2 text-white/90">
-                        — {entry.comment}
-                      </span>
+                      <>
+                        <span aria-hidden>›</span>
+                        <span className="text-white/90">{entry.comment}</span>
+                      </>
                     )}
                   </li>
                 ))}
@@ -715,53 +719,35 @@ function CardView({
                       </option>
                     ))}
                   </select>
-                  {(selected.requires_order_number ||
-                    draft.order_number.trim()) && (
-                    // The order number belongs to «Начало реагирования»; at «Принята» the field
-                    // only made trainees look for something to fill in (docs/BUGS.md, 8).
-                    <input
-                      aria-label="Номер наряда"
-                      placeholder={
-                        selected.requires_order_number
-                          ? "Номер наряда (обязателен)"
-                          : "Номер наряда"
-                      }
-                      value={draft.order_number}
-                      onChange={(e) =>
-                        setDraft({ order_number: e.target.value })
-                      }
-                      className={cn(
-                        "h-8 w-44 border-b px-2 text-sm placeholder:text-[var(--arm-text-muted)] focus:border-[var(--arm-blue)] focus:outline-none",
-                        selected.requires_order_number &&
-                          !draft.order_number.trim()
-                          ? "border-[var(--arm-orange)]"
-                          : "border-[#a9adb2]",
-                      )}
-                    />
-                  )}
-                  {selected.code === STATUS_REJECTED && (
-                    <select
-                      aria-label="Причина отказа"
-                      value={draft.reject_reason}
-                      onChange={(e) =>
-                        setDraft({ reject_reason: e.target.value })
-                      }
-                      className="h-8 w-64 border-b border-[#a9adb2] bg-white px-2 text-sm focus:border-[var(--arm-blue)] focus:outline-none"
-                    >
-                      <option value="">Причина отказа…</option>
-                      {attempt.reject_reasons.map((r) => (
-                        <option key={r.code} value={r.code}>
-                          {r.title}
-                        </option>
-                      ))}
-                    </select>
-                  )}
+                  {/* The live row is always «Статус | Номер наряда | Комментарий»: the field stays
+                      even where the number is optional (docs/DECISIONS.md, карточка ДДС). */}
+                  <input
+                    aria-label="Номер наряда"
+                    placeholder={
+                      selected.requires_order_number
+                        ? "Номер наряда (обязателен)"
+                        : "Номер наряда"
+                    }
+                    value={draft.order_number}
+                    onChange={(e) =>
+                      setDraft({ order_number: e.target.value })
+                    }
+                    className={cn(
+                      "h-8 w-44 border-b px-2 text-sm placeholder:text-[var(--arm-text-muted)] focus:border-[var(--arm-blue)] focus:outline-none",
+                      selected.requires_order_number &&
+                        !draft.order_number.trim()
+                        ? "border-[var(--arm-orange)]"
+                        : "border-[#a9adb2]",
+                    )}
+                  />
                   <input
                     aria-label="Комментарий"
                     placeholder={
-                      selected.requires_comment
-                        ? "Комментарий обязателен"
-                        : "Комментарий (по желанию)"
+                      selected.code === STATUS_REJECTED
+                        ? "Причина отказа и кому передана информация"
+                        : selected.requires_comment
+                          ? "Комментарий обязателен"
+                          : "Комментарий"
                     }
                     value={draft.comment}
                     onChange={(e) => setDraft({ comment: e.target.value })}
@@ -838,6 +824,7 @@ function CardView({
             <div className="flex w-[104px] items-center px-3 text-xs text-[var(--arm-on-dark-muted)]">
               Службы:
             </div>
+            <div className="flex flex-wrap items-stretch">
             {ownService && (
               <div
                 className={cn(
@@ -880,7 +867,10 @@ function CardView({
                   />
                 </div>
                 <div
-                  className="truncate px-2 text-center text-xs font-semibold"
+                  className={cn(
+                    "truncate px-2 text-center text-xs font-semibold",
+                    ownService.is_main && "underline underline-offset-2",
+                  )}
                   title={ownService.title}
                 >
                   {ownService.short_title}
@@ -908,7 +898,10 @@ function CardView({
                   />
                 </div>
                 <div
-                  className="truncate px-2 text-center text-xs font-semibold"
+                  className={cn(
+                    "truncate px-2 text-center text-xs font-semibold",
+                    s.is_main && "underline underline-offset-2",
+                  )}
                   title={s.title}
                 >
                   {s.short_title}
@@ -919,6 +912,7 @@ function CardView({
                 </div>
               </div>
             ))}
+            </div>
             <div className="ml-auto flex items-center gap-1 px-2">
               <FlagButton
                 field="services"

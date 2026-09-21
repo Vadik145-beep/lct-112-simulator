@@ -367,7 +367,7 @@ function JournalRow({
         <td colSpan={COLUMNS} className="bg-[var(--arm-dark-2)] px-4 py-1 text-xs text-[var(--arm-on-dark)]">
           <span className="text-[var(--arm-on-dark-muted)]">Описание:</span>
           <span className="ml-6 text-[var(--arm-on-dark-muted)]">
-            {formatDate(item.issued_at)} {formatTime(item.issued_at)} оп. {item.operator_no} —{" "}
+            {formatDate(item.issued_at, true)} {formatTime(item.issued_at)} оп. {item.operator_no} —{" "}
           </span>
           <span className="font-semibold">{item.description || "—"}</span>
         </td>
