@@ -364,6 +364,7 @@ function ReviewView({
           total={evaluation.total}
           passed={evaluation.passed}
           override={attempt.override}
+          reasons={evaluation.errors.filter((e) => e.critical).map((e) => e.explanation)}
         />
       </div>
 

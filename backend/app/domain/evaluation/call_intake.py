@@ -14,6 +14,13 @@
 - typical_errors (5): 5 minus penalties of the detectors that fired, not below 0.
 - grammar (10): 10 − 2 × LanguageTool errors in the description, not below 0; «not checked»
   when LanguageTool is down and the total is renormalized.
+
+Two blocking rules (issues #69 and #70) fire as critical typical errors, so the attempt fails
+whatever the total: ``questions_not_asked`` when the trainee asked fewer than
+``scenario.min_questions_share`` of the required topics (topics the caller volunteered in a
+cloud call do not count), and ``card_empty`` when the card has neither type, nor address, nor
+description. An empty description scores 0 for description and grammar («nothing to check»
+is not «no mistakes»); an empty card scores 0 for flags/services and time as well.
 """
 
 from __future__ import annotations
@@ -125,6 +132,11 @@ def _flags_services(
     reference = scenario.reference_card
     card = attempt.card
     half = max_points / 2
+    if card_is_empty(attempt):
+        note = "карточка не заполнена: признаки и службы не оцениваются"
+        return Component(
+            "flags_services", TITLES["flags_services"], 0.0, max_points, items=[{"note": note}]
+        )
     keys = set(reference.flags) | {k for k, v in card.flags.items() if v}
     wrong = sorted(k for k in keys if bool(reference.flags.get(k)) != bool(card.flags.get(k)))
     flags_fraction = 1.0 if not keys else 1 - len(wrong) / len(keys)
@@ -185,13 +197,44 @@ def _address(reference: Address, actual: Address, max_points: int) -> Component:
     )
 
 
+CLOUD_METHOD = "cloud"
+MIN_DESCRIPTION_WORDS = 2
+
+
 def clarified_topics(attempt: CallIntakeAttempt) -> set[str]:
-    """Topics touched in the conversation: labels from the dialog engine when present,
-    otherwise keywords of ``caller_topics`` over the text."""
+    """Topics the trainee clarified: labels from the dialog engine when present, otherwise
+    keywords of ``caller_topics`` over the text. A caller's reply of a local mode answers the
+    operator's question, so its topic counts; in a cloud call the caller speaks freely and
+    keyword topics on their speech would credit the trainee for questions never asked
+    (issue #69), so only the operator's own phrases count there."""
     topics: set[str] = set()
     for turn in attempt.dialog:
+        if turn.role == "caller" and turn.method == CLOUD_METHOD:
+            continue
         topics.update(turn.topics or detect_topics(turn.text))
     return topics
+
+
+def description_words(attempt: CallIntakeAttempt) -> int:
+    return len(normalize_text(attempt.card.description).split())
+
+
+def has_description(attempt: CallIntakeAttempt) -> bool:
+    """A description of at least two words; one word («пропуск», «-») is a placeholder."""
+    return description_words(attempt) >= MIN_DESCRIPTION_WORDS
+
+
+def card_is_empty(attempt: CallIntakeAttempt) -> bool:
+    """No incident type or signs, no street or descriptive address, no description
+    (issue #70): the card was saved without work on it."""
+    card = attempt.card
+    return not (
+        card.incident_type
+        or card.signs_path
+        or card.address.street
+        or card.address.descriptive
+        or has_description(attempt)
+    )
 
 
 def _required_topics(scenario: CallIntakeScenario, topics: set[str], max_points: int) -> Component:
@@ -222,6 +265,13 @@ def _description(
     reference = scenario.reference_card
     text = attempt.card.description
     half = max_points / 2
+    if not has_description(attempt):
+        item = {
+            "note": "описание не заполнено",
+            "keywords_found": [],
+            "keywords_missing": list(reference.description_keywords),
+        }
+        return Component("description", TITLES["description"], 0.0, max_points, items=[item])
     found, missing = keyword_coverage(text, reference.description_keywords)
     keywords_fraction = (
         1.0
@@ -247,6 +297,8 @@ def _description(
 def _time(scenario: CallIntakeScenario, attempt: CallIntakeAttempt, max_points: int) -> Component:
     seconds = seconds_between(attempt.answered_at, attempt.submitted_at)
     fraction = time_fraction(seconds, scenario.norm_seconds)
+    if card_is_empty(attempt):
+        fraction = 0.0  # saving an empty card fast is not a fast card (issue #70)
     items = [
         {
             "seconds": None if seconds is None else round(seconds, 1),
@@ -264,7 +316,13 @@ def _typical_errors(errors: list[ErrorItem], max_points: int) -> Component:
     return Component("typical_errors", TITLES["typical_errors"], score, max_points, items=items)
 
 
-def _grammar(grammar: GrammarResult | None, max_points: int) -> Component:
+def _grammar(
+    grammar: GrammarResult | None, max_points: int, attempt: CallIntakeAttempt
+) -> Component:
+    if not has_description(attempt):
+        # Nothing to check is not «no mistakes» (issue #70).
+        note = "описание не заполнено: грамотность не оценивается"
+        return Component("grammar", TITLES["grammar"], 0.0, max_points, items=[{"note": note}])
     if grammar is None or not grammar.available:
         return Component("grammar", TITLES["grammar"], 0.0, max_points, status="not_checked")
     score = max(0.0, float(max_points - 2 * grammar.error_count))
@@ -297,7 +355,9 @@ def evaluate_call_intake(
     maxima = apply_weights(DEFAULT_WEIGHTS, weights)
     embeddings = embeddings or TfidfEmbedding()
     topics = clarified_topics(attempt)
-    ctx = CallContext(scenario=scenario, attempt=attempt, topics=topics)
+    ctx = CallContext(
+        scenario=scenario, attempt=attempt, topics=topics, card_empty=card_is_empty(attempt)
+    )
     errors = run_detectors(CALL_DETECTORS, ctx)
 
     components = [
@@ -308,13 +368,14 @@ def evaluate_call_intake(
         _description(scenario, attempt, maxima["description"], embeddings),
         _time(scenario, attempt, maxima["time"]),
         _typical_errors(errors, maxima["typical_errors"]),
-        _grammar(grammar, maxima["grammar"]),
+        _grammar(grammar, maxima["grammar"], attempt),
     ]
     for component in components:
         if component.max == 0:
             component.status = "disabled"
+    grammar_checked = grammar is not None and grammar.available and has_description(attempt)
     methods = {
-        "grammar": grammar.method if grammar is not None and grammar.available else "not_checked",
+        "grammar": grammar.method if grammar_checked else "not_checked",
         "similarity": embeddings.method,
     }
     return finalize(MODE, components, errors, methods, pass_threshold)

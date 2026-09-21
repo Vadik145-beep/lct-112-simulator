@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from math import ceil
 
 from rapidfuzz import fuzz
 
@@ -392,6 +393,7 @@ class CallContext:
     scenario: CallIntakeScenario
     attempt: CallIntakeAttempt
     topics: set[str]  # topics clarified during the conversation
+    card_empty: bool = False  # the card has no type, address or description (issue #70)
 
 
 def address_not_asked(ctx: CallContext) -> ErrorItem | None:
@@ -431,7 +433,39 @@ def region_not_clarified(ctx: CallContext) -> ErrorItem | None:
     )
 
 
+def questions_not_asked(ctx: CallContext) -> ErrorItem | None:
+    """Blocking rule of issue #69: fewer than ``min_questions_share`` of the required topics
+    asked by the trainee → critical error, the attempt fails whatever the total."""
+    required = list(ctx.scenario.required_topics)
+    share = ctx.scenario.min_questions_share
+    if not required or share <= 0:
+        return None
+    needed = ceil(len(required) * share)
+    asked = [t for t in required if t in ctx.topics]
+    if len(asked) >= needed:
+        return None
+    return _item(
+        "questions_not_asked",
+        f"Незачёт: задано {len(asked)} из {len(required)} обязательных вопросов "
+        f"(нужно не меньше {needed}).",
+        critical=True,
+    )
+
+
+def card_empty(ctx: CallContext) -> ErrorItem | None:
+    """Blocking rule of issue #70: a card without type, address and description."""
+    if not ctx.card_empty:
+        return None
+    return _item(
+        "card_empty",
+        "Незачёт: карточка сохранена без типа происшествия, адреса и описания.",
+        critical=True,
+    )
+
+
 CALL_DETECTORS: dict[str, Callable[[CallContext], ErrorItem | None]] = {
+    "questions_not_asked": questions_not_asked,
+    "card_empty": card_empty,
     "address_not_asked": address_not_asked,
     "no_call_dropped_mark": no_call_dropped_mark,
     "region_not_clarified": region_not_clarified,
