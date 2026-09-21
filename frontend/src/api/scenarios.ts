@@ -105,6 +105,24 @@ export function useApproveScenario(id: string) {
   );
 }
 
+/** Deletes a scenario nobody trained on; one used in lessons is archived instead. */
+export function useRemoveScenario(id: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: () => unwrap(api.DELETE("/api/scenarios/{scenario_id}", path(id))),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: ["scenarios", "list"] });
+      void client.invalidateQueries({ queryKey: scenarioKey(id) });
+    },
+  });
+}
+
+export function useRestoreScenario(id: string) {
+  return useScenarioMutation<void>(id, () =>
+    unwrap(api.POST("/api/scenarios/{scenario_id}/restore", path(id))),
+  );
+}
+
 export function useEditReply(id: string) {
   return useScenarioMutation<{ reply_id: number; text?: string; topic?: string }>(id, ({ reply_id, ...body }) =>
     unwrap(

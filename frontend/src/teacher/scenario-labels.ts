@@ -4,12 +4,14 @@ export const SCENARIO_STATUS_TITLES: Record<string, string> = {
   draft: "Черновик",
   review: "На проверке",
   approved: "Утверждён",
+  archived: "В архиве",
 };
 
 export const SCENARIO_STATUS_TONES: Record<string, BadgeTone> = {
   draft: "neutral",
   review: "warning",
   approved: "success",
+  archived: "neutral",
 };
 
 export const SOURCE_TITLES: Record<string, string> = {
