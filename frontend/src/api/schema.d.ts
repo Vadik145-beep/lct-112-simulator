@@ -3813,6 +3813,29 @@ export interface components {
              */
             voicing: "none" | "queued" | "done" | "failed";
         };
+        /**
+         * ReportAction
+         * @description One step of the trainee on the card or in the call, for the �actions� column of the
+         *     lesson report (��: ����� �� ����������� � ����������).
+         */
+        ReportAction: {
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Seconds */
+            seconds: number;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "status" | "flag" | "call" | "question" | "card";
+            /** Title */
+            title: string;
+            /** Detail */
+            detail?: string | null;
+        };
         /** ReportAttempt */
         ReportAttempt: {
             /**
@@ -3876,6 +3899,11 @@ export interface components {
              * @default []
              */
             comments: string[];
+            /**
+             * Actions
+             * @default []
+             */
+            actions: components["schemas"]["ReportAction"][];
         };
         /** ReportErrorCount */
         ReportErrorCount: {

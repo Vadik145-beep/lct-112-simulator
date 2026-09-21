@@ -174,6 +174,13 @@ test.describe("Волна 4: занятие целиком", () => {
     await expect(attempts.getByRole("row")).toHaveCount(3); // header + 2 attempts
     await expect(attempts).toContainText("38260311");
     await expect(attempts).toContainText("38261102");
+    // The actions column unfolds the trainee's steps with the time from issue (ТЗ: «информация о действиях»).
+    const first = attempts.locator("tr", { hasText: "38260311" });
+    await first.getByText(/действи/).click();
+    const steps = first.getByRole("list", { name: "Действия обучающегося" });
+    await expect(steps).toContainText("Принята");
+    await expect(steps).toContainText("Начало реагирования — наряд 14-217; Направлен дежурный слесарь");
+    await expect(steps).toContainText("Работы завершены");
     await teacher.screenshot({ path: `${SHOTS}/08-report.png`, fullPage: true });
     await attempts.getByRole("link", { name: "Разбор" }).first().click();
     await expect(teacher.getByTestId("review-verdict")).toBeVisible();
