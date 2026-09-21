@@ -196,6 +196,31 @@ def _incident_out(body: dict, lookups: Lookups) -> IncidentOut:
     )
 
 
+# The classifier notifies «Территориальные ОИВ» as one abstract service; on the live АРМ-112 the
+# tab names the district's own ДДС («Упр. района Вешняки», «Поселение Вороновское») and the
+# prefecture of the okrug — the customer's answer of 21.09.2026 to question 4. The names are
+# derived from the card's address; the service code and the evaluation do not change.
+TERRITORIAL_CODES = frozenset({"territorial_oiv", "territorial_oiv_tinao"})
+
+
+def territorial_titles(address: dict, fallback_title: str, fallback_short: str) -> tuple[str, str]:
+    district = str(address.get("district") or "").strip()
+    okrug = str(address.get("okrug") or "").strip()
+    if not district:
+        return fallback_title, fallback_short
+    lowered = district.lower()
+    if lowered.startswith("район "):
+        short = "Упр. " + district
+    elif lowered.endswith(" район"):
+        short = "Упр. " + district
+    else:
+        short = "Упр. района " + district
+    title = f"ДДС управы: {district}"
+    if okrug:
+        title += f", префектура {okrug}"
+    return title, short
+
+
 def _service_statuses(attempt: Attempt, body: dict, lookups: Lookups) -> list[ServiceStatusOut]:
     """Tabs of the «Службы» strip: the trainee's service from the attempt log, the rest from
     the scenario."""
@@ -203,6 +228,7 @@ def _service_statuses(attempt: Attempt, body: dict, lookups: Lookups) -> list[Se
     own_code = body.get("service") or ""
     itype = lookups.incident_types.get(str(card.get("incident_type") or ""))
     main_code = itype.main_service if itype else None
+    address = card.get("address") or {}
     result: list[ServiceStatusOut] = []
     seen: set[str] = set()
 
@@ -211,11 +237,15 @@ def _service_statuses(attempt: Attempt, body: dict, lookups: Lookups) -> list[Se
             return
         seen.add(code)
         service = lookups.services.get(code)
+        title = service.title if service else code
+        short_title = service.short_title if service else code
+        if code in TERRITORIAL_CODES:
+            title, short_title = territorial_titles(address, title, short_title)
         result.append(
             ServiceStatusOut(
                 code=code,
-                title=service.title if service else code,
-                short_title=service.short_title if service else code,
+                title=title,
+                short_title=short_title,
                 status=status,
                 status_title=_status_title(status, lookups),
                 at=at,

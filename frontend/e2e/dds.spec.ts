@@ -119,7 +119,8 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
       page.getByText("задымление: мусоропровод").first(),
     ).toBeVisible();
     await page.getByRole("button", { name: "Раскрыть" }).first().click();
-    await expect(page.getByText("Заявитель:")).toBeVisible();
+    // exact: the softphone panel may show «Заявитель: …» of a ringing call of another lesson.
+    await expect(page.getByText("Заявитель:", { exact: true })).toBeVisible();
     await page.screenshot({ path: `${SHOTS}/02-journal.png`, fullPage: true });
 
     // Card 38260311: full chain within the norm.
