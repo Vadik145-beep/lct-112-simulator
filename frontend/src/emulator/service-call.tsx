@@ -5,7 +5,10 @@ import { getAccessToken } from "@/api/token";
 import { newActionId } from "@/emulator/draft";
 import {
   END_REASON_TITLES,
+  callTitle,
   factTitle,
+  isReport,
+  otherSide,
   type ServiceCallOut,
 } from "@/emulator/service-call-model";
 import { formatSeconds } from "@/emulator/time";
@@ -214,14 +217,17 @@ export function ServiceCallPanel({
           ? "border-[var(--arm-blue)] bg-[#eef3fb]"
           : "border-[#a9adb2] bg-[var(--arm-field)]",
       )}
-      aria-label={`Звонок в службу: ${call.service_title}`}
+      aria-label={callTitle(call)}
       data-testid="service-call-panel"
+      data-kind={call.kind}
       data-state={open ? (call.answered ? "talking" : "ringing") : "ended"}
     >
       <div className="flex items-center justify-between gap-2">
         <span className="inline-flex items-center gap-1 font-semibold">
           <Phone className="size-3.5" aria-hidden />
-          {call.service_title}
+          {isReport(call)
+            ? `Доклад бригады: ${call.service_title}`
+            : call.service_title}
         </span>
         <span className="text-[var(--arm-text-muted)]">
           {!open
@@ -229,8 +235,12 @@ export function ServiceCallPanel({
             : call.answered
               ? telephony
                 ? "разговор по телефону"
-                : "разговор"
-              : "вызов…"}
+                : isReport(call)
+                  ? "входящий доклад"
+                  : "разговор"
+              : isReport(call)
+                ? "входящий вызов…"
+                : "вызов…"}
         </span>
       </div>
       <ol
@@ -250,7 +260,7 @@ export function ServiceCallPanel({
             )}
           >
             <span className="text-[10px] text-[var(--arm-text-muted)]">
-              {t.role === "caller" ? "дежурный" : "вы"}
+              {t.role === "caller" ? otherSide(call) : "вы"}
               {t.heard ? " (распознано)" : ""}:{" "}
             </span>
             {t.text}

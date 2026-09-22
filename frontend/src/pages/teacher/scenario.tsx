@@ -710,6 +710,20 @@ function Reference({ scenario }: { scenario: ScenarioOut }) {
                     )
                     .join("; ")}
             </p>
+            <p
+              className="text-muted-foreground"
+              data-testid="reference-reports"
+            >
+              Доклады бригады по телефону:{" "}
+              {((reference.reports as Body[]) ?? []).length === 0
+                ? "нет (статусы хода работ ученик ставит сам)"
+                : ((reference.reports as Body[]) ?? [])
+                    .map(
+                      (r) =>
+                        `через ${str(r.after_seconds)} с — ${RESPONSE_STATUS_TITLES[str(r.status)] ?? str(r.status)}: «${str(r.text)}»`,
+                    )
+                    .join("; ")}
+            </p>
             {((scenario.body.service_replies as Body[]) ?? []).length > 0 && (
               <p className="text-muted-foreground">
                 Реплики дежурного от модели, ждут утверждения:{" "}
