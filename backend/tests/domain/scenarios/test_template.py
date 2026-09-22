@@ -7,7 +7,7 @@ import time
 import pytest
 
 from app.domain.evaluation.schemas import parse_scenario
-from app.domain.scenarios.classify import rank_types
+from app.domain.scenarios.classify import rank_types, type_phrases
 from app.domain.scenarios.facts import parse_ticket
 from app.domain.scenarios.generated import TOPIC_CODES
 from app.domain.scenarios.template import (
@@ -50,6 +50,35 @@ def test_rank_types_finds_the_row(
     indoors = any([facts.address.entrance, facts.address.floor, facts.address.apartment])
     ranked = rank_types(facts.what_happened, type_rows, injured=injured, indoors=indoors, limit=1)
     assert ranked and ranked[0].code in expected_codes, [(c.code, c.title) for c in ranked]
+
+
+@pytest.mark.parametrize(
+    ("ref", "expected_code"),
+    [
+        ("13-2", "22.46.0.0"),  # рожает жена, воды отошли → Роды
+        ("20-2", "22.35.0.0"),  # речь невнятная, лицо перекошено → Парализовало
+        ("18-2", "22.2.0.0"),  # не может разбудить мужа, хрипы → Без сознания
+        ("11-3", "17.2.1.3"),  # собирала грибы, заблудилась → Поиск в лесу
+        ("17-2", "22.50.0.0"),  # судороги, пена изо рта → Судороги
+        ("19-3", "17.4.11.0"),  # сбила электричка → Сбит поездом жд
+        ("10-1", "1.6.16.1"),  # горит помещение кассы → Пожар: прочие объекты
+    ],
+)
+def test_caller_wording_reaches_the_classifier_row(
+    tickets: list[dict], type_rows: list[dict], ref: str, expected_code: str
+) -> None:
+    """The caller says «рожает, воды отошли», the classifier says «Роды»: without the wording
+    dictionary the right row does not even get among the candidates the model chooses from."""
+    item = ticket(tickets, ref)
+    facts = parse_ticket(item["situation"], item["address"])
+    ranked = rank_types(facts.what_happened, type_rows, limit=3)
+    assert expected_code in [c.code for c in ranked], [(c.code, c.title) for c in ranked]
+
+
+def test_every_wording_code_exists_in_the_classifier(type_rows: list[dict]) -> None:
+    codes = {str(r["code"]) for r in type_rows}
+    unknown = sorted(set(type_phrases()) - codes)
+    assert not unknown, f"в data/seed/type_synonyms.json коды не из классификатора: {unknown}"
 
 
 def test_every_ticket_gives_two_valid_bodies_fast(
