@@ -99,9 +99,14 @@ class CallOutcome:
     fraction: float
 
 
+def outgoing_calls(attempt: CardResponseAttempt) -> list[ServiceCallLog]:
+    """The dispatcher's own calls; the squad's reports are scored elsewhere."""
+    return [c for c in attempt.service_calls if c.kind == "outgoing"]
+
+
 def outcomes(scenario: CardResponseScenario, attempt: CardResponseAttempt) -> list[CallOutcome]:
     logs_by_service: dict[str, list[ServiceCallLog]] = {}
-    for log in attempt.service_calls:
+    for log in outgoing_calls(attempt):
         logs_by_service.setdefault(log.service, []).append(log)
     result: list[CallOutcome] = []
     for ref in scenario.reference.service_calls:

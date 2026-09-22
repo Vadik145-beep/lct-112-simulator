@@ -355,7 +355,7 @@ def service_not_informed(ctx: CardContext) -> ErrorItem | None:
     required = ctx.scenario.reference.service_calls
     if not required or ctx.final_primary is None or ctx.final_primary.status != sm.ACCEPTED:
         return None
-    reached = {c.service for c in ctx.attempt.service_calls if c.answered}
+    reached = {c.service for c in ctx.attempt.service_calls if c.answered and c.kind == "outgoing"}
     missing = [r.service for r in required if r.service not in reached]
     if not missing:
         return None
@@ -364,6 +364,78 @@ def service_not_informed(ctx: CardContext) -> ErrorItem | None:
         "Карточка принята, но в службу по телефону не позвонили: "
         + ", ".join(f"«{s}»" for s in missing)
         + ". Руководителю службы передаются адрес, тип происшествия, пострадавшие и номер наряда.",
+    )
+
+
+# How long after a report the matching status may still be set without a penalty.
+REPORT_REACTION_SECONDS = 120
+# Statuses the squad reports about: the progress ones and the closing «Работы завершены».
+REPORTED_STATUSES = (*sm.PROGRESS_STATUSES, sm.WORKS_DONE)
+
+
+def _reports_delivered(ctx: CardContext) -> dict[str, StatusEntry | None]:
+    """Progress status → the squad's report call that announced it (the first one)."""
+    delivered: dict[str, StatusEntry | None] = {}
+    for call in ctx.attempt.service_calls:
+        status = call.report_status
+        if call.kind == "report" and status and status not in delivered:
+            delivered[status] = StatusEntry(status=status, at=call.started_at)
+    return delivered
+
+
+def status_before_report(ctx: CardContext) -> ErrorItem | None:
+    """A progress status set before the squad reported it (customer, 21.09.2026: the
+    dispatcher learns about the departure, arrival and works by phone). Only for cards whose
+    reference has reports; a status the reports never cover is not judged."""
+    expected = {r.status for r in ctx.scenario.reference.reports}
+    if not expected or sm.ACCEPTED not in ctx.statuses:
+        return None
+    delivered = _reports_delivered(ctx)
+    early: list[str] = []
+    for entry in ctx.log:
+        if entry.status not in expected or entry.status not in REPORTED_STATUSES:
+            continue
+        report = delivered.get(entry.status)
+        if report is None or entry.at < report.at:
+            early.append(entry.status)
+    if not early:
+        return None
+    return _item(
+        "status_before_report",
+        "Проставлены до доклада бригады: "
+        + ", ".join(f"«{sm.title(s)}»" for s in dict.fromkeys(early))
+        + ". Статусы хода работ ставятся по факту получения информации от наряда.",
+    )
+
+
+def report_not_reflected(ctx: CardContext) -> ErrorItem | None:
+    """The squad reported a milestone, the card never got the status (or got it much later)."""
+    if sm.ACCEPTED not in ctx.statuses or sm.WORKS_REFUSED in ctx.statuses:
+        return None
+    delivered = _reports_delivered(ctx)
+    if not delivered:
+        return None
+    missed: list[str] = []
+    late: list[str] = []
+    for status, report in delivered.items():
+        assert report is not None
+        entries = [e for e in ctx.entries(status) if e.at >= report.at]
+        if not entries:
+            missed.append(status)
+        elif (seconds_between(report.at, entries[0].at) or 0.0) > REPORT_REACTION_SECONDS:
+            late.append(status)
+    if not missed and not late:
+        return None
+    parts = []
+    if missed:
+        parts.append("не проставлены " + ", ".join(f"«{sm.title(s)}»" for s in missed))
+    if late:
+        parts.append(
+            "позже норматива на отражение доклада " + ", ".join(f"«{sm.title(s)}»" for s in late)
+        )
+    return _item(
+        "report_not_reflected",
+        "Доклады бригады не отражены в карточке: " + "; ".join(parts) + ".",
     )
 
 
@@ -382,6 +454,8 @@ CARD_DETECTORS: dict[str, Callable[[CardContext], ErrorItem | None]] = {
     "error_missed": error_missed,
     "false_alarm": false_alarm,
     "service_not_informed": service_not_informed,
+    "status_before_report": status_before_report,
+    "report_not_reflected": report_not_reflected,
 }
 
 

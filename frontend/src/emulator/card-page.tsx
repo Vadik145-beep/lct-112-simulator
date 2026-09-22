@@ -75,6 +75,27 @@ const HINTS: Record<string, string> = {
   works_started:
     "По окончании — «Работы завершены» с комментарием о результатах: статус закрывает карточку.",
 };
+// The same hints when the squad reports by phone (customer, 21.09.2026): the statuses of
+// the response follow the reports of the squad leader, not the dispatcher's guess.
+const REPORT_HINTS: Record<string, string> = {
+  accepted:
+    "Реагирование будет. Позвоните дежурному службы и передайте карточку. Старший наряда будет докладывать по телефону — о выезде, прибытии, работах и их завершении; каждый доклад отражайте статусом с комментарием, а не наперёд.",
+  response_started:
+    "Бригада в пути. Дождитесь доклада «на месте» и поставьте «Прибытие»; можно позвонить дежурному и уточнить ход работ.",
+  arrived:
+    "Бригада на месте. По докладу о начале работ — «Проведение работ» с тем, что делают.",
+  works_started:
+    "Работы идут. По докладу о завершении — «Работы завершены» с результатом из доклада: статус закрывает карточку.",
+};
+
+function hintFor(attempt: AttemptOut): string {
+  const table = attempt.reports_expected ? REPORT_HINTS : HINTS;
+  return (
+    table[attempt.response_status] ??
+    HINTS[attempt.response_status] ??
+    "Действуйте по памятке."
+  );
+}
 
 export function CardPage() {
   const { attemptId } = useParams<{ attemptId: string }>();
@@ -1016,7 +1037,7 @@ function CardView({
             </label>
             {hintsOn && !finished && (
               <p className="rounded-sm bg-[var(--arm-field)] p-2 text-xs leading-snug">
-                {HINTS[attempt.response_status] ?? "Действуйте по памятке."}
+                {hintFor(attempt)}
               </p>
             )}
             {hintsOn && !finished && (
