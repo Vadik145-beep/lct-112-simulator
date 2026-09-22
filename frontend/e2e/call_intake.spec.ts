@@ -123,7 +123,12 @@ test.describe("Волна 7: приём вызова от звонка до ра
     await expect(strip.locator("[data-service='mosgaz']")).toBeVisible();
     // A service added by hand stays after the type resolves again.
     await page.getByRole("button", { name: "Добавить службу" }).click();
-    await page.getByLabel("Служба для добавления").selectOption("103");
+    const dialog = page.getByRole("dialog", { name: "Добавьте службы" });
+    await dialog.getByLabel("Поиск службы").fill("скорая");
+    await expect(dialog.getByRole("button", { name: /Служба 101/ })).toHaveCount(0);
+    await dialog.getByRole("button", { name: /Служба 103/ }).click();
+    await page.screenshot({ path: `${SHOTS}/02a-add-services.png` });
+    await dialog.getByRole("button", { name: "Сохранить и закрыть" }).click();
     await expect(strip.locator("[data-service='103']")).toBeVisible();
     await page.screenshot({ path: `${SHOTS}/02-card-filled.png`, fullPage: true });
 

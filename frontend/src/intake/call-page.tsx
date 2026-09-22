@@ -149,10 +149,16 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
       setAskInjured(true);
     }
   };
-  const addService = (code: string) => {
+  // Automatic services come from the type and the flags; the dialog «Добавьте службы» edits
+  // only the ones added by hand (instruction §6: the automatic list is not to be touched).
+  const autoServices = useMemo(
+    () => (typeServices.data?.type_code === card.incident_type ? typeServices.data.services.map((x) => x.code) : []),
+    [typeServices.data, card.incident_type],
+  );
+  const applyManual = (manual: string[]) => {
     setAddingService(false);
-    if (!code || card.services.includes(code)) return;
-    update((c, manual) => ({ card: { ...c, services: [...c.services, code] }, manual: [...manual, code] }));
+    const wanted = [...autoServices, ...manual.filter((code) => !autoServices.includes(code))];
+    update((c) => ({ card: { ...c, services: wanted }, manual }));
   };
 
   // --- saving --------------------------------------------------------------------------
@@ -388,23 +394,13 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
               <Plus className="size-4" />
             </button>
             {addingService && (
-              <select
-                aria-label="Служба для добавления"
-                autoFocus
-                defaultValue=""
-                onChange={(e) => addService(e.target.value)}
-                onBlur={() => setAddingService(false)}
-                className="absolute bottom-full left-2 z-10 mb-1 h-8 w-64 rounded-sm border border-[#a9adb2] bg-white px-2 text-sm text-[var(--arm-text)]"
-              >
-                <option value="">Выберите службу…</option>
-                {(services.data ?? [])
-                  .filter((s) => !card.services.includes(s.code))
-                  .map((s) => (
-                    <option key={s.code} value={s.code}>
-                      {s.title}
-                    </option>
-                  ))}
-              </select>
+              <AddServicesDialog
+                all={services.data ?? []}
+                auto={autoServices}
+                manual={draft.manual_services}
+                onClose={() => setAddingService(false)}
+                onSave={applyManual}
+              />
             )}
           </div>
           <div className="ml-auto flex shrink-0 items-center gap-1 px-2">
@@ -562,6 +558,91 @@ function PhoneBox({ label, value, onChange }: { label: string; value: string; on
             {value || "+7 ( ) - -"}
           </span>
         )}
+      </div>
+    </div>
+  );
+}
+
+/** «Добавьте службы» of the live АРМ-112 (instruction §6): a search line, the whole list,
+ * automatic services in blue and locked, the ones added by hand toggle, «Сохранить и закрыть». */
+function AddServicesDialog({
+  all,
+  auto,
+  manual,
+  onClose,
+  onSave,
+}: {
+  all: { code: string; title: string; short_title: string }[];
+  auto: string[];
+  manual: string[];
+  onClose: () => void;
+  onSave: (manual: string[]) => void;
+}) {
+  const [query, setQuery] = useState("");
+  const [picked, setPicked] = useState<string[]>(manual);
+  const needle = query.trim().toLowerCase().replace(/ё/g, "е");
+  const shown = all.filter((s) => !needle || `${s.title} ${s.short_title}`.toLowerCase().replace(/ё/g, "е").includes(needle));
+  const toggle = (code: string) => setPicked((list) => (list.includes(code) ? list.filter((c) => c !== code) : [...list, code]));
+  return (
+    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/30" role="presentation" onClick={onClose}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Добавьте службы"
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") onClose();
+        }}
+        className="flex max-h-[80vh] w-[420px] flex-col bg-white p-4 text-[var(--arm-text)] shadow-2xl"
+      >
+        <div className="flex items-start justify-between">
+          <h2 className="text-xl font-semibold">Добавьте службы</h2>
+          <button type="button" aria-label="Закрыть" onClick={onClose} className="rounded-sm p-1 hover:bg-[var(--arm-panel)]">
+            <X className="size-4" />
+          </button>
+        </div>
+        <input
+          aria-label="Поиск службы"
+          placeholder="Поиск …"
+          autoFocus
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="mt-2 h-8 border-b border-[#a9adb2] px-1 text-sm focus:border-[var(--arm-blue)] focus:outline-none"
+        />
+        <ul className="arm-scroll mt-3 flex-1 divide-y divide-[#dcdedf] overflow-y-auto border border-[#dcdedf] text-sm" aria-label="Службы">
+          {shown.map((s) => {
+            const isAuto = auto.includes(s.code);
+            const isOn = isAuto || picked.includes(s.code);
+            return (
+              <li key={s.code}>
+                <button
+                  type="button"
+                  aria-pressed={isOn}
+                  disabled={isAuto}
+                  title={isAuto ? "Подобрана автоматически по типу и признакам" : undefined}
+                  onClick={() => toggle(s.code)}
+                  className={cn(
+                    "w-full px-3 py-2 text-left leading-tight",
+                    isOn ? "bg-[var(--arm-blue)] text-white" : "hover:bg-[#eaf3fc]",
+                    isAuto && "cursor-default opacity-90",
+                  )}
+                >
+                  {s.title}
+                </button>
+              </li>
+            );
+          })}
+          {shown.length === 0 && <li className="px-3 py-2 text-xs text-[var(--arm-text-muted)]">Ничего не найдено.</li>}
+        </ul>
+        <div className="mt-3 flex justify-center">
+          <button
+            type="button"
+            onClick={() => onSave(picked)}
+            className="h-9 rounded-sm border border-[var(--arm-orange)] px-4 font-semibold text-[var(--arm-orange)] hover:bg-[#fff1ea]"
+          >
+            Сохранить и закрыть
+          </button>
+        </div>
       </div>
     </div>
   );
