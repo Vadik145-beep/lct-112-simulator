@@ -177,6 +177,18 @@
           "default": 45,
           "title": "After Seconds",
           "type": "integer"
+        },
+        "audio": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Audio"
         }
       },
       "required": [

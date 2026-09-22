@@ -271,6 +271,21 @@ export function useSpeakToOfficer(attemptId: string) {
   });
 }
 
+/** «Ответить» on the squad's incoming report (issue #103). */
+export function useAnswerServiceCall(attemptId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (callId: string) =>
+      unwrap(
+        api.POST("/api/attempts/{attempt_id}/service-call/{call_id}/answer", {
+          params: { path: { attempt_id: attemptId, call_id: callId } },
+        }),
+      ),
+    onSuccess: (data) =>
+      client.setQueryData(attemptKey(attemptId), data.attempt),
+  });
+}
+
 export function useEndServiceCall(attemptId: string) {
   const client = useQueryClient();
   return useMutation({

@@ -115,7 +115,7 @@ async def sweep_reports(
 
     now = now or training.utcnow()
     rows = await session.execute(
-        select(Attempt, TrainingSession)
+        select(Attempt)
         .join(TrainingSession, TrainingSession.id == Attempt.session_id)
         .where(
             Attempt.mode == MODE_CARD_RESPONSE,
@@ -127,7 +127,7 @@ async def sweep_reports(
     events: list[SessionEvent] = []
     to_dial: list[tuple[Attempt, dict]] = []
     live = telephony.telephony_active()
-    for attempt, ts in rows:
+    for (attempt,) in rows:
         stale = stale_report(attempt, now)
         if stale is not None:
             _, ended = await officer.end(session, attempt, stale["id"], officer.END_NOT_TAKEN)
@@ -148,15 +148,7 @@ async def sweep_reports(
         service = services.get(scenario.service)
         title = service.title if service else scenario.service
         call, started = await officer.start_report(
-            session,
-            attempt,
-            ts,
-            card.version,
-            scenario,
-            report,
-            title,
-            telephony=live,
-            now=now,
+            session, attempt, scenario, report, title, telephony=live, now=now
         )
         events.extend(started)
         if live:
@@ -175,7 +167,11 @@ async def dial_reports(to_dial: list[tuple[Attempt, dict]]) -> list[SessionEvent
     manager = telephony.get_service()
     for attempt, call in to_dial:
         dialled = manager is not None and await manager.calls.dial_service(
-            attempt.id, call["id"], call["service"], call.get("service_title") or ""
+            attempt.id,
+            call["id"],
+            call["service"],
+            call.get("service_title") or "",
+            kind=officer.KIND_REPORT,
         )
         if dialled:
             continue

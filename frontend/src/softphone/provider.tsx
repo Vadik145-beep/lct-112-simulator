@@ -256,8 +256,10 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
     );
     sip.on("incoming", (call) => {
       if (call.serviceCallId) {
-        // The dispatcher started this call from the card: pick up at once, the card page
-        // shows the conversation (issue #36).
+        // A call on the card (issue #36): the card page shows the conversation. The one the
+        // dispatcher started is picked up at once; the squad's report is an incoming call the
+        // trainee answers with «Ответить» (issue #103).
+        const report = call.serviceCallKind === "report";
         setState((s) => ({
           ...s,
           status: "incoming",
@@ -270,7 +272,7 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
           lastCaller: null,
           stats: null,
         }));
-        sip.answer();
+        if (!report) sip.answer();
         return;
       }
       setState((s) => ({
@@ -461,7 +463,9 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
       withBusy(async () => {
         if (state.mode === "sip") {
           phone.current?.answer();
-          if (state.attemptId)
+          // A call on the card is answered by Asterisk reporting the pick-up (issue #103);
+          // only a 112 call has an attempt state to move here.
+          if (state.attemptId && !state.serviceCallId)
             await telephonyApi.answer(state.attemptId).catch(() => null);
           return;
         }

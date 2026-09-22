@@ -42,12 +42,14 @@ export function factTitle(code: string): string {
 }
 
 /** «Звонок 00:47, переданы: адрес, тип» for the history of a service; a report reads
- * «Доклад бригады 00:20: «Прибытие»». */
+ * «Доклад бригады 00:20: «Прибытие»», and one nobody answered says so (issue #103). */
 export function describeCall(call: ServiceCallOut): string {
   const length = call.seconds != null ? formatSeconds(call.seconds) : "идёт";
   if (isReport(call)) {
     const status = call.report_status_title ?? call.report_status ?? "";
-    return `Доклад бригады ${length}${status ? `: «${status}»` : ""}`;
+    const about = status ? `: «${status}»` : "";
+    if (call.ended_at && !call.answered) return `Доклад бригады не принят${about}`;
+    return `Доклад бригады ${length}${about}`;
   }
   const passed = call.facts_passed.map(factTitle).join(", ") || "ничего";
   return `Звонок ${length}, переданы: ${passed}`;

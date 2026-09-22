@@ -374,11 +374,13 @@ REPORTED_STATUSES = (*sm.PROGRESS_STATUSES, sm.WORKS_DONE)
 
 
 def _reports_delivered(ctx: CardContext) -> dict[str, StatusEntry | None]:
-    """Progress status → the squad's report call that announced it (the first one)."""
+    """Progress status → the squad's report call that announced it (the first one). A report
+    the dispatcher never picked up told them nothing, so it does not count as delivered; not
+    answering is its own error (``report_not_taken``, issue #103)."""
     delivered: dict[str, StatusEntry | None] = {}
     for call in ctx.attempt.service_calls:
         status = call.report_status
-        if call.kind == "report" and status and status not in delivered:
+        if call.kind == "report" and call.answered and status and status not in delivered:
             delivered[status] = StatusEntry(status=status, at=call.started_at)
     return delivered
 
@@ -439,6 +441,30 @@ def report_not_reflected(ctx: CardContext) -> ErrorItem | None:
     )
 
 
+# A report the card closed while it was still ringing is not the dispatcher's fault.
+REPORT_END_CARD_CLOSED = "card_closed"
+
+
+def report_not_taken(ctx: CardContext) -> ErrorItem | None:
+    """The squad called with a report and nobody picked up (issue #103). A report still
+    ringing when the card was closed is not counted."""
+    reports = [c for c in ctx.attempt.service_calls if c.kind == "report"]
+    missed = [
+        call.report_status or ""
+        for call in reports
+        if not call.answered and call.end_reason != REPORT_END_CARD_CLOSED
+    ]
+    if not missed:
+        return None
+    named = [sm.title(s) for s in dict.fromkeys(missed) if s]
+    about = " (" + ", ".join(f"«{t}»" for t in named) + ")" if named else ""
+    return _item(
+        "report_not_taken",
+        f"Бригада звонила с докладом {len(missed)} раз(а){about}, диспетчер не ответил. "
+        "Доклад принимается по телефону: без него ход реагирования в карточке не отражается.",
+    )
+
+
 CARD_DETECTORS: dict[str, Callable[[CardContext], ErrorItem | None]] = {
     "no_status": no_status,
     "late_primary": late_primary,
@@ -456,6 +482,7 @@ CARD_DETECTORS: dict[str, Callable[[CardContext], ErrorItem | None]] = {
     "service_not_informed": service_not_informed,
     "status_before_report": status_before_report,
     "report_not_reflected": report_not_reflected,
+    "report_not_taken": report_not_taken,
 }
 
 

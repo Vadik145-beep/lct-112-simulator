@@ -20,6 +20,7 @@ import {
   attemptKey,
   NetworkError,
   useAttempt,
+  useAnswerServiceCall,
   useEndServiceCall,
   useFinishAttempt,
   useFlagField,
@@ -79,7 +80,7 @@ const HINTS: Record<string, string> = {
 // the response follow the reports of the squad leader, not the dispatcher's guess.
 const REPORT_HINTS: Record<string, string> = {
   accepted:
-    "Реагирование будет. Позвоните дежурному службы и передайте карточку. Старший наряда будет докладывать по телефону — о выезде, прибытии, работах и их завершении; каждый доклад отражайте статусом с комментарием, а не наперёд.",
+    "Реагирование будет. Позвоните дежурному службы и передайте карточку. Старший наряда будет звонить с докладами — о выезде, прибытии, работах и их завершении; ответьте на звонок и отражайте каждый доклад статусом с комментарием, а не наперёд.",
   response_started:
     "Бригада в пути. Дождитесь доклада «на месте» и поставьте «Прибытие»; можно позвонить дежурному и уточнить ход работ.",
   arrived:
@@ -189,6 +190,7 @@ function CardView({
   const sayToOfficer = useSayToOfficer(attempt.id);
   const speakToOfficer = useSpeakToOfficer(attempt.id);
   const endCall = useEndServiceCall(attempt.id);
+  const answerCall = useAnswerServiceCall(attempt.id);
   // Whether the stt service answers comes with every service-call response.
   const [sttAvailable, setSttAvailable] = useState(false);
   const openCall =
@@ -200,11 +202,13 @@ function CardView({
     startCall.isPending ||
     sayToOfficer.isPending ||
     speakToOfficer.isPending ||
+    answerCall.isPending ||
     endCall.isPending;
   const callError =
     startCall.error ??
     sayToOfficer.error ??
     speakToOfficer.error ??
+    answerCall.error ??
     endCall.error;
   const callsByService = useMemo(() => {
     const map = new Map<string, AttemptOut["service_calls"]>();
@@ -219,6 +223,18 @@ function CardView({
         setShownCallId(data.call.id);
         setSttAvailable(data.stt_available);
       },
+    });
+  };
+  // The squad's report is an incoming call (issue #103): the trainee answers it. The phone
+  // carries the voice when it is the one ringing; otherwise the card answers over the API.
+  const answerReport = () => {
+    if (!openCall || callBusy) return;
+    if (softphone?.serviceCallId === openCall.id) {
+      void softphone.answer();
+      return;
+    }
+    answerCall.mutate(openCall.id, {
+      onSuccess: (data) => setSttAvailable(data.stt_available),
     });
   };
   const hangUpService = () => {
@@ -1080,6 +1096,7 @@ function CardView({
             onSpeak={(blob, actionId) =>
               speakToOfficer.mutate({ callId: shownCall.id, blob, actionId })
             }
+            onAnswer={answerReport}
             onEnd={hangUpService}
           />
         )}

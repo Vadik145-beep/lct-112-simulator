@@ -767,6 +767,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/attempts/{attempt_id}/service-call/{call_id}/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Answer Service Call
+         * @description ���������� on the squad's incoming report (issue #103). With telephony the trainee
+         *     answers the phone and Asterisk reports it; this is the path of the card without
+         *     telephony. Answering twice changes nothing.
+         */
+        post: operations["answer_service_call_api_attempts__attempt_id__service_call__call_id__answer_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/attempts/{attempt_id}/service-call/{call_id}/end": {
         parameters: {
             query?: never;
@@ -6292,6 +6314,38 @@ export interface operations {
                 "multipart/form-data": components["schemas"]["Body_speak_to_officer_api_attempts__attempt_id__service_call__call_id__utterance_post"];
             };
         };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceCallResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    answer_service_call_api_attempts__attempt_id__service_call__call_id__answer_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+                call_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {

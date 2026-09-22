@@ -1,7 +1,8 @@
 """The squad's reports to the dispatcher without telephony (customer, 21.09.2026): the sweep
-delivers them on the card's timeline as report calls, the dispatcher talks to the squad
-leader and reflects the report with a status; an ignored report is closed and the timeline
-goes on; the evaluation tells a status set after the report from one set before it.
+delivers them on the card's timeline as report calls, the dispatcher answers the call, talks
+to the squad leader and reflects the report with a status; an ignored report is closed and the
+timeline goes on; the evaluation tells a status set after the report from one set before it,
+and a report nobody answered is an error of its own (issue #103).
 
 Time is moved by rewinding the stored timestamps of the attempt (as the «Не оповещено» test
 does), so the order of events stays as it would be in a real lesson.
@@ -22,7 +23,7 @@ from app.models import MODE_CARD_RESPONSE, Attempt
 from app.training import reports
 from tests.api.conftest import DATA_DIR
 from tests.api.test_dialog import make_attempt
-from tests.api.test_service_calls import end, say, start, status
+from tests.api.test_service_calls import answer, end, say, start, status
 from tests.conftest import bearer, login
 
 pytestmark = pytest.mark.skipif(
@@ -117,19 +118,34 @@ async def test_reports_arrive_on_the_timeline_and_the_dispatcher_reflects_them(
     assert started(events) == ["response_started"]
     first = next(e for e in events if e["type"] == "service_call.started")
     assert first["kind"] == "report"
-    assert [e["type"] for e in events].count("service_call.answered") == 1  # spoke at once
+    # The squad's call rings: nobody answers it for the dispatcher (issue #103).
+    assert [e["type"] for e in events].count("service_call.answered") == 0
 
     data = await get_attempt(client, token, attempt_id)
     report = next(c for c in data["service_calls"] if c["kind"] == "report")
     assert report["report_status"] == "response_started"
     assert report["report_status_title"] == "Начало реагирования"
-    assert report["answered"] is True and report["ended_at"] is None
-    assert report["turns"][0]["role"] == "caller"
-    assert "Выехали" in report["turns"][0]["text"]
-    assert report["facts_required"] == []
+    assert report["answered"] is False and report["ended_at"] is None
+    assert report["turns"] == []
 
     # Delivered once: the same sweep again is silent while the report is open.
     assert await sweep() == []
+
+    # Talking to a squad leader who has not been answered yet is refused.
+    r = await say(client, token, attempt_id, report["id"], "Слушаю")
+    assert r.status_code == 409, r.text
+
+    # «Ответить»: the report is the first phrase of the call.
+    r = await answer(client, token, attempt_id, report["id"])
+    assert r.status_code == 200, r.text
+    report = r.json()["call"]
+    assert report["answered"] is True
+    assert report["turns"][0]["role"] == "caller"
+    assert "Выехали" in report["turns"][0]["text"]
+    assert report["facts_required"] == []
+    # Answering twice changes nothing.
+    r = await answer(client, token, attempt_id, report["id"])
+    assert r.status_code == 200 and len(r.json()["call"]["turns"]) == 1
 
     # The dispatcher talks to the squad leader: the report is repeated on request, facts are
     # not counted on a report; then hangs up and reflects the report.
@@ -145,11 +161,13 @@ async def test_reports_arrive_on_the_timeline_and_the_dispatcher_reflects_them(
     assert r.status_code == 200, r.text
 
     # The next report counts from the end of the previous one (45 s), not from «Принята».
-    await rewind(attempt_id, 44)
+    # The margins are wide: the real seconds the requests take count towards the delay too.
+    await rewind(attempt_id, 35)
     assert await sweep() == []
-    await rewind(attempt_id, 2)
+    await rewind(attempt_id, 15)
     assert started(await sweep()) == ["arrived"]
     arrived = (await report_calls(attempt_id))[-1]
+    await answer(client, token, attempt_id, arrived["id"])
     await end(client, token, attempt_id, arrived["id"])
     r = await status(client, token, attempt_id, status="arrived")
     assert r.status_code == 200, r.text
@@ -157,11 +175,11 @@ async def test_reports_arrive_on_the_timeline_and_the_dispatcher_reflects_them(
     # A report nobody talks to is closed after the timeout and the timeline goes on.
     await rewind(attempt_id, 31)
     assert started(await sweep()) == ["works_started"]
-    # A few seconds of margin: the report's greeting is voiced (and encoded) after the call
-    # is stamped, and that real time counts towards the timeout.
-    await rewind(attempt_id, reports.REPORT_CALL_TIMEOUT_SECONDS - 5)
+    # A margin both ways: the report is stamped before its greeting is voiced, and that real
+    # time counts towards the timeout.
+    await rewind(attempt_id, reports.REPORT_CALL_TIMEOUT_SECONDS - 15)
     assert await sweep() == []
-    await rewind(attempt_id, 5)
+    await rewind(attempt_id, 15)
     events = await sweep()
     assert [e["end_reason"] for e in events if e["type"] == "service_call.ended"] == ["not_taken"]
     ignored = (await report_calls(attempt_id))[-1]
@@ -169,6 +187,7 @@ async def test_reports_arrive_on_the_timeline_and_the_dispatcher_reflects_them(
     await rewind(attempt_id, 61)
     assert started(await sweep()) == ["works_done"]
     done = (await report_calls(attempt_id))[-1]
+    await answer(client, token, attempt_id, done["id"])
     await end(client, token, attempt_id, done["id"])
 
     # The dispatcher never reflected «Проведение работ» and closes the card after the last
@@ -181,8 +200,11 @@ async def test_reports_arrive_on_the_timeline_and_the_dispatcher_reflects_them(
     evaluation = r.json()["attempt"]["evaluation"]
     errors = {e["code"]: e["explanation"] for e in evaluation["errors"]}
     assert "status_before_report" not in errors
-    assert "report_not_reflected" in errors
-    assert "«Проведение работ»" in errors["report_not_reflected"]
+    # The report nobody answered is an error of its own and is not counted as delivered,
+    # so «Проведение работ» is missing from the card without being blamed twice.
+    assert "report_not_taken" in errors
+    assert "«Проведение работ»" in errors["report_not_taken"]
+    assert "report_not_reflected" not in errors
     component = evaluation["components"]["service_call"]
     assert component["items"][0]["called"] is True
     assert len([c for c in r.json()["attempt"]["service_calls"] if c["kind"] == "report"]) == 4

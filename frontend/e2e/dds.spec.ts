@@ -859,7 +859,7 @@ test.describe("Доклады бригады диспетчеру по теле�
     await expect(page.getByTestId("service-call-panel")).toHaveCount(0);
     await setStatus(page, "Принята");
     await expect(
-      page.getByText(/Старший наряда будет докладывать/),
+      page.getByText(/Старший наряда будет звонить с докладами/),
     ).toBeVisible();
 
     const report = page.locator(
@@ -872,6 +872,10 @@ test.describe("Доклады бригады диспетчеру по теле�
     ) => {
       await expect(report).toBeVisible({ timeout: 30_000 });
       await expect(report).toContainText("Доклад бригады");
+      // The squad's call is incoming: nothing is said until the trainee answers (#103).
+      await expect(report).toHaveAttribute("data-state", "ringing");
+      await expect(report).not.toContainText(phrase);
+      await report.getByTestId("answer-report").click();
       await expect(report).toContainText(phrase);
       await report.getByRole("button", { name: "Завершить звонок" }).click();
       await expect(report).toHaveCount(0, { timeout: 15_000 });
@@ -905,6 +909,7 @@ test.describe("Доклады бригады диспетчеру по теле�
     ).toBeVisible();
     await expect(page.getByText(/до доклада бригады/)).toHaveCount(0);
     await expect(page.getByText(/Доклад бригады не отражён/)).toHaveCount(0);
+    await expect(page.getByText(/Доклад бригады не принят/)).toHaveCount(0);
     await expect(page.getByTestId("service-calls")).toContainText(
       "Доклад бригады",
     );

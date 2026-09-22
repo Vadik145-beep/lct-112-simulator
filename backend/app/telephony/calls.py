@@ -16,9 +16,11 @@ go into the session log like everything else, so the panel and the monitoring se
 
 A dispatcher's call to a service officer (issue #36) uses the same legs the other way round:
 ``dial_service`` rings the trainee's phones from the officer's number (``Local/s@service-out``,
-header ``X-Service-Call`` so the softphone answers at once), and after the answer the officer
-greets and the same pipeline (snoop → STT → ``officer.say`` → voice) runs on the call's own
-record in ``attempts.service_calls``.
+header ``X-Service-Call``), and after the answer the officer greets and the same pipeline
+(snoop → STT → ``officer.say`` → voice) runs on the call's own record in
+``attempts.service_calls``. The squad's reports (issue #103) ring the same way but are
+incoming: ``X-Service-Call-Kind`` tells the softphone to let the trainee answer instead of
+picking up by itself, and a report nobody answered ends as «не принят».
 """
 
 from __future__ import annotations
@@ -72,6 +74,7 @@ SERVICE_DIAL_ENDPOINT = "Local/s@service-out/n"
 VAR_LOGIN = "__STU_LOGIN"
 VAR_ATTEMPT = "__ATTEMPT_ID"
 VAR_SERVICE_CALL = "__SERVICE_CALL_ID"
+VAR_SERVICE_CALL_KIND = "__SERVICE_CALL_KIND"
 VAR_RING_TIMEOUT = "__RING_TIMEOUT"
 VAR_CALLER_NAME = "__CALLER_NAME"
 VAR_CALLER_NUM = "__CALLER_NUM"
@@ -117,6 +120,8 @@ class Call:
     reply_latencies: list[float] = field(default_factory=list)
     # Set for a dispatcher's call to a service officer (issue #36); None for a 112 call.
     service_call_id: str | None = None
+    # Which way the service call goes: the dispatcher's own call or a squad's report (#103).
+    service_call_kind: str = officer.KIND_OUTGOING
     service: str | None = None
     service_title: str = ""
 
@@ -306,11 +311,17 @@ class CallManager:
         return True
 
     async def dial_service(
-        self, attempt_id: uuid.UUID, call_id: str, service: str, service_title: str
+        self,
+        attempt_id: uuid.UUID,
+        call_id: str,
+        service: str,
+        service_title: str,
+        kind: str = officer.KIND_OUTGOING,
     ) -> bool:
         """Rings the trainee's phones from the officer's number for a service call the
-        dispatcher started from the card (issue #36). Returns False when nothing could be
-        dialled (the API then answers in text)."""
+        dispatcher started from the card (issue #36) or for a squad's report (issue #103;
+        ``kind`` says which, so the softphone knows whether to answer by itself). Returns
+        False when nothing could be dialled (the API then answers in text)."""
         if call_id in self.calls:
             return True
         async with SessionLocal() as session:
@@ -333,6 +344,7 @@ class CallManager:
             login=account.login,
             channel_id=f"svc-{call_id}",
             service_call_id=call_id,
+            service_call_kind=kind,
             service=service,
             service_title=service_title,
         )
@@ -348,6 +360,7 @@ class CallManager:
                     VAR_LOGIN: account.login,
                     VAR_ATTEMPT: str(attempt_id),
                     VAR_SERVICE_CALL: call_id,
+                    VAR_SERVICE_CALL_KIND: kind,
                     VAR_RING_TIMEOUT: str(timeout),
                     VAR_CALLER_NAME: service_title or service,
                     VAR_CALLER_NUM: service_number(service),
@@ -714,7 +727,9 @@ class CallManager:
                 return
             if call.to_officer:
                 assert call.service_call_id is not None
-                _, events = await officer.end(session, attempt, call.service_call_id, reason)
+                _, events = await officer.end(
+                    session, attempt, call.service_call_id, _service_end_reason(call, reason)
+                )
             else:
                 events = await call_state.end(session, attempt, reason)
             await session.commit()
@@ -727,6 +742,14 @@ class CallManager:
 
 # ISDN causes (ChannelDestroyed) that mean the phone could not be reached at all.
 _CAUSE_UNREACHABLE = {1, 3, 20, 27, 34, 38, 41, 42, 44, 47, 58}
+
+
+def _service_end_reason(call: Call, reason: str) -> str:
+    """A report the trainee never picked up is «не принят», not «нет ответа» (issue #103):
+    the squad called, nobody answered, and the timeline goes on without the dispatcher."""
+    if call.service_call_kind == officer.KIND_REPORT and not call.answered:
+        return officer.END_NOT_TAKEN
+    return reason
 
 
 def _end_reason(call: Call, cause: int | None) -> str:

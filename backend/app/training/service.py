@@ -630,6 +630,7 @@ def evaluation_input(attempt: Attempt) -> dict:
                 "report_status": c.get("report_status"),
                 "answered": bool(c.get("answered")),
                 "ended_at": c.get("ended_at"),
+                "end_reason": c.get("end_reason"),
                 "dialog": [
                     {
                         "role": t["role"],

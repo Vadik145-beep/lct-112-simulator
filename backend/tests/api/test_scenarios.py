@@ -29,6 +29,11 @@ SEED_CALL = json.loads(
         encoding="utf-8"
     )
 )
+SEED_CARD = json.loads(
+    (DATA_DIR / "seed" / "scenarios" / "card_moek_1_net_otopleniya.json").read_text(
+        encoding="utf-8"
+    )
+)
 
 
 async def teacher(client: AsyncClient) -> dict[str, str]:
@@ -199,6 +204,59 @@ async def test_put_edits_draft_but_not_approved_parts(client: AsyncClient) -> No
         json={"reply_ids": [new_id], "confirm_grammar": True},
     )
     assert r.status_code == 200 and r.json()["status"] == "approved"
+
+
+async def test_teacher_edits_the_squad_timeline(client: AsyncClient) -> None:
+    """Issue #103: the texts and the delays of the squad's reports are the teacher's to
+    change; an impossible timeline is refused and an empty list turns the reports off."""
+    headers = await teacher(client)
+    body = json.loads(json.dumps(SEED_CARD))
+    body["title"] = "Тестовая карточка без отопления"
+    body["ticket_ref"] = None
+    body.pop("status", None)
+    r = await client.post("/api/scenarios", headers=headers, json={"body": body, "status": "draft"})
+    assert r.status_code == 201, r.text
+    created = r.json()
+    scenario_id = created["id"]
+    assert [rep["status"] for rep in created["body"]["reference"]["reports"]]
+
+    edited = json.loads(json.dumps(created["body"]))
+    edited["reference"]["reports"] = [
+        {
+            "status": "arrived",
+            "text": "Старший наряда. На месте, спускаемся в подвал.",
+            "after_seconds": 90,
+        },
+        {
+            "status": "works_done",
+            "text": "Старший наряда. Работы завершены, тепло подали.",
+            "after_seconds": 120,
+        },
+    ]
+    r = await client.put(f"/api/scenarios/{scenario_id}", headers=headers, json={"body": edited})
+    assert r.status_code == 200, r.text
+    saved = r.json()["body"]["reference"]["reports"]
+    assert [rep["status"] for rep in saved] == ["arrived", "works_done"]
+    assert saved[0]["after_seconds"] == 90
+    assert "спускаемся в подвал" in saved[0]["text"]
+    assert r.json()["problems"] == []
+
+    broken = json.loads(json.dumps(edited))
+    broken["reference"]["reports"][0]["after_seconds"] = 1
+    r = await client.put(f"/api/scenarios/{scenario_id}", headers=headers, json={"body": broken})
+    assert r.status_code == 200, r.text  # a draft may be saved with problems…
+    assert any("от 5 до 3600" in p for p in r.json()["problems"])
+    r = await client.post(
+        f"/api/scenarios/{scenario_id}/approve", headers=headers, json={"confirm_grammar": True}
+    )
+    assert r.status_code == 422  # …but not approved with them
+
+    off = json.loads(json.dumps(edited))
+    off["reference"]["reports"] = []
+    r = await client.put(f"/api/scenarios/{scenario_id}", headers=headers, json={"body": off})
+    assert r.status_code == 200, r.text
+    assert r.json()["body"]["reference"]["reports"] == []
+    assert r.json()["problems"] == []
 
 
 async def test_reply_edit_approve_lock_delete(client: AsyncClient) -> None:
