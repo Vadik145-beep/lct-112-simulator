@@ -8,13 +8,11 @@ import { cn } from "@/lib/utils";
 export function SurveyCard({
   groups,
   selection,
-  number,
   onChange,
   disabled,
 }: {
   groups: ClassifierGroupOut[];
   selection: Selection;
-  number: string;
   onChange: (selection: Selection, node: ClassifierNode | null) => void;
   disabled?: boolean;
 }) {
@@ -131,11 +129,11 @@ export function SurveyCard({
       {group && (
         <>
           <div className="flex gap-1 bg-[var(--arm-panel)] px-2 py-1">
-            <span className="border border-[#a9adb2] bg-white px-2 py-0.5 text-xs">Происшествие {number}</span>
+            <span className="border border-[#a9adb2] bg-white px-2 py-0.5 text-xs">{group.title}</span>
           </div>
           <div className="flex min-h-0 flex-1 flex-col bg-white" aria-label="Опросная карта">
             <div className="flex items-center justify-between bg-[var(--arm-dark)] px-3 py-1.5 text-sm font-semibold text-[var(--arm-on-dark)]">
-              <span className="underline decoration-[var(--arm-on-dark-muted)] underline-offset-4">Происшествие {number}</span>
+              <span className="underline decoration-[var(--arm-on-dark-muted)] underline-offset-4">{group.title}</span>
               <button type="button" aria-label="Убрать тип происшествия" onClick={clear} disabled={disabled} className="rounded-sm p-0.5 hover:bg-[var(--arm-dark-2)]">
                 <X className="size-4" />
               </button>

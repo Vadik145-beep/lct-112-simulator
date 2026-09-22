@@ -303,6 +303,14 @@ function CardView({
   );
   const error = setStatus.error ?? finish.error;
   const nextId = issuedNext ?? nextCardId;
+  // The live АРМ-112 keeps the order number once entered (screenshots of 17.09.2026: «23» stays
+  // in the row from «Принята» to «Работы завершены»). The row opens with the last one, editable.
+  const lastOrderNumber = useMemo(
+    () =>
+      [...attempt.status_log].reverse().find((e) => e.order_number)
+        ?.order_number ?? "",
+    [attempt.status_log],
+  );
 
   const openEditor = useCallback(
     (status?: string) => {
@@ -316,6 +324,7 @@ function CardView({
             : byCode.has(prev.status)
               ? prev.status
               : (transitions[0]?.code ?? ""),
+        order_number: prev.order_number || lastOrderNumber,
       }));
       setPanelOpen(true);
       setTimeout(
@@ -326,7 +335,7 @@ function CardView({
         0,
       );
     },
-    [byCode, finished, setDraft, transitions],
+    [byCode, finished, lastOrderNumber, setDraft, transitions],
   );
 
   const submit = useCallback(() => {

@@ -162,6 +162,15 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
     await expect(page.getByTestId("own-service-panel")).toContainText(
       "наряд 14-217",
     );
+    // The order number stays in the row for the next statuses (live АРМ-112), still editable.
+    await page.getByRole("button", { name: "Проставить статус" }).click();
+    const orderField = page
+      .getByRole("form", { name: "Проставление статуса" })
+      .getByLabel("Номер наряда");
+    await expect(orderField).toHaveValue("14-217");
+    await orderField.fill("");
+    await expect(orderField).toHaveValue("");
+    await page.keyboard.press("Escape");
     await setStatus(page, "Прибытие");
     await setStatus(page, "Проведение работ", {
       comment: "Мусоропровод вскрыт, тлеющий мусор удалён",

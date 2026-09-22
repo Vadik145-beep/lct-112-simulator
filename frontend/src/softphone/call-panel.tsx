@@ -86,7 +86,6 @@ export function CallPanel({
   compact?: boolean;
 }) {
   const phone = useSoftphone();
-  const [text, setText] = useState("");
   if (!phone) return null;
   // A call to a service officer lives in the card (issue #36), not in this panel.
   if (phone.serviceCallId) return null;
@@ -205,6 +204,24 @@ export function CallPanel({
         )}
       </div>
 
+      <CallControls />
+    </section>
+  );
+}
+
+/**
+ * The controls of a call in progress: the cloud state, push-to-talk / text to the caller,
+ * the microphone. Part of the floating panel; the operator card shows them in the trainer
+ * panel next to the transcript, keeping the header row of the card as flat as the live one.
+ */
+export function CallControls({ className }: { className?: string }) {
+  const phone = useSoftphone();
+  const [text, setText] = useState("");
+  if (!phone || phone.serviceCallId) return null;
+  if (phone.status === "disconnected" || phone.status === "ready") return null;
+  const talking = phone.status === "talking";
+  return (
+    <div className={className} data-testid="call-controls">
       {talking && phone.mode === "browser" && phone.cloud === "connecting" && (
         <div
           className="mt-3 flex items-center gap-2 text-sm text-muted-foreground"
@@ -326,6 +343,6 @@ export function CallPanel({
           </span>
         )}
       </footer>
-    </section>
+    </div>
   );
 }
