@@ -1,6 +1,7 @@
 """Incident type for a situation text without a model: word-stem overlap between the
 situation and the classifier row (signs, final title, statistics group, hints), with a small
-synonym map from everyday words of the tickets to the classifier's vocabulary.
+synonym map from everyday words of the tickets to the classifier's vocabulary and the
+caller-wording dictionary of ``data/seed/type_synonyms.json`` («рожает, воды отошли» → Роды).
 
 Good enough for a *draft* (the teacher reviews every generated scenario); the generation
 model, when present, picks the type itself and this module only checks that the code exists.
@@ -11,6 +12,7 @@ from __future__ import annotations
 import re
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
+from pathlib import Path
 
 from app.domain.evaluation.text import normalize_text
 
@@ -207,6 +209,37 @@ def _row_text(row: Mapping) -> str:
     )
 
 
+# code → how a caller names this incident (data/seed/type_synonyms.json). The classifier speaks
+# its own language («Парализовало»), the caller says «лицо перекошено»; without the bridge the
+# right row does not even reach the model that picks the type.
+_TYPE_PHRASES: dict[str, str] | None = None
+
+
+def type_phrases() -> dict[str, str]:
+    global _TYPE_PHRASES
+    if _TYPE_PHRASES is None:
+        set_type_phrases(_load_type_phrases())
+    return _TYPE_PHRASES or {}
+
+
+def set_type_phrases(phrases: Mapping[str, str]) -> None:
+    """Used by the loader and by tests; keys starting with «_» are notes, not codes."""
+    global _TYPE_PHRASES
+    _TYPE_PHRASES = {k: v for k, v in phrases.items() if not k.startswith("_")}
+
+
+def _load_type_phrases() -> dict[str, str]:
+    import json
+
+    from app.config import get_settings
+
+    path = Path(get_settings().data_dir) / "seed" / "type_synonyms.json"
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):  # the file is data: without it the search just works as before
+        return {}
+
+
 def rank_types(
     situation: str,
     rows: Iterable[Mapping],
@@ -248,15 +281,23 @@ def _rank(
     # Rare stems separate rows better: weight = 1 / rows containing the stem (smoothed).
     frequency: dict[str, int] = {}
     row_stems: list[set[str]] = []
+    row_sizes: list[int] = []
+    phrases = type_phrases()
     for row in rows:
         own = stems(_row_text(row), length)
+        # The caller's wording only adds ways to find the row: it must not make the row «larger»
+        # for the normalization below, or a well-described row would lose to a bare one.
+        row_sizes.append(len(own))
+        extra = phrases.get(str(row.get("code")))
+        if extra:
+            own = own | stems(extra, length)
         row_stems.append(own)
         for stem in own:
             frequency[stem] = frequency.get(stem, 0) + 1
     total = max(len(rows), 1)
 
     scored: list[TypeCandidate] = []
-    for row, own in zip(rows, row_stems, strict=True):
+    for row, own, size in zip(rows, row_stems, row_sizes, strict=True):
         common = set(situation_stems) & own
         if not common:
             continue
@@ -273,7 +314,7 @@ def _rank(
             score += 0.3
         # Long enumerations («кровля крыша фасад балкон столб щит…») touch every situation:
         # normalize by the row's own size.
-        score *= ROW_SIZE_NORM / (ROW_SIZE_NORM + len(own))
+        score *= ROW_SIZE_NORM / (ROW_SIZE_NORM + size)
         # Fewer filled signs is a broader row; prefer the specific leaf when scores tie.
         specificity = sum(1 for k in ("sign2", "sign3") if row.get(k)) * 0.01
         scored.append(
