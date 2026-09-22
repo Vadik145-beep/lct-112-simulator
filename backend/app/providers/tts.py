@@ -1,10 +1,14 @@
 """TTSProvider: the caller's voice.
 
-Main implementation: Piper (ONNX, CPU) with the Russian voices from ``models/tts``
-(``scripts/fetch_models.sh``). A scenario names a voice as ``ru_male_1``, ``ru_female_1``…;
-``VOICES`` maps those to a Piper model plus speaking rate, so the same scenario sounds the same on
-every stand. Background noise (``caller.noise``: indoor, street, crowd) is mixed in at a level
-that grows with the scenario difficulty, so a harder call is harder to hear (PRD 9.3).
+Main implementation: Silero TTS v4 (PyTorch, CPU, ``models/tts/silero_v4_ru.pt``): five native
+Russian speakers plus SSML prosody, so the elderly and the child callers get their own pitch and
+pace instead of a slowed-down adult. Piper (ONNX, three Russian voices) stays as the second
+engine (``TTS_PROVIDER=piper``) and as the fallback when the Silero model or torch is missing.
+A scenario names a voice as ``ru_male_1``, ``ru_female_1``…; ``VOICES`` lists those ids (shown
+in the teacher's form), ``SILERO_VOICES`` / ``VoiceSpec`` map them to an engine voice, so the
+same scenario sounds the same on every stand. Background noise (``caller.noise``: indoor, street,
+crowd) is mixed in at a level that grows with the scenario difficulty, so a harder call is harder
+to hear (PRD 9.3).
 
 Replies are voiced once, when the teacher approves them (wave 8), and stored as WAV plus MP3
 (MP3 needs ``ffmpeg``; without it only WAV is written). ``generate`` mode voices sentence by
@@ -24,7 +28,8 @@ import wave
 from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Protocol
+from typing import Literal, Protocol
+from xml.sax.saxutils import escape
 
 from app.logging import get_logger
 
@@ -57,6 +62,36 @@ VOICES: dict[str, VoiceSpec] = {
     "ru_child_1": VoiceSpec("ru_RU-irina-medium", 0.9, "детский голос приближённо"),
 }
 DEFAULT_VOICE = "ru_male_1"
+
+TTSEngine = Literal["auto", "silero", "piper", "text"]
+SILERO_MODEL_FILE = "silero_v4_ru.pt"  # models/tts, scripts/models.manifest
+SILERO_SAMPLE_RATE = 24000  # the model offers 8, 24 and 48 kHz
+SILERO_THREADS = 2  # torch intra-op threads: keeps the API and the worker responsive
+
+
+@dataclass(frozen=True)
+class SileroVoiceSpec:
+    speaker: str  # aidar, baya, kseniya, xenia, eugene
+    rate: str = "medium"  # SSML prosody rate: x-slow … x-fast
+    pitch: str = "medium"  # SSML prosody pitch: x-low … x-high
+
+
+# Scenario voice ids → Silero speakers with prosody. The elderly speak slower and lower, the
+# child gets a raised pitch on the lightest female voice; tuned by ear (22.09.2026).
+SILERO_VOICES: dict[str, SileroVoiceSpec] = {
+    "ru_male_1": SileroVoiceSpec("aidar"),
+    "ru_male_2": SileroVoiceSpec("eugene"),
+    "ru_male_3": SileroVoiceSpec("eugene", "slow", "x-low"),
+    "ru_male_4": SileroVoiceSpec("aidar", "fast"),
+    "ru_female_1": SileroVoiceSpec("kseniya"),
+    "ru_female_2": SileroVoiceSpec("baya", "slow", "low"),
+    "ru_female_3": SileroVoiceSpec("xenia", "fast"),
+    "ru_child_1": SileroVoiceSpec("kseniya", "medium", "x-high"),
+}
+assert set(SILERO_VOICES) == set(VOICES)
+
+_DIGITS = re.compile(r"\d+")
+_LONG_NUMBER = 5  # digit runs this long and longer (phones, card numbers) are read digit by digit
 
 # Noise level in dB relative to full scale at difficulty 1; every further level adds NOISE_STEP_DB.
 NOISE_LEVELS_DB: dict[str, float] = {"indoor": -36.0, "street": -28.0, "crowd": -24.0}
@@ -172,6 +207,92 @@ class PiperTTS:
         return clips
 
 
+class SileroTTS:
+    """Silero TTS v4 (``silero_v4_ru.pt``, torch on CPU). The model reads no digits, so numbers
+    are spelled out first (``spell_numbers``); the voice id picks a speaker and SSML prosody."""
+
+    method = "silero"
+
+    def __init__(self, model_path: Path) -> None:
+        self._path = model_path
+        self._model = None
+        self._lock = asyncio.Lock()
+
+    def available_voices(self) -> list[str]:
+        return list(SILERO_VOICES) if self._path.exists() else []
+
+    def warm(self) -> int:
+        """Loads the model and voices one short phrase per speaker (the first synthesis of a
+        speaker takes seconds, the next ones a fraction) so the opening line of a call does not
+        wait; returns the number of voices ready. Blocking: call it from a worker thread."""
+        self._load()
+        for speaker in sorted({spec.speaker for spec in SILERO_VOICES.values()}):
+            self._synthesize_sync("Алло.", SileroVoiceSpec(speaker))
+        return len(SILERO_VOICES)
+
+    def _load(self):
+        if self._model is None:
+            import torch
+
+            if not self._path.exists():
+                raise FileNotFoundError(f"модель Silero не найдена: {self._path}")
+            torch.set_num_threads(SILERO_THREADS)
+            # A file object, not the path: torch's C++ reader trips over non-ASCII folders
+            # on Windows (a developer checkout under a Cyrillic path).
+            with self._path.open("rb") as file:
+                model = torch.package.PackageImporter(file).load_pickle("tts_models", "model")
+            model.to(torch.device("cpu"))
+            self._model = model
+        return self._model
+
+    def _synthesize_sync(self, text: str, spec: SileroVoiceSpec) -> AudioClip:
+        model = self._load()
+        ssml = (
+            f'<speak><prosody rate="{spec.rate}" pitch="{spec.pitch}">'
+            f"{escape(spell_numbers(text))}</prosody></speak>"
+        )
+        audio = model.apply_tts(
+            ssml_text=ssml, speaker=spec.speaker, sample_rate=SILERO_SAMPLE_RATE
+        )
+        pcm = (audio.clamp(-1.0, 1.0) * 32767).to("cpu").numpy().astype("<i2").tobytes()
+        return AudioClip(pcm=pcm, sample_rate=SILERO_SAMPLE_RATE)
+
+    async def synthesize(
+        self, text: str, voice: str | None = None, noise: str | None = None, difficulty: int = 1
+    ) -> AudioClip | None:
+        text = text.strip()
+        if not text:
+            return None
+        spec = SILERO_VOICES.get(voice or DEFAULT_VOICE, SILERO_VOICES[DEFAULT_VOICE])
+        async with self._lock:  # one torch model, one synthesis at a time
+            clip = await asyncio.to_thread(self._synthesize_sync, text, spec)
+        return mix_noise(clip, noise, difficulty)
+
+    async def synthesize_sentences(
+        self, text: str, voice: str | None = None, noise: str | None = None, difficulty: int = 1
+    ) -> list[AudioClip]:
+        clips = []
+        for sentence in split_sentences(text):
+            clip = await self.synthesize(sentence, voice, noise, difficulty)
+            if clip is not None:
+                clips.append(clip)
+        return clips
+
+
+def spell_numbers(text: str) -> str:
+    """``11 лет`` → ``одиннадцать лет``; a phone number is read digit by digit. Silero skips
+    digits it cannot read; Piper (espeak) reads them itself, so only Silero calls this."""
+    from num2words import num2words
+
+    def replace(match: re.Match[str]) -> str:
+        digits = match.group(0)
+        if len(digits) >= _LONG_NUMBER:
+            return " ".join(num2words(int(d), lang="ru") for d in digits)
+        return num2words(int(digits), lang="ru")
+
+    return _DIGITS.sub(replace, text)
+
+
 def split_sentences(text: str) -> list[str]:
     return [s for s in _SENTENCE_END.split(text.strip()) if s]
 
@@ -260,21 +381,50 @@ def iter_pcm_frames(clip: AudioClip, frame_ms: int = 20) -> Iterator[bytes]:
         yield clip.pcm[start : start + step]
 
 
-def build_tts_provider(models_dir: str | None) -> TTSProvider:
-    """Piper when the voices folder has at least one voice and the library imports."""
-    if models_dir:
-        voices_dir = Path(models_dir) / "tts"
-        try:
-            provider = PiperTTS(voices_dir)
-            voices = provider.available_voices()
-            if voices:
-                import piper  # noqa: F401 - checks the library is installed
+def _build_silero(voices_dir: Path) -> TTSProvider | None:
+    provider = SileroTTS(voices_dir / SILERO_MODEL_FILE)
+    if not provider.available_voices():
+        log.warning("silero model not found", path=str(provider._path))
+        return None
+    try:
+        import num2words  # noqa: F401 - digits are spelled out before synthesis
+        import torch  # noqa: F401 - checks the library is installed
+    except Exception as exc:  # broken install: try the next engine, do not crash
+        log.warning("silero unavailable", error=str(exc))
+        return None
+    log.info("tts provider", method=provider.method, voices=provider.available_voices())
+    return provider
 
-                log.info("tts provider", method=provider.method, voices=voices)
+
+def _build_piper(voices_dir: Path) -> TTSProvider | None:
+    try:
+        provider = PiperTTS(voices_dir)
+        voices = provider.available_voices()
+        if voices:
+            import piper  # noqa: F401 - checks the library is installed
+
+            log.info("tts provider", method=provider.method, voices=voices)
+            return provider
+        log.warning("no Piper voices found", dir=str(voices_dir))
+    except Exception as exc:  # broken install: text only, do not crash
+        log.warning("piper unavailable", error=str(exc))
+    return None
+
+
+def build_tts_provider(models_dir: str | None, engine: TTSEngine = "auto") -> TTSProvider:
+    """``auto``: Silero when its model and torch are there, else Piper, else text only. An
+    explicit engine that is not available also degrades to text (with a warning)."""
+    if models_dir and engine != "text":
+        voices_dir = Path(models_dir) / "tts"
+        if engine in ("auto", "silero"):
+            provider = _build_silero(voices_dir)
+            if provider is not None:
                 return provider
-            log.warning("no Piper voices found, replies will be text only", dir=str(voices_dir))
-        except Exception as exc:  # broken install: text only, do not crash
-            log.warning("piper unavailable, replies will be text only", error=str(exc))
+        if engine in ("auto", "piper"):
+            provider = _build_piper(voices_dir)
+            if provider is not None:
+                return provider
+        log.warning("no tts engine available, replies will be text only", engine=engine)
     return NoTTS()
 
 
@@ -286,5 +436,6 @@ def get_tts_provider() -> TTSProvider:
     if _provider is None:
         from app.config import get_settings
 
-        _provider = build_tts_provider(get_settings().models_dir)
+        settings = get_settings()
+        _provider = build_tts_provider(settings.models_dir, settings.tts_provider)
     return _provider

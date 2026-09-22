@@ -49,8 +49,11 @@ class Settings(BaseSettings):
     # How the caller answers (PRD 9.3): select | hybrid | generate | buttons | live.
     # Without a reachable dialog model every mode degrades to `buttons`.
     dialog_mode: Literal["select", "hybrid", "generate", "buttons", "live"] = "select"
-    # Folder with downloaded models (scripts/fetch_models.sh): tts/ (Piper voices), stt/, llm/.
+    # Folder with downloaded models (scripts/fetch_models.sh): tts/ (Silero, Piper), stt/, llm/.
     models_dir: str | None = None
+    # The caller's voice engine: auto = Silero when models/tts/silero_v4_ru.pt is there, else
+    # Piper, else text only.
+    tts_provider: Literal["auto", "silero", "piper", "text"] = "auto"
     # Writable folder for generated files (voiced replies, recordings); /storage in compose.
     storage_dir: str = "../storage"
     # Analytics folder (PRD 9.7): models/ holds the readiness forecast model and its metrics,

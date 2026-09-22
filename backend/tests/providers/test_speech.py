@@ -1,4 +1,4 @@
-"""STTProvider (HTTP client to the stt service) and TTSProvider (Piper) with their fallbacks."""
+"""STTProvider (HTTP client to the stt service) and TTSProvider (Silero, Piper) with fallbacks."""
 
 from __future__ import annotations
 
@@ -11,15 +11,19 @@ import pytest
 
 from app.providers.stt import COMMON_TERMS, HttpSTT, NoSTT, build_stt_provider, hint_prompt
 from app.providers.tts import (
+    SILERO_MODEL_FILE,
+    SILERO_VOICES,
     VOICES,
     AudioClip,
     NoTTS,
     PiperTTS,
+    SileroTTS,
     build_tts_provider,
     iter_pcm_frames,
     mix_noise,
     noise_level_db,
     save_clip,
+    spell_numbers,
     split_sentences,
 )
 
@@ -154,7 +158,7 @@ async def test_no_tts_returns_nothing() -> None:
     reason="голоса Piper не скачаны (scripts/fetch_models.sh --only tts)",
 )
 async def test_piper_voices_reply(tmp_path: Path) -> None:
-    provider = build_tts_provider(str(MODELS_DIR))
+    provider = build_tts_provider(str(MODELS_DIR), "piper")
     assert isinstance(provider, PiperTTS)
     assert set(provider.available_voices()) >= {"ru_male_1", "ru_male_3"}
     clip = await provider.synthesize(
@@ -174,6 +178,53 @@ async def test_piper_voices_reply(tmp_path: Path) -> None:
     sentences = await provider.synthesize_sentences("Нет, никто. Соседке плохо стало.")
     assert len(sentences) == 2
     assert all(VOICES[v].model for v in provider.available_voices())
+
+
+def test_spell_numbers_for_silero() -> None:
+    assert spell_numbers("Ребёнок 11 лет, дом 13") == "Ребёнок одиннадцать лет, дом тринадцать"
+    # a phone number is read digit by digit, a short number as a word
+    assert spell_numbers("916 320-12-83").startswith("девятьсот шестнадцать триста двадцать")
+    assert spell_numbers("9163201283") == ("девять один шесть три два ноль один два восемь три")
+    assert spell_numbers("без цифр") == "без цифр"
+
+
+def test_silero_voice_ids_match_scenario_voices() -> None:
+    assert set(SILERO_VOICES) == set(VOICES)
+    assert SILERO_VOICES["ru_female_2"].rate == "slow"  # the elderly speak slower
+    assert SILERO_VOICES["ru_child_1"].pitch == "x-high"
+
+
+def test_engine_choice_without_models_is_text(tmp_path: Path) -> None:
+    (tmp_path / "tts").mkdir()
+    assert build_tts_provider(str(tmp_path), "silero").method == "text"
+    assert build_tts_provider(str(tmp_path), "auto").method == "text"
+    assert build_tts_provider(str(tmp_path), "text").method == "text"
+    assert SileroTTS(tmp_path / "tts" / SILERO_MODEL_FILE).available_voices() == []
+
+
+@pytest.mark.skipif(
+    not (MODELS_DIR / "tts" / SILERO_MODEL_FILE).exists(),
+    reason="модель Silero не скачана (scripts/fetch_models.sh --only tts)",
+)
+async def test_silero_voices_reply(tmp_path: Path) -> None:
+    provider = build_tts_provider(str(MODELS_DIR))  # auto prefers Silero
+    assert isinstance(provider, SileroTTS)
+    assert provider.available_voices() == list(SILERO_VOICES)
+    clip = await provider.synthesize("Ребёнок 11 лет упал с велосипеда.", "ru_child_1", "street", 2)
+    assert clip is not None
+    assert 1.0 < clip.duration_seconds < 8.0
+    assert clip.sample_rate == 24000
+    paths = save_clip(clip, tmp_path / "r1")
+    with wave.open(str(paths["wav"]), "rb") as wav:
+        assert wav.getnchannels() == 1
+        assert wav.getframerate() == 24000
+    slow = await provider.synthesize("Вавилова, восемьдесят один, корпус один.", "ru_female_2")
+    normal = await provider.synthesize("Вавилова, восемьдесят один, корпус один.", "ru_female_1")
+    assert slow is not None and normal is not None
+    assert slow.duration_seconds > normal.duration_seconds  # ru_female_2 is the slow elderly voice
+    sentences = await provider.synthesize_sentences("Нет, никто. Соседке плохо стало.")
+    assert len(sentences) == 2
+    assert await provider.synthesize("   ") is None
 
 
 # --- embeddings (e5 through onnxruntime) ---------------------------------------------------------

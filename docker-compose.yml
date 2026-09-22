@@ -30,6 +30,8 @@ x-backend-env: &backend-env
   ANALYTICS_DIR: /ai
   EMBEDDING_MODEL_DIR: ${EMBEDDING_MODEL_DIR:-/models/embeddings/multilingual-e5-small}
   DIALOG_MODE: ${DIALOG_MODE:-select}
+  # The caller's voice: auto = Silero (/models/tts/silero_v4_ru.pt), else Piper, else text.
+  TTS_PROVIDER: ${TTS_PROVIDER:-auto}
   LLM_DIALOG_URL: ${LLM_DIALOG_URL:-http://llm-dialog:8080}
   LLM_GEN_URL: ${LLM_GEN_URL:-http://llm-gen:8080}
   STT_URL: ${STT_URL:-http://stt:9000}
