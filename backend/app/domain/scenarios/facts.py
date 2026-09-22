@@ -248,9 +248,22 @@ _APARTMENT = re.compile(r"кв\.?\s*(\d+)", re.IGNORECASE)
 _CITY = re.compile(r"\bг\.\s*([А-ЯЁ][а-яё-]+)|\b(Зеленоград|Балашиха|Волжский|Королёв|Королев)\b")
 _DESCRIPTIVE_HINTS = re.compile(
     r"(около|напротив|рядом|между|не доезжая|вход от|со стороны|в сторону|№ дома неизвестен|"
-    r"\bкм\b|за деревней|далее по|точка на карте|у «|смотрит|обочина|платформа|съезд|двор\b)",
+    r"\bкм\b|за деревней|далее по|точка на карте|у «|смотрит|обочина|платформа|съезд|двор\b|"
+    r"на пересечении|в область|остановка)",
     re.IGNORECASE,
 )
+# Prepositions a ticket puts before the street when it describes a place instead of naming an
+# address: «на стороне ул. Фабрициуса», «стоят на Ленинградском ш.», «если ехать от…».
+_LEADING_PREPOSITION = re.compile(
+    r"^(?:стоят на|на стороне|если ехать от|ехали? по|вход от|после|около|напротив|от|до|по)\s+",
+    re.IGNORECASE,
+)
+# A head that names a road or a green area, not a street of the address: the street base has no
+# such row, so the trainee would have nothing to pick in the card — it belongs in the description.
+_NOT_A_STREET = re.compile(r"^(?:дорога|мкад|съезд|трасса|парк|лесопарк)\b", re.IGNORECASE)
+# What is left of «стоят на Ленинградском ш.» after the preposition: an oblique case, i.e. the
+# ticket points at a road, it does not name the address. The street base holds nominative names.
+_OBLIQUE = re.compile(r"\b[А-Яа-яЁё]+(?:ом|ого|ому|ым|ыми|ых)\b")
 _EXACT_IN_BRACKETS = re.compile(r"\(([^()]*(?:дом|д\.|№)[^()]*)\)", re.IGNORECASE)
 
 
@@ -267,7 +280,11 @@ def _street_from(part: str) -> str | None:
     if hint:
         head = head[: hint.start()]  # «ул. Карла Маркса около комбината» → the street only
     head = _clean(re.sub(r"\(.*", "", head))
-    if not head or not _STREET_TYPE.search(head):
+    without_preposition = _clean(_LEADING_PREPOSITION.sub("", head))
+    if without_preposition != head and _OBLIQUE.search(without_preposition):
+        return None
+    head = without_preposition
+    if not head or not _STREET_TYPE.search(head) or _NOT_A_STREET.search(head):
         return None
     if re.search(r"\d{3,}", head):  # «МЖД Киевская 1 км» is a landmark, not a street
         return None
