@@ -15,8 +15,14 @@ export interface IncomingCall {
   attemptId: string | null; // from the X-Attempt-Id header of the INVITE
   callerNumber: string;
   callerName: string;
-  /** A call the dispatcher started to a service officer (issue #36): X-Service-Call. */
+  /** A call on the card of the dispatcher (issue #36): X-Service-Call. */
   serviceCallId: string | null;
+  /**
+   * Which way that call goes (X-Service-Call-Kind): "outgoing" — the dispatcher called the
+   * officer and the phone answers by itself; "report" — the squad calls in and the trainee
+   * answers (issue #103).
+   */
+  serviceCallKind: string | null;
 }
 
 export interface CallStats {
@@ -223,6 +229,7 @@ export class SipPhone {
       callerNumber: identity?.uri?.user ?? "",
       callerName: identity?.display_name ?? "",
       serviceCallId: e.request.getHeader("X-Service-Call") ?? null,
+      serviceCallKind: e.request.getHeader("X-Service-Call-Kind") ?? null,
     };
     session.on(
       "peerconnection",

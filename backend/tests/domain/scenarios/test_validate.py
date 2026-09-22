@@ -144,6 +144,48 @@ def test_card_response_checks() -> None:
     ]
 
 
+def test_brigade_reports_the_teacher_edits_are_checked() -> None:
+    """The squad's timeline (issue #103): only progress statuses, one report per status,
+    a text to say and a delay the sweep can work with."""
+    body = {
+        "kind": "card_response",
+        "title": "Нет отопления",
+        "service": "gkh",
+        "card": {
+            "incident_type": "1.1.1.1",
+            "signs": [],
+            "flags": {"injured": False},
+            "description": "Нет отопления в доме.",
+            "notified": [{"service": "gkh", "status": "Получена службой"}],
+        },
+        "reference": {
+            "decision": "accept",
+            "status_chain": [{"status": "accepted"}, {"status": "arrived"}],
+            "reports": [
+                {"status": "arrived", "text": "Прибыли на адрес.", "after_seconds": 45},
+            ],
+        },
+    }
+    assert check_body(body, REFS) == []
+
+    broken = json.loads(json.dumps(body))
+    broken["reference"]["reports"] = [
+        {"status": "accepted", "text": "Приняли.", "after_seconds": 45},
+        {"status": "arrived", "text": "Прибыли.", "after_seconds": 1},
+        {"status": "arrived", "text": "   ", "after_seconds": 45},
+    ]
+    problems = check_body(broken, REFS)
+    assert any("accepted" in p for p in problems)
+    assert any("Два доклада" in p for p in problems)
+    assert any("от 5 до 3600" in p for p in problems)
+    assert any("без текста" in p for p in problems)
+
+    # No reports at all is a valid choice: the trainee sets the progress statuses alone.
+    off = json.loads(json.dumps(body))
+    off["reference"]["reports"] = []
+    assert check_body(off, REFS) == []
+
+
 def test_generation_schema_constrains_codes() -> None:
     schema = generated.call_intake_schema(["1.1.1.1", "2.1.0.0", "1.1.1.1"])
     assert schema["properties"]["incident_type"]["enum"] == ["1.1.1.1", "2.1.0.0"]

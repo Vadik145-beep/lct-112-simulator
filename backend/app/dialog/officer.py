@@ -12,7 +12,9 @@ evaluation engine recounts them from the stored turns.
 A report (``kind: "report"``) is the same record started by the system on the squad's
 timeline (``training.service.sweep_reports``): turn 0 is the squad leader's report instead of
 a greeting, ``report_status`` names the status it stands for, and the leader answers from a
-small set of confirmations. Facts are not counted on reports.
+small set of confirmations. Facts are not counted on reports. A report is an incoming call:
+the record waits for the trainee to answer it in both modes (issue #103), and one nobody
+answered ends as ``not_taken``.
 
 Rows of ``attempts.service_calls``::
 
@@ -25,6 +27,7 @@ Every function works inside the caller's transaction and returns the events it a
 
 from __future__ import annotations
 
+import hashlib
 import uuid
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -278,8 +281,6 @@ def _new_call(service: str, service_title: str, now: datetime, *, telephony: boo
 async def start_report(
     session: AsyncSession,
     attempt: Attempt,
-    ts: TrainingSession,
-    version: ScenarioVersion,
     scenario: CardResponseScenario,
     report: BrigadeReport,
     service_title: str,
@@ -288,9 +289,9 @@ async def start_report(
     now: datetime | None = None,
 ) -> tuple[dict, list[SessionEvent]]:
     """The squad leader calls the dispatcher with ``report``: a new record of kind «report».
-    Without telephony the report is «answered» at once and its text is turn 0; with telephony
-    the record waits for the trainee to pick up (``answer``). The caller makes sure no other
-    call is open and the report was not delivered yet."""
+    The record always waits for the trainee to pick up (``answer``), by the phone with
+    telephony and by the button in the card without it (issue #103). The caller makes sure no
+    other call is open and the report was not delivered yet."""
     if attempt.state in training.CLOSED_STATES:
         raise ApiError(409, "card_closed", "Работа с карточкой завершена.")
     if open_call(attempt) is not None:
@@ -305,10 +306,6 @@ async def start_report(
     attempt.service_calls = [*calls_of(attempt), call]
     flag_modified(attempt, "service_calls")
     events = [await _event(session, attempt, EVENT_STARTED, call)]
-    if not telephony:
-        answered = await answer(session, attempt, ts, version, scenario, call["id"], now=now)
-        events.extend(answered[1])
-        call = answered[0]
     await session.flush()
     return call, events
 
@@ -333,7 +330,7 @@ async def answer(
     now = now or training.utcnow()
     officer = call_scenario(scenario, call, attempt)
     if is_report(call):
-        audio = await _report_audio(version, officer, call)
+        audio = await _report_audio(version, officer, _report_of(scenario, call))
         topics = ["report", call.get("report_status") or ""]
     else:
         audio = await _greeting_audio(version, officer, call["service"])
@@ -427,7 +424,13 @@ async def say(
     if call.get("ended_at"):
         raise ApiError(409, "call_ended", "Звонок завершён: дежурному больше не сказать.")
     if not call.get("answered"):
-        raise ApiError(409, "not_answered", "Дежурный ещё не ответил.")
+        raise ApiError(
+            409,
+            "not_answered",
+            "Вы ещё не ответили на звонок: нажмите «Ответить»."
+            if is_report(call)
+            else "Дежурный ещё не ответил.",
+        )
     retry = _find_retry(call, action_id)
     if retry is not None:
         return retry
@@ -483,22 +486,31 @@ async def say(
     )
 
 
+def _text_key(text: str) -> str:
+    """Short digest of a phrase: the voice file of an edited text is a different file."""
+    return hashlib.sha1(text.encode()).hexdigest()[:8]  # noqa: S324 - a cache key, not security
+
+
 def _reply_stem(call: dict, reply: CallerReply) -> str:
     if is_report(call):
-        # Report replies quote the report itself: cache per scenario status, not per service.
-        return f"report-{call['id'][:8]}-{len(call.get('dialog') or [])}"
+        # Report replies quote the report itself: cache per phrase, so every trainee who
+        # hears the same squad leader gets the same file instead of a fresh synthesis.
+        return f"report-{call.get('report_status') or 'report'}-{_text_key(reply.text)}"
     if reply.reply_id:
         return f"officer-{call['service']}-r{reply.reply_id}"
-    return f"officer-{call['id'][:8]}-{len(call.get('dialog') or [])}"
+    return f"officer-{call['service']}-{_text_key(reply.text)}"
 
 
 async def _report_audio(
-    version: ScenarioVersion, leader: CallIntakeScenario, call: dict
+    version: ScenarioVersion, leader: CallIntakeScenario, report: BrigadeReport
 ) -> str | None:
-    reply = CallerReply(text=leader.caller.opening, topics=["report"], operator_topics=[])
-    return await dialog.reply_audio(
-        None, version, leader, reply, stem=f"report-{call['id'][:8]}-opening"
+    """The squad leader's report: the recording of the scenario when it has one, else a
+    synthesis cached per scenario version and text (issue #67)."""
+    reply = CallerReply(
+        text=leader.caller.opening, topics=["report"], operator_topics=[], audio=report.audio
     )
+    stem = f"report-{report.status}-{_text_key(report.text)}"
+    return await dialog.reply_audio(None, version, leader, reply, stem=stem)
 
 
 async def _greeting_audio(

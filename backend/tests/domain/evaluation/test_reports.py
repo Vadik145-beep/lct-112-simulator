@@ -1,6 +1,7 @@
 """Reports of the squad to the dispatcher (customer, 21.09.2026): the default timeline of a
-card, the squad leader's dialog, the officer's answer about the progress, and the two
-detectors — a status set before the report, a report never reflected."""
+card, the squad leader's dialog, the officer's answer about the progress, and the three
+detectors — a status set before the report, a report never reflected, a report nobody
+answered (issue #103)."""
 
 from __future__ import annotations
 
@@ -183,6 +184,45 @@ def test_status_long_after_the_report_is_late() -> None:
     errors = errors_of(scenario, attempt)
     assert "report_not_reflected" in errors
     assert "позже норматива" in errors["report_not_reflected"]
+
+
+def test_report_nobody_answered_is_an_error_and_is_not_counted_as_delivered() -> None:
+    scenario = card_scenario(NAME)
+    perfect = perfect_card_attempt(scenario)
+    calls = []
+    for call in perfect.service_calls:
+        row = call.model_dump()
+        if call.kind == "report" and call.report_status == "arrived":
+            # The squad called, the dispatcher never picked up: no dialog, «не принят».
+            row.update(answered=False, dialog=[], end_reason="not_taken")
+        calls.append(row)
+    errors = errors_of(scenario, with_changes(perfect, service_calls=calls))
+    assert "report_not_taken" in errors
+    assert "«Прибытие»" in errors["report_not_taken"]
+    # The status is in the card, and the dispatcher is not blamed for reflecting it late:
+    # the report they never heard is not a delivered one. Setting it anyway is the other
+    # error — the status went into the card without the information behind it.
+    assert "report_not_reflected" not in errors
+    assert "«Прибытие»" in errors["status_before_report"]
+
+
+def test_report_still_ringing_when_the_card_closed_is_not_blamed() -> None:
+    scenario = card_scenario(NAME)
+    perfect = perfect_card_attempt(scenario)
+    calls = [c.model_dump() for c in perfect.service_calls]
+    calls.append(
+        {
+            "service": scenario.service,
+            "kind": "report",
+            "report_status": "works_done",
+            "started_at": at(STEP_SECONDS["works_done"]),
+            "answered": False,
+            "ended_at": at(STEP_SECONDS["works_done"] + 2),
+            "end_reason": "card_closed",
+            "dialog": [],
+        }
+    )
+    assert "report_not_taken" not in errors_of(scenario, with_changes(perfect, service_calls=calls))
 
 
 def test_card_without_reports_is_judged_as_before() -> None:

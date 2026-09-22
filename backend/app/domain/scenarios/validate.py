@@ -9,14 +9,16 @@ a revised reference is created through ``revise`` instead.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 
 from pydantic import ValidationError
 
+from app.domain.evaluation import status_machine as sm
 from app.domain.evaluation.data_check import FIELD_TITLES, values_match
 from app.domain.evaluation.schemas import (
     SERVICE_CALL_FACTS,
+    BrigadeReport,
     CardResponseScenario,
     parse_scenario,
 )
@@ -43,6 +45,39 @@ class ReferenceCodes:
     flags: set[str]
     services: set[str]
     tickets: set[str] = field(default_factory=set)  # «2-1» refs
+
+
+# What the squad may report (issue #103, memo p. 22: the status follows the report) and how
+# far apart the reports may be set: from a handful of seconds to an hour after the previous
+# milestone.
+REPORT_STATUS_CODES = frozenset({*sm.PROGRESS_STATUSES, sm.WORKS_DONE})
+REPORT_DELAY_RANGE = (5, 3600)
+REPORT_TEXT_MAX = 500
+
+
+def _check_reports(reports: Sequence[BrigadeReport]) -> list[str]:
+    """The squad's timeline the teacher may edit: known statuses, one report per status,
+    a text to say and a sane delay."""
+    problems: list[str] = []
+    bad = sorted({r.status for r in reports} - REPORT_STATUS_CODES)
+    if bad:
+        problems.append(f"Доклады бригады бывают только о ходе работ, не о: {', '.join(bad)}.")
+    statuses = [r.status for r in reports]
+    if len(statuses) != len(set(statuses)):
+        problems.append("Два доклада бригады об одном статусе.")
+    lo, hi = REPORT_DELAY_RANGE
+    for report in reports:
+        if not report.text.strip():
+            problems.append(f"Доклад «{sm.title(report.status)}» без текста.")
+        elif len(report.text) > REPORT_TEXT_MAX:
+            problems.append(
+                f"Доклад «{sm.title(report.status)}» длиннее {REPORT_TEXT_MAX} символов."
+            )
+        if not lo <= report.after_seconds <= hi:
+            problems.append(
+                f"Задержка доклада «{sm.title(report.status)}»: от {lo} до {hi} секунд."
+            )
+    return problems
 
 
 def check_body(body: Mapping, refs: ReferenceCodes) -> list[str]:
@@ -92,6 +127,7 @@ def check_body(body: Mapping, refs: ReferenceCodes) -> list[str]:
             bad_facts = sorted(set(call.required_facts) - set(SERVICE_CALL_FACTS))
             if bad_facts:
                 problems.append(f"Неизвестные факты звонка в службу: {', '.join(bad_facts)}.")
+        problems += _check_reports(reference.reports)
 
     if type_code not in refs.incident_types:
         problems.append(f"Тип происшествия {type_code} отсутствует в классификаторе.")
