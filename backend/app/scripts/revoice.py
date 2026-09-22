@@ -5,11 +5,14 @@
     python -m app.scripts.revoice --scenario <uuid>
 
 Needed after the voice engine changes (Piper → Silero, 22.09.2026): ``voice_reply`` keeps a
-reply's audio once it exists, so a stand keeps the old voice until the file is replaced. A
-reply whose recording the teacher uploaded (audit ``scenario.reply.audio``) is left alone; the
-teacher's voice always wins over the synthesizer. Only the latest version of a scenario is
-touched — earlier versions are history. Runs inside the worker/backend container, where the
-models and STORAGE_DIR are mounted.
+reply's audio once it exists, so a stand keeps the old voice until the file is replaced.
+
+Two kinds of recording are left alone, because they are not synthesized on the stand and sound
+better than any local engine: the studio voicing of the reference scenarios (ElevenLabs,
+``tts/seed/…``, see ``app.seed._attach_audio``) and a recording the teacher uploaded (audit
+``scenario.reply.audio``). Only the latest version of a scenario is touched — earlier versions
+are history. Runs inside the worker/backend container, where the models and STORAGE_DIR are
+mounted.
 """
 
 from __future__ import annotations
@@ -29,6 +32,15 @@ from app.logging import configure_logging
 from app.models import AuditLog, Scenario, ScenarioVersion
 from app.providers.tts import get_tts_provider
 from app.scenarios.service import ALLOWED_AUDIO, _replies, audio_stem
+
+# Recordings the stand did not synthesize: the studio voicing of the reference scenarios that
+# the seeder copies into ``STORAGE_DIR/tts/seed/<key>/`` (``app.seed``, ветка студийной озвучки).
+SEED_AUDIO_PREFIX = "tts/seed/"
+
+
+def keeps_recording(audio: str, scenario_id: str, reply_id: int, uploaded: set) -> bool:
+    """A studio recording or one the teacher uploaded always wins over a local engine."""
+    return audio.startswith(SEED_AUDIO_PREFIX) or (scenario_id, reply_id) in uploaded
 
 
 async def uploaded_replies(session) -> set[tuple[str, int]]:
@@ -86,9 +98,10 @@ async def run(scenario_id: uuid.UUID | None, dry_run: bool) -> int:
             changed = False
             for reply in replies:
                 reply_id = int(reply.get("id", -1))
-                if not reply.get("audio") or not reply.get("text"):
+                audio = reply.get("audio")
+                if not audio or not reply.get("text"):
                     continue
-                if (str(version.scenario_id), reply_id) in keep:
+                if keeps_recording(audio, str(version.scenario_id), reply_id, keep):
                     skipped += 1
                     continue
                 if dry_run:
@@ -115,7 +128,8 @@ async def run(scenario_id: uuid.UUID | None, dry_run: bool) -> int:
             await session.commit()
     action = "к переозвучке" if dry_run else "переозвучено"
     print(
-        f"Реплик {action}: {voiced}, записей преподавателя оставлено: {skipped}, ошибок: {failed}"
+        f"Реплик {action}: {voiced}, студийных записей и записей преподавателя оставлено: "
+        f"{skipped}, ошибок: {failed}"
     )
     return 1 if failed else 0
 
