@@ -126,8 +126,10 @@ class Settings(BaseSettings):
     cloud_voice_transcriber_model: str = "stt-rt-v5"
     cloud_voice_language: str = "ru"
     # Longest cloud call in seconds (Vapi ends it) and seconds of silence before it hangs up.
+    # The dispatcher fills the card while the caller waits, so a minute of silence is normal
+    # work, not a dropped call (замечание пользователя 22.09.2026): 180 seconds.
     cloud_voice_max_seconds: int = 900
-    cloud_voice_silence_seconds: int = 60
+    cloud_voice_silence_seconds: int = 180
     # Seconds the SIP leg to Vapi may ring before the call falls back to the local pipeline.
     cloud_voice_answer_seconds: int = 15
 
