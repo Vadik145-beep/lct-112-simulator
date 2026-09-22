@@ -157,9 +157,11 @@ async def test_reports_arrive_on_the_timeline_and_the_dispatcher_reflects_them(
     # A report nobody talks to is closed after the timeout and the timeline goes on.
     await rewind(attempt_id, 31)
     assert started(await sweep()) == ["works_started"]
-    await rewind(attempt_id, reports.REPORT_CALL_TIMEOUT_SECONDS - 1)
+    # A few seconds of margin: the report's greeting is voiced (and encoded) after the call
+    # is stamped, and that real time counts towards the timeout.
+    await rewind(attempt_id, reports.REPORT_CALL_TIMEOUT_SECONDS - 5)
     assert await sweep() == []
-    await rewind(attempt_id, 1)
+    await rewind(attempt_id, 5)
     events = await sweep()
     assert [e["end_reason"] for e in events if e["type"] == "service_call.ended"] == ["not_taken"]
     ignored = (await report_calls(attempt_id))[-1]
