@@ -68,7 +68,10 @@ docker compose --profile ai up -d
 `scripts/models.manifest`, лицензии перечислены в `docs/LIBRARIES.md`.
 
 Настройки в `.env`: `LLM_DIALOG_MODEL`, `LLM_GEN_MODEL`, `STT_MODEL`, число потоков `LLM_THREADS`,
-режим диалога `DIALOG_MODE`.
+режим диалога `DIALOG_MODE`, движок голоса заявителя `TTS_PROVIDER` (`auto`: Silero при
+наличии `tts/silero_v4_ru.pt`, иначе Piper, иначе только текст). Голос Silero скачивается
+с models.silero.ai — если этот адрес закрыт, скачайте файл на другой машине и положите в
+`models/tts/`.
 
 ## 5. Телефония
 
@@ -158,6 +161,17 @@ docker compose exec backend alembic upgrade head
 
 Миграции базы выполняются автоматически при старте бэкенда; команда нужна только при ручном
 обновлении.
+
+Если обновление сменило голосовой движок (например, появился `tts/silero_v4_ru.pt`), уже
+озвученные реплики остаются в старом голосе — переозвучить их текущим движком:
+
+```bash
+./scripts/fetch_models.sh --only tts
+docker compose exec worker python -m app.scripts.revoice --dry-run   # сколько реплик
+docker compose exec worker python -m app.scripts.revoice
+```
+
+Записи, загруженные преподавателем вручную, команда не трогает.
 
 ## 9. Частые проблемы
 

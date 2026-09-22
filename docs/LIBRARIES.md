@@ -21,7 +21,9 @@
 | websockets | BSD-3 | события ARI Asterisk (`app/telephony/ari.py`), клиент WebSocket в тестах |
 | cryptography | Apache 2.0 / BSD | шифрование SIP-паролей обучающихся (Fernet, ключ из SECRET_KEY) |
 | NumPy | BSD | звук звонка: RTP ↔ PCM, VAD, ресемплинг (`app/telephony/media.py`); модель прогноза готовности и симулятор когорты (`app/domain/analytics/`) |
-| piper-tts (+ onnxruntime, numpy, espeak-ng в составе) | GPL-3.0 (piper 1.x, из-за espeak-ng) | озвучка реплик заявителя (`TTSProvider`) |
+| PyTorch (torch, сборка CPU с download.pytorch.org/whl/cpu) | BSD-3 | запуск модели Silero TTS (`SileroTTS`) |
+| num2words | LGPL-2.1 (библиотека, без правок) | цифры словами перед синтезом Silero («11 лет» → «одиннадцать лет», телефон по цифрам) |
+| piper-tts (+ onnxruntime, numpy, espeak-ng в составе) | GPL-3.0 (piper 1.x, из-за espeak-ng) | озвучка реплик заявителя, второй движок (`TTS_PROVIDER=piper`) и запасной без модели Silero |
 | onnxruntime | MIT | запуск модели эмбеддингов e5 (`EmbeddingProvider`) |
 | tokenizers | Apache 2.0 | токенизация текста для e5 |
 | ReportLab | BSD | отчёт о занятии в PDF (`app/reports/export.py`); шрифт DejaVu Sans (лицензия Bitstream Vera, файл рядом со шрифтами) встроен, кириллица без системных шрифтов |
@@ -68,12 +70,13 @@
 | Qwen2.5-3B-Instruct, GGUF Q4_K_M | `llm/qwen2.5-3b-instruct-q4_k_m.gguf` | Qwen Research License (некоммерческая) | диалог, кандидат для сравнения; на стенде только если выиграет замер, для продажи не годится |
 | Qwen2.5-7B-Instruct, GGUF Q4_K_M (2 части) | `llm/qwen2.5-7b-instruct-q4_k_m-0000N-of-00002.gguf` | Apache 2.0 | генерация сценариев (`llm-gen`), судья в замерах |
 | faster-whisper base / small (Systran, CTranslate2 int8) | `stt/faster-whisper-{base,small}/` | MIT (веса Whisper OpenAI — MIT) | распознавание речи оператора |
+| Silero TTS v4 ru (5 дикторов: aidar, baya, kseniya, xenia, eugene) | `tts/silero_v4_ru.pt` | **CC BY-NC-SA 4.0** (некоммерческая) | основной голос заявителя: пожилые и ребёнок через высоту/темп (SSML), без акцента; для продажи продукта заменить (коммерческая лицензия Silero или другой движок) |
 | Piper ru_RU denis, dmitri (medium) | `tts/ru_RU-{denis,dmitri}-medium.onnx` | датасет CC0, модель MIT | мужские голоса заявителя |
 | Piper ru_RU irina (medium) | `tts/ru_RU-irina-medium.onnx` | датасет RHVoice, лицензия не указана автором голоса; модель MIT | женский голос; перед продажей продукта заменить или уточнить лицензию |
 | intfloat/multilingual-e5-small (ONNX) | `embeddings/multilingual-e5-small/` | MIT | смысловая близость описаний (`EmbeddingProvider`) |
 | Silero VAD v5 (ONNX, onnx-community/silero-vad) | `vad/silero_vad.onnx` | MIT | границы фраз оператора в звонке (`app/telephony/media.py`); без файла — детектор по громкости |
 
-Голос `ruslan` (CC BY-NC-SA) не используется.
+Голос Piper `ruslan` (CC BY-NC-SA) не используется. Модель Silero скачивается с models.silero.ai (не с Hugging Face), строка в манифесте с полным URL.
 
 ## Данные
 

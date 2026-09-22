@@ -13,7 +13,8 @@ WORKDIR /app
 
 COPY --from=ghcr.io/astral-sh/uv:0.5 /uv /usr/local/bin/uv
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-dev
+# The uv cache is dropped in the same layer: with torch it is over 1 GB of duplicate wheels.
+RUN uv sync --frozen --no-dev && rm -rf /root/.cache
 
 COPY . .
 RUN chmod +x entrypoint.sh
