@@ -72,17 +72,39 @@ export function flattenTypes(groups: ClassifierGroupOut[]): TypeHit[] {
 /** Types whose final title or signs contain every word of the query, in any order and form
  * («тран» finds «Транспорт», «пожар кварт» finds «пожар: квартира»), as the search line
  * «что случилось?» of the live АРМ-112 works. The group title is left out: «пожар» would
- * otherwise match every type of «Пожары и задымления». */
+ * otherwise match every type of «Пожары и задымления».
+ *
+ * The classifier speaks its own language, the caller does not: the words a caller uses come
+ * with the type (`phrases`, data/seed/type_synonyms.json), so «машина упала в воду» finds
+ * «Падение автомашины в воду». When nothing matches every word, the search falls back to the
+ * types that match most of them — better a short list to look through than «ничего не найдено». */
+const STEM = 5; // letters of a word that must match in the fallback search
+
 export function searchTypes(all: TypeHit[], query: string, limit = 12): TypeHit[] {
   const words = normalize(query).split(/\s+/).filter((w) => w.length >= 2);
   if (words.length === 0) return [];
-  const hits: TypeHit[] = [];
+  const exact: TypeHit[] = [];
+  const partial: { hit: TypeHit; matched: number }[] = [];
   for (const hit of all) {
-    const haystack = normalize([hit.node.final_title ?? "", ...hit.path].join(" "));
+    const haystack = normalize(
+      [hit.node.final_title ?? "", hit.node.phrases ?? "", ...hit.path].join(" "),
+    );
     if (words.every((w) => haystack.includes(w))) {
-      hits.push(hit);
-      if (hits.length >= limit) break;
+      exact.push(hit);
+      if (exact.length >= limit) return exact;
+      continue;
     }
+    // For the fallback the word counts by its stem: «квартире» must find «квартира».
+    const matched = words.filter((w) => haystack.includes(w.slice(0, STEM))).length;
+    if (matched > 0) partial.push({ hit, matched });
   }
-  return hits;
+  if (exact.length > 0) return exact;
+  // Half the words or more, the best first: «машина упала в воду» keeps «Падение автомашины
+  // в воду» and drops the types that only share «в».
+  const enough = Math.max(2, Math.ceil(words.length / 2));
+  return partial
+    .filter((p) => p.matched >= enough)
+    .sort((a, b) => b.matched - a.matched)
+    .slice(0, limit)
+    .map((p) => p.hit);
 }
