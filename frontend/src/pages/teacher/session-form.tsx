@@ -58,7 +58,10 @@ const DIALOG_MODES: { code: string; title: string; hint: string }[] = [
   { code: "generate", title: "Свободная генерация", hint: "модель сочиняет каждую реплику; медленнее и менее предсказуемо" },
   { code: "buttons", title: "Кнопки тем", hint: "без модели" },
 ];
-const NORM_DEFAULT = { card_response: 30, call_intake: 90 } as const;
+// plan/track-c-vapi.md: the caller lives in Vapi; offered only where the stand enables it
+// (ALLOW_EXTERNAL_AI=true, outside the closed contour).
+const CLOUD_MODE = { code: "cloud", title: "Облачный голос", hint: "заявителя играет облачная модель с живым голосом; демо вне закрытого контура" };
+const NORM_DEFAULT = { card_response: 30, call_intake: 60 } as const;
 
 const selectClass =
   "flex h-9 w-full rounded-md border border-input bg-background text-foreground px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50";
@@ -194,13 +197,18 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               <div className="space-y-1.5">
                 <Label htmlFor="dialog-mode">Как отвечает заявитель</Label>
                 <select id="dialog-mode" className={selectClass} value={form.dialog_mode} onChange={(e) => patch({ dialog_mode: e.target.value })}>
-                  {DIALOG_MODES.map((m) => (
+                  {[...DIALOG_MODES, ...(models.data?.cloud || form.dialog_mode === "cloud" ? [CLOUD_MODE] : [])].map((m) => (
                     <option key={m.code} value={m.code}>
                       {m.title} — {m.hint}
                     </option>
                   ))}
                 </select>
-                {models.data && !models.data.dialog && form.dialog_mode !== "buttons" && (
+                {form.dialog_mode === "cloud" && (
+                  <p className="text-xs text-muted-foreground" data-testid="cloud-mode-note">
+                    Голос оператора и выдуманные данные билета уходят во внешний облачный сервис. Без телефонии разговор идёт прямо из браузера; если облако недоступно, заявитель отвечает локальной моделью.
+                  </p>
+                )}
+                {models.data && !models.data.dialog && form.dialog_mode !== "buttons" && form.dialog_mode !== "cloud" && (
                   <p className="text-xs text-destructive" role="alert" data-testid="dialog-model-warning">
                     Модель диалога сейчас недоступна: заявитель будет отвечать по ключевым словам, как в режиме «Кнопки тем».
                   </p>

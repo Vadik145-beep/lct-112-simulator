@@ -267,11 +267,16 @@ async def test_caller_drops_the_call_after_second_question(
     attempt = await load(attempt_id)
     assert attempt.call_end_reason == CALL_END_CALLER_HANGUP
     assert stt.calls == 2
-    # Asterisk was asked to hang up the trainee's channel.
-    assert any(
-        r.path.endswith(f"/channels/{call.channel_id}")
-        for r in fake_ari.calls("DELETE", "/channels/")
-    )
+
+    # Asterisk was asked to hang up the trainee's channel — after the farewell reply has been
+    # played, so a moment later than the stored «ended» state the wait above saw.
+    async def hung_up() -> bool:
+        return any(
+            r.path.endswith(f"/channels/{call.channel_id}")
+            for r in fake_ari.calls("DELETE", "/channels/")
+        )
+
+    await wait_until(hung_up)
 
 
 async def test_manager_hangup_deletes_channel(manager: CallManager, fake_ari: FakeAri):

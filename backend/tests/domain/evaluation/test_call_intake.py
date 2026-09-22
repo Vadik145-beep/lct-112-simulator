@@ -6,7 +6,7 @@ import pytest
 
 from app.domain.evaluation import evaluate_sync
 from app.domain.evaluation.call_intake import evaluate_call_intake
-from app.domain.evaluation.schemas import DialogTurn
+from app.domain.evaluation.schemas import Address, DialogTurn
 from tests.domain.evaluation.helpers import (
     call_scenario,
     grammar_down,
@@ -155,9 +155,9 @@ def test_description_keywords_and_similarity() -> None:
     assert evaluate_call_intake(scenario, attempt).components["description"].score == 0
 
 
-@pytest.mark.parametrize(("seconds", "expected"), [(60, 10), (90, 10), (135, 5), (180, 0)])
+@pytest.mark.parametrize(("seconds", "expected"), [(30, 10), (60, 10), (90, 5), (120, 0)])
 def test_time_component(seconds: int, expected: int) -> None:
-    scenario = call_scenario()  # norm 90 s
+    scenario = call_scenario()  # norm 60 s
     attempt = perfect_call_attempt(scenario, seconds=seconds)
     assert evaluate_call_intake(scenario, attempt).components["time"].score == expected
 
@@ -223,3 +223,95 @@ def test_evaluate_sync_accepts_raw_dictionaries() -> None:
     assert result.mode == "call_intake"
     assert result.total == 100
     assert result.to_dict()["components"]["address"]["score"] == 15
+
+
+# --- blocking rules of issues #69 and #70 -----------------------------------------------------
+
+
+def test_cloud_caller_speech_does_not_count_as_a_question_asked() -> None:
+    scenario = call_scenario()
+    attempt = perfect_call_attempt(scenario)
+    attempt.dialog = [
+        DialogTurn(role="operator", text="Расскажите, что случилось?", method="cloud"),
+        # The caller volunteers the address and the danger: nobody asked.
+        DialogTurn(role="caller", text="Улица Берзарина, дом 21, дым идёт", method="cloud"),
+    ]
+    component = evaluate_call_intake(scenario, attempt).components["required_topics"]
+    assert component.items[0]["covered"] == ["what_happened"]
+    # A local mode labels the caller's reply with the topic it answers: that still counts.
+    attempt.dialog = [
+        DialogTurn(role="operator", text="Куда ехать?", method="select"),
+        DialogTurn(role="caller", text="Берзарина, 21", topics=["address"], method="select"),
+    ]
+    component = evaluate_call_intake(scenario, attempt).components["required_topics"]
+    assert component.items[0]["covered"] == ["address"]
+
+
+def test_fewer_than_half_of_the_questions_fails_the_attempt() -> None:
+    scenario = call_scenario()  # 7 required topics → at least 4 must be asked
+    attempt = perfect_call_attempt(scenario)
+    asked = {"what_happened", "address", "injured"}
+    attempt.dialog = [t for t in attempt.dialog if set(t.topics) <= asked]
+    result = evaluate_call_intake(scenario, attempt, grammar=grammar_ok())
+    error = next(e for e in result.errors if e.code == "questions_not_asked")
+    assert error.critical
+    assert error.explanation == "Незачёт: задано 3 из 7 обязательных вопросов (нужно не меньше 4)."
+    assert result.total >= 70  # the card itself is perfect …
+    assert not result.passed  # … but the attempt fails anyway
+    assert result.components["typical_errors"].score == 5 - 3
+
+    # Exactly half is enough; the share is a setting of the scenario; 0 disables the rule.
+    attempt = perfect_call_attempt(scenario)
+    attempt.dialog = [t for t in attempt.dialog if set(t.topics) <= asked | {"danger"}]
+    assert evaluate_call_intake(scenario, attempt, grammar=grammar_ok()).passed
+    scenario.min_questions_share = 0.8  # 6 of 7
+    assert not evaluate_call_intake(scenario, attempt, grammar=grammar_ok()).passed
+    scenario.min_questions_share = 0
+    assert evaluate_call_intake(scenario, attempt, grammar=grammar_ok()).passed
+
+
+def test_empty_card_scores_zero_where_there_is_nothing_to_check() -> None:
+    scenario = call_scenario()
+    attempt = perfect_call_attempt(scenario)
+    attempt.card.incident_type = None
+    attempt.card.signs_path = []
+    attempt.card.address = Address()
+    attempt.card.services = []
+    attempt.card.flags = {}
+    attempt.card.description = "пропуск"
+    result = evaluate_call_intake(scenario, attempt, grammar=grammar_ok())
+    scores = {k: c.score for k, c in result.components.items()}
+    assert scores == {
+        "survey_card": 0,
+        "flags_services": 0,
+        "address": 0,
+        "required_topics": 15,  # the conversation was fine
+        "description": 0,
+        "time": 0,
+        "typical_errors": 0,  # card_empty costs the whole component
+        "grammar": 0,
+    }
+    assert result.components["grammar"].status == "checked"
+    assert result.methods["grammar"] == "not_checked"
+    assert result.total == 15
+    error = next(e for e in result.errors if e.code == "card_empty")
+    assert error.critical
+    assert not result.passed
+
+
+def test_one_word_description_zeroes_only_the_text_components() -> None:
+    scenario = call_scenario()
+    attempt = perfect_call_attempt(scenario)
+    attempt.card.description = "пожар"
+    result = evaluate_call_intake(scenario, attempt, grammar=grammar_errors(0))
+    assert result.components["description"].score == 0
+    assert result.components["grammar"].score == 0
+    assert result.components["time"].score == 10
+    assert result.components["flags_services"].score == 10
+    assert "card_empty" not in {e.code for e in result.errors}
+    assert result.passed
+    attempt.card.description = "Дым из мусоропровода"
+    assert (
+        evaluate_call_intake(scenario, attempt, grammar=grammar_ok()).components["grammar"].score
+        == 10
+    )

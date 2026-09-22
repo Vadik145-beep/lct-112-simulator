@@ -76,6 +76,7 @@ async def answer(
     scenario: CallIntakeScenario,
     *,
     telephony: bool,
+    with_opening: bool | None = None,
 ) -> tuple[dict, list[SessionEvent]]:
     """The operator picked up: the caller's opening becomes turn 0 (voiced when a voice is
     available) and the attempt is «в разговоре». Idempotent."""
@@ -87,7 +88,10 @@ async def answer(
         raise ApiError(409, "call_ended", "Звонок уже завершён, ответить нельзя.")
     now = training.utcnow()
     was_answered = attempt.call_state == CALL_ANSWERED
-    opening = await dialog.ensure_opening(attempt, version, scenario, now)
+    # In a cloud lesson the greeting is spoken by Vapi and comes back in its transcript, so
+    # we store none of our own; the caller of a fallback asks for it explicitly.
+    write_opening = with_opening if with_opening is not None else not dialog.cloud_lesson(ts)
+    opening = await dialog.ensure_opening(attempt, version, scenario, now, with_turn=write_opening)
     events: list[SessionEvent] = []
     if not was_answered:
         attempt.call_state = CALL_ANSWERED

@@ -3,7 +3,7 @@
   "title": "Свист от газовой трубы в квартире",
   "ticket_ref": "31-3",
   "difficulty": 1,
-  "norm_seconds": 90,
+  "norm_seconds": 60,
   "caller": {
     "persona": "elderly_calm",
     "voice": "ru_male_3",

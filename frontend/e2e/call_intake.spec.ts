@@ -59,7 +59,9 @@ test.describe("Волна 7: приём вызова от звонка до ра
     const { problems, foreign } = watchNetwork(page);
 
     await loginAsStudent(page);
-    await page.getByRole("link", { name: /Открыть АРМ оператора 112/ }).click();
+    // Straight to the workplace of the reset lesson: a stand with several running lessons
+    // shows several «Открыть АРМ оператора 112» links.
+    await page.goto(`/student/sessions/${sessionId}/calls`);
     // The workplace asks for a call and opens the card as soon as one rings.
     await expect(page).toHaveURL(/\/student\/attempts\/[0-9a-f-]+$/, { timeout: 15_000 });
     const attemptId = page.url().split("/").pop()!;
@@ -84,7 +86,7 @@ test.describe("Волна 7: приём вызова от звонка до ра
 
     // The card: the seed puts the gas-pipe call first (difficulty 1).
     await page.getByLabel("Фамилия и имя заявителя").fill("Петров Иван Сергеевич");
-    await page.getByLabel("Статус заявителя").selectOption("жилец");
+    await page.getByLabel("Статус заявителя").selectOption("участник");
     const street = page.getByRole("combobox", { name: "Улица" });
     await street.fill("Вавил");
     // The street runs through several districts: pick the ЮЗАО row (the reference).
@@ -102,17 +104,31 @@ test.describe("Волна 7: приём вызова от звонка до ра
     await expect(page.getByTestId("description-counter")).toContainText("/ 1999");
 
     // Survey card: group → sign → sign; the services strip fills itself.
-    await page.getByRole("button", { name: "добавить тип происшествия" }).click();
+    await page.getByRole("button", { name: "по группам" }).click();
     await page.getByRole("listbox", { name: "Группа происшествия" }).getByRole("button", { name: /^13\./ }).click();
     await pickSign(page, "Запах газа в помещении");
+    // Until a type is chosen the survey card says what to pick next, not «тип не выбран».
+    await expect(page.getByTestId("survey-type")).toContainText("уточните");
     await pickSign(page, "От газововго оборудования"); // sic: the classifier's own spelling
     await expect(page.getByTestId("survey-type")).toContainText(/газ/i);
+    // «Пострадавшие» asks for the count in a small window, as the live АРМ-112 does.
+    await page.getByRole("button", { name: "Пострадавшие" }).click();
+    const injured = page.getByRole("dialog", { name: "Количество пострадавших" });
+    await injured.getByLabel("Количество пострадавших").fill("2");
+    await injured.getByRole("button", { name: "ОК" }).click();
+    await expect(page.getByRole("button", { name: "Пострадавшие (2)" })).toBeVisible();
+    await page.getByRole("button", { name: "Пострадавшие (2)" }).click(); // off again: the scenario has none
     const strip = page.getByTestId("services-strip");
     await expect(strip.locator("[data-service='101']")).toBeVisible({ timeout: 10_000 });
     await expect(strip.locator("[data-service='mosgaz']")).toBeVisible();
     // A service added by hand stays after the type resolves again.
     await page.getByRole("button", { name: "Добавить службу" }).click();
-    await page.getByLabel("Служба для добавления").selectOption("103");
+    const dialog = page.getByRole("dialog", { name: "Добавьте службы" });
+    await dialog.getByLabel("Поиск службы").fill("скорая");
+    await expect(dialog.getByRole("button", { name: /Служба 101/ })).toHaveCount(0);
+    await dialog.getByRole("button", { name: /Служба 103/ }).click();
+    await page.screenshot({ path: `${SHOTS}/02a-add-services.png` });
+    await dialog.getByRole("button", { name: "Сохранить и закрыть" }).click();
     await expect(strip.locator("[data-service='103']")).toBeVisible();
     await page.screenshot({ path: `${SHOTS}/02-card-filled.png`, fullPage: true });
 
@@ -125,7 +141,10 @@ test.describe("Волна 7: приём вызова от звонка до ра
     await expect(strip.locator("[data-service='103']")).toBeVisible();
     await expect(transcript.locator("li[data-role=caller]")).toHaveCount(2);
 
-    // Save (Ctrl+Enter): scored at once, the next call is offered.
+    // Save (Ctrl+Enter twice: the first opens «Оповестить и сохранить карточку», as on the live
+    // АРМ-112, the second confirms): scored at once, the next call is offered.
+    await page.keyboard.press("Control+Enter");
+    await expect(page.getByRole("alertdialog", { name: "Подтверждение сохранения" })).toBeVisible();
     await page.keyboard.press("Control+Enter");
     // The first evaluation of a cold stand loads the e5 model (tens of seconds on a bind mount).
     await expect(page.getByTestId("card-score")).toBeVisible({ timeout: 120_000 });
@@ -142,6 +161,10 @@ test.describe("Волна 7: приём вызова от звонка до ра
     await expect(page.getByRole("list", { name: "Темы" }).locator("li[data-topic=address][data-covered=true]")).toBeVisible();
     await expect(page.getByRole("list", { name: "Реплики" }).locator("li")).toHaveCount(3);
     await expect(page.getByTestId("review-services")).toContainText(/Мосгаз|mosgaz/);
+    // Issue #69: one question of seven is below the half → not passed whatever the score.
+    await expect(page.getByTestId("review-verdict")).toHaveText("Не зачтено");
+    await expect(page.locator("[data-error=questions_not_asked]")).toBeVisible();
+    await expect(page.getByTestId("review-blockers")).toContainText("из 7 обязательных вопросов");
     await page.screenshot({ path: `${SHOTS}/04-review.png`, fullPage: true });
 
     // The next call rings on the workplace page.
@@ -193,9 +216,33 @@ test.describe("Волна 7: приём вызова от звонка до ра
     await page.keyboard.press("Escape");
     await page.getByLabel("Описание со слов заявителя").fill("Ребёнок 11 лет упал с велосипеда, отёк руки.");
     await page.getByTestId("save-card").click();
+    await page.getByTestId("confirm-save-card").click();
     await expect(page.getByTestId("card-score")).toBeVisible({ timeout: 120_000 });
     await page.getByRole("link", { name: "Открыть разбор" }).click();
     await expect(page.locator("[data-error=region_not_clarified]")).toBeVisible();
     await page.screenshot({ path: `${SHOTS}/05-region-not-clarified.png`, fullPage: true });
+  });
+});
+
+test.describe("Оператор 112: строка «что случилось?»", () => {
+  test("часть слова находит тип и заполняет опросную карту", async ({ page, request }) => {
+    test.setTimeout(120_000);
+    const { sessionId } = await resetCallSession(request);
+    await loginAsStudent(page);
+    await page.goto(`/student/sessions/${sessionId}/calls`);
+    await expect(page).toHaveURL(/\/student\/attempts\/[0-9a-f-]+$/, { timeout: 15_000 });
+    await page.getByTestId("call-answer").click();
+    await expect(page.getByTestId("call-panel")).toContainText("разговор", { timeout: 90_000 });
+
+    const search = page.getByLabel("Что случилось?");
+    await search.fill("газ оборуд");
+    const found = page.getByRole("listbox", { name: "Найденные типы происшествий" });
+    await expect(found).toContainText("Запах газа в помещении");
+    await found.getByRole("button").first().click();
+    await expect(page.getByTestId("survey-type")).toContainText(/газ/i);
+    await expect(
+      page.getByTestId("survey-card").getByRole("button", { name: "Запах газа в помещении", exact: true, pressed: true }),
+    ).toBeVisible();
+    await page.screenshot({ path: `${SHOTS}/06-type-search.png`, fullPage: true });
   });
 });

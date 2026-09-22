@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from math import ceil
 
 from rapidfuzz import fuzz
 
@@ -354,7 +355,7 @@ def service_not_informed(ctx: CardContext) -> ErrorItem | None:
     required = ctx.scenario.reference.service_calls
     if not required or ctx.final_primary is None or ctx.final_primary.status != sm.ACCEPTED:
         return None
-    reached = {c.service for c in ctx.attempt.service_calls if c.answered}
+    reached = {c.service for c in ctx.attempt.service_calls if c.answered and c.kind == "outgoing"}
     missing = [r.service for r in required if r.service not in reached]
     if not missing:
         return None
@@ -363,6 +364,104 @@ def service_not_informed(ctx: CardContext) -> ErrorItem | None:
         "Карточка принята, но в службу по телефону не позвонили: "
         + ", ".join(f"«{s}»" for s in missing)
         + ". Руководителю службы передаются адрес, тип происшествия, пострадавшие и номер наряда.",
+    )
+
+
+# How long after a report the matching status may still be set without a penalty.
+REPORT_REACTION_SECONDS = 120
+# Statuses the squad reports about: the progress ones and the closing «Работы завершены».
+REPORTED_STATUSES = (*sm.PROGRESS_STATUSES, sm.WORKS_DONE)
+
+
+def _reports_delivered(ctx: CardContext) -> dict[str, StatusEntry | None]:
+    """Progress status → the squad's report call that announced it (the first one). A report
+    the dispatcher never picked up told them nothing, so it does not count as delivered; not
+    answering is its own error (``report_not_taken``, issue #103)."""
+    delivered: dict[str, StatusEntry | None] = {}
+    for call in ctx.attempt.service_calls:
+        status = call.report_status
+        if call.kind == "report" and call.answered and status and status not in delivered:
+            delivered[status] = StatusEntry(status=status, at=call.started_at)
+    return delivered
+
+
+def status_before_report(ctx: CardContext) -> ErrorItem | None:
+    """A progress status set before the squad reported it (customer, 21.09.2026: the
+    dispatcher learns about the departure, arrival and works by phone). Only for cards whose
+    reference has reports; a status the reports never cover is not judged."""
+    expected = {r.status for r in ctx.scenario.reference.reports}
+    if not expected or sm.ACCEPTED not in ctx.statuses:
+        return None
+    delivered = _reports_delivered(ctx)
+    early: list[str] = []
+    for entry in ctx.log:
+        if entry.status not in expected or entry.status not in REPORTED_STATUSES:
+            continue
+        report = delivered.get(entry.status)
+        if report is None or entry.at < report.at:
+            early.append(entry.status)
+    if not early:
+        return None
+    return _item(
+        "status_before_report",
+        "Проставлены до доклада бригады: "
+        + ", ".join(f"«{sm.title(s)}»" for s in dict.fromkeys(early))
+        + ". Статусы хода работ ставятся по факту получения информации от наряда.",
+    )
+
+
+def report_not_reflected(ctx: CardContext) -> ErrorItem | None:
+    """The squad reported a milestone, the card never got the status (or got it much later)."""
+    if sm.ACCEPTED not in ctx.statuses or sm.WORKS_REFUSED in ctx.statuses:
+        return None
+    delivered = _reports_delivered(ctx)
+    if not delivered:
+        return None
+    missed: list[str] = []
+    late: list[str] = []
+    for status, report in delivered.items():
+        assert report is not None
+        entries = [e for e in ctx.entries(status) if e.at >= report.at]
+        if not entries:
+            missed.append(status)
+        elif (seconds_between(report.at, entries[0].at) or 0.0) > REPORT_REACTION_SECONDS:
+            late.append(status)
+    if not missed and not late:
+        return None
+    parts = []
+    if missed:
+        parts.append("не проставлены " + ", ".join(f"«{sm.title(s)}»" for s in missed))
+    if late:
+        parts.append(
+            "позже норматива на отражение доклада " + ", ".join(f"«{sm.title(s)}»" for s in late)
+        )
+    return _item(
+        "report_not_reflected",
+        "Доклады бригады не отражены в карточке: " + "; ".join(parts) + ".",
+    )
+
+
+# A report the card closed while it was still ringing is not the dispatcher's fault.
+REPORT_END_CARD_CLOSED = "card_closed"
+
+
+def report_not_taken(ctx: CardContext) -> ErrorItem | None:
+    """The squad called with a report and nobody picked up (issue #103). A report still
+    ringing when the card was closed is not counted."""
+    reports = [c for c in ctx.attempt.service_calls if c.kind == "report"]
+    missed = [
+        call.report_status or ""
+        for call in reports
+        if not call.answered and call.end_reason != REPORT_END_CARD_CLOSED
+    ]
+    if not missed:
+        return None
+    named = [sm.title(s) for s in dict.fromkeys(missed) if s]
+    about = " (" + ", ".join(f"«{t}»" for t in named) + ")" if named else ""
+    return _item(
+        "report_not_taken",
+        f"Бригада звонила с докладом {len(missed)} раз(а){about}, диспетчер не ответил. "
+        "Доклад принимается по телефону: без него ход реагирования в карточке не отражается.",
     )
 
 
@@ -381,6 +480,9 @@ CARD_DETECTORS: dict[str, Callable[[CardContext], ErrorItem | None]] = {
     "error_missed": error_missed,
     "false_alarm": false_alarm,
     "service_not_informed": service_not_informed,
+    "status_before_report": status_before_report,
+    "report_not_reflected": report_not_reflected,
+    "report_not_taken": report_not_taken,
 }
 
 
@@ -392,6 +494,7 @@ class CallContext:
     scenario: CallIntakeScenario
     attempt: CallIntakeAttempt
     topics: set[str]  # topics clarified during the conversation
+    card_empty: bool = False  # the card has no type, address or description (issue #70)
 
 
 def address_not_asked(ctx: CallContext) -> ErrorItem | None:
@@ -431,7 +534,39 @@ def region_not_clarified(ctx: CallContext) -> ErrorItem | None:
     )
 
 
+def questions_not_asked(ctx: CallContext) -> ErrorItem | None:
+    """Blocking rule of issue #69: fewer than ``min_questions_share`` of the required topics
+    asked by the trainee → critical error, the attempt fails whatever the total."""
+    required = list(ctx.scenario.required_topics)
+    share = ctx.scenario.min_questions_share
+    if not required or share <= 0:
+        return None
+    needed = ceil(len(required) * share)
+    asked = [t for t in required if t in ctx.topics]
+    if len(asked) >= needed:
+        return None
+    return _item(
+        "questions_not_asked",
+        f"Незачёт: задано {len(asked)} из {len(required)} обязательных вопросов "
+        f"(нужно не меньше {needed}).",
+        critical=True,
+    )
+
+
+def card_empty(ctx: CallContext) -> ErrorItem | None:
+    """Blocking rule of issue #70: a card without type, address and description."""
+    if not ctx.card_empty:
+        return None
+    return _item(
+        "card_empty",
+        "Незачёт: карточка сохранена без типа происшествия, адреса и описания.",
+        critical=True,
+    )
+
+
 CALL_DETECTORS: dict[str, Callable[[CallContext], ErrorItem | None]] = {
+    "questions_not_asked": questions_not_asked,
+    "card_empty": card_empty,
     "address_not_asked": address_not_asked,
     "no_call_dropped_mark": no_call_dropped_mark,
     "region_not_clarified": region_not_clarified,

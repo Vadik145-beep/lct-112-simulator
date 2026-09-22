@@ -3,7 +3,7 @@
   "title": "Горит балкон на 13-м этаже, номер дома неизвестен",
   "ticket_ref": "4-1",
   "difficulty": 2,
-  "norm_seconds": 90,
+  "norm_seconds": 60,
   "caller": {
     "persona": "witness_shaken",
     "voice": "ru_female_1",

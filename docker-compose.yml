@@ -30,6 +30,8 @@ x-backend-env: &backend-env
   ANALYTICS_DIR: /ai
   EMBEDDING_MODEL_DIR: ${EMBEDDING_MODEL_DIR:-/models/embeddings/multilingual-e5-small}
   DIALOG_MODE: ${DIALOG_MODE:-select}
+  # The caller's voice: auto = Silero (/models/tts/silero_v4_ru.pt), else Piper, else text.
+  TTS_PROVIDER: ${TTS_PROVIDER:-auto}
   LLM_DIALOG_URL: ${LLM_DIALOG_URL:-http://llm-dialog:8080}
   LLM_GEN_URL: ${LLM_GEN_URL:-http://llm-gen:8080}
   STT_URL: ${STT_URL:-http://stt:9000}
@@ -42,9 +44,32 @@ x-backend-env: &backend-env
   ARI_PASSWORD: ${ARI_PASSWORD:-trainer}
   ASTERISK_CONFIG_DIR: /asterisk
   TELEPHONY_MEDIA_HOST: backend
+  # Cloud voice (profile cloud, plan/track-c-vapi.md): the caller is played by Vapi.
+  CLOUD_VOICE_ENABLED: ${CLOUD_VOICE_ENABLED:-false}
+  VAPI_API_KEY: ${VAPI_API_KEY:-}
+  VAPI_PUBLIC_KEY: ${VAPI_PUBLIC_KEY:-}
+  VAPI_SIP_HOST: ${VAPI_SIP_HOST:-sip.vapi.ai}
+  VAPI_NUMBER_NAME: ${VAPI_NUMBER_NAME:-dds-trainer}
+  CLOUD_VOICE_PUBLIC_URL: ${CLOUD_VOICE_PUBLIC_URL:-}
+  CLOUD_VOICE_WEBHOOK_SECRET: ${CLOUD_VOICE_WEBHOOK_SECRET:-}
+  CLOUD_VOICE_MODEL_PROVIDER: ${CLOUD_VOICE_MODEL_PROVIDER:-openai}
+  CLOUD_VOICE_MODEL: ${CLOUD_VOICE_MODEL:-gpt-4.1}
+  CLOUD_VOICE_VOICE_PROVIDER: ${CLOUD_VOICE_VOICE_PROVIDER:-11labs}
+  CLOUD_VOICE_VOICE_ID: ${CLOUD_VOICE_VOICE_ID:-3EuKHIEZbSzrHGNmdYsx}
+  CLOUD_VOICE_VOICE_ID_MALE: ${CLOUD_VOICE_VOICE_ID_MALE:-}
+  CLOUD_VOICE_VOICE_ID_FEMALE: ${CLOUD_VOICE_VOICE_ID_FEMALE:-}
+  CLOUD_VOICE_VOICE_ID_ELDER_MALE: ${CLOUD_VOICE_VOICE_ID_ELDER_MALE:-}
+  CLOUD_VOICE_VOICE_ID_ELDER_FEMALE: ${CLOUD_VOICE_VOICE_ID_ELDER_FEMALE:-}
+  CLOUD_VOICE_VOICE_ID_YOUNG: ${CLOUD_VOICE_VOICE_ID_YOUNG:-}
+  CLOUD_VOICE_VOICE_MODEL: ${CLOUD_VOICE_VOICE_MODEL:-eleven_flash_v2_5}
+  CLOUD_VOICE_TRANSCRIBER_PROVIDER: ${CLOUD_VOICE_TRANSCRIBER_PROVIDER:-soniox}
+  CLOUD_VOICE_TRANSCRIBER_MODEL: ${CLOUD_VOICE_TRANSCRIBER_MODEL:-stt-rt-v5}
+  CLOUD_VOICE_LANGUAGE: ${CLOUD_VOICE_LANGUAGE:-ru}
+  CLOUD_VOICE_ANSWER_SECONDS: ${CLOUD_VOICE_ANSWER_SECONDS:-15}
 
 services:
   nginx:
+    image: lct112/nginx:${APP_VERSION:-latest}
     build:
       context: .
       dockerfile: deploy/nginx/Dockerfile
@@ -54,8 +79,16 @@ services:
       - "${HTTPS_PORT:-443}:443"
     environment:
       TLS_HOSTS: ${TLS_HOSTS:-localhost,127.0.0.1}
+      # Domain with a Let's Encrypt certificate (profile cloud, plan/track-c-vapi.md);
+      # empty = only the internal certificate above.
+      PUBLIC_HOST: ${PUBLIC_HOST:-}
+      # The cloud voice in the browser needs Vapi and Daily in the CSP (deploy/nginx/entrypoint.sh).
+      CLOUD_VOICE_ENABLED: ${CLOUD_VOICE_ENABLED:-false}
+      VAPI_API_URL: ${VAPI_API_URL:-https://api.vapi.ai}
     volumes:
       - certs:/etc/nginx/certs
+      - letsencrypt:/etc/nginx/letsencrypt:ro
+      - certbot-www:/var/www/certbot:ro
     depends_on:
       backend:
         condition: service_healthy
@@ -67,6 +100,7 @@ services:
       start_period: 20s
 
   backend:
+    image: lct112/backend:${APP_VERSION:-latest}
     build:
       context: ./backend
     restart: unless-stopped
@@ -92,6 +126,8 @@ services:
       start_period: 30s
 
   worker:
+    # The same image as backend (one build, two roles); compose builds it once.
+    image: lct112/backend:${APP_VERSION:-latest}
     build:
       context: ./backend
     restart: unless-stopped
@@ -162,6 +198,7 @@ services:
       start_period: 60s
 
   backup:
+    image: lct112/backup:${APP_VERSION:-latest}
     build:
       context: ./deploy/backup
     restart: unless-stopped
@@ -254,6 +291,7 @@ services:
       start_period: 120s
 
   stt:
+    image: lct112/stt:${APP_VERSION:-latest}
     build:
       context: ./deploy/stt
     profiles: ["ai"]
@@ -274,6 +312,7 @@ services:
   # порт SIP_PORT (udp/tcp). Звук идёт напрямую на порты RTP, поэтому они опубликованы;
   # на Docker Desktop нужен TELEPHONY_EXTERNAL_IP (адрес машины), см. .env.example.
   asterisk:
+    image: lct112/asterisk:${APP_VERSION:-latest}
     build:
       context: ./deploy/asterisk
     profiles: ["telephony"]
@@ -308,6 +347,48 @@ services:
       retries: 5
       start_period: 20s
 
+  # ---------- Облачный голос (профиль cloud, plan/track-c-vapi.md) ----------
+  # Отдельный Asterisk с SIP-транком на Vapi: заявителя играет облако, стажёр отвечает в том же
+  # софтфоне. Сетевой псевдоним «asterisk», поэтому nginx (/ws/sip) и бэкенд (ARI_URL) не
+  # меняются; профили telephony и cloud в одном проекте вместе не поднимать. Порты SIP и RTP
+  # свои (CLOUD_*), чтобы не пересекаться с локальным контейнером.
+  asterisk-cloud:
+    image: lct112/asterisk-cloud:${APP_VERSION:-latest}
+    build:
+      context: ./deploy
+      dockerfile: asterisk-cloud/Dockerfile
+    profiles: ["cloud"]
+    restart: unless-stopped
+    hostname: asterisk-cloud
+    networks:
+      default:
+        aliases:
+          - asterisk
+    environment:
+      ARI_PASSWORD: ${ARI_PASSWORD:-trainer}
+      TELEPHONY_EXTERNAL_IP: ${TELEPHONY_EXTERNAL_IP:-}
+      TELEPHONY_LOCAL_NET: ${TELEPHONY_LOCAL_NET:-172.16.0.0/12}
+      CLOUD_SIP_PORT: ${CLOUD_SIP_PORT:-5061}
+      CLOUD_RTP_START: ${CLOUD_RTP_START:-10200}
+      CLOUD_RTP_END: ${CLOUD_RTP_END:-10300}
+      VAPI_SIP_HOST: ${VAPI_SIP_HOST:-sip.vapi.ai}
+      TZ: ${TZ:-Europe/Moscow}
+    ports:
+      - "${CLOUD_SIP_PORT:-5061}:${CLOUD_SIP_PORT:-5061}/udp"
+      - "${CLOUD_SIP_PORT:-5061}:${CLOUD_SIP_PORT:-5061}/tcp"
+      - "${CLOUD_ARI_PORT:-8089}:8088"
+      - "${CLOUD_RTP_START:-10200}-${CLOUD_RTP_END:-10300}:${CLOUD_RTP_START:-10200}-${CLOUD_RTP_END:-10300}/udp"
+    volumes:
+      - asterisk-conf:/etc/asterisk/generated
+      - storage:/var/spool/asterisk/recording
+      - storage:/var/lib/asterisk/sounds/trainer:ro
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/healthcheck.sh"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
   # ---------- Профили следующих волн (объявлены, пока пустые) ----------
   # live: vLLM, потоковые STT/TTS, VAD — трек G.
   # monitoring: Prometheus, Grafana — фаза E.
@@ -323,3 +404,6 @@ volumes:
   backups:
   certs:
   asterisk-conf:
+  # Let's Encrypt certificate of PUBLIC_HOST and the webroot of its challenges (profile cloud).
+  letsencrypt:
+  certbot-www:

@@ -82,14 +82,12 @@ async function setStatus(
   await form
     .getByLabel("Статус", { exact: true })
     .selectOption({ label: status });
-  if (opts.reason)
-    await form
-      .getByLabel("Причина отказа")
-      .selectOption({ label: opts.reason });
   if (opts.orderNumber)
     await form.getByLabel("Номер наряда").fill(opts.orderNumber);
-  if (opts.comment)
-    await form.getByLabel("Комментарий", { exact: true }).fill(opts.comment);
+  // No reason drop-down on the live АРМ-112: the reason opens the comment.
+  const comment = [opts.reason, opts.comment].filter(Boolean).join(": ");
+  if (comment)
+    await form.getByLabel("Комментарий", { exact: true }).fill(comment);
   await form.getByRole("button", { name: "Сохранить статус" }).click();
   await expect(form).toBeHidden();
 }
@@ -121,7 +119,8 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
       page.getByText("задымление: мусоропровод").first(),
     ).toBeVisible();
     await page.getByRole("button", { name: "Раскрыть" }).first().click();
-    await expect(page.getByText("Заявитель:")).toBeVisible();
+    // exact: the softphone panel may show «Заявитель: …» of a ringing call of another lesson.
+    await expect(page.getByText("Заявитель:", { exact: true })).toBeVisible();
     await page.screenshot({ path: `${SHOTS}/02-journal.png`, fullPage: true });
 
     // Card 38260311: full chain within the norm.
@@ -163,6 +162,15 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
     await expect(page.getByTestId("own-service-panel")).toContainText(
       "наряд 14-217",
     );
+    // The order number stays in the row for the next statuses (live АРМ-112), still editable.
+    await page.getByRole("button", { name: "Проставить статус" }).click();
+    const orderField = page
+      .getByRole("form", { name: "Проставление статуса" })
+      .getByLabel("Номер наряда");
+    await expect(orderField).toHaveValue("14-217");
+    await orderField.fill("");
+    await expect(orderField).toHaveValue("");
+    await page.keyboard.press("Escape");
     await setStatus(page, "Прибытие");
     await setStatus(page, "Проведение работ", {
       comment: "Мусоропровод вскрыт, тлеющий мусор удалён",
@@ -205,7 +213,6 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
       .selectOption({ label: "Не принята" });
     await form.getByRole("button", { name: "Сохранить статус" }).click();
     await expect(form.getByRole("alert")).toContainText("причину отказа");
-    await form.getByLabel("Причина отказа").selectOption({ label: "Дубль" });
     await form
       .getByLabel("Комментарий", { exact: true })
       .fill(
@@ -213,8 +220,12 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
       );
     await form.getByRole("button", { name: "Сохранить статус" }).click();
     await expect(form).toBeHidden();
+    // The history line is «Не принята › comment», the reason lives in the comment text.
     await expect(page.getByTestId("own-service-panel")).toContainText(
-      "Не принята: Дубль",
+      "Не принята",
+    );
+    await expect(page.getByTestId("own-service-panel")).toContainText(
+      "Дубль: реагирование по КП 38260311",
     );
     // After «Не принята» only «Принята» remains (memo page 21).
     await page.getByRole("button", { name: "Проставить статус" }).click();
@@ -634,7 +645,9 @@ test.describe("Задача #36: звонок диспетчера в служб
     ).toBeDisabled();
 
     // The stand runs the stt service: the microphone is offered next to the text field.
-    await expect(panel.getByRole("button", { name: "Удерживайте и говорите" })).toBeEnabled();
+    await expect(
+      panel.getByRole("button", { name: "Удерживайте и говорите" }),
+    ).toBeEnabled();
     const input = panel.getByLabel("Сказать дежурному");
     for (const phrase of [
       "Передаю карточку: улица Молостовых, дом 10, корпус 1",
@@ -704,6 +717,202 @@ test.describe("Задача #36: звонок диспетчера в служб
       path: `../docs/screenshots/wave-11/36-review.png`,
       fullPage: true,
     });
+
+    expect(
+      (
+        await request.post(`/api/sessions/${sessionId}/finish`, { headers: th })
+      ).ok(),
+    ).toBeTruthy();
+    expect(foreign, "все запросы только к своему origin").toEqual([]);
+    expect(problems).toEqual([]);
+  });
+});
+
+test.describe("Доклады бригады диспетчеру по телефону (ответ заказчика 21.09.2026)", () => {
+  test("после «Принята» старший наряда докладывает о выезде, прибытии, работах и завершении; обучающийся отражает доклады статусами и в разборе нет ошибок по докладам", async ({
+    page,
+    request,
+  }) => {
+    test.setTimeout(240_000);
+    const { problems, foreign } = watchNetwork(page);
+
+    // A copy of the seed card «Течь стояка» with a fast squad: the reports come 2 seconds
+    // after the previous milestone (the background sweep runs every 5 seconds).
+    const teacher = await apiToken(request, "teacher1");
+    const th = { Authorization: `Bearer ${teacher}` };
+    const stamp = new Date().toLocaleTimeString("ru-RU");
+    const found = (await (
+      await request.get("/api/scenarios", {
+        headers: th,
+        params: { kind: "card_response", q: "Течь стояка" },
+      })
+    ).json()) as { items: { id: string }[] };
+    expect(
+      found.items.length,
+      "seed must provide «Течь стояка»",
+    ).toBeGreaterThan(0);
+    // The plain card, not its twin with a planted operator mistake (issue #35).
+    type Seed = {
+      body: {
+        title: string;
+        injected_errors?: unknown[];
+        reference: { reports: { status: string; after_seconds: number }[] };
+      };
+    };
+    let seed: Seed | undefined;
+    for (const item of found.items) {
+      const candidate = (await (
+        await request.get(`/api/scenarios/${item.id}`, { headers: th })
+      ).json()) as Seed;
+      if ((candidate.body.injected_errors ?? []).length === 0) {
+        seed = candidate;
+        break;
+      }
+    }
+    expect(
+      seed,
+      "seed must provide «Течь стояка» without planted errors",
+    ).toBeDefined();
+    seed = seed!;
+    expect(seed.body.reference.reports.map((r) => r.status)).toEqual([
+      "response_started",
+      "arrived",
+      "works_started",
+      "works_done",
+    ]);
+    const body = {
+      ...seed.body,
+      title: `Доклады бригады · ${stamp}`,
+      reference: {
+        ...seed.body.reference,
+        reports: seed.body.reference.reports.map((r) => ({
+          ...r,
+          after_seconds: 2,
+        })),
+      },
+    };
+    const created = await request.post("/api/scenarios", {
+      headers: th,
+      data: { body, status: "review" },
+    });
+    expect(created.status(), await created.text()).toBe(201);
+    const scenarioId = ((await created.json()) as { id: string }).id;
+    const approved = await request.post(
+      `/api/scenarios/${scenarioId}/approve`,
+      {
+        headers: th,
+        data: { reference: true, replies: true, confirm_grammar: true },
+      },
+    );
+    expect(approved.status(), await approved.text()).toBe(200);
+
+    const students = (await (
+      await request.get("/api/students", { headers: th })
+    ).json()) as { id: string; login: string }[];
+    const group = await request.post("/api/groups", {
+      headers: th,
+      data: {
+        title: `Группа докладов · ${stamp}`,
+        student_ids: students
+          .filter((s) => s.login === "student2")
+          .map((s) => s.id),
+      },
+    });
+    expect(group.status(), await group.text()).toBe(201);
+    const session = await request.post("/api/sessions", {
+      headers: th,
+      data: {
+        title: `Доклады бригады · ${stamp}`,
+        group_id: ((await group.json()) as { id: string }).id,
+        difficulty: 1,
+        scenario_ids: [scenarioId],
+        service_profile: ["gkh"],
+        norm_seconds: 30,
+        pass_threshold: 70,
+      },
+    });
+    expect(session.status(), await session.text()).toBe(201);
+    const sessionId = ((await session.json()) as { id: string }).id;
+    expect(
+      (
+        await request.post(`/api/sessions/${sessionId}/start`, { headers: th })
+      ).ok(),
+    ).toBeTruthy();
+
+    await page.goto("/login");
+    await page.getByLabel("Логин").fill("student2");
+    await page.getByLabel("Пароль").fill(PASSWORD);
+    await page.getByRole("button", { name: "Войти", exact: true }).click();
+    await expect(
+      page.getByRole("heading", { name: "Мои задания" }),
+    ).toBeVisible();
+    await page.goto(`/student/sessions/${sessionId}/journal`);
+    await page
+      .getByRole("link", { name: /Открыть карточку/ })
+      .first()
+      .click();
+    await expect(page.getByTestId("own-service-panel")).toContainText(
+      "Получена службой",
+    );
+
+    // No report before «Принята»; the hint tells the trainee to wait for the reports.
+    await expect(page.getByTestId("service-call-panel")).toHaveCount(0);
+    await setStatus(page, "Принята");
+    await expect(
+      page.getByText(/Старший наряда будет звонить с докладами/),
+    ).toBeVisible();
+
+    const report = page.locator(
+      '[data-testid="service-call-panel"][data-kind="report"]',
+    );
+    const takeReport = async (
+      phrase: RegExp,
+      status: string,
+      opts?: { orderNumber?: string; comment?: string },
+    ) => {
+      await expect(report).toBeVisible({ timeout: 30_000 });
+      await expect(report).toContainText("Доклад бригады");
+      // The squad's call is incoming: nothing is said until the trainee answers (#103).
+      await expect(report).toHaveAttribute("data-state", "ringing");
+      await expect(report).not.toContainText(phrase);
+      await report.getByTestId("answer-report").click();
+      await expect(report).toContainText(phrase);
+      await report.getByRole("button", { name: "Завершить звонок" }).click();
+      await expect(report).toHaveCount(0, { timeout: 15_000 });
+      await setStatus(page, status, opts);
+    };
+    await takeReport(/Выехали/, "Начало реагирования", {
+      orderNumber: "ЖКХ-118",
+      comment: "Направлен дежурный сантехник, наряд ЖКХ-118",
+    });
+    await expect(page.getByTestId("service-call-line").first()).toContainText(
+      "Доклад бригады",
+    );
+    await takeReport(/Прибыли/, "Прибытие");
+    await takeReport(/Перекрыт стояк/, "Проведение работ", {
+      comment: "Перекрыт стояк по подъезду, устранение течи",
+    });
+    await takeReport(/Работы завершены/, "Работы завершены", {
+      comment: "Заменён участок стояка, вода подана, подъезд осушен",
+    });
+    await expect(page.getByTestId("card-score")).toHaveText(/^\d+$/, {
+      timeout: 60_000,
+    });
+    await page.screenshot({
+      path: `../docs/screenshots/wave-11/reports-card.png`,
+      fullPage: true,
+    });
+
+    await page.getByRole("link", { name: "Открыть разбор" }).click();
+    await expect(
+      page.getByText("Типичные ошибки", { exact: true }).first(),
+    ).toBeVisible();
+    await expect(page.getByText(/до доклада бригады/)).toHaveCount(0);
+    await expect(page.getByText(/Доклад бригады не отражён/)).toHaveCount(0);
+    await expect(page.getByText(/Доклад бригады не принят/)).toHaveCount(0);
+    await expect(page.getByTestId("service-calls")).toContainText(
+      "Доклад бригады",
+    );
 
     expect(
       (

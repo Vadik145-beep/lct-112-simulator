@@ -104,6 +104,17 @@ async def migrated_database() -> AsyncIterator[None]:
     yield
 
 
+@pytest.fixture(scope="session", autouse=True)
+def warm_voice() -> None:
+    """Loads the voice engine once, as the application does at startup (app.warmup): the
+    first synthesis of Silero costs seconds, and the call and report tests measure real time."""
+    from app.providers.tts import get_tts_provider
+
+    tts = get_tts_provider()
+    if hasattr(tts, "warm"):
+        tts.warm()
+
+
 @pytest.fixture(scope="session")
 async def admin_engine() -> AsyncIterator[AsyncEngine]:
     engine = create_async_engine(ADMIN_URL)

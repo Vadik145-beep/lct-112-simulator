@@ -15,6 +15,7 @@ const DIALOG_MODE_TITLES: Record<string, string> = {
   generate: "Свободная генерация",
   buttons: "Кнопки тем",
   live: "Живой режим",
+  cloud: "Облачный голос",
 };
 
 /**
@@ -29,6 +30,7 @@ export function DialogPanel({
   hints,
   telephony,
   input = true,
+  controls,
   onCallerSpoke,
 }: {
   attemptId: string;
@@ -39,6 +41,8 @@ export function DialogPanel({
   telephony: boolean;
   /** Own text field and microphone; off when the softphone panel provides them. */
   input?: boolean;
+  /** The softphone's talk controls, shown under the transcript in place of the own field. */
+  controls?: React.ReactNode;
   /** The caller's reply that just arrived (to notice a hang-up, for example). */
   onCallerSpoke?: (turn: DialogTurnOut, callEnded: boolean) => void;
 }) {
@@ -61,14 +65,16 @@ export function DialogPanel({
   const error = say.error ?? askTopic.error ?? utterance.error;
 
   // Voice of the caller: the newest reply with a file plays once, after the operator's
-  // gesture (answering, sending) so autoplay is allowed.
+  // gesture (answering, sending) so autoplay is allowed. Not when the sound comes another
+  // way: the SIP call, the softphone panel (it plays what it gets from the API) or the
+  // cloud caller speaking in the browser — the phrase would be heard twice.
   useEffect(() => {
     const last = dialog.turns[dialog.turns.length - 1];
     if (!last || last.role !== "caller" || last.index <= played.current) return;
     played.current = last.index;
-    if (!last.audio_url || telephony) return;
+    if (!last.audio_url || telephony || !input || dialog.mode === "cloud") return;
     void play(last.audio_url);
-  }, [dialog.turns, telephony]);
+  }, [dialog.turns, dialog.mode, telephony, input]);
 
   useEffect(() => {
     log.current?.lastElementChild?.scrollIntoView({ block: "nearest" });
@@ -144,7 +150,9 @@ export function DialogPanel({
       </div>
       {dialog.fallback_replies > 0 && (
         <p className="rounded-sm border border-[var(--arm-red)] bg-white px-2 py-1 text-[11px] leading-snug text-[var(--arm-red)]" role="alert" data-testid="dialog-fallback-warning">
-          Модель заявителя недоступна: {dialog.fallback_replies === 1 ? "ответ подобран" : `${dialog.fallback_replies} ответов подобраны`} по ключевым словам, а не режимом «{DIALOG_MODE_TITLES[dialog.requested_mode] ?? dialog.requested_mode}».
+          {dialog.mode === "cloud"
+            ? `Облачный голос был недоступен: ${dialog.fallback_replies === 1 ? "ответ дан" : `${dialog.fallback_replies} ответов даны`} локальной моделью из утверждённых реплик.`
+            : `Модель заявителя недоступна: ${dialog.fallback_replies === 1 ? "ответ подобран" : `${dialog.fallback_replies} ответов подобраны`} по ключевым словам, а не режимом «${DIALOG_MODE_TITLES[dialog.requested_mode] ?? dialog.requested_mode}».`}
         </p>
       )}
       <ol ref={log} className="arm-scroll flex min-h-24 flex-1 flex-col gap-1.5 overflow-y-auto rounded-sm bg-white p-2 text-xs" aria-label="Стенограмма разговора">
@@ -162,11 +170,19 @@ export function DialogPanel({
             <span className="mt-0.5 flex flex-wrap gap-1 text-[10px] text-[var(--arm-text-muted)]">
               {formatTime(t.at, false)}
               {t.heard && <span title="распознано из речи">🎙</span>}
-              {(t.topics ?? []).map((topic) => (
-                <span key={topic} className="rounded-sm bg-[var(--arm-panel)] px-1">
-                  {topicTitle(dialog, topic)}
+              {t.method === "cloud" && t.role === "caller" && (
+                <span title="облачный голос: задержка ответа от конца вашей фразы" data-testid="turn-latency">
+                  ☁ {t.latency_ms != null ? `${(t.latency_ms / 1000).toFixed(1)} с` : ""}
                 </span>
-              ))}
+              )}
+              {/* Темы показываем там, где они что-то значат: в облаке слова заявителя
+                  вопрос диспетчера не закрывают (замечание пользователя 22.09.2026). */}
+              {!(t.method === "cloud" && t.role === "caller") &&
+                (t.topics ?? []).map((topic) => (
+                  <span key={topic} className="rounded-sm bg-[var(--arm-panel)] px-1">
+                    {topicTitle(dialog, topic)}
+                  </span>
+                ))}
               {t.audio_url && !telephony && (
                 <button type="button" className="underline-offset-2 hover:underline" onClick={() => replay(t.audio_url!)}>
                   ▶ прослушать
@@ -236,6 +252,8 @@ export function DialogPanel({
           )}
         </div>
       )}
+
+      {!input && controls}
 
       {hints && (
         <div className="rounded-sm bg-[var(--arm-field)] p-2 text-xs" data-testid="topics-hint">

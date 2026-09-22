@@ -197,4 +197,88 @@ test.describe("Волна 8: сценарии", () => {
     await expect(page.getByText(/Карточки обучающихся — сохранённые в приёме вызова/)).toBeVisible();
     await page.screenshot({ path: `${SHOTS}/07-session-source.png` });
   });
+
+  test("удаление: черновик исчезает, использованный уходит в архив и восстанавливается", async ({ page, request }) => {
+    const teacher = await apiToken(request, "teacher1");
+    const headers = { Authorization: `Bearer ${teacher}` };
+    // A seed scenario the running lesson has already issued to student1: it can only be archived.
+    // A previous run may have left it archived — restore first so the test is repeatable.
+    const findSeed = async (status: string) =>
+      ((await (await request.get(`/api/scenarios?kind=call_intake&status=${status}`, { headers })).json()) as {
+        items: { id: string; ticket_ref: string | null }[];
+      }).items.find((s) => s.ticket_ref === "31-3");
+    let used = await findSeed("approved");
+    if (!used) {
+      used = await findSeed("archived");
+      expect(used, "seed scenario 31-3 must exist").toBeTruthy();
+      expect((await request.post(`/api/scenarios/${used!.id}/restore`, { headers })).status()).toBe(200);
+    }
+    // A fresh draft nobody trained on (a copy of the seed body): it is deleted for good.
+    const seed = (await (await request.get(`/api/scenarios/${used!.id}`, { headers })).json()) as {
+      body: Record<string, unknown>;
+    };
+    const made = await request.post("/api/scenarios", {
+      headers,
+      data: { body: { ...seed.body, title: "Черновик на удаление", ticket_ref: null, approved: {} }, status: "draft" },
+    });
+    expect(made.status(), await made.text()).toBe(201);
+    const draft = (await made.json()) as { id: string };
+
+    await loginWithForm(page, "teacher1");
+    await expect(page).toHaveURL(/\/teacher/, { timeout: 30_000 });
+    await page.goto(`/teacher/scenarios/${draft.id}`);
+    await page.getByRole("button", { name: "Удалить" }).click();
+    await expect(page.getByRole("alertdialog", { name: "Удаление сценария" })).toBeVisible();
+    await page.getByRole("button", { name: "Да, удалить" }).click();
+    await expect(page).toHaveURL(/\/teacher\/scenarios$/);
+    expect((await request.get(`/api/scenarios/${draft.id}`, { headers })).status()).toBe(404);
+
+    await page.goto(`/teacher/scenarios/${used!.id}`);
+    await page.getByRole("button", { name: "Удалить" }).click();
+    await page.getByRole("button", { name: "Да, удалить" }).click();
+    await expect(page.getByText("В архиве", { exact: true })).toBeVisible();
+    await expect(page.getByText(/Сценарий в архиве/)).toBeVisible();
+    // Editors are inert while archived: clicks on «Добавить» do nothing (no form opens).
+    await page.getByRole("button", { name: "Добавить" }).click({ force: true }).catch(() => undefined);
+    await expect(page.locator("#new-text")).toHaveCount(0);
+    await page.screenshot({ path: `${SHOTS}/08-scenario-archived.png` });
+    await page.getByRole("button", { name: "Восстановить" }).click();
+    await expect(page.getByText("Утверждён", { exact: true })).toBeVisible();
+  });
+
+  test("методичка преподавателя видна обучающемуся: список, чтение целиком, поиск", async ({ page, request }) => {
+    const teacher = await apiToken(request, "teacher1");
+    const headers = { Authorization: `Bearer ${teacher}` };
+    const text = [
+      "Порядок приёма карточки.",
+      "Диспетчер ставит «Принята» не позже тридцати секунд после поступления.",
+      "Комментарий к отказу называет причину и кому передана информация.",
+    ].join("\n\n");
+    const uploaded = await request.post("/api/reference/docs", {
+      headers,
+      multipart: { file: { name: "Регламент ДДС e2e.txt", mimeType: "text/plain", buffer: Buffer.from(text, "utf-8") } },
+    });
+    expect(uploaded.status(), await uploaded.text()).toBe(201);
+
+    await loginWithForm(page, "student1");
+    await expect(page).toHaveURL(/\/student/, { timeout: 30_000 });
+    await page.goto("/student/reference");
+    const materials = page.getByRole("region", { name: "Методические материалы" });
+    await expect(materials).toContainText("Работа на АРМ-112");
+    await expect(materials).toContainText("Регламент ДДС e2e");
+    await page.screenshot({ path: `${SHOTS}/09-student-materials.png`, fullPage: true });
+
+    await materials.getByRole("link", { name: /Регламент ДДС e2e/ }).click();
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Регламент ДДС e2e");
+    const article = page.getByRole("article", { name: "Текст материала" });
+    await expect(article).toContainText("не позже тридцати секунд");
+    await expect(article).toContainText("кому передана информация");
+
+    await page.goto("/student/reference?q=тридцати секунд");
+    const hits = page.locator("section", { has: page.getByText("Материалы преподавателя") });
+    await expect(hits).toContainText("не позже тридцати секунд");
+    await expect(hits.getByRole("link", { name: "Регламент ДДС e2e" })).toBeVisible();
+
+    expect((await request.delete("/api/reference/docs/Регламент ДДС e2e", { headers })).status()).toBe(204);
+  });
 });

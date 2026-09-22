@@ -196,11 +196,39 @@ def _incident_out(body: dict, lookups: Lookups) -> IncidentOut:
     )
 
 
+# The classifier notifies «Территориальные ОИВ» as one abstract service; on the live АРМ-112 the
+# tab names the district's own ДДС («Упр. района Вешняки», «Поселение Вороновское») and the
+# prefecture of the okrug — the customer's answer of 21.09.2026 to question 4. The names are
+# derived from the card's address; the service code and the evaluation do not change.
+TERRITORIAL_CODES = frozenset({"territorial_oiv", "territorial_oiv_tinao"})
+
+
+def territorial_titles(address: dict, fallback_title: str, fallback_short: str) -> tuple[str, str]:
+    district = str(address.get("district") or "").strip()
+    okrug = str(address.get("okrug") or "").strip()
+    if not district:
+        return fallback_title, fallback_short
+    lowered = district.lower()
+    if lowered.startswith("район "):
+        short = "Упр. " + district
+    elif lowered.endswith(" район"):
+        short = "Упр. " + district
+    else:
+        short = "Упр. района " + district
+    title = f"ДДС управы: {district}"
+    if okrug:
+        title += f", префектура {okrug}"
+    return title, short
+
+
 def _service_statuses(attempt: Attempt, body: dict, lookups: Lookups) -> list[ServiceStatusOut]:
     """Tabs of the «Службы» strip: the trainee's service from the attempt log, the rest from
     the scenario."""
     card = body.get("card", {})
     own_code = body.get("service") or ""
+    itype = lookups.incident_types.get(str(card.get("incident_type") or ""))
+    main_code = itype.main_service if itype else None
+    address = card.get("address") or {}
     result: list[ServiceStatusOut] = []
     seen: set[str] = set()
 
@@ -209,15 +237,20 @@ def _service_statuses(attempt: Attempt, body: dict, lookups: Lookups) -> list[Se
             return
         seen.add(code)
         service = lookups.services.get(code)
+        title = service.title if service else code
+        short_title = service.short_title if service else code
+        if code in TERRITORIAL_CODES:
+            title, short_title = territorial_titles(address, title, short_title)
         result.append(
             ServiceStatusOut(
                 code=code,
-                title=service.title if service else code,
-                short_title=service.short_title if service else code,
+                title=title,
+                short_title=short_title,
                 status=status,
                 status_title=_status_title(status, lookups),
                 at=at,
                 is_own=is_own,
+                is_main=code == main_code,
             )
         )
 
@@ -326,6 +359,7 @@ def card_out(attempt: Attempt, body: dict, lookups: Lookups) -> CardOut:
         incident=_incident_out(body, lookups),
         flags=flags,
         injured=flags.get(FLAG_INJURED, False),
+        injured_count=card.get("injured_count"),
         ambulance_refused=flags.get(FLAG_AMBULANCE_REFUSED, False),
         blocked=flags.get(FLAG_BLOCKED, False),
         emergency=flags.get(FLAG_EMERGENCY, False),
@@ -360,21 +394,26 @@ def status_log_out(attempt: Attempt, lookups: Lookups) -> list[StatusLogEntryOut
 
 def service_call_out(attempt: Attempt, body: dict, call: dict, lookups: Lookups) -> ServiceCallOut:
     service = lookups.services.get(call.get("service") or "")
+    # Facts are passed on the dispatcher's own calls only; a report has nothing to pass.
     required = next(
         (
             list(c.get("required_facts") or [])
             for c in (body.get("reference") or {}).get("service_calls") or []
-            if c.get("service") == call.get("service")
+            if c.get("service") == call.get("service") and call.get("kind") != "report"
         ),
         [],
     )
     started = datetime.fromisoformat(call["started_at"])
     ended = datetime.fromisoformat(call["ended_at"]) if call.get("ended_at") else None
     turns = call.get("dialog") or []
+    report_status = call.get("report_status")
     return ServiceCallOut(
         id=call["id"],
         service=call["service"],
         service_title=service.title if service else call.get("service_title") or call["service"],
+        kind=call.get("kind") or "outgoing",
+        report_status=report_status,
+        report_status_title=_status_title(report_status, lookups) if report_status else None,
         started_at=started,
         answered=bool(call.get("answered")),
         answered_at=datetime.fromisoformat(call["answered_at"])
@@ -485,6 +524,7 @@ def attempt_out(
         service_calls_required=[
             c.get("service") for c in (body.get("reference") or {}).get("service_calls") or []
         ],
+        reports_expected=bool((body.get("reference") or {}).get("reports")),
         transitions=[TransitionOut(**t.__dict__) for t in transitions],
         reject_reasons=[
             RejectReasonOut(code=r.code, title=r.title)

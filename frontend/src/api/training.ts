@@ -271,6 +271,21 @@ export function useSpeakToOfficer(attemptId: string) {
   });
 }
 
+/** «Ответить» on the squad's incoming report (issue #103). */
+export function useAnswerServiceCall(attemptId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (callId: string) =>
+      unwrap(
+        api.POST("/api/attempts/{attempt_id}/service-call/{call_id}/answer", {
+          params: { path: { attempt_id: attemptId, call_id: callId } },
+        }),
+      ),
+    onSuccess: (data) =>
+      client.setQueryData(attemptKey(attemptId), data.attempt),
+  });
+}
+
 export function useEndServiceCall(attemptId: string) {
   const client = useQueryClient();
   return useMutation({
@@ -320,6 +335,23 @@ export function useProgressReporter(attemptId: string) {
     },
     [send],
   );
+}
+
+/** Methodical materials the trainee can read in full: the memo and the teacher's documents. */
+export function useMaterials() {
+  return useQuery({
+    queryKey: ["reference-materials"],
+    queryFn: () => unwrap(api.GET("/api/reference/materials")),
+    staleTime: 60_000,
+  });
+}
+
+export function useMaterial(name: string) {
+  return useQuery({
+    queryKey: ["reference-material", name],
+    queryFn: () => unwrap(api.GET("/api/reference/materials/{name}", { params: { path: { name } } })),
+    staleTime: 60_000,
+  });
 }
 
 export function useReferenceSearch(query: string) {

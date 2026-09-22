@@ -9,13 +9,14 @@ import {
   Play,
   Plus,
   RefreshCw,
+  RotateCcw,
   SpellCheck,
   Square,
   Trash2,
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import {
   useAddReply,
@@ -26,6 +27,8 @@ import {
   useGrammarCheck,
   useJob,
   usePreviewDialog,
+  useRemoveScenario,
+  useRestoreScenario,
   useReviseScenario,
   useScenario,
   useScenarioOptions,
@@ -116,7 +119,11 @@ export function TeacherScenarioPage() {
           </ul>
         </div>
       )}
-      <div className="grid gap-6 lg:grid-cols-2">
+      {/* An archived scenario is read-only: every editor below is inert until it is restored. */}
+      <div
+        className="grid gap-6 lg:grid-cols-2"
+        inert={scenario.status === "archived" || undefined}
+      >
         <div className="space-y-6">
           {scenario.kind === "call_intake" ? (
             <CallerFacts scenario={scenario} />
@@ -141,11 +148,24 @@ export function TeacherScenarioPage() {
 // ---------------------------------------------------------------- header, approval, grammar
 
 function Header({ scenario }: { scenario: ScenarioOut }) {
+  const navigate = useNavigate();
   const approve = useApproveScenario(scenario.id);
   const grammar = useGrammarCheck(scenario.id);
+  const remove = useRemoveScenario(scenario.id);
+  const restore = useRestoreScenario(scenario.id);
   const options = useScenarioOptions();
   const [issues, setIssues] = useState<GrammarIssueOut[] | null>(null);
   const [needConfirm, setNeedConfirm] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState(false);
+  const archived = scenario.status === "archived";
+
+  const doRemove = () =>
+    remove.mutate(undefined, {
+      onSuccess: (data) => {
+        setConfirmRemove(false);
+        if (data.result === "deleted") void navigate("/teacher/scenarios");
+      },
+    });
 
   const runGrammar = async () => {
     const report = await grammar.mutateAsync();
@@ -225,7 +245,30 @@ function Header({ scenario }: { scenario: ScenarioOut }) {
             )}{" "}
             Проверить грамотность
           </Button>
-          {!scenario.fully_approved && (
+          {archived ? (
+            <Button
+              variant="outline"
+              onClick={() => restore.mutate()}
+              disabled={restore.isPending}
+            >
+              {restore.isPending ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <RotateCcw />
+              )}{" "}
+              Восстановить
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              className="text-destructive"
+              onClick={() => setConfirmRemove(true)}
+              disabled={remove.isPending || confirmRemove}
+            >
+              <Trash2 /> Удалить
+            </Button>
+          )}
+          {!scenario.fully_approved && !archived && (
             <Button
               onClick={() => void doApprove(false)}
               disabled={approve.isPending || scenario.problems.length > 0}
@@ -240,6 +283,45 @@ function Header({ scenario }: { scenario: ScenarioOut }) {
           )}
         </div>
       </div>
+      {archived && (
+        <p className="text-sm text-muted-foreground" role="status">
+          Сценарий в архиве: он не предлагается занятиям и не редактируется.
+          Разборы прошлых занятий по нему открываются как раньше.
+        </p>
+      )}
+      {confirmRemove && (
+        <div
+          className="flex flex-wrap items-center gap-3 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm"
+          role="alertdialog"
+          aria-label="Удаление сценария"
+        >
+          <span>
+            Удалить сценарий «{scenario.title}»? Если по нему уже занимались или
+            он из набора заказчика, он уйдёт в архив, чтобы разборы занятий
+            остались.
+          </span>
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={doRemove}
+            disabled={remove.isPending}
+          >
+            {remove.isPending ? "Удаляем…" : "Да, удалить"}
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setConfirmRemove(false)}
+          >
+            Отмена
+          </Button>
+        </div>
+      )}
+      {(remove.isError || restore.isError) && (
+        <p className="text-sm text-destructive" role="alert">
+          {remove.error?.message ?? restore.error?.message}
+        </p>
+      )}
       {approve.isError && !needConfirm && (
         <p className="text-sm text-destructive" role="alert">
           {approve.error.message}
@@ -482,11 +564,30 @@ function PlantedErrors({ body }: { body: Body }) {
 
 // ---------------------------------------------------------------- reference
 
+/** A row of the squad's timeline being edited; the delay is a string while typed. */
+interface ReportRow {
+  status: string;
+  after_seconds: string;
+  text: string;
+}
+
+// Milestones the squad reports about and the delays the backend accepts
+// (app.domain.scenarios.validate).
+const REPORT_STATUSES = [
+  "response_started",
+  "arrived",
+  "works_started",
+  "works_done",
+] as const;
+const REPORT_DELAY_MIN = 5;
+const REPORT_DELAY_MAX = 3600;
+
 function Reference({ scenario }: { scenario: ScenarioOut }) {
   const update = useUpdateScenario(scenario.id);
   const approve = useApproveScenario(scenario.id);
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState("");
+  const [reports, setReports] = useState<ReportRow[] | null>(null);
   const isCall = scenario.kind === "call_intake";
   const reference = isCall
     ? obj(scenario.body.reference_card)
@@ -500,6 +601,45 @@ function Reference({ scenario }: { scenario: ScenarioOut }) {
   const startEdit = () => {
     setText(description);
     setEditing(true);
+  };
+  // The squad's timeline (issue #103): what the leader says at each milestone and how long
+  // after the previous one they call. An empty list turns the reports off.
+  const startReports = () =>
+    setReports(
+      ((reference.reports as Body[]) ?? []).map((r) => ({
+        status: str(r.status),
+        after_seconds: str(r.after_seconds),
+        text: str(r.text),
+      })),
+    );
+  const patchReport = (index: number, part: Partial<ReportRow>) =>
+    setReports(
+      (rows) =>
+        rows?.map((row, i) => (i === index ? { ...row, ...part } : row)) ??
+        rows,
+    );
+  const addReport = () =>
+    setReports((rows) => [
+      ...(rows ?? []),
+      {
+        status:
+          REPORT_STATUSES.find(
+            (code) => !(rows ?? []).some((r) => r.status === code),
+          ) ?? REPORT_STATUSES[0],
+        after_seconds: "45",
+        text: "",
+      },
+    ]);
+  const saveReports = async () => {
+    if (!reports) return;
+    const body = structuredClone(scenario.body) as Body;
+    (body.reference as Body).reports = reports.map((r) => ({
+      status: r.status,
+      after_seconds: Number(r.after_seconds) || 0,
+      text: r.text.trim(),
+    }));
+    await update.mutateAsync(body);
+    setReports(null);
   };
   const save = async () => {
     const body = structuredClone(scenario.body) as Body;
@@ -633,6 +773,119 @@ function Reference({ scenario }: { scenario: ScenarioOut }) {
                     )
                     .join("; ")}
             </p>
+            <div data-testid="reference-reports">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">
+                  Доклады бригады по телефону
+                </span>
+                {reports === null && !scenario.reference_approved && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={startReports}
+                    aria-label="Изменить доклады бригады"
+                  >
+                    <Pencil /> Изменить
+                  </Button>
+                )}
+              </div>
+              {reports === null ? (
+                <p className="text-muted-foreground">
+                  {((reference.reports as Body[]) ?? []).length === 0
+                    ? "нет (статусы хода работ ученик ставит сам)"
+                    : ((reference.reports as Body[]) ?? [])
+                        .map(
+                          (r) =>
+                            `через ${str(r.after_seconds)} с — ${RESPONSE_STATUS_TITLES[str(r.status)] ?? str(r.status)}: «${str(r.text)}»`,
+                        )
+                        .join("; ")}
+                </p>
+              ) : (
+                <div className="mt-1 space-y-2">
+                  {reports.length === 0 && (
+                    <p className="text-muted-foreground">
+                      Докладов нет: бригада не звонит, статусы хода работ
+                      обучающийся ставит сам.
+                    </p>
+                  )}
+                  {reports.map((report, i) => (
+                    <div
+                      key={i}
+                      className="flex flex-wrap items-center gap-2"
+                      data-testid="report-row"
+                    >
+                      <select
+                        className={selectClass}
+                        value={report.status}
+                        aria-label="Статус доклада"
+                        onChange={(e) =>
+                          patchReport(i, { status: e.target.value })
+                        }
+                      >
+                        {REPORT_STATUSES.map((code) => (
+                          <option key={code} value={code}>
+                            {RESPONSE_STATUS_TITLES[code] ?? code}
+                          </option>
+                        ))}
+                      </select>
+                      <Input
+                        type="number"
+                        min={REPORT_DELAY_MIN}
+                        max={REPORT_DELAY_MAX}
+                        className="w-24"
+                        value={report.after_seconds}
+                        aria-label="Через сколько секунд"
+                        onChange={(e) =>
+                          patchReport(i, { after_seconds: e.target.value })
+                        }
+                      />
+                      <span className="text-muted-foreground">с</span>
+                      <Input
+                        className="min-w-64 flex-1"
+                        value={report.text}
+                        aria-label="Что докладывает старший наряда"
+                        onChange={(e) =>
+                          patchReport(i, { text: e.target.value })
+                        }
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        aria-label="Удалить доклад"
+                        onClick={() =>
+                          setReports(reports.filter((_, j) => j !== i))
+                        }
+                      >
+                        <Trash2 />
+                      </Button>
+                    </div>
+                  ))}
+                  <p className="text-muted-foreground">
+                    Задержка считается от предыдущего события: у первого доклада
+                    — от «Принята» или от конца звонка диспетчера в службу.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <Button size="sm" variant="outline" onClick={addReport}>
+                      <Plus /> Добавить доклад
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => void saveReports()}
+                      disabled={update.isPending}
+                    >
+                      Сохранить
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setReports(null)}
+                    >
+                      Отмена
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
             {((scenario.body.service_replies as Body[]) ?? []).length > 0 && (
               <p className="text-muted-foreground">
                 Реплики дежурного от модели, ждут утверждения:{" "}

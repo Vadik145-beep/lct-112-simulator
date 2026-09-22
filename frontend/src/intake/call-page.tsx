@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Bell, Link2, MessageSquare, Phone, Plus, Timer, X } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import {
@@ -22,6 +22,7 @@ import { ArmButton, TrainerPanel } from "@/emulator/widgets";
 import { useSessionEvents, type SessionEvent } from "@/emulator/ws";
 import { AddressForm } from "@/intake/address-form";
 import { CallBlock } from "@/intake/call-panel";
+import { CallControls } from "@/softphone/call-panel";
 import { DialogPanel } from "@/intake/dialog-panel";
 import { newId, useCardDraft, type Card } from "@/intake/draft";
 import { SignButton, SurveyCard } from "@/intake/survey-card";
@@ -37,7 +38,8 @@ const PRIMARY_FLAGS: { code: string; title: string }[] = [
   { code: "not_on_site", title: "Нет на месте / Отказ от скорой" },
   { code: "no_access", title: "Нет доступа / Заблокированные" },
 ];
-const CALLER_ROLES = ["очевидец", "пострадавший", "родственник", "прохожий", "сотрудник", "жилец", "водитель", "иное"];
+// Statuses of the caller as the instruction of the customer lists them (§5.3, «выберите статус»).
+const CALLER_ROLES = ["очевидец", "пострадавший", "родственник", "знакомый", "ребёнок", "участник"];
 
 /** The operator-112 card with the call (PRD 13.5), for a call-intake attempt. */
 export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; connectionSeq?: number }) {
@@ -137,15 +139,38 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
 
   const setCard = (patch: Partial<Card>) => update((c) => ({ card: { ...c, ...patch } }));
   const toggleFlag = (code: string) => update((c) => ({ card: { ...c, flags: { ...c.flags, [code]: !c.flags[code] } } }));
-  const addService = (code: string) => {
+  // «Пострадавшие» opens a small window for the count, as on the live АРМ-112 (§5.2).
+  const [askInjured, setAskInjured] = useState(false);
+  const toggleInjured = () => {
+    if (card.flags.injured) {
+      update((c) => ({ card: { ...c, flags: { ...c.flags, injured: false }, injured_count: null } }));
+      setAskInjured(false);
+    } else {
+      toggleFlag("injured");
+      setAskInjured(true);
+    }
+  };
+  // Automatic services come from the type and the flags; the dialog «Добавьте службы» edits
+  // only the ones added by hand (instruction §6: the automatic list is not to be touched).
+  const autoServices = useMemo(
+    () => (typeServices.data?.type_code === card.incident_type ? typeServices.data.services.map((x) => x.code) : []),
+    [typeServices.data, card.incident_type],
+  );
+  const applyManual = (manual: string[]) => {
     setAddingService(false);
-    if (!code || card.services.includes(code)) return;
-    update((c, manual) => ({ card: { ...c, services: [...c.services, code] }, manual: [...manual, code] }));
+    const wanted = [...autoServices, ...manual.filter((code) => !autoServices.includes(code))];
+    update((c) => ({ card: { ...c, services: wanted }, manual }));
   };
 
   // --- saving --------------------------------------------------------------------------
+  // «Сохранить» first asks to confirm notifying the services, as the live АРМ-112 does (§8):
+  // the first press opens the strip, the second one (or Ctrl+Enter again) saves.
+  const [confirmSave, setConfirmSave] = useState(false);
+  const confirmOpen = useRef(false);
+  confirmOpen.current = confirmSave;
   const save = useCallback(() => {
     if (closed || submit.isPending) return;
+    setConfirmSave(false);
     const id = draft.submission_id ?? newId();
     setSubmissionId(id);
     submit.mutate(
@@ -165,11 +190,16 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
       const typing = target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName);
       if (e.ctrlKey && e.key === "Enter") {
         e.preventDefault();
-        save();
+        // Ctrl+Enter opens the confirmation, Ctrl+Enter again saves.
+        if (confirmOpen.current) save();
+        else setConfirmSave(true);
       } else if (e.key === "?" && !typing) {
         e.preventDefault();
         setShowHelp((v) => !v);
-      } else if (e.key === "Escape") setShowHelp(false);
+      } else if (e.key === "Escape") {
+        setShowHelp(false);
+        setConfirmSave(false);
+      }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -238,6 +268,9 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
                 className="h-7 w-44 border-b border-[#a9adb2] bg-transparent text-sm text-[var(--arm-text-muted)] focus:border-[var(--arm-blue)] focus:outline-none"
               >
                 <option value="">выберите статус</option>
+                {card.caller.role && !CALLER_ROLES.includes(card.caller.role) && (
+                  <option value={card.caller.role}>{card.caller.role}</option>
+                )}
                 {CALLER_ROLES.map((r) => (
                   <option key={r} value={r}>
                     {r}
@@ -269,10 +302,40 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
             <div className="flex items-start gap-1 bg-[var(--arm-panel)] px-2 py-2">
               <div className="flex flex-wrap gap-1" role="group" aria-label="Признаки">
                 {PRIMARY_FLAGS.map((f) => (
-                  <FlagButton key={f.code} active={Boolean(card.flags[f.code])} disabled={closed} onClick={() => toggleFlag(f.code)}>
+                  <FlagButton
+                    key={f.code}
+                    active={Boolean(card.flags[f.code])}
+                    disabled={closed}
+                    onClick={() => (f.code === "injured" ? toggleInjured() : toggleFlag(f.code))}
+                  >
                     {f.title}
+                    {f.code === "injured" && card.injured_count ? ` (${card.injured_count})` : ""}
                   </FlagButton>
                 ))}
+                {askInjured && card.flags.injured && !closed && (
+                  <div className="flex items-center gap-2 rounded-sm border border-[var(--arm-blue)] bg-white px-2 py-1 text-xs" role="dialog" aria-label="Количество пострадавших">
+                    <label htmlFor="injured-count">Количество пострадавших</label>
+                    <input
+                      id="injured-count"
+                      type="number"
+                      min={1}
+                      max={9999}
+                      autoFocus
+                      value={card.injured_count ?? ""}
+                      onChange={(e) => setCard({ injured_count: e.target.value === "" ? null : Number(e.target.value) })}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          setAskInjured(false);
+                        }
+                      }}
+                      className="h-6 w-16 border-b border-[#a9adb2] px-1 text-center focus:border-[var(--arm-blue)] focus:outline-none"
+                    />
+                    <button type="button" onClick={() => setAskInjured(false)} className="rounded-sm border border-[var(--arm-blue)] px-2 text-[var(--arm-blue)] hover:bg-[#eaf3fc]">
+                      ОК
+                    </button>
+                  </div>
+                )}
                 {extraFlags.map((f) => (
                   <FlagButton key={f.code} active={Boolean(card.flags[f.code])} disabled={closed} onClick={() => toggleFlag(f.code)} title={f.column_hint ?? undefined} small>
                     {f.title}
@@ -296,7 +359,6 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
               <SurveyCard
                 groups={tree.data.groups}
                 selection={{ signs_path: card.signs_path, incident_type: card.incident_type }}
-                number={attempt.card.number}
                 disabled={closed}
                 onChange={(selection) => setCard(selection)}
               />
@@ -332,36 +394,44 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
               <Plus className="size-4" />
             </button>
             {addingService && (
-              <select
-                aria-label="Служба для добавления"
-                autoFocus
-                defaultValue=""
-                onChange={(e) => addService(e.target.value)}
-                onBlur={() => setAddingService(false)}
-                className="absolute bottom-full left-2 z-10 mb-1 h-8 w-64 rounded-sm border border-[#a9adb2] bg-white px-2 text-sm text-[var(--arm-text)]"
-              >
-                <option value="">Выберите службу…</option>
-                {(services.data ?? [])
-                  .filter((s) => !card.services.includes(s.code))
-                  .map((s) => (
-                    <option key={s.code} value={s.code}>
-                      {s.title}
-                    </option>
-                  ))}
-              </select>
+              <AddServicesDialog
+                all={services.data ?? []}
+                auto={autoServices}
+                manual={draft.manual_services}
+                onClose={() => setAddingService(false)}
+                onSave={applyManual}
+              />
             )}
           </div>
           <div className="ml-auto flex shrink-0 items-center gap-1 px-2">
-            <button
-              type="button"
-              onClick={save}
-              disabled={closed || submit.isPending}
-              title="Сохранить (Ctrl+Enter)"
-              className="h-9 rounded-sm bg-white px-6 text-base font-semibold text-[var(--arm-orange)] hover:bg-[#fff1ea] disabled:opacity-60"
-              data-testid="save-card"
-            >
-              {submit.isPending ? "сохраняем…" : "сохранить"}
-            </button>
+            {confirmSave && !closed ? (
+              <div className="flex items-center gap-2 rounded-sm bg-white px-3 py-1 text-sm text-[var(--arm-text)]" role="alertdialog" aria-label="Подтверждение сохранения">
+                <span>Оповестить службы и сохранить карточку?</span>
+                <button
+                  type="button"
+                  onClick={save}
+                  disabled={submit.isPending}
+                  className="h-7 rounded-sm bg-[var(--arm-orange)] px-3 font-semibold text-white hover:bg-[#d9571a] disabled:opacity-60"
+                  data-testid="confirm-save-card"
+                >
+                  {submit.isPending ? "сохраняем…" : "Оповестить и сохранить карточку"}
+                </button>
+                <button type="button" onClick={() => setConfirmSave(false)} className="h-7 rounded-sm border border-[#a9adb2] px-2 hover:bg-[var(--arm-panel)]">
+                  Вернуться к заполнению
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setConfirmSave(true)}
+                disabled={closed || submit.isPending}
+                title="Сохранить (Ctrl+Enter)"
+                className="h-9 rounded-sm bg-white px-6 text-base font-semibold text-[var(--arm-orange)] hover:bg-[#fff1ea] disabled:opacity-60"
+                data-testid="save-card"
+              >
+                {submit.isPending ? "сохраняем…" : "сохранить"}
+              </button>
+            )}
             {[Link2, Timer, Bell, MessageSquare].map((Icon, i) => (
               <span key={i} className="flex size-8 items-center justify-center rounded-sm border border-white/60" aria-hidden>
                 <Icon className="size-4" />
@@ -414,6 +484,7 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
             hints={attempt.session.hints_enabled && hintsOn}
             telephony={call.telephony}
             input={!phone}
+            controls={phone ? <CallControls className="rounded-sm bg-[var(--arm-field)] p-2" /> : null}
             onCallerSpoke={callerSpoke}
           />
         ) : null}
@@ -473,7 +544,7 @@ function PhoneBox({ label, value, onChange }: { label: string; value: string; on
   return (
     <div className="flex items-center gap-1.5 bg-[var(--arm-panel)] px-2 py-1">
       <Phone className="size-4 text-[var(--arm-text-muted)]" aria-hidden />
-      <div className="flex w-[5rem] flex-col">
+      <div className="flex w-[8.5rem] flex-col">
         <span className="text-[9px] text-[var(--arm-text-muted)]">{label}</span>
         {onChange ? (
           <input
@@ -484,10 +555,95 @@ function PhoneBox({ label, value, onChange }: { label: string; value: string; on
             className="h-5 border-b border-[#a9adb2] bg-transparent text-sm tabular-nums focus:border-[var(--arm-blue)] focus:outline-none"
           />
         ) : (
-          <span className="border-b border-[#a9adb2] text-sm tabular-nums" data-testid={label === "АОН" ? "aon" : undefined}>
+          <span className="whitespace-nowrap border-b border-[#a9adb2] text-sm tabular-nums" data-testid={label === "АОН" ? "aon" : undefined}>
             {value || "+7 ( ) - -"}
           </span>
         )}
+      </div>
+    </div>
+  );
+}
+
+/** «Добавьте службы» of the live АРМ-112 (instruction §6): a search line, the whole list,
+ * automatic services in blue and locked, the ones added by hand toggle, «Сохранить и закрыть». */
+function AddServicesDialog({
+  all,
+  auto,
+  manual,
+  onClose,
+  onSave,
+}: {
+  all: { code: string; title: string; short_title: string }[];
+  auto: string[];
+  manual: string[];
+  onClose: () => void;
+  onSave: (manual: string[]) => void;
+}) {
+  const [query, setQuery] = useState("");
+  const [picked, setPicked] = useState<string[]>(manual);
+  const needle = query.trim().toLowerCase().replace(/ё/g, "е");
+  const shown = all.filter((s) => !needle || `${s.title} ${s.short_title}`.toLowerCase().replace(/ё/g, "е").includes(needle));
+  const toggle = (code: string) => setPicked((list) => (list.includes(code) ? list.filter((c) => c !== code) : [...list, code]));
+  return (
+    <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/30" role="presentation" onClick={onClose}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Добавьте службы"
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") onClose();
+        }}
+        className="flex max-h-[80vh] w-[420px] flex-col bg-white p-4 text-[var(--arm-text)] shadow-2xl"
+      >
+        <div className="flex items-start justify-between">
+          <h2 className="text-xl font-semibold">Добавьте службы</h2>
+          <button type="button" aria-label="Закрыть" onClick={onClose} className="rounded-sm p-1 hover:bg-[var(--arm-panel)]">
+            <X className="size-4" />
+          </button>
+        </div>
+        <input
+          aria-label="Поиск службы"
+          placeholder="Поиск …"
+          autoFocus
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="mt-2 h-8 border-b border-[#a9adb2] px-1 text-sm focus:border-[var(--arm-blue)] focus:outline-none"
+        />
+        <ul className="arm-scroll mt-3 flex-1 divide-y divide-[#dcdedf] overflow-y-auto border border-[#dcdedf] text-sm" aria-label="Службы">
+          {shown.map((s) => {
+            const isAuto = auto.includes(s.code);
+            const isOn = isAuto || picked.includes(s.code);
+            return (
+              <li key={s.code}>
+                <button
+                  type="button"
+                  aria-pressed={isOn}
+                  disabled={isAuto}
+                  title={isAuto ? "Подобрана автоматически по типу и признакам" : undefined}
+                  onClick={() => toggle(s.code)}
+                  className={cn(
+                    "w-full px-3 py-2 text-left leading-tight",
+                    isOn ? "bg-[var(--arm-blue)] text-white" : "hover:bg-[#eaf3fc]",
+                    isAuto && "cursor-default opacity-90",
+                  )}
+                >
+                  {s.title}
+                </button>
+              </li>
+            );
+          })}
+          {shown.length === 0 && <li className="px-3 py-2 text-xs text-[var(--arm-text-muted)]">Ничего не найдено.</li>}
+        </ul>
+        <div className="mt-3 flex justify-center">
+          <button
+            type="button"
+            onClick={() => onSave(picked)}
+            className="h-9 rounded-sm border border-[var(--arm-orange)] px-4 font-semibold text-[var(--arm-orange)] hover:bg-[#fff1ea]"
+          >
+            Сохранить и закрыть
+          </button>
+        </div>
       </div>
     </div>
   );

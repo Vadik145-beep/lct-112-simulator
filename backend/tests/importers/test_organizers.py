@@ -75,6 +75,11 @@ async def test_classifier_tree(imported: dict, client: AsyncClient) -> None:
     dtp = next(n for n in body["groups"][1]["children"] if n["title"] == "ДТП")
     assert dtp["type_code"] == "2.1.0.0"
     assert any(c["title"] == "Транспорт легковой" for c in dtp["children"])
+    # The 144 rows «Не отображается оператору 112» stay in the base (services, evaluation) but
+    # are not offered on the survey card, as on the live АРМ-112.
+    assert not any(n["title"].startswith("Не отображается") for n in fires)
+    r = await client.get("/api/classifier/1.99.0.2/services", headers=bearer(token))
+    assert r.status_code == 200 and "101" in [s["code"] for s in r.json()["services"]]
 
 
 async def test_services_by_type_and_flags(imported: dict, client: AsyncClient) -> None:

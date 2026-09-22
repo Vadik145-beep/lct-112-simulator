@@ -1,21 +1,99 @@
-import { Phone, PhoneOff } from "lucide-react";
+import { Phone, PhoneIncoming, PhoneOff } from "lucide-react";
 
 import { ArmButton } from "@/emulator/widgets";
-import { CallPanel as SoftphonePanel } from "@/softphone/call-panel";
-import { STATUS_LABELS, type Softphone } from "@/softphone/context";
+import { END_REASON_LABELS, STATUS_LABELS, type Softphone } from "@/softphone/context";
+import { cn } from "@/lib/utils";
 
 /**
- * The call block at the top-left of the operator card (screenshot page 15). While a call
- * rings, goes on or has just ended it is the softphone panel of `src/softphone/` (SIP through
- * Asterisk or the browser microphone); otherwise the idle block «не подключен / готов».
+ * The call block at the top-left of the operator card (screenshot page 15): one row, as flat
+ * as the live one. While a call rings, goes on or has just ended it shows the state and
+ * «Ответить» / «Завершить»; the talk controls live in the trainer panel (CallControls).
+ * Otherwise the idle block «не подключен / готов».
  */
 export function CallBlock({ phone }: { phone: Softphone | null }) {
   if (phone && phone.status !== "disconnected" && phone.status !== "ready") {
+    const incoming = phone.status === "incoming";
+    const talking = phone.status === "talking";
+    const ended = phone.status === "ended";
     return (
-      <SoftphonePanel
-        compact
-        className="static right-auto bottom-auto z-auto w-[20rem] shrink-0 rounded-none border-0 bg-[var(--arm-panel)] p-2 text-[var(--arm-text)] shadow-none"
-      />
+      <div
+        className={cn(
+          // Заметный блок: входящий — оранжевый на всю плашку, разговор — зелёная рамка
+          // слева (замечание пользователя 22.09.2026: звонок был мелкий и незаметный).
+          "flex min-h-[4.5rem] w-[16rem] shrink-0 flex-col justify-center gap-1 px-3 py-2",
+          incoming
+            ? "animate-pulse bg-[var(--arm-orange)] text-white"
+            : "border-l-4 bg-[var(--arm-panel)]",
+          talking && "border-[var(--arm-green)]",
+          ended && "border-[var(--arm-text-muted)]",
+        )}
+        data-testid="call-panel"
+        data-status={phone.status}
+        aria-live="polite"
+      >
+        <div className="flex items-center gap-2">
+          {incoming ? (
+            <PhoneIncoming className="size-7 shrink-0" aria-hidden />
+          ) : (
+            <Phone
+              className={cn(
+                "size-6 shrink-0",
+                talking ? "text-[var(--arm-green)]" : "text-[var(--arm-text-muted)]",
+              )}
+              aria-hidden
+            />
+          )}
+          <div className="flex min-w-0 flex-col leading-tight">
+            <span className={cn("truncate font-semibold", incoming ? "text-base" : "text-sm")}>
+              {incoming ? "Входящий вызов" : "Вызов 112"}
+            </span>
+            {phone.callerNumber && (
+              <span className="truncate font-mono text-base tabular-nums">
+                {phone.callerNumber}
+              </span>
+            )}
+          </div>
+        </div>
+        <span
+          className={cn("text-[11px]", incoming ? "text-white/90" : "text-[var(--arm-text-muted)]")}
+          role="status"
+        >
+          {STATUS_LABELS[phone.status]}
+          {ended && phone.endReason
+            ? `: ${END_REASON_LABELS[phone.endReason] ?? phone.endReason}`
+            : ""}
+          {phone.error ? ` · ${phone.error}` : ""}
+        </span>
+        <div className="flex gap-1">
+          {incoming && (
+            <ArmButton
+              variant="blue"
+              className="h-9 flex-1 px-3 text-sm normal-case"
+              onClick={() => void phone.answer()}
+              disabled={phone.busy}
+              data-testid="call-answer"
+            >
+              Ответить
+            </ArmButton>
+          )}
+          {(incoming || talking) && (
+            <ArmButton
+              variant="orange"
+              className="h-9 flex-1 px-3 text-sm normal-case"
+              onClick={() => void phone.hangup()}
+              disabled={phone.busy}
+              data-testid="call-hangup"
+            >
+              Завершить
+            </ArmButton>
+          )}
+          {ended && (
+            <ArmButton className="h-9 flex-1 px-3 text-sm normal-case" onClick={phone.dismiss}>
+              Закрыть
+            </ArmButton>
+          )}
+        </div>
+      </div>
     );
   }
   const ready = phone?.status === "ready";

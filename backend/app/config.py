@@ -49,8 +49,11 @@ class Settings(BaseSettings):
     # How the caller answers (PRD 9.3): select | hybrid | generate | buttons | live.
     # Without a reachable dialog model every mode degrades to `buttons`.
     dialog_mode: Literal["select", "hybrid", "generate", "buttons", "live"] = "select"
-    # Folder with downloaded models (scripts/fetch_models.sh): tts/ (Piper voices), stt/, llm/.
+    # Folder with downloaded models (scripts/fetch_models.sh): tts/ (Silero, Piper), stt/, llm/.
     models_dir: str | None = None
+    # The caller's voice engine: auto = Silero when models/tts/silero_v4_ru.pt is there, else
+    # Piper, else text only.
+    tts_provider: Literal["auto", "silero", "piper", "text"] = "auto"
     # Writable folder for generated files (voiced replies, recordings); /storage in compose.
     storage_dir: str = "../storage"
     # Analytics folder (PRD 9.7): models/ holds the readiness forecast model and its metrics,
@@ -85,6 +88,50 @@ class Settings(BaseSettings):
     call_ring_timeout_seconds: int = 45
     # Silero VAD model (ONNX); missing file = energy-based detector.
     vad_model_path: str | None = None
+
+    # Cloud voice (plan/track-c-vapi.md, compose profile `cloud`): in a lesson with
+    # dialog_mode=cloud the caller is played by Vapi — over a SIP trunk of the `asterisk-cloud`
+    # container when telephony is on, straight from the browser (Vapi Web SDK) when it is off.
+    # Demo only, outside the closed contour: requires ALLOW_EXTERNAL_AI=true.
+    cloud_voice_enabled: bool = False
+    vapi_api_key: str | None = None
+    # Public key of the Vapi account: the browser starts web calls with it (no telephony).
+    vapi_public_key: str | None = None
+    vapi_api_url: str = "https://api.vapi.ai"
+    # SIP host of Vapi (sip.vapi.ai or sip.eu.vapi.ai); the trunk in asterisk-cloud points here.
+    vapi_sip_host: str = "sip.vapi.ai"
+    # Name of the SIP number in the Vapi account; created on start when missing.
+    vapi_number_name: str = "dds-trainer"
+    # This stand as Vapi reaches it for webhooks: https with a certificate a public CA signed.
+    cloud_voice_public_url: str | None = None
+    # Secret Vapi sends back in the X-Trainer-Secret header (empty = derived from SECRET_KEY).
+    cloud_voice_webhook_secret: str | None = None
+    cloud_voice_model_provider: str = "openai"
+    cloud_voice_model: str = "gpt-4.1"
+    cloud_voice_voice_provider: str = "11labs"
+    # The default voice and, when set, the voices by the scenario's caller (ru_male_*,
+    # ru_female_*, ru_child_*; the «slow» variants ru_male_3 / ru_female_2 are the elderly).
+    cloud_voice_voice_id: str = "3EuKHIEZbSzrHGNmdYsx"
+    cloud_voice_voice_id_male: str | None = None
+    cloud_voice_voice_id_female: str | None = None
+    cloud_voice_voice_id_elder_male: str | None = None
+    cloud_voice_voice_id_elder_female: str | None = None
+    cloud_voice_voice_id_young: str | None = None
+    # eleven_flash_v2_5: the only ElevenLabs model that takes the language explicitly (no
+    # accent drift on short phrases), also the fastest; eleven_multilingual_v2 guesses it.
+    cloud_voice_voice_model: str = "eleven_flash_v2_5"
+    # Soniox stt-rt-v5: the best Russian accuracy of the providers tried (plan/track-c-cloud.md);
+    # deepgram/nova-2 is the fallback choice.
+    cloud_voice_transcriber_provider: str = "soniox"
+    cloud_voice_transcriber_model: str = "stt-rt-v5"
+    cloud_voice_language: str = "ru"
+    # Longest cloud call in seconds (Vapi ends it) and seconds of silence before it hangs up.
+    # The dispatcher fills the card while the caller waits, so a minute of silence is normal
+    # work, not a dropped call (замечание пользователя 22.09.2026): 180 seconds.
+    cloud_voice_max_seconds: int = 900
+    cloud_voice_silence_seconds: int = 180
+    # Seconds the SIP leg to Vapi may ring before the call falls back to the local pipeline.
+    cloud_voice_answer_seconds: int = 15
 
     # Backups (PRD 14): the folder shared with the `backup` service (/backups in compose), the
     # daily time and how many dumps to keep; the administrator overrides the last two.
@@ -125,6 +172,8 @@ class Settings(BaseSettings):
         if self.allow_external_ai:
             return
         external = self.external_ai_hosts()
+        if self.cloud_voice_enabled:
+            external["CLOUD_VOICE_ENABLED"] = urlparse(self.vapi_api_url).hostname or "vapi"
         if external:
             listed = ", ".join(f"{name} → {host}" for name, host in external.items())
             raise RuntimeError(

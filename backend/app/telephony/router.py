@@ -31,9 +31,9 @@ from app.models import (
     TrainingSession,
     User,
 )
+from app.telephony import cloud_web, sip
 from app.telephony import service as telephony
 from app.telephony import settings as telephony_settings
-from app.telephony import sip
 from app.telephony.calls import _caller_id
 from app.telephony.schemas import (
     AnswerResponse,
@@ -129,7 +129,8 @@ async def answer(attempt_id: uuid.UUID, user: ActiveUser, session: DbSession) ->
     await session.commit()
     await publish_events(events)
     return AnswerResponse(
-        opening=_turn_out(0, opening), dialog=await _dialog_out(session, attempt, ts, scenario)
+        opening=_turn_out(0, opening) if opening else None,
+        dialog=await _dialog_out(session, attempt, ts, scenario),
     )
 
 
@@ -172,6 +173,9 @@ async def _end_call(
     service = telephony.get_service()
     if service is not None:
         await service.calls.hangup(attempt.id, reason)
+    web_calls = cloud_web.get_calls()
+    if web_calls is not None:
+        await web_calls.hangup(attempt.id)
     return CallResponse(dialog=await _dialog_out(session, attempt, ts, scenario))
 
 

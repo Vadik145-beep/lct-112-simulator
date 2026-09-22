@@ -4,8 +4,8 @@ import type { ServiceStatusOut } from "@/api/training";
 import { describeCorrection, serviceCorrection } from "@/emulator/flag-field-model";
 
 const services: ServiceStatusOut[] = [
-  { code: "moek", title: "МОЭК", short_title: "МОЭК", status: "added", status_title: "Добавлена", at: null, is_own: true },
-  { code: "moslift", title: "Мослифт", short_title: "Мослифт", status: "received", status_title: "Получена службой", at: null, is_own: false },
+  { code: "moek", title: "МОЭК", short_title: "МОЭК", status: "added", status_title: "Добавлена", at: null, is_own: true, is_main: true },
+  { code: "moslift", title: "Мослифт", short_title: "Мослифт", status: "received", status_title: "Получена службой", at: null, is_own: false, is_main: false },
 ];
 
 describe("flag corrections", () => {

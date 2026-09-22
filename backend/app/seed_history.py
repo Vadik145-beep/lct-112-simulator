@@ -50,7 +50,7 @@ SEED = 112
 # Hidden levels of student1…student6: a strong, an average and a struggling part of the group.
 LEVELS = (1.0, 0.45, 0.15, -0.3, -0.75, -1.2)
 ATTEMPTS_PER_SESSION = (2, 4)
-NORM_SECONDS = {MODE_CARD_RESPONSE: 30, MODE_CALL_INTAKE: 90}
+NORM_SECONDS = {MODE_CARD_RESPONSE: 30, MODE_CALL_INTAKE: 60}
 PASS_THRESHOLD = 70
 MODE_TITLES = {
     MODE_CARD_RESPONSE: "Реагирование на карточку",

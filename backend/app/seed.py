@@ -27,6 +27,7 @@ from app.models import (
     MODE_CALL_INTAKE,
     MODE_CARD_RESPONSE,
     SCENARIO_APPROVED,
+    SCENARIO_ARCHIVED,
     SESSION_RUNNING,
     Group,
     GroupMember,
@@ -239,6 +240,9 @@ async def seed_scenarios(session: AsyncSession, data_dir: Path) -> tuple[int, in
                 ScenarioVersion.version == scenario.current_version,
             )
         )
+        if scenario.status == SCENARIO_ARCHIVED:
+            # Archived by a teacher («удалить»): the seed refreshes the body but never revives it.
+            fields.pop("status")
         for name, value in fields.items():
             setattr(scenario, name, value)
         if current is None or current.body != body:
@@ -337,7 +341,7 @@ async def seed_demo_call_session(session: AsyncSession, keys: list[str]) -> bool
             card_source="scenarios",
             scenario_ids=scenario_ids,
             difficulty=3,
-            norm_seconds=90,
+            norm_seconds=60,
             pass_threshold=70,
             hints_enabled=True,
             voice_enabled=True,

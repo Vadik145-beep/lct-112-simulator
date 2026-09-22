@@ -201,6 +201,29 @@ function StudentRow({ student, open, onToggle, threshold }: { student: ReportStu
   );
 }
 
+/** The trainee's steps with the time from issue: folded into a count, opened on demand. */
+function ActionsCell({ actions }: { actions: ReportAttempt["actions"] }) {
+  if (actions.length === 0) return <span className="text-muted-foreground">—</span>;
+  return (
+    <details className="group">
+      <summary className="cursor-pointer whitespace-nowrap text-primary underline-offset-2 hover:underline">
+        {actions.length} {plural(actions.length, "действие", "действия", "действий")}
+      </summary>
+      <ol className="mt-1 space-y-0.5 text-xs" aria-label="Действия обучающегося">
+        {actions.map((x, i) => (
+          <li key={i} className="flex gap-2">
+            <span className="w-10 shrink-0 text-right font-mono tabular-nums text-muted-foreground">{formatDuration(x.seconds)}</span>
+            <span>
+              {x.title}
+              {x.detail && <span className="text-muted-foreground"> — {x.detail}</span>}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </details>
+  );
+}
+
 function AttemptsTable({ attempts, threshold }: { attempts: ReportAttempt[]; threshold: number }) {
   return (
     <table className="w-full text-xs sm:text-sm" aria-label="Попытки">
@@ -212,6 +235,7 @@ function AttemptsTable({ attempts, threshold }: { attempts: ReportAttempt[]; thr
           <th className="py-1 pr-3 text-right font-medium">Время</th>
           <th className="py-1 pr-3 font-medium">Решение</th>
           <th className="py-1 pr-3 font-medium">Ошибки</th>
+          <th className="py-1 pr-3 font-medium">Действия</th>
           <th className="py-1 pr-3 font-medium">Разбор</th>
         </tr>
       </thead>
@@ -256,6 +280,9 @@ function AttemptsTable({ attempts, threshold }: { attempts: ReportAttempt[]; thr
                   {a.comments.length} {plural(a.comments.length, "комментарий", "комментария", "комментариев")}
                 </div>
               )}
+            </td>
+            <td className="py-1 pr-3 align-top">
+              <ActionsCell actions={a.actions} />
             </td>
             <td className="py-1 pr-3">
               <Link to={`/teacher/attempts/${a.id}/review`} className="text-primary underline-offset-2 hover:underline">
