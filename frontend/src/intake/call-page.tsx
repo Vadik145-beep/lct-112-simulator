@@ -22,6 +22,7 @@ import { ArmButton, TrainerPanel } from "@/emulator/widgets";
 import { useSessionEvents, type SessionEvent } from "@/emulator/ws";
 import { AddressForm } from "@/intake/address-form";
 import { CallBlock } from "@/intake/call-panel";
+import { CallControls } from "@/softphone/call-panel";
 import { DialogPanel } from "@/intake/dialog-panel";
 import { newId, useCardDraft, type Card } from "@/intake/draft";
 import { SignButton, SurveyCard } from "@/intake/survey-card";
@@ -358,7 +359,6 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
               <SurveyCard
                 groups={tree.data.groups}
                 selection={{ signs_path: card.signs_path, incident_type: card.incident_type }}
-                number={attempt.card.number}
                 disabled={closed}
                 onChange={(selection) => setCard(selection)}
               />
@@ -484,6 +484,7 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
             hints={attempt.session.hints_enabled && hintsOn}
             telephony={call.telephony}
             input={!phone}
+            controls={phone ? <CallControls className="rounded-sm bg-[var(--arm-field)] p-2" /> : null}
             onCallerSpoke={callerSpoke}
           />
         ) : null}
@@ -543,7 +544,7 @@ function PhoneBox({ label, value, onChange }: { label: string; value: string; on
   return (
     <div className="flex items-center gap-1.5 bg-[var(--arm-panel)] px-2 py-1">
       <Phone className="size-4 text-[var(--arm-text-muted)]" aria-hidden />
-      <div className="flex w-[5rem] flex-col">
+      <div className="flex w-[8.5rem] flex-col">
         <span className="text-[9px] text-[var(--arm-text-muted)]">{label}</span>
         {onChange ? (
           <input
@@ -554,7 +555,7 @@ function PhoneBox({ label, value, onChange }: { label: string; value: string; on
             className="h-5 border-b border-[#a9adb2] bg-transparent text-sm tabular-nums focus:border-[var(--arm-blue)] focus:outline-none"
           />
         ) : (
-          <span className="border-b border-[#a9adb2] text-sm tabular-nums" data-testid={label === "АОН" ? "aon" : undefined}>
+          <span className="whitespace-nowrap border-b border-[#a9adb2] text-sm tabular-nums" data-testid={label === "АОН" ? "aon" : undefined}>
             {value || "+7 ( ) - -"}
           </span>
         )}
