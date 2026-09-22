@@ -118,6 +118,21 @@ def test_street_behind_a_preposition_is_still_a_street() -> None:
     assert crossing.descriptive and "пересечении" in crossing.descriptive
 
 
+def test_caller_gender_from_patronymic_and_relative() -> None:
+    """The voice of the scenario follows it: a ticket's «Ивлев Артем Олегович» must not answer
+    in a woman's voice."""
+    male = parse_ticket("Задымление в торговом центре, Ивлев Артем Олегович, 916-123-98-78", "")
+    assert male.caller.gender == "male"
+    female = parse_ticket("Горит крыша, Иванова Инна Степановна, 916-126-34-71", "")
+    assert female.caller.gender == "female"
+    mother = parse_ticket("Ребенок упал с велосипеда. Вызывает мама, 9163201283", "")
+    assert mother.caller.gender == "female"
+    husband = parse_ticket("Отошли воды, вызывает супруг Минин Сергей Антонович, 916 897 5623", "")
+    assert husband.caller.gender == "male"
+    unknown = parse_ticket("Дерутся 3 человека, без пострадавших", "")
+    assert unknown.caller.gender is None
+
+
 def test_injured_summary() -> None:
     assert injured_summary("Дерутся 10-15 человек, 5 пострадавших с травмами") == "есть, 5"
     assert injured_summary("ДТП, Б/П, Б/Р, пежо + фольксваген") == "нет"

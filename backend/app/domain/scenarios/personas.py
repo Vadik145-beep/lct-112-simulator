@@ -90,3 +90,27 @@ DEFAULT_NOISE = "indoor"
 
 def persona(code: str | None) -> Persona:
     return PERSONA_BY_CODE.get(code or DEFAULT_PERSONA, PERSONA_BY_CODE[DEFAULT_PERSONA])
+
+
+# The same manner of speaking in the other gender: normal ↔ normal, slow ↔ slow, fast ↔ fast.
+# The child's voice has no counterpart and stays as it is.
+COUNTERPART_VOICE: dict[str, str] = {
+    "ru_male_1": "ru_female_1",
+    "ru_male_2": "ru_female_1",
+    "ru_male_3": "ru_female_2",
+    "ru_male_4": "ru_female_3",
+    "ru_female_1": "ru_male_1",
+    "ru_female_2": "ru_male_3",
+    "ru_female_3": "ru_male_4",
+}
+
+
+def voice_for(code: str | None, gender: str | None) -> str:
+    """The persona's voice, switched to the gender of the caller the ticket names: a man must
+    not answer in a woman's voice just because the persona's default is female."""
+    voice = persona(code).voice
+    if gender == "male" and voice.startswith("ru_female"):
+        return COUNTERPART_VOICE[voice]
+    if gender == "female" and voice.startswith("ru_male"):
+        return COUNTERPART_VOICE[voice]
+    return voice

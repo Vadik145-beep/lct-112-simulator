@@ -105,6 +105,7 @@ class CallerFacts:
     phone: str | None = None
     role: str = "очевидец"  # очевидец | участник | пострадавший | родственник
     relation: str | None = None  # «мама», «супруг» when the role is a relative
+    gender: str | None = None  # male | female, by the patronymic or the relative word
 
 
 def _names(text: str) -> list[str]:
@@ -124,6 +125,30 @@ def _names(text: str) -> list[str]:
             continue
         found.append(f"{first} {second}")
     return found
+
+
+# Who is on the line: the patronymic is the reliable sign, the relative word the next one.
+# The voice of the scenario follows it, so «Ивлев Артем Олегович» does not answer as a woman.
+_MALE_PATRONYMIC = re.compile(r"\b[А-ЯЁ][а-яё]+(?:ович|евич|ьич)\b")
+_FEMALE_PATRONYMIC = re.compile(r"\b[А-ЯЁ][а-яё]+(?:овна|евна|инична|ична)\b")
+_MALE_WORDS = ("муж", "супруг", "отец", "папа", "брат", "сын", "дедушка", "дед", "сожитель")
+_FEMALE_WORDS = ("жена", "супруга", "мама", "мать", "сестра", "дочь", "бабушка", "соседка")
+
+
+def caller_gender(name: str | None, relation: str | None) -> str | None:
+    if name:
+        if _FEMALE_PATRONYMIC.search(name):
+            return "female"
+        if _MALE_PATRONYMIC.search(name):
+            return "male"
+    word = (relation or "").lower()
+    if word:
+        # «супруга» before «супруг», «мать» before «муж»: the longer word wins.
+        if any(word.startswith(w) for w in _FEMALE_WORDS):
+            return "female"
+        if any(word.startswith(w) for w in _MALE_WORDS):
+            return "male"
+    return None
 
 
 def parse_caller(situation: str) -> CallerFacts:
@@ -164,6 +189,7 @@ def parse_caller(situation: str) -> CallerFacts:
             caller.role = "участник"
         elif re.search(r"(наблюда|видит|проезжал|прохож|очевидец|заявитель)", lowered):
             caller.role = "очевидец"
+    caller.gender = caller_gender(caller.name, caller.relation)
     return caller
 
 
