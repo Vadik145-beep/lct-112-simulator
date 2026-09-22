@@ -6,6 +6,7 @@ from __future__ import annotations
 import asyncio
 import io
 import json
+import uuid
 import wave
 
 import pytest
@@ -13,7 +14,7 @@ from httpx import AsyncClient
 from sqlalchemy import select
 
 from app.db import SessionLocal
-from app.models import AuditLog, Scenario
+from app.models import AuditLog, Scenario, TrainingSession
 from app.scenarios import jobs
 from tests.api.conftest import DATA_DIR
 from tests.conftest import bearer, login
@@ -648,12 +649,40 @@ async def test_used_scenario_is_archived_hidden_and_restorable(client: AsyncClie
     )
     assert r.status_code == 422 and r.json()["error"]["code"] == "unknown_scenario"
 
-    # Restore: the seed scenario is fully approved, so it comes back approved.
+    # The archived scenario drops out of the queue of a lesson created with it explicitly.
+    from app.training.service import scenario_queue
+
+    async with SessionLocal() as db:
+        ts = await db.get(TrainingSession, uuid.UUID(lesson["id"]))
+        assert scenario_id not in {str(s.id) for s in await scenario_queue(db, ts)}
+
+    # A restart re-runs the seed: the archived seed scenario stays archived, not revived.
+    from app.seed import seed_scenarios
+
+    async with SessionLocal() as db:
+        await seed_scenarios(db, DATA_DIR)
+        await db.commit()
+    r = await client.get(f"/api/scenarios/{scenario_id}", headers=headers)
+    assert r.json()["status"] == "archived"
+
+    # Restore: the seed scenario was approved, so it comes back approved.
     r = await client.post(f"/api/scenarios/{scenario_id}/restore", headers=headers)
     assert r.status_code == 200, r.text
     assert r.json()["status"] == "approved"
     r = await client.post(f"/api/scenarios/{scenario_id}/restore", headers=headers)
     assert r.status_code == 409 and r.json()["error"]["code"] == "not_archived"
+
+
+async def test_unused_seed_scenario_is_archived_not_deleted(client: AsyncClient) -> None:
+    """A deleted seed scenario would be recreated by app.seed at the next start, so it is
+    archived instead — even with no attempts behind it."""
+    headers = await teacher(client)
+    listed = (await client.get("/api/scenarios", headers=headers, params={"ticket": "17-1"})).json()
+    seeded = next(s for s in listed["items"] if s["ticket_ref"] == "17-1")
+    r = await client.delete(f"/api/scenarios/{seeded['id']}", headers=headers)
+    assert r.status_code == 200 and r.json() == {"result": "archived"}
+    r = await client.post(f"/api/scenarios/{seeded['id']}/restore", headers=headers)
+    assert r.status_code == 200 and r.json()["status"] == "approved"
 
 
 async def test_student_cannot_delete_scenarios(client: AsyncClient) -> None:

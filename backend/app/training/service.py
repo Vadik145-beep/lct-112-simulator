@@ -188,9 +188,14 @@ async def load_scenario_card(
 async def scenario_queue(session: AsyncSession, ts: TrainingSession) -> list[Scenario]:
     """Scenarios of the session in issue order."""
     if ts.scenario_ids:
+        # A scenario archived after the lesson was created drops out of its queue too.
         rows = {
             s.id: s
-            for s in await session.scalars(select(Scenario).where(Scenario.id.in_(ts.scenario_ids)))
+            for s in await session.scalars(
+                select(Scenario).where(
+                    Scenario.id.in_(ts.scenario_ids), Scenario.status == SCENARIO_APPROVED
+                )
+            )
         }
         return [rows[i] for i in ts.scenario_ids if i in rows]
     query = (

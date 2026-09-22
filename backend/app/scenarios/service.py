@@ -634,7 +634,10 @@ async def remove(session: AsyncSession, loaded: Loaded, actor: User) -> str:
     used = await session.scalar(
         select(func.count()).select_from(Attempt).where(Attempt.scenario_id == scenario.id)
     )
-    if used:
+    # A seed scenario is archived even when unused: ``app.seed`` runs at every start and would
+    # recreate a deleted one by its seed key; the archive survives the seed (app.seed keeps
+    # the status of an archived scenario).
+    if used or scenario.seed_key:
         scenario.archived_from = scenario.status
         scenario.status = SCENARIO_ARCHIVED
         result = "archived"
