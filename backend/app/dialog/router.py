@@ -70,7 +70,7 @@ def call_out(attempt: Attempt) -> CallOut:
 async def _dialog_out(
     session: DbSession, attempt: Attempt, ts: TrainingSession, scenario: CallIntakeScenario
 ) -> DialogOut:
-    covered = dialog.covered_topics(attempt)
+    covered = dialog.covered_topics(attempt, ts)
     required = set(scenario.required_topics)
     provider = dialog.provider_for(ts)
     # In the cloud mode (plan/track-c-vapi.md) the caller lives in Vapi; the local provider

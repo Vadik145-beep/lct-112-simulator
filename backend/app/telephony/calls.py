@@ -491,7 +491,14 @@ class CallManager:
                 await self._end(call, CALL_END_FAILED)
                 return False
             opening, events = await call_state.answer(
-                session, loaded.attempt, loaded.ts, loaded.version, loaded.scenario, telephony=True
+                session,
+                loaded.attempt,
+                loaded.ts,
+                loaded.version,
+                loaded.scenario,
+                telephony=True,
+                # Плеем приветствие — значит его говорим мы, и реплика нужна в стенограмме.
+                with_opening=play,
             )
             if call.recording_name:
                 loaded.attempt.recording_path = f"{call.recording_name}.{RECORDING_FORMAT}"

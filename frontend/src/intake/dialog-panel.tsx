@@ -175,11 +175,14 @@ export function DialogPanel({
                   ☁ {t.latency_ms != null ? `${(t.latency_ms / 1000).toFixed(1)} с` : ""}
                 </span>
               )}
-              {(t.topics ?? []).map((topic) => (
-                <span key={topic} className="rounded-sm bg-[var(--arm-panel)] px-1">
-                  {topicTitle(dialog, topic)}
-                </span>
-              ))}
+              {/* Темы показываем там, где они что-то значат: в облаке слова заявителя
+                  вопрос диспетчера не закрывают (замечание пользователя 22.09.2026). */}
+              {!(t.method === "cloud" && t.role === "caller") &&
+                (t.topics ?? []).map((topic) => (
+                  <span key={topic} className="rounded-sm bg-[var(--arm-panel)] px-1">
+                    {topicTitle(dialog, topic)}
+                  </span>
+                ))}
               {t.audio_url && !telephony && (
                 <button type="button" className="underline-offset-2 hover:underline" onClick={() => replay(t.audio_url!)}>
                   ▶ прослушать

@@ -17,39 +17,78 @@ export function CallBlock({ phone }: { phone: Softphone | null }) {
     const ended = phone.status === "ended";
     return (
       <div
-        className="flex h-12 shrink-0 items-center gap-2 bg-[var(--arm-panel)] px-2"
+        className={cn(
+          // Заметный блок: входящий — оранжевый на всю плашку, разговор — зелёная рамка
+          // слева (замечание пользователя 22.09.2026: звонок был мелкий и незаметный).
+          "flex min-h-[4.5rem] w-[16rem] shrink-0 flex-col justify-center gap-1 px-3 py-2",
+          incoming
+            ? "animate-pulse bg-[var(--arm-orange)] text-white"
+            : "border-l-4 bg-[var(--arm-panel)]",
+          talking && "border-[var(--arm-green)]",
+          ended && "border-[var(--arm-text-muted)]",
+        )}
         data-testid="call-panel"
         data-status={phone.status}
         aria-live="polite"
       >
-        {incoming ? (
-          <PhoneIncoming className="size-5 animate-pulse text-[var(--arm-orange)]" aria-hidden />
-        ) : (
-          <Phone className={cn("size-5", talking ? "text-[var(--arm-green)]" : "text-[var(--arm-text-muted)]")} aria-hidden />
-        )}
-        <div className="flex flex-col leading-tight">
-          <span className="text-sm">
-            Вызов {phone.callerNumber && <span className="font-mono tabular-nums">{phone.callerNumber}</span>}
-          </span>
-          <span className="text-[10px] text-[var(--arm-text-muted)]" role="status">
-            {STATUS_LABELS[phone.status]}
-            {ended && phone.endReason ? `: ${END_REASON_LABELS[phone.endReason] ?? phone.endReason}` : ""}
-            {phone.error ? ` · ${phone.error}` : ""}
-          </span>
+        <div className="flex items-center gap-2">
+          {incoming ? (
+            <PhoneIncoming className="size-7 shrink-0" aria-hidden />
+          ) : (
+            <Phone
+              className={cn(
+                "size-6 shrink-0",
+                talking ? "text-[var(--arm-green)]" : "text-[var(--arm-text-muted)]",
+              )}
+              aria-hidden
+            />
+          )}
+          <div className="flex min-w-0 flex-col leading-tight">
+            <span className={cn("truncate font-semibold", incoming ? "text-base" : "text-sm")}>
+              {incoming ? "Входящий вызов" : "Вызов 112"}
+            </span>
+            {phone.callerNumber && (
+              <span className="truncate font-mono text-base tabular-nums">
+                {phone.callerNumber}
+              </span>
+            )}
+          </div>
         </div>
-        <div className="ml-1 flex gap-1">
+        <span
+          className={cn("text-[11px]", incoming ? "text-white/90" : "text-[var(--arm-text-muted)]")}
+          role="status"
+        >
+          {STATUS_LABELS[phone.status]}
+          {ended && phone.endReason
+            ? `: ${END_REASON_LABELS[phone.endReason] ?? phone.endReason}`
+            : ""}
+          {phone.error ? ` · ${phone.error}` : ""}
+        </span>
+        <div className="flex gap-1">
           {incoming && (
-            <ArmButton variant="blue" className="h-7 px-2 normal-case" onClick={() => void phone.answer()} disabled={phone.busy} data-testid="call-answer">
+            <ArmButton
+              variant="blue"
+              className="h-9 flex-1 px-3 text-sm normal-case"
+              onClick={() => void phone.answer()}
+              disabled={phone.busy}
+              data-testid="call-answer"
+            >
               Ответить
             </ArmButton>
           )}
           {(incoming || talking) && (
-            <ArmButton variant="orange" className="h-7 px-2 normal-case" onClick={() => void phone.hangup()} disabled={phone.busy} data-testid="call-hangup">
+            <ArmButton
+              variant="orange"
+              className="h-9 flex-1 px-3 text-sm normal-case"
+              onClick={() => void phone.hangup()}
+              disabled={phone.busy}
+              data-testid="call-hangup"
+            >
               Завершить
             </ArmButton>
           )}
           {ended && (
-            <ArmButton className="h-7 px-2 normal-case" onClick={phone.dismiss}>
+            <ArmButton className="h-9 flex-1 px-3 text-sm normal-case" onClick={phone.dismiss}>
               Закрыть
             </ArmButton>
           )}

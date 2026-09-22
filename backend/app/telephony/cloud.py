@@ -40,6 +40,7 @@ from app.models import (
     CALL_END_CALLER_HANGUP,
     CALL_END_FAILED,
     CALL_END_HANGUP,
+    CALL_END_SILENCE,
     CALL_ENDED,
 )
 from app.telephony import settings as telephony_settings
@@ -168,8 +169,11 @@ async def apply_report(call: CloudTurns, message: dict) -> None:
         if loaded is None:
             return
         attempt = loaded.attempt
-        # The report starts with the opening Vapi spoke; turn 0 holds it already.
-        if reported and attempt.dialog and reported[0][0] == "caller":
+        # The report starts with the opening Vapi spoke. When the cloud worked, that phrase
+        # is already turn 0 of the transcript and is counted in ``stored``; only our own
+        # opening (a lesson that fell back to the local pipeline) has to be skipped here.
+        ours = bool(attempt.dialog) and attempt.dialog[0].get("method") == "opening"
+        if reported and ours and reported[0][0] == "caller":
             if normalize_text(reported[0][1]) == normalize_text(attempt.dialog[0]["text"]):
                 reported = reported[1:]
         stored = len(dialog.external_turns(attempt))
@@ -193,7 +197,11 @@ def end_reason(ended_reason: str) -> str:
     reason = ended_reason.lower()
     if reason.startswith("customer"):
         return CALL_END_HANGUP
-    if reason.startswith("assistant") or "silence" in reason or "max-duration" in reason:
+    if "silence" in reason or "max-duration" in reason:
+        # Nobody hung up: Vapi closed the call itself. Saying «заявитель положил трубку»
+        # misleads the trainee, who was only filling the card (замечание 22.09.2026).
+        return CALL_END_SILENCE
+    if reason.startswith("assistant"):
         return CALL_END_CALLER_HANGUP
     return CALL_END_FAILED
 
