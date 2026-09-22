@@ -83,8 +83,45 @@ def perfect_card_attempt(scenario: CardResponseScenario) -> CardResponseAttempt:
         received_at=at(5),
         status_log=status_log(*steps),
         flagged_fields=flags,
-        service_calls=perfect_service_calls(scenario),
+        service_calls=[*perfect_service_calls(scenario), *perfect_report_calls(scenario)],
     )
+
+
+def perfect_report_calls(scenario: CardResponseScenario) -> list[dict]:
+    """The squad's reports (customer, 21.09.2026), each taken by the dispatcher shortly before
+    the matching status of STEP_SECONDS: a report call of 20 seconds, ended 10 seconds before
+    the status is set."""
+    calls = []
+    for report in scenario.reference.reports:
+        status_at = STEP_SECONDS[report.status]
+        start = status_at - 30
+        calls.append(
+            {
+                "service": scenario.service,
+                "kind": "report",
+                "report_status": report.status,
+                "started_at": at(start),
+                "answered": True,
+                "ended_at": at(start + 20),
+                "dialog": [
+                    {"role": "caller", "text": report.text, "topics": ["report"], "at": at(start)},
+                    {
+                        "role": "operator",
+                        "text": "Принял, отражаю.",
+                        "topics": [],
+                        "at": at(start + 8),
+                    },
+                    {
+                        "role": "caller",
+                        "text": "Принято, работаем дальше.",
+                        "topics": ["confirm"],
+                        "at": at(start + 9),
+                    },
+                ],
+                "facts_passed": [],
+            }
+        )
+    return calls
 
 
 def perfect_service_calls(scenario: CardResponseScenario) -> list[dict]:

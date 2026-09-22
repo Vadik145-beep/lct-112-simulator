@@ -35,7 +35,7 @@ from typing import Any, Protocol
 
 from app.domain.evaluation.schemas import CallIntakeScenario, DialogTurn, Reply
 from app.domain.evaluation.text import detect_service_facts, detect_topics, normalize_text
-from app.domain.reference_data import CALLER_TOPICS, OFFICER_TOPICS
+from app.domain.reference_data import CALLER_TOPICS, OFFICER_PROGRESS_KEYWORDS, OFFICER_TOPICS
 from app.logging import get_logger
 from app.providers.llm import ChatModel, Message, ModelOutputError, ModelUnavailableError
 
@@ -63,10 +63,17 @@ class Vocabulary:
     detect: Callable[[str], list[str]]
 
 
+TOPIC_PROGRESS = "progress"
+
+
 def detect_officer_topics(text: str) -> list[str]:
-    """Facts the dispatcher's phrase carries, plus «repeat» when they ask to repeat."""
+    """Facts the dispatcher's phrase carries, «progress» when they ask how the response
+    goes, plus «repeat» when they ask to repeat. A question about the progress that names
+    no fact is only «progress»: «выехали?» is not the squad number."""
     found = detect_service_facts(text)
     lowered = text.lower()
+    if any(w in lowered for w in OFFICER_PROGRESS_KEYWORDS):
+        found.append(TOPIC_PROGRESS)
     if any(w in lowered for w in _REPEAT_KEYWORDS):
         found.append(TOPIC_REPEAT)
     return found
