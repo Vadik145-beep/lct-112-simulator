@@ -22,7 +22,7 @@ from tests.api.conftest import DATA_DIR
 from tests.api.test_dialog import GAS_PIPE, make_attempt
 from tests.conftest import bearer, login
 from tests.telephony.test_calls import events_of, load
-from tests.telephony.test_cloud import PUBLIC_URL, FakeVapiApi
+from tests.telephony.test_cloud import PUBLIC_URL, FakeVapiApi, scenario_opening
 
 pytestmark = pytest.mark.skipif(
     not (DATA_DIR / "seed" / "classifier.json").exists(),
@@ -78,7 +78,8 @@ async def test_start_stores_the_assistant_and_answers_the_call(
     assert stored["server"]["url"] == f"{PUBLIC_URL}{WEBHOOK_PATH}"
     assert stored["name"].startswith("web-")
     attempt = await load(attempt_id)
-    assert attempt.call_state == CALL_ANSWERED and attempt.dialog[0]["method"] == "opening"
+    # Приветствие скажет Vapi: своей реплики не пишем (замечание пользователя 22.09.2026).
+    assert attempt.call_state == CALL_ANSWERED and attempt.dialog == []
     # Asking again is idempotent: the same assistant, no second one in the account.
     again = await client.post(f"/api/attempts/{attempt_id}/cloud-call", headers=bearer(student))
     assert again.json()["assistant_id"] == keys["assistant_id"] and len(api.assistants) == 1
@@ -128,7 +129,10 @@ async def test_browser_failure_is_noted(client: AsyncClient, web: CloudWebCalls,
         headers=bearer(student),
         json={"reason": "microphone denied"},
     )
-    assert r.status_code == 204
+    # Ответ несёт приветствие, которое панель проиграет вместо облачного заявителя.
+    assert r.status_code == 200
+    assert r.json()["text"] == await scenario_opening(attempt_id)
+    assert (await load(attempt_id)).dialog[0]["method"] == "opening"
     assert EVENT_CLOUD_FALLBACK in await events_of(attempt_id)
     assert keys["assistant_id"] not in api.assistants
     assert web.call_for_attempt(attempt_id) is None
@@ -144,7 +148,7 @@ async def test_messages_by_assistant_id_become_turns_and_end_the_call(
     attempt_id = await make_attempt(GAS_PIPE, dialog_mode="cloud")
     keys, student = await start_call(client, attempt_id)
     call = {"id": "web-call-1", "assistantId": keys["assistant_id"], "type": "webCall"}
-    opening = (await load(attempt_id)).dialog[0]["text"]
+    opening = await scenario_opening(attempt_id)
     for message in (
         {"type": "transcript", "role": "assistant", "transcript": opening, "call": call},
         {"type": "speech-update", "role": "user", "status": "stopped", "call": call},
@@ -155,6 +159,7 @@ async def test_messages_by_assistant_id_become_turns_and_end_the_call(
         assert (await hook(client, message)).status_code == 200
     turns = (await load(attempt_id)).dialog
     assert [t["role"] for t in turns] == ["caller", "operator", "caller"]
+    assert turns[0]["text"] == opening and turns[0]["method"] == dialog.EXTERNAL_METHOD
     assert turns[1]["heard"] and "address" in turns[1]["topics"]
     assert turns[2]["method"] == dialog.EXTERNAL_METHOD and turns[2]["latency_ms"] >= 0
     # Later messages are matched by the call id alone.
@@ -208,7 +213,7 @@ async def test_hangup_in_the_panel_deletes_the_assistant(
         "call": {"assistantId": keys["assistant_id"]},
     }
     assert (await hook(client, late)).json() == {}
-    assert len((await load(attempt_id)).dialog) == 1
+    assert (await load(attempt_id)).dialog == []
 
 
 async def test_status_ended_by_the_trainee_side(client: AsyncClient, web: CloudWebCalls):

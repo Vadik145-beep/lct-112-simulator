@@ -14,13 +14,18 @@ from collections.abc import AsyncIterator
 
 import httpx
 import pytest
+from sqlalchemy import select
 
 from app.config import get_settings
+from app.db import SessionLocal
 from app.dialog import service as dialog
 from app.models import (
     CALL_ANSWERED,
     CALL_END_CALLER_HANGUP,
     CALL_END_HANGUP,
+    CALL_END_SILENCE,
+    Attempt,
+    ScenarioVersion,
 )
 from app.telephony import cloud as cloud_module
 from app.telephony import vapi as vapi_module
@@ -158,6 +163,19 @@ def opening_audio(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(media, "to_asterisk_sound", lambda source: source.with_suffix(".sln16"))
 
 
+async def scenario_opening(attempt_id) -> str:
+    """Приветствие из сценария: в облачном занятии своей реплики у нас нет, его говорит Vapi."""
+    async with SessionLocal() as session:
+        attempt = await session.get(Attempt, attempt_id)
+        version = await session.scalar(
+            select(ScenarioVersion).where(
+                ScenarioVersion.scenario_id == attempt.scenario_id,
+                ScenarioVersion.version == attempt.scenario_version,
+            )
+        )
+    return str((version.body.get("caller") or {})["opening"])
+
+
 async def answered_call(manager: CloudCallManager, fake_ari: FakeAri, scenario: str = GAS_PIPE):
     """A call of a cloud lesson whose trainee answered: the Vapi leg is being dialled."""
     attempt_id = await make_attempt(scenario, dialog_mode="cloud")
@@ -204,7 +222,8 @@ async def test_answer_dials_vapi_leg_and_bridges_it(manager: CloudCallManager, f
     await wait_until(lambda: _answered(attempt_id))
     attempt = await load(attempt_id)
     assert attempt.call_state == CALL_ANSWERED
-    assert attempt.dialog[0]["method"] == "opening"
+    # Приветствие скажет Vapi: своей реплики не пишем (замечание пользователя 22.09.2026).
+    assert attempt.dialog == []
     assert attempt.recording_path == f"recordings/{attempt_id.hex}.wav"
     assert not fake_ari.calls("POST", "/play")
 
@@ -351,7 +370,8 @@ async def test_assistant_request_answers_with_the_scenario(
     attempt = await load(attempt_id)
     response = await manager.webhook(message("assistant-request", call))
     assistant = response["assistant"]
-    assert assistant["firstMessage"] == attempt.dialog[0]["text"]
+    assert assistant["firstMessage"] == await scenario_opening(attempt_id)
+    assert attempt.dialog == []
     prompt = assistant["model"]["messages"][0]["content"]
     assert "ЗАЯВИТЕЛЯ" in prompt and "бросаешь трубку" in prompt
     assert assistant["server"]["url"] == f"{PUBLIC_URL}{WEBHOOK_PATH}"
@@ -376,9 +396,9 @@ async def test_transcripts_become_turns_and_vapi_ends_the_call(
 ):
     attempt_id, call, _ = await answered_call(manager, fake_ari)
     await wait_until(lambda: _answered(attempt_id))
-    opening = (await load(attempt_id)).dialog[0]["text"]
+    opening = await scenario_opening(attempt_id)
     await manager.webhook(message("assistant-request", call))
-    # The opening Vapi spoke is turn 0 already and is not stored twice.
+    # The opening Vapi spoke becomes turn 0: our own copy of it is never stored.
     await manager.webhook(
         message("transcript", call, role="assistant", transcriptType="final", transcript=opening)
     )
@@ -402,10 +422,11 @@ async def test_transcripts_become_turns_and_vapi_ends_the_call(
     attempt = await load(attempt_id)
     turns = attempt.dialog
     assert [t["role"] for t in turns] == ["caller", "operator", "caller"]
+    assert turns[0]["text"] == opening and turns[0]["method"] == dialog.EXTERNAL_METHOD
     assert turns[1]["text"] == "Диктуйте адрес" and turns[1]["heard"] is True
     assert "address" in turns[1]["topics"]
     assert turns[2]["method"] == dialog.EXTERNAL_METHOD
-    assert (await events_of(attempt_id)).count("dialog.turn") == 2
+    assert (await events_of(attempt_id)).count("dialog.turn") == 3
 
     # The final report carries a phrase the live messages missed; then the call ends.
     await manager.webhook(
@@ -450,18 +471,19 @@ async def test_speech_updates_measure_the_reply_latency(
     await manager.webhook(
         message("transcript", call, role="assistant", transcriptType="final", transcript="Ленина")
     )
+    # Турн 0 — фраза диспетчера: своего приветствия в облаке нет (замечание 22.09.2026).
     turns = (await load(attempt_id)).dialog
-    assert turns[1].get("latency_ms") is None
-    assert turns[2]["latency_ms"] >= 50
-    assert call.latencies_ms == [turns[2]["latency_ms"]]
+    assert turns[0].get("latency_ms") is None
+    assert turns[1]["latency_ms"] >= 50
+    assert call.latencies_ms == [turns[1]["latency_ms"]]
     # The next reply without a measured start carries no latency.
     await manager.webhook(
         message("transcript", call, role="assistant", transcriptType="final", transcript="Ещё")
     )
-    assert (await load(attempt_id)).dialog[3].get("latency_ms") is None
+    assert (await load(attempt_id)).dialog[2].get("latency_ms") is None
 
 
-async def test_status_ended_by_silence_is_a_caller_hangup(
+async def test_status_ended_by_silence_has_its_own_reason(
     manager: CloudCallManager, fake_ari: FakeAri
 ):
     attempt_id, call, _ = await answered_call(manager, fake_ari)
@@ -470,7 +492,8 @@ async def test_status_ended_by_silence_is_a_caller_hangup(
         message("status-update", call, status="ended", endedReason="silence-timed-out")
     )
     await wait_until(lambda: _ended(attempt_id))
-    assert (await load(attempt_id)).call_end_reason == CALL_END_CALLER_HANGUP
+    # Тишина — не «заявитель положил трубку»: свой код причины (замечание 22.09.2026).
+    assert (await load(attempt_id)).call_end_reason == CALL_END_SILENCE
 
 
 async def test_token_is_found_in_sip_uri_and_template_variables(

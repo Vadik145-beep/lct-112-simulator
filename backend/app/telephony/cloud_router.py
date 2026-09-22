@@ -19,6 +19,8 @@ from app.auth.deps import ActiveUser, DbSession
 from app.config import get_settings
 from app.dialog import call as call_state
 from app.dialog import service as dialog
+from app.dialog.router import _turn_out
+from app.dialog.schemas import DialogTurnOut
 from app.errors import ApiError
 from app.events import publish_events
 from app.telephony import cloud_web
@@ -26,6 +28,7 @@ from app.telephony import service as telephony
 from app.telephony.calls import LoadedAttempt
 from app.telephony.cloud import CloudCallManager
 from app.telephony.vapi import SECRET_HEADER, WEBHOOK_PATH, VapiError, webhook_secret
+from app.training import service as training
 
 router = APIRouter(tags=["cloud-voice"])
 API_PREFIX = "/api"
@@ -120,13 +123,20 @@ async def start_web_call(attempt_id: uuid.UUID, user: ActiveUser, session: DbSes
     )
 
 
-@router.post("/attempts/{attempt_id}/cloud-call/failed", status_code=204)
+@router.post("/attempts/{attempt_id}/cloud-call/failed", response_model=DialogTurnOut | None)
 async def web_call_failed(
     attempt_id: uuid.UUID, body: WebCallFailedIn, user: ActiveUser, session: DbSession
-) -> None:
+) -> DialogTurnOut | None:
     """The SDK could not start or lost the call: noted in the session log; the panel
-    continues with the microphone."""
-    await dialog.dialog_attempt(session, attempt_id, user, for_write=True)
+    continues with the microphone. The caller greets from our own side now — in a working
+    cloud call the greeting is spoken by Vapi and we store none (замечание 22.09.2026), so
+    the answer carries the opening the panel has to play."""
+    attempt, _ts, version, scenario = await dialog.dialog_attempt(
+        session, attempt_id, user, for_write=True
+    )
+    opening = await dialog.ensure_opening(attempt, version, scenario, training.utcnow())
+    await session.commit()
     web_calls = cloud_web.get_calls()
     if web_calls is not None:
         await web_calls.failed(attempt_id, body.reason[:200] or "browser")
+    return _turn_out(0, opening) if opening else None

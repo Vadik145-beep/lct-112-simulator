@@ -1664,7 +1664,9 @@ export interface paths {
         /**
          * Web Call Failed
          * @description The SDK could not start or lost the call: noted in the session log; the panel
-         *     continues with the microphone.
+         *     continues with the microphone. The caller greets from our own side now � in a working
+         *     cloud call the greeting is spoken by Vapi and we store none (��������� 22.09.2026), so
+         *     the answer carries the opening the panel has to play.
          */
         post: operations["web_call_failed_api_attempts__attempt_id__cloud_call_failed_post"];
         delete?: never;
@@ -2262,7 +2264,7 @@ export interface components {
         };
         /** AnswerResponse */
         AnswerResponse: {
-            opening: components["schemas"]["DialogTurnOut"];
+            opening: components["schemas"]["DialogTurnOut"] | null;
             dialog: components["schemas"]["DialogOut"];
         };
         /** ApproveIn */
@@ -7974,11 +7976,13 @@ export interface operations {
         };
         responses: {
             /** @description Successful Response */
-            204: {
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["DialogTurnOut"] | null;
+                };
             };
             /** @description Validation Error */
             422: {

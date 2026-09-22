@@ -53,6 +53,15 @@ class ServiceInfo:
 # --- helpers ---------------------------------------------------------------------------------
 
 
+def spoken(text: str) -> str:
+    """Текст так, как его произносит заявитель: без скобок классификатора. Названия типов и
+    групп приходят с уточнениями — «взрыв жд транспорт (пути, депо) (Взрывы)», — и синтез
+    читает скобки вслух (замечание пользователя 22.09.2026)."""
+    without = re.sub(r"\s*\([^()]*\)", "", text)
+    without = re.sub(r"\s{2,}", " ", without).strip(" ,;")
+    return without or text.strip()
+
+
 def _lower_first(text: str) -> str:
     """«Горит балкон» → «горит балкон», but «ДТП …» stays."""
     if len(text) > 1 and text[1].islower():
@@ -214,7 +223,7 @@ def _facts_sheet(facts: TicketFacts) -> dict[str, str]:
 
 
 def _opening(facts: TicketFacts, persona_code: str) -> str:
-    what = _lower_first(facts.what_happened)
+    what = _lower_first(spoken(facts.what_happened))
     what = re.split(r"[.;]", what, maxsplit=1)[0].strip(" ,")
     lead = {
         "angry_customer": "Значит так, ",
@@ -243,7 +252,7 @@ def _replies(facts: TicketFacts, persona_code: str, flags: dict[str, bool]) -> l
     descriptive = facts.address.descriptive
     replies: list[tuple[str, str]] = []
 
-    what = _lower_first(facts.what_happened)
+    what = _lower_first(spoken(facts.what_happened))
     replies.append(("what_happened", filler_join(f"{what}.")))
     replies.append(
         ("what_happened", f"Я же говорю: {re.split(r'[.;,]', what)[0]}. Что ещё вам сказать?")

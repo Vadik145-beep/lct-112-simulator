@@ -389,7 +389,6 @@ async def generate_for_session(
         refs,
         kind=ts.mode,
         groups=groups,
-        titles=titles,
         difficulty=ts.difficulty,
         service_profile=list(ts.service_profile),
         count=count,
