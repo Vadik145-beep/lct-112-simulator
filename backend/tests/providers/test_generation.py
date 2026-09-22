@@ -7,6 +7,7 @@ from __future__ import annotations
 import pytest
 
 from app.domain.evaluation.schemas import parse_scenario
+from app.domain.scenarios.facts import parse_ticket
 from app.domain.scenarios.template import ServiceInfo
 from app.providers.embeddings import TfidfEmbedding
 from app.providers.generation import (
@@ -133,6 +134,32 @@ async def test_model_answer_becomes_a_body_with_reference_from_the_row() -> None
     assert set(schema["properties"]["incident_type"]["enum"]) <= {r["code"] for r in ROWS}
     prompt = fake.calls[0]["messages"][1]["content"]
     assert "Памятка, стр. 21" in prompt and "1.99.0.8" in prompt
+
+
+async def test_card_of_a_ticket_keeps_the_ticket_address_and_voice() -> None:
+    """From a ticket the reference card is graded against the ticket, not against what the
+    model wrote: an invented street is not in the card's hint list, so the trainee could not
+    fill it. The voice follows the caller of the ticket, a man is not voiced as a woman."""
+    facts = parse_ticket(
+        "Задымление на минус первом этаже в торговом центре, "
+        "Ивлев Артем Олегович (работник мебельного магазина), 916-123-98-78",
+        "Москва, станция метро Пражская, ТЦ «Электронный рай» (ул. Кировоградская, дом 15)",
+    )
+    answer = model_answer(
+        persona="worried_resident",
+        address={"street": "улица Придуманная", "house": "7"},
+        caller={"name": "Кто-то", "role": "очевидец", "phone": "000"},
+    )
+    result = await LlmGeneration(FakeModel([answer])).generate(
+        request(facts=facts, ticket_ref="8-1", phrase=None), CTX
+    )
+    scenario = parse_scenario(result.body)
+    assert scenario.reference_card.address.street == "ул. Кировоградская"
+    assert scenario.reference_card.address.house == "15"
+    assert scenario.reference_card.caller.name == "Ивлев Артем Олегович"
+    assert scenario.reference_card.caller.phone == "916-123-98-78"
+    # worried_resident speaks in ru_female_1; the caller of the ticket is a man.
+    assert scenario.caller.voice == "ru_male_1"
 
 
 async def test_invalid_answers_are_retried_then_template() -> None:
