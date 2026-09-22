@@ -152,18 +152,36 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
-  const failCloud = useCallback((attemptId: string, reason: string) => {
-    cloud.current = null;
-    setState((s) => ({
-      ...s,
-      cloud: "failed",
-      muted: false,
-      callerSpeaking: false,
-      micLevel: 0,
-      error: `Облачный заявитель недоступен (${reason}): отвечайте через микрофон, заявитель ответит из утверждённых реплик.`,
-    }));
-    void telephonyApi.cloudCallFailed(attemptId, reason).catch(() => null);
-  }, []);
+  const failCloud = useCallback(
+    (attemptId: string, reason: string) => {
+      cloud.current = null;
+      setState((s) => ({
+        ...s,
+        cloud: "failed",
+        muted: false,
+        callerSpeaking: false,
+        micLevel: 0,
+        error: `Облачный заявитель недоступен (${reason}): отвечайте через микрофон, заявитель ответит из утверждённых реплик.`,
+      }));
+      // Приветствие бэкенд пишет только сейчас (в облаке его говорит Vapi): играем его.
+      void telephonyApi
+        .cloudCallFailed(attemptId, reason)
+        .then((opening) => {
+          if (!opening) return;
+          setState((s) => ({
+            ...s,
+            lastCaller: {
+              text: opening.text,
+              audioUrl: opening.audio_url ?? null,
+              heardText: null,
+            },
+          }));
+          playReply(opening.audio_url ?? null);
+        })
+        .catch(() => null);
+    },
+    [playReply],
+  );
 
   const startCloud = useCallback(
     async (attemptId: string) => {
@@ -455,22 +473,24 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
           status: "talking",
           sessionId:
             result.dialog.seq !== undefined ? s.sessionId : s.sessionId,
-          lastCaller: {
-            text: result.opening.text,
-            audioUrl: result.opening.audio_url ?? null,
-            heardText: null,
-          },
+          // В облачном занятии своей реплики приветствия нет: его говорит Vapi.
+          lastCaller: result.opening
+            ? {
+                text: result.opening.text,
+                audioUrl: result.opening.audio_url ?? null,
+                heardText: null,
+              }
+            : null,
           sttAvailable: result.dialog.stt_available,
           cloud: cloudLesson ? "connecting" : "off",
         }));
         void client.invalidateQueries({ queryKey: ["dialog", attemptId] });
         if (cloudLesson) {
-          // The cloud caller says the opening itself; only the fallback plays our file.
+          // Приветствие говорит сам облачный заявитель; запасной путь получает свою
+          // реплику от бэкенда (POST …/cloud-call/failed) и играет её оттуда.
           await startCloud(attemptId);
-          if (cloud.current === null)
-            playReply(result.opening.audio_url ?? null);
         } else {
-          playReply(result.opening.audio_url ?? null);
+          playReply(result.opening?.audio_url ?? null);
         }
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

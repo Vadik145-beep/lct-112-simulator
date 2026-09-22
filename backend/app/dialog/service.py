@@ -150,11 +150,19 @@ def _find_retry(attempt: Attempt, action_id: str | None) -> TurnResult | None:
     return None
 
 
-def _ensure_opening(attempt: Attempt, scenario: CallIntakeScenario, now: datetime) -> None:
-    """The caller speaks first: the scenario's opening becomes turn 0 when the call is answered."""
+def _ensure_opening(
+    attempt: Attempt, scenario: CallIntakeScenario, now: datetime, *, with_turn: bool = True
+) -> None:
+    """The caller speaks first: the scenario's opening becomes turn 0 when the call is answered.
+
+    In a cloud lesson the caller lives in Vapi and says the opening himself, so we store no
+    turn of our own — otherwise the greeting lands in the transcript twice (замечание
+    пользователя 22.09.2026). The state of the call moves on either way.
+    """
     if attempt.dialog:
         return
-    attempt.dialog = [_turn("caller", scenario.caller.opening, [], now, method="opening")]
+    if with_turn:
+        attempt.dialog = [_turn("caller", scenario.caller.opening, [], now, method="opening")]
     if attempt.answered_at is None:
         attempt.answered_at = now
     if attempt.call_state in (CALL_IDLE, CALL_RINGING):
@@ -166,10 +174,18 @@ def _ensure_opening(attempt: Attempt, scenario: CallIntakeScenario, now: datetim
 
 
 async def ensure_opening(
-    attempt: Attempt, version: ScenarioVersion, scenario: CallIntakeScenario, now: datetime
+    attempt: Attempt,
+    version: ScenarioVersion,
+    scenario: CallIntakeScenario,
+    now: datetime,
+    *,
+    with_turn: bool = True,
 ) -> dict:
-    """Turn 0 with its voice file: what the call panel plays when the operator answers."""
-    _ensure_opening(attempt, scenario, now)
+    """Turn 0 with its voice file: what the call panel plays when the operator answers.
+    A cloud lesson has no turn of ours (``with_turn=False``) and returns an empty one."""
+    _ensure_opening(attempt, scenario, now, with_turn=with_turn)
+    if not attempt.dialog:
+        return {}
     opening = attempt.dialog[0]
     if opening.get("method") == "opening" and not opening.get("audio"):
         audio = await opening_audio(version, scenario)
@@ -270,7 +286,7 @@ async def say(
     if retry is not None:
         return retry
     now = training.utcnow()
-    _ensure_opening(attempt, scenario, now)
+    _ensure_opening(attempt, scenario, now, with_turn=not cloud_lesson(ts))
     reply = await provider_for(ts).reply(_context(attempt, scenario), text)
     operator = _turn("operator", text, reply.operator_topics, now, action_id=action_id, heard=heard)
     return await _store_turns(session, attempt, ts, version, scenario, operator, reply, now)
@@ -293,7 +309,7 @@ async def ask_topic(
     if retry is not None:
         return retry
     now = training.utcnow()
-    _ensure_opening(attempt, scenario, now)
+    _ensure_opening(attempt, scenario, now, with_turn=not cloud_lesson(ts))
     reply = await provider_for(ts).reply_to_topic(_context(attempt, scenario), topic)
     operator = _turn("operator", topic_question(topic), [topic], now, action_id=action_id)
     return await _store_turns(session, attempt, ts, version, scenario, operator, reply, now)
@@ -329,10 +345,15 @@ EXTERNAL_METHOD = "cloud"
 
 
 def _is_opening(attempt: Attempt, role: str, text: str) -> bool:
-    """The cloud provider reports the opening it spoke first; turn 0 already holds it."""
+    """A repeat of the opening our side already stored (a local lesson that fell back to the
+    cloud, or an old attempt with turn 0 of ours). Cloud lessons keep no opening of their own,
+    so the check normally finds nothing."""
     if role != "caller" or len(attempt.dialog) != 1:
         return False
-    return normalize_text(text) == normalize_text(attempt.dialog[0].get("text", ""))
+    stored = attempt.dialog[0]
+    if stored.get("method") != "opening":
+        return False
+    return normalize_text(text) == normalize_text(stored.get("text", ""))
 
 
 async def external_turn(
@@ -356,7 +377,7 @@ async def external_turn(
     if not text:
         return None, []
     now = now or training.utcnow()
-    _ensure_opening(attempt, scenario, now)
+    _ensure_opening(attempt, scenario, now, with_turn=not cloud_lesson(ts))
     if _is_opening(attempt, role, text):
         return attempt.dialog[0], []
     topics = [t for t in detect_topics(text) if t not in SERVICE_TOPICS]
@@ -392,8 +413,18 @@ def external_turns(attempt: Attempt) -> list[dict]:
     return [t for t in attempt.dialog if t.get("method") == EXTERNAL_METHOD]
 
 
-def covered_topics(attempt: Attempt) -> set[str]:
-    return {topic for turn in attempt.dialog for topic in turn.get("topics", [])}
+def covered_topics(attempt: Attempt, ts: TrainingSession | None = None) -> set[str]:
+    """Topics the panel «Что выяснить» ticks. The same rule as the evaluation
+    (``call_intake.clarified_topics``): in a cloud lesson the caller speaks freely, and his
+    own words must not close a question the dispatcher never asked (замечание пользователя
+    22.09.2026 — «Адрес» загорался от фразы заявителя «где депо»)."""
+    cloud = ts is not None and cloud_lesson(ts)
+    topics: set[str] = set()
+    for turn in attempt.dialog:
+        if cloud and turn.get("role") == "caller" and turn.get("method") == EXTERNAL_METHOD:
+            continue
+        topics.update(turn.get("topics", []))
+    return topics
 
 
 def _add_pending_reply(version: ScenarioVersion, attempt: Attempt, reply: CallerReply) -> bool:

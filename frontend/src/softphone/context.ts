@@ -83,6 +83,7 @@ export const STATUS_LABELS: Record<CallStatus, string> = {
 export const END_REASON_LABELS: Record<string, string> = {
   hangup: "вы завершили вызов",
   caller_hangup: "заявитель положил трубку",
+  silence: "связь прервана: долгая тишина",
   no_answer: "не ответили вовремя",
   no_contact: "отмечено «нет контакта»",
   call_dropped: "отмечено «срыв звонка»",

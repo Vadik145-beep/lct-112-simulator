@@ -60,6 +60,7 @@ CALL_ENDED = "ended"  # see call_end_reason
 # call_end_reason values.
 CALL_END_HANGUP = "hangup"  # the operator hung up
 CALL_END_CALLER_HANGUP = "caller_hangup"  # the caller dropped the call (scenario)
+CALL_END_SILENCE = "silence"  # the cloud call died of silence, nobody hung up
 CALL_END_NO_ANSWER = "no_answer"  # the softphone did not answer in time
 CALL_END_NO_CONTACT = "no_contact"  # «нет контакта» pressed
 CALL_END_CALL_DROPPED = "call_dropped"  # «срыв звонка» pressed

@@ -13,7 +13,7 @@ from __future__ import annotations
 import asyncio
 import random
 import uuid
-from collections.abc import Mapping, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -1006,7 +1006,6 @@ def plan_for_groups(
     *,
     kind: str,
     groups: Sequence[str],
-    titles: Mapping[str, str],
     difficulty: int,
     service_profile: Sequence[str],
     count: int,
@@ -1015,8 +1014,9 @@ def plan_for_groups(
     """Requests for a lesson without approved cards (ТЗ, «Настройка учебной среды»: the
     teacher picks the categories, the system generates the scenarios and references).
     ``count`` requests go round-robin over ``groups``; each takes a random incident type of
-    its group (within the lesson's services for the response mode), and the phrase names
-    that type so both the model and the template land on it."""
+    its group (within the lesson's services for the response mode), and the phrase is the
+    title of that type — it becomes the caller's own words, so no brackets of the classifier
+    and no group name in it (замечание пользователя 22.09.2026)."""
     rng = rng or random.Random()  # noqa: S311 — variety, not security
     by_group: dict[str, list[dict]] = {}
     for row in refs.incident_types.values():
@@ -1030,7 +1030,9 @@ def plan_for_groups(
         if not rows:
             continue
         row = rng.choice(rows)
-        phrase = f"{row['final_title']} ({titles.get(group, 'группа ' + group)})"
+        # Без названия группы в скобках: группа уже уходит в ``incident_group``, а фраза
+        # становится речью заявителя, и скобки он зачитывает вслух (замечание 22.09.2026).
+        phrase = str(row["final_title"])
         requests.append(
             GenerationRequest(
                 kind=kind,

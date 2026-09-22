@@ -129,7 +129,8 @@ async def answer(attempt_id: uuid.UUID, user: ActiveUser, session: DbSession) ->
     await session.commit()
     await publish_events(events)
     return AnswerResponse(
-        opening=_turn_out(0, opening), dialog=await _dialog_out(session, attempt, ts, scenario)
+        opening=_turn_out(0, opening) if opening else None,
+        dialog=await _dialog_out(session, attempt, ts, scenario),
     )
 
 
