@@ -38,7 +38,17 @@ const GROUPS: ClassifierGroupOut[] = [
         type_code: "2.1.0.0",
         final_title: "ДТП без пострадавших",
         flags: [],
-        children: [{ title: "Транспорт легковой", type_code: "2.1.1.0", final_title: "ДТП легковой", flags: [], children: [] }],
+        children: [
+          { title: "Транспорт легковой", type_code: "2.1.1.0", final_title: "ДТП легковой", flags: [], children: [] },
+          {
+            title: "Падение в воду",
+            type_code: "2.2.14.0",
+            final_title: "Падение автомобиля в воду",
+            flags: [],
+            phrases: "машина упала в воду автомобиль съехал в реку утонула машина",
+            children: [],
+          },
+        ],
       },
     ],
   },
@@ -102,5 +112,15 @@ describe("searchTypes", () => {
   });
   it("ignores queries shorter than two letters", () => {
     expect(searchTypes(all, "д")).toEqual([]);
+  });
+  it("finds a type by the words a caller uses, not only by the classifier's own", () => {
+    expect(searchTypes(all, "машина упала в воду").map((h) => h.node.type_code)).toEqual([
+      "2.2.14.0",
+    ]);
+  });
+  it("falls back to the closest types instead of «ничего не найдено»", () => {
+    // «в квартире дым коромыслом» matches no type fully; the smoke one is still the answer.
+    const hits = searchTypes(all, "в квартире дым коромыслом");
+    expect(hits[0]?.node.type_code).toBe("1.5.1.2");
   });
 });
