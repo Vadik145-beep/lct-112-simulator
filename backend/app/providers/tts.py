@@ -222,12 +222,9 @@ class SileroTTS:
         return list(SILERO_VOICES) if self._path.exists() else []
 
     def warm(self) -> int:
-        """Loads the model and voices one short phrase per speaker (the first synthesis of a
-        speaker takes seconds, the next ones a fraction) so the opening line of a call does not
+        """Loads the model (a few seconds, see ``_load``) so the opening line of a call does not
         wait; returns the number of voices ready. Blocking: call it from a worker thread."""
         self._load()
-        for speaker in sorted({spec.speaker for spec in SILERO_VOICES.values()}):
-            self._synthesize_sync("Алло.", SileroVoiceSpec(speaker))
         return len(SILERO_VOICES)
 
     def _load(self):
@@ -237,12 +234,18 @@ class SileroTTS:
             if not self._path.exists():
                 raise FileNotFoundError(f"модель Silero не найдена: {self._path}")
             torch.set_num_threads(SILERO_THREADS)
+            # The legacy TorchScript executor: the profiling one spends the first two
+            # syntheses (seconds each) on profiling; with it off only the first is slow.
+            torch._C._jit_set_profiling_executor(False)
+            torch._C._jit_set_profiling_mode(False)
             # A file object, not the path: torch's C++ reader trips over non-ASCII folders
             # on Windows (a developer checkout under a Cyrillic path).
             with self._path.open("rb") as file:
                 model = torch.package.PackageImporter(file).load_pickle("tts_models", "model")
             model.to(torch.device("cpu"))
             self._model = model
+            # The one slow synthesis is paid here, once, not inside somebody's call.
+            self._synthesize_sync("Алло.", SILERO_VOICES[DEFAULT_VOICE])
         return self._model
 
     def _synthesize_sync(self, text: str, spec: SileroVoiceSpec) -> AudioClip:
