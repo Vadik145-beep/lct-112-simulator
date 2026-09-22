@@ -30,6 +30,7 @@ export function DialogPanel({
   hints,
   telephony,
   input = true,
+  controls,
   onCallerSpoke,
 }: {
   attemptId: string;
@@ -40,6 +41,8 @@ export function DialogPanel({
   telephony: boolean;
   /** Own text field and microphone; off when the softphone panel provides them. */
   input?: boolean;
+  /** The softphone's talk controls, shown under the transcript in place of the own field. */
+  controls?: React.ReactNode;
   /** The caller's reply that just arrived (to notice a hang-up, for example). */
   onCallerSpoke?: (turn: DialogTurnOut, callEnded: boolean) => void;
 }) {
@@ -246,6 +249,8 @@ export function DialogPanel({
           )}
         </div>
       )}
+
+      {!input && controls}
 
       {hints && (
         <div className="rounded-sm bg-[var(--arm-field)] p-2 text-xs" data-testid="topics-hint">
