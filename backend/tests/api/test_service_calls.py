@@ -216,7 +216,7 @@ async def test_text_call_passes_facts_and_lands_in_the_evaluation(client: AsyncC
     assert r.status_code == 409
 
 
-async def test_closing_the_card_ends_an_open_call_and_no_call_is_penalised(
+async def test_closing_the_card_ends_an_open_call_and_a_silent_call_scores_nothing(
     client: AsyncClient,
 ) -> None:
     attempt_id = await make_attempt(CARD, mode=MODE_CARD_RESPONSE, dialog_mode="buttons")
@@ -230,21 +230,28 @@ async def test_closing_the_card_ends_an_open_call_and_no_call_is_penalised(
     attempt = r.json()["attempt"]
     assert attempt["service_calls"][0]["ended_at"] is not None
     assert attempt["service_calls"][0]["end_reason"] == "card_closed"
-    component = attempt["evaluation"]["components"]["service_call"]
-    assert 0 < component["score"] < component["max"]  # reached, no facts
+    evaluation = attempt["evaluation"]
+    component = evaluation["components"]["service_call"]
+    # Greeting the officer and passing nothing scores as if the call was never made (#127).
+    assert component["score"] == 0
     assert component["items"][0]["facts_missing"] == [
         "address",
         "incident_type",
         "injured",
     ]
+    codes = {e["code"] for e in evaluation["errors"]}
+    assert "service_call_silent" in codes
+    assert "service_not_informed" not in codes  # the dispatcher did call
 
-    # A card accepted without any call: zero and the detector.
+    # A card accepted without any call: zero and the other detector.
     other = await make_attempt(CARD, mode=MODE_CARD_RESPONSE, dialog_mode="buttons")
     r = await status(client, token, other, status="accepted")
     r = await client.post(f"/api/attempts/{other}/finish", headers=bearer(token))
     evaluation = r.json()["attempt"]["evaluation"]
     assert evaluation["components"]["service_call"]["score"] == 0
-    assert "service_not_informed" in {e["code"] for e in evaluation["errors"]}
+    codes = {e["code"] for e in evaluation["errors"]}
+    assert "service_not_informed" in codes
+    assert "service_call_silent" not in codes
 
 
 async def test_service_call_access_and_validation(client: AsyncClient) -> None:

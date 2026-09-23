@@ -9,6 +9,11 @@ pick up, listen and reflect the report with the matching status; the evaluation 
 status log with the report times (``detectors.status_before_report``,
 ``detectors.report_not_reflected``).
 
+The squad leaves only once it has a task: on a card that requires a call to the service
+officer, the timeline starts at the end of the call in which the dispatcher named the address,
+not at «Принята» (issue #127). A dispatcher who never called, or who reached the officer and
+said nothing, gets no reports at all — there is nowhere for the squad to go.
+
 ``sweep_reports`` runs in the background sweep of the API (``app.training.sweeper``) next to the
 «Не оповещено» check, so it works without telephony too: without it the report is answered at
 once and shown in the card; with telephony the trainee's phone rings from the squad's number
@@ -25,6 +30,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.evaluation import status_machine as machine
 from app.domain.evaluation.schemas import BrigadeReport, CardResponseScenario
+from app.domain.evaluation.service_call import address_named
 from app.models import (
     ACTIVE_ATTEMPT_STATES,
     MODE_CARD_RESPONSE,
@@ -54,6 +60,39 @@ def accepted_at(attempt: Attempt) -> datetime | None:
     return None
 
 
+def dispatched_at(scenario: CardResponseScenario, attempt: Attempt) -> datetime | None:
+    """When the squad got its task and could leave, or ``None`` while it has none.
+
+    A card the reference sends nobody to call is dispatched by «Принята» alone. Where the card
+    does require a call to the service officer, the squad leaves at the end of the call in
+    which the dispatcher named the address: a squad that was not told where to go does not
+    depart, however long the dispatcher held the line (issue #127).
+    """
+    from app.dialog import officer
+
+    accepted = accepted_at(attempt)
+    if accepted is None:
+        return None
+    if not scenario.reference.service_calls:
+        return accepted
+    told: list[datetime] = []
+    for call in officer.calls_of(attempt):
+        if call.get("kind") != officer.KIND_OUTGOING or not call.get("answered"):
+            continue
+        ended = _at(call.get("ended_at"))
+        if ended is None or ended < accepted:
+            continue
+        # The stored turns carry more than the evaluation schema (the voicing, the method), so
+        # they are read as they are written.
+        if any(
+            turn.get("role") == "operator"
+            and address_named(scenario.card, str(turn.get("text") or ""))
+            for turn in call.get("dialog") or []
+        ):
+            told.append(ended)
+    return min(told) if told else None
+
+
 def next_report(
     scenario: CardResponseScenario, attempt: Attempt, now: datetime
 ) -> BrigadeReport | None:
@@ -76,14 +115,9 @@ def next_report(
             (_at(last["started_at"]) or now) + timedelta(seconds=REPORT_CALL_TIMEOUT_SECONDS)
         )
     else:
-        base = accepted_at(attempt)
+        base = dispatched_at(scenario, attempt)
         if base is None:
             return None
-        # The squad leaves after the dispatcher's call to the officer, when there was one.
-        for call in officer.calls_of(attempt):
-            ended = _at(call.get("ended_at"))
-            if not officer.is_report(call) and call.get("answered") and ended and ended > base:
-                base = ended
     if base + timedelta(seconds=report.after_seconds) > now:
         return None
     return report
