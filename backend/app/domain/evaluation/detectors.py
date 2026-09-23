@@ -23,6 +23,7 @@ from app.domain.evaluation.schemas import (
     CardResponseScenario,
     StatusEntry,
 )
+from app.domain.evaluation.service_call import facts_from_dialog
 from app.domain.evaluation.text import normalize_text
 from app.domain.evaluation.timing import seconds_between
 from app.domain.reference_data import TYPICAL_ERRORS
@@ -350,12 +351,31 @@ def _shown(value: str, label: str | None) -> str:
     return f"«{label}»" if label else f"«{value}»"
 
 
+def _informed_services(ctx: CardContext) -> tuple[set[str], set[str]]:
+    """Services the officer of which picked up, split by whether the dispatcher passed any of
+    the facts the card requires. Reaching somebody is not informing them (issue #127)."""
+    reached: set[str] = set()
+    told: set[str] = set()
+    required_by_service = {
+        r.service: r.required_facts for r in ctx.scenario.reference.service_calls
+    }
+    for call in ctx.attempt.service_calls:
+        if call.kind != "outgoing" or not call.answered:
+            continue
+        reached.add(call.service)
+        required = required_by_service.get(call.service) or []
+        passed = facts_from_dialog(ctx.scenario.card, call.dialog)
+        if not required or any(fact in passed for fact in required):
+            told.add(call.service)
+    return reached, told
+
+
 def service_not_informed(ctx: CardContext) -> ErrorItem | None:
     """The card is accepted, but a required service officer was never reached (issue #36)."""
     required = ctx.scenario.reference.service_calls
     if not required or ctx.final_primary is None or ctx.final_primary.status != sm.ACCEPTED:
         return None
-    reached = {c.service for c in ctx.attempt.service_calls if c.answered and c.kind == "outgoing"}
+    reached, _ = _informed_services(ctx)
     missing = [r.service for r in required if r.service not in reached]
     if not missing:
         return None
@@ -364,6 +384,24 @@ def service_not_informed(ctx: CardContext) -> ErrorItem | None:
         "Карточка принята, но в службу по телефону не позвонили: "
         + ", ".join(f"«{s}»" for s in missing)
         + ". Руководителю службы передаются адрес, тип происшествия, пострадавшие и номер наряда.",
+    )
+
+
+def service_call_silent(ctx: CardContext) -> ErrorItem | None:
+    """The officer picked up and the dispatcher said nothing the card required (issue #127)."""
+    required = ctx.scenario.reference.service_calls
+    if not required or ctx.final_primary is None or ctx.final_primary.status != sm.ACCEPTED:
+        return None
+    reached, told = _informed_services(ctx)
+    silent = [r.service for r in required if r.service in reached and r.service not in told]
+    if not silent:
+        return None
+    return _item(
+        "service_call_silent",
+        "Дозвонились в службу, но ничего не передали: "
+        + ", ".join(f"«{s}»" for s in silent)
+        + ". Дежурному нужны адрес, тип происшествия, пострадавшие и номер наряда — "
+        "без них наряду ехать некуда.",
     )
 
 
@@ -480,6 +518,7 @@ CARD_DETECTORS: dict[str, Callable[[CardContext], ErrorItem | None]] = {
     "error_missed": error_missed,
     "false_alarm": false_alarm,
     "service_not_informed": service_not_informed,
+    "service_call_silent": service_call_silent,
     "status_before_report": status_before_report,
     "report_not_reflected": report_not_reflected,
     "report_not_taken": report_not_taken,

@@ -4,11 +4,15 @@ the facts (issue #36, customer: «в рамках телефонии фокус 
 The reference lists the calls (``reference.service_calls``: service, required facts, norm);
 the attempt logs the calls made (``service_calls``: dialog of each). Each required call is an
 equal share of the component: 30 % for reaching the officer, 50 % for the facts passed (their
-share), 20 % for staying within the norm. Facts are read from the dispatcher's turns by
-keywords (``detect_service_facts``); the address counts only when the street and the house of
-the card are actually named, not just the word «адрес», and the incident when the phrase shares
-a word with the card itself (``incident_named``), because the keyword table is too narrow for
-how a dispatcher really speaks.
+share), 20 % for staying within the norm — but a call that passed none of the required facts
+scores nothing at all, because reaching the officer and saying nothing leaves the service
+knowing nothing.
+
+Facts are read from the dispatcher's turns by keywords (``detect_service_facts``); the address
+counts only when the street and the house of the card are actually named, not just the word
+«адрес», and the incident when the phrase shares a word with the card itself
+(``incident_named``), because the keyword table is too narrow for how a dispatcher really
+speaks.
 """
 
 from __future__ import annotations
@@ -167,14 +171,21 @@ def outcomes(scenario: CardResponseScenario, attempt: CardResponseAttempt) -> li
         for log in candidates:
             passed = facts_from_dialog(scenario.card, log.dialog)
             required = list(ref.required_facts)
+            passed_required = [f for f in passed if f in required]
             missing = [f for f in required if f not in passed]
             seconds = call_seconds(log)
             within = seconds is not None and seconds <= ref.norm_seconds
             facts_fraction = (len(required) - len(missing)) / len(required) if required else 1.0
-            fraction = REACHED_SHARE + FACTS_SHARE * facts_fraction + (NORM_SHARE if within else 0)
-            outcome = CallOutcome(
-                ref, log, [f for f in passed if f in required], missing, seconds, within, fraction
-            )
+            if required and not passed_required:
+                # Reaching the officer and saying nothing is not a call: the service learns
+                # nothing, and hanging up at once always fits the norm (as with an empty card
+                # saved fast, issue #70).
+                fraction = 0.0
+            else:
+                fraction = (
+                    REACHED_SHARE + FACTS_SHARE * facts_fraction + (NORM_SHARE if within else 0)
+                )
+            outcome = CallOutcome(ref, log, passed_required, missing, seconds, within, fraction)
             if best is None or outcome.fraction > best.fraction:
                 best = outcome
         assert best is not None

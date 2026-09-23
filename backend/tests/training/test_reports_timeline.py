@@ -52,7 +52,17 @@ def report_call(status: str, start: float, end: float | None, *, spoken: bool = 
     }
 
 
-def officer_call(start: float, end: float) -> dict:
+# What the dispatcher says to the officer of «card_gkh_1_tech_v_podezde»: the squad only
+# leaves once it has been told where to go.
+ADDRESS_PASSED = "улица Свободы, дом 42, течёт стояк, пострадавших нет, код подъезда 5В"
+
+
+def officer_call(start: float, end: float, said: str = ADDRESS_PASSED) -> dict:
+    dialog = [
+        {"role": "caller", "text": "Дежурный слушает.", "topics": ["greeting"], "at": iso(start)}
+    ]
+    if said:
+        dialog.append({"role": "operator", "text": said, "topics": [], "at": iso(start + 1)})
     return {
         "id": "o-1",
         "service": "gkh",
@@ -60,7 +70,7 @@ def officer_call(start: float, end: float) -> dict:
         "started_at": iso(start),
         "answered": True,
         "ended_at": iso(end),
-        "dialog": [],
+        "dialog": dialog,
     }
 
 
@@ -69,9 +79,17 @@ FIRST = SCENARIO.reference.reports[0]  # response_started, 30 s after «Прин
 SECOND = SCENARIO.reference.reports[1]  # arrived, 45 s after the first report ended
 
 
-def test_first_report_comes_after_the_delay_from_accepted() -> None:
-    assert reports.next_report(SCENARIO, attempt(), now(10 + FIRST.after_seconds - 1)) is None
-    due = reports.next_report(SCENARIO, attempt(), now(10 + FIRST.after_seconds))
+def test_a_squad_that_was_never_called_does_not_leave() -> None:
+    """«Принята» alone dispatches nobody when the card requires a call to the officer: the
+    squad has no address to go to (issue #127)."""
+    assert reports.next_report(SCENARIO, attempt(), now(10 + FIRST.after_seconds)) is None
+    assert reports.next_report(SCENARIO, attempt(), now(5000)) is None
+
+
+def test_first_report_comes_after_the_delay_from_the_call_to_the_officer() -> None:
+    a = attempt(calls=[officer_call(20, 80)])
+    assert reports.next_report(SCENARIO, a, now(80 + FIRST.after_seconds - 1)) is None
+    due = reports.next_report(SCENARIO, a, now(80 + FIRST.after_seconds))
     assert due is not None and due.status == "response_started"
 
 
@@ -82,12 +100,12 @@ def test_nothing_before_accepted_or_after_a_rejection() -> None:
     assert reports.next_report(SCENARIO, attempt("works_done"), now(500)) is None
 
 
-def test_the_squad_leaves_after_the_dispatcher_call_to_the_officer() -> None:
-    # «Принята» at 10, the dispatcher talks to the officer 20..80: the delay counts from 80.
-    a = attempt(calls=[officer_call(20, 80)])
-    assert reports.next_report(SCENARIO, a, now(80 + FIRST.after_seconds - 1)) is None
-    due = reports.next_report(SCENARIO, a, now(80 + FIRST.after_seconds))
-    assert due is not None and due.status == "response_started"
+def test_a_silent_call_to_the_officer_dispatches_nobody() -> None:
+    """Reaching the officer and hanging up without a word leaves the squad without a task."""
+    silent = attempt(calls=[officer_call(20, 22, said="")])
+    assert reports.next_report(SCENARIO, silent, now(5000)) is None
+    greeted = attempt(calls=[officer_call(20, 24, said="Алло, добрый день.")])
+    assert reports.next_report(SCENARIO, greeted, now(5000)) is None
 
 
 def test_next_report_counts_from_the_end_of_the_previous_one() -> None:
