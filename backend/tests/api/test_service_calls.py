@@ -57,6 +57,51 @@ async def status(client: AsyncClient, token: dict, attempt_id: uuid.UUID, **body
     return await client.post(f"/api/attempts/{attempt_id}/status", headers=bearer(token), json=body)
 
 
+async def test_dds_lesson_carries_its_dialog_mode_and_refuses_the_cloud(
+    client: AsyncClient,
+) -> None:
+    """Режим диалога — настройка занятия ДДС: им отвечают дежурный службы и старший группы.
+    Облачный голос играет только заявителя, поэтому в реагировании его не предлагают."""
+    token = await login(client, "teacher1")
+    groups = await client.get("/api/groups", headers=bearer(token))
+    assert groups.status_code == 200, groups.text
+    rows = groups.json()
+    group_id = (rows["items"] if isinstance(rows, dict) else rows)[0]["id"]
+    body = {
+        "title": "Режим в ДДС",
+        "mode": MODE_CARD_RESPONSE,
+        "group_id": group_id,
+        "difficulty": 1,
+        "norm_seconds": 30,
+        "pass_threshold": 70,
+        "dialog_mode": "buttons",
+        "voice_enabled": False,
+    }
+    created = await client.post("/api/sessions", headers=bearer(token), json=body)
+    assert created.status_code == 201, created.text
+    assert created.json()["dialog_mode"] == "buttons"
+    assert created.json()["voice_enabled"] is False
+
+    refused = await client.post(
+        "/api/sessions", headers=bearer(token), json={**body, "dialog_mode": "cloud"}
+    )
+    assert refused.status_code == 422, refused.text
+    assert refused.json()["error"]["code"] == "cloud_voice_not_for_cards"
+
+
+async def test_call_without_voice_goes_in_text(client: AsyncClient) -> None:
+    """Голос выключен — дежурный отвечает текстом, записи к репликам не прикладываются."""
+    attempt_id = await make_attempt(
+        CARD, mode=MODE_CARD_RESPONSE, dialog_mode="buttons", voice_enabled=False
+    )
+    token = await login(client, "student1")
+    r = await start(client, token, attempt_id)
+    assert r.status_code == 200, r.text
+    greeting = r.json()["call"]["turns"][0]
+    assert "слушаю" in greeting["text"]
+    assert greeting["audio_url"] is None
+
+
 async def test_text_call_passes_facts_and_lands_in_the_evaluation(client: AsyncClient) -> None:
     attempt_id = await make_attempt(CARD, mode=MODE_CARD_RESPONSE, dialog_mode="buttons")
     token = await login(client, "student1")

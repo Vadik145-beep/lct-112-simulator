@@ -251,7 +251,7 @@ async def seed_history(session: AsyncSession, *, now: datetime | None = None) ->
                 norm_seconds=norm,
                 pass_threshold=PASS_THRESHOLD,
                 hints_enabled=True,
-                voice_enabled=mode == MODE_CALL_INTAKE,
+                voice_enabled=True,
                 dialog_mode="select",
                 status=SESSION_FINISHED,
                 started_at=started,

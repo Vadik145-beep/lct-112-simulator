@@ -173,13 +173,23 @@ async def validate_settings(session: AsyncSession, spec: SessionSettings, teache
         raise ApiError(422, "bad_mode", "Неизвестный режим занятия.")
     if spec.dialog_mode not in DIALOG_MODES:
         raise ApiError(422, "bad_dialog_mode", f"Режим диалога: один из {', '.join(DIALOG_MODES)}.")
-    if spec.dialog_mode == DIALOG_MODE_CLOUD and not get_settings().cloud_voice_enabled:
-        raise ApiError(
-            422,
-            "cloud_voice_disabled",
-            "Облачный голос выключен на этой установке (CLOUD_VOICE_ENABLED): "
-            "выберите другой режим диалога.",
-        )
+    if spec.dialog_mode == DIALOG_MODE_CLOUD:
+        if spec.mode != MODE_CALL_INTAKE:
+            # Облако играет только заявителя на входящем вызове: служебные звонки ДДС идут
+            # через локальный конвейер (plan/track-c-vapi.md).
+            raise ApiError(
+                422,
+                "cloud_voice_not_for_cards",
+                "Облачный голос есть только в приёме вызова: в реагировании на карточку "
+                "службу и бригаду играет локальная модель.",
+            )
+        if not get_settings().cloud_voice_enabled:
+            raise ApiError(
+                422,
+                "cloud_voice_disabled",
+                "Облачный голос выключен на этой установке (CLOUD_VOICE_ENABLED): "
+                "выберите другой режим диалога.",
+            )
     if spec.card_source not in CARD_SOURCES:
         raise ApiError(
             422,
