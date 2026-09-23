@@ -14,6 +14,7 @@ from app.auth.deps import ActiveUser, DbSession
 from app.config import get_settings
 from app.domain import materials
 from app.domain.memo_search import MIN_QUERY_LENGTH, SEARCH_LIMIT, search_memo
+from app.domain.scenarios.classify import type_phrases
 from app.domain.services import available_flags, resolve_services
 from app.errors import ApiError
 from app.importers.organizers import normalize_street
@@ -42,6 +43,9 @@ class ClassifierNode(BaseModel):
     type_code: str | None = None
     final_title: str | None = None
     flags: list[str] = []
+    # How a caller names this incident (data/seed/type_synonyms.json): the trainee types
+    # «машина упала в воду», the classifier says «Падение автомашины в воду».
+    phrases: str | None = None
     children: list["ClassifierNode"] = []
 
 
@@ -213,6 +217,7 @@ def _build_tree(types: list[IncidentType]) -> dict[str, list[ClassifierNode]]:
                 node.type_code = t.code
                 node.final_title = t.final_title
                 node.flags = list(t.flag_codes)
+                node.phrases = type_phrases().get(t.code)
             level = node.children
     return by_group
 

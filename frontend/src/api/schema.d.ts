@@ -2779,6 +2779,8 @@ export interface components {
              * @default []
              */
             flags: string[];
+            /** Phrases */
+            phrases?: string | null;
             /**
              * Children
              * @default []
