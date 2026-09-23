@@ -1,155 +1,172 @@
 {
   "opening": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Помогите! Касса горит на станции! Кассир обожглась, лицо и руки!",
-    "bytes": 65663,
-    "sha256": "dfabeb1dcd7e1de8a5cb70f0a7fb2a64bdfc04f39194d3823224b66a6dcb717e"
+    "bytes": 94502,
+    "sha256": "77e6819abcb30be1e2967bf907f136587f628b57f21930e1783f8e0e5ccd381d"
   },
   "r1": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Касса горит! Прямо внутри огонь, стекло уже лопнуло.",
-    "bytes": 47691,
-    "sha256": "3108e8796da4f9851b6ab6d974f26a0d2d857bde6118b40a7d8cf59f80ab5aed"
+    "bytes": 59812,
+    "sha256": "6ef04a0ffc4d6b4bab4fed7fde51ae12278a639b01c066e4304dacc435651052"
   },
   "r2": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
-    "text": "Кассир выскочила, у неё лицо и руки обожжены. Огонь не тухнет.",
+    "text": "Ой, огонь прямо внутри, стекло уже лопнуло!",
     "bytes": 52288,
-    "sha256": "900eb36d198bf51efbb28fc238aca661cb0c9f31fe5e0ab117d85c48d77268bb"
+    "sha256": "2a871de2ae3569d930a395969d48197cd9fa9d8d6275451ec432f23ba2e909a8"
   },
   "r3": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Станция Текстильщики, железнодорожная. Платформа в сторону области.",
-    "bytes": 67753,
-    "sha256": "0fb0b811a2cba8bb3884bd214f2393dcb7e434f8d66315883523a981d5d4cd09"
+    "bytes": 86979,
+    "sha256": "8a7701ed0e924de9320c6300db9595bb24947bed0b95b7e3c9aca2308e881ac3"
   },
   "r4": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Подъезжать со стороны Люблинской улицы, там для служб проезд есть.",
-    "bytes": 56050,
-    "sha256": "a7c9348a4b355f208f70a5333555e061158e34e6318ff9042adbb2c13edb38e3"
+    "bytes": 69007,
+    "sha256": "eadaa3780e0ec0f644a4c40bb0f3b854ccd296af98c951d63605b241257c454d"
   },
   "r5": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Москва, Текстильщики.",
-    "bytes": 20524,
-    "sha256": "59a113c217395067a87eae86083e787580a6ffa4f43d8120ec218e243de6179b"
+    "bytes": 38078,
+    "sha256": "0026e2ae3f4292f35df78d7fd2a2384872a37865833f4d0be58551f56d6e04cb"
   },
   "r6": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Одна пострадавшая, кассир. Ожог лица и рук, но в сознании.",
-    "bytes": 48527,
-    "sha256": "1e4cd79ffeb406b02cccbaa458405c3a3056f395a128df1e65091eb7d7a54fed"
+    "bytes": 63991,
+    "sha256": "32b9346dfc97072d202b5269ba770c0ffa24b25dbc385e00e3959bd72309b3fd"
   },
   "r7": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Назвалась Гвоздикова Анна Павловна, сорок пять лет.",
-    "bytes": 44765,
-    "sha256": "16406a15f8a690505bab1afeb5c666fab72356dd35e8b7b70b63faad219cdd9f"
+    "bytes": 59812,
+    "sha256": "2167fe654dec8463809dabbc5c68fdb4af596126c3aa9af93937e0857c9982ce"
   },
   "r8": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Дым на платформу тянет, а тут людей полно, электричку ждут.",
-    "bytes": 51453,
-    "sha256": "a4face1401be301e5599c2b9131d17b5f7a66bb334c7d2f41629411f99a1ab4c"
+    "bytes": 61066,
+    "sha256": "4841feac517e275ef1549005081ec4d9f4e8755bbe713d5418d35a4d6d60cef6"
   },
   "r9": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "В кассе была она одна. На платформе человек тридцать.",
-    "bytes": 44347,
-    "sha256": "7be56a42e5c56490589cb6f22a80b12d649d9ce0c39d84261afe9077b41632e1"
+    "bytes": 63991,
+    "sha256": "0e5ac043eec247fcc726e1a59e89ed15aaf5d04402ccae6b4e0afcd90785c71a"
   },
   "r10": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Минуты три назад вспыхнуло. Сначала дым пошёл, потом пламя.",
-    "bytes": 50199,
-    "sha256": "0ef956d3d9a8a3022df05dff16594e0feb23050847e3d3571a73d3cb7cb267c8"
+    "bytes": 80292,
+    "sha256": "d0e64d546fedadb2931435ace68a285f1e2e1888a9c8d893a54c00d709475352"
   },
   "r11": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Беликова Юлия Викторовна. Я очевидец.",
-    "bytes": 31391,
-    "sha256": "12fc04603d7021c086016f6a876f5a14d4f2e54305d08ffe01df51bdad1db3ec"
+    "bytes": 49781,
+    "sha256": "bf05d6b856e7b996f002dd47ba7116451ac46c22dff0dcd3f2daf955738e23da"
   },
   "r12": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
-    "bytes": 58976,
-    "sha256": "5320fbcfbfd8b4198a0dc3f7224cc87c91005d42033d5a2add1c6d8972c75e85"
+    "bytes": 85725,
+    "sha256": "613e359b46470a37b6de42cb04e2ce62ea70ced69a5e3e57d1ff161068977bcc"
   },
   "r13": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Я пассажирка, электричку ждала. С кассиром не знакома.",
-    "bytes": 44765,
-    "sha256": "339358ba0b14818c833ca813b294cc92884fad63e7140072884122d0e025adc5"
+    "bytes": 70261,
+    "sha256": "2e8d615be16983dc00d7c7cd11a6d4c1ee1a61f27a7256fda4bfe63f97e18a49"
   },
   "r14": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Это станция, платформа. Подъездов нет.",
-    "bytes": 32226,
-    "sha256": "5b17808cf44a8ee1b1fd35f7982a81fbcf46b070413b48b8cdd9739e5a5f234d"
+    "bytes": 52288,
+    "sha256": "f4366c5bbb6fc7ae380fd9bca9e7c3475bd1b33bb0fca6700016372e8616981b"
   },
   "r15": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Что? Тут объявления по громкой, повторите!",
-    "bytes": 38078,
-    "sha256": "2dc20cbd538e8eb3f4ad69db003dd74c2d15d62fe26b215ed52583d643a10b06"
+    "bytes": 53542,
+    "sha256": "baac5476b29c63e45427e264077b67f0064b65974756a3f47ddccfdc16abb992"
   },
   "r16": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Не знаю я! Людей с платформы уводить?",
-    "bytes": 35988,
-    "sha256": "3ddd13b0bd754f3d5cbf33c3ff71d7d2140f26e84472a61be65ae268cd750bdf"
+    "bytes": 62319,
+    "sha256": "816370e0c53e43e2ba8fe004d4743ae2205b420b9a36051012619c2f9342916c"
   }
 }

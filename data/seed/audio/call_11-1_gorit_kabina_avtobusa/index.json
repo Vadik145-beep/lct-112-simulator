@@ -1,155 +1,172 @@
 {
   "opening": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
-    "text": "Здравствуйте, тут автобус горит! Кабина водителя занялась, дым валит, пассажиры вышли!",
-    "bytes": 87397,
-    "sha256": "9986571ac7fbbd2d7acd6a19f6767faeb18beb55303ef7464b923862dbb0bae2"
+    "text": "Ой, тут автобус горит! Кабина водителя занялась, дым валит, пассажиры вышли!",
+    "bytes": 70261,
+    "sha256": "815672e43670d1a41f57e3a974dcfb16a788b98423cb79d482e35243bdfff04e"
   },
   "r1": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Автобус горит! Кабина водителя занялась, из-под панели дым валит.",
-    "bytes": 67753,
-    "sha256": "99f18a3fe0e28fc6902f396d13e844ec765f72d3e31e8a83b851ae50fd87105a"
+    "bytes": 75276,
+    "sha256": "1bec1314c5eb20d4c235abe3620e63f6159c68036c312e17a8dde03efd315132"
   },
   "r2": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Уже пламя видно через лобовое. Водитель огнетушителем пробовал, не помогает.",
-    "bytes": 81964,
-    "sha256": "227132f6f902ebb97b3eb22a86fb1a3d1e901553fa5ac434ae1f6d0e42c44c9b"
+    "bytes": 76530,
+    "sha256": "d787966a6c60cb144dce8dd0728d599e5c88cc27def1e2b0e0155e782823ca71"
   },
   "r3": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Дмитровское шоссе, в сторону области. У автобусной остановки.",
-    "bytes": 76112,
-    "sha256": "3a65560979f79d076b0b4e8e2eceadf52b1cee778ce908c19935a54380fb68f5"
+    "bytes": 56050,
+    "sha256": "30459e4ada9f4e02172dec2ff318929e2a00ec9df7c133b3bbe46344b5c27f87"
   },
   "r4": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Остановка называется Лианозовский электромеханический завод. Номера дома тут нет.",
-    "bytes": 82799,
-    "sha256": "96b341b5fb04d9cfc41eab847bb08f4240608fb4fd48a670da4de5ea33bff11f"
+    "bytes": 79038,
+    "sha256": "7977987e60b2d19b00192dacdd76c35de014ecb7b42333b7e6ac3814e4bca6fd"
   },
   "r5": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Москва пока, но до области рядом.",
-    "bytes": 37660,
-    "sha256": "7d6862199334415e94342b1a3042d85b2d5361304a8a8db8d3c925577a00d7a4"
+    "bytes": 38078,
+    "sha256": "8633747b6f02cbb1608c1ff0fba59bbc135278fe4bb2eb281de28087a8a4ff88"
   },
   "r6": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Пострадавших нет. Все вышли, и водитель тоже.",
-    "bytes": 51035,
-    "sha256": "46c85865810f8fc5c91b6f3dccfa4740a30a39ef70f450284259dccb3e771d2c"
+    "bytes": 43511,
+    "sha256": "67359235b3afd95bb36ff918878a00efbe9606934bfe0375eff0cda4b81f43da"
   },
   "r7": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Бак сзади, а горит спереди. Люди близко стоят, я их отгоняю.",
-    "bytes": 70261,
-    "sha256": "a34a4dc33f05c9e05c03c7bccad96ad2743307374224fcb777afc3487a7abd0c"
+    "bytes": 65245,
+    "sha256": "f751607965cc9b5477bc2f383aeacd9a433a12248d9d406270c9d6dcd1d11e2a"
   },
   "r8": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Автобус, маршрут шестьдесят три. Бортовой номер пятнадцать тысяч четыреста семьдесят семь.",
-    "bytes": 99936,
-    "sha256": "10377fc6d0d81467542c2b2e7f2e3a57e6ffa8f122dc17f834aa9e917960e3c8"
+    "bytes": 81546,
+    "sha256": "ecd731ce7e3d6f75e0f19473fea59410e4ef611ed9b439a50bc7de141dbe2a74"
   },
   "r9": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Государственный знак не скажу, он спереди, а там всё в дыму.",
-    "bytes": 59812,
-    "sha256": "444e228d180ed5dab94d6d6fbf2fcaad9a89662ff35bf9d3875cd43582869ed1"
+    "bytes": 71515,
+    "sha256": "26398135a021eed94934582c692ae9da788e0364a75be260a08267fd4a6dea4c"
   },
   "r10": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Пассажиров было человек двадцать, все на остановке стоят.",
-    "bytes": 59812,
-    "sha256": "592646e50168642b666e1c0e59bca4ba5df5c758d78fb6056938baca0499d6fa"
+    "bytes": 56050,
+    "sha256": "75378473ac0f9d6fbc79c2af897e2267882cc3326c43f4cc10841d0f6e881a1c"
   },
   "r11": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Минуты две назад задымило, сейчас уже горит.",
-    "bytes": 53124,
-    "sha256": "0362bb541f96d9b8da09c8099ac04ca849a3fd543e949c7032c1af195a8ab722"
+    "bytes": 38078,
+    "sha256": "49a58db3fc87897ab3279c20cc15a34fc80f3eaf2ea2ef52aae4374ba27bfd61"
   },
   "r12": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Титов Павел Петрович.",
-    "bytes": 27629,
-    "sha256": "921f16ce579f1e8bdfcb39d78c14331be0d9cd97470a8f2e0fbe90b3313d7bae"
+    "bytes": 28047,
+    "sha256": "ba372288e7a3adf3fb51a22f4c1305ad0d48d0752fb004c2526bc313efec2ca0"
   },
   "r13": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
-    "bytes": 77784,
-    "sha256": "ceff8c548e621c8286293be86650dec239bc79c8ebcec6430d0e6a090b8fceea"
+    "bytes": 61066,
+    "sha256": "0cc934353d901bae552773648e1e30b2ef84e8b257b2df1db25f7aea51f85e34"
   },
   "r14": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Я пассажиром ехал, вышел вместе со всеми.",
-    "bytes": 49363,
-    "sha256": "80385bd672c295cad98cab434a19811f29280ac6250b6dc9cb0feb2e6dc584c6"
+    "bytes": 43511,
+    "sha256": "5459de6ff7c6c1257f62042360dd524088857dfd28829fd4cb760ce31b18e071"
   },
   "r15": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Что? Повторите, тут шумно, дорога рядом!",
-    "bytes": 41839,
-    "sha256": "918de7dd9221292670838662706b212c316f157315410635fbc960477796f440"
+    "bytes": 38078,
+    "sha256": "7faf9b470c652f8da11fc9a3954ef9f7b68dc8e4887b1d905f99486ce661d6e9"
   },
   "r16": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Не знаю я. Людей подальше отвести?",
-    "bytes": 44347,
-    "sha256": "15c583ef1343e78b4310de5672d893379c3fd642c229eced3ae73179a8334304"
+    "bytes": 40586,
+    "sha256": "9329fd337cc48a6bc896ce8c28ab94e94ec8c826b0039aaf603aa94060884636"
   }
 }

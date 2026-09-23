@@ -1,137 +1,152 @@
 {
   "opening": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Здравствуйте. У нашего подъезда молодой человек стоит у домофона, кого-то ждёт. Мне не объяснил, кого. Я старшая по подъезду.",
-    "bytes": 183946,
-    "sha256": "079ee92cf584a8b3621330cc0e966ebed180e384d2aa3d715ca01be50d5971ad"
+    "bytes": 175168,
+    "sha256": "4ea0993b5eb708cb5ddec7242ea8a1bf40cd88b8036656b40ab5d2af604f4490"
   },
   "r1": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "У подъезда посторонний стоит. Молодой человек, у домофона, кого-то ждёт.",
-    "bytes": 120834,
-    "sha256": "409b6459b632fc366118d5fb428347ecf908ad3355e751d8ce3921f70c981a1a"
+    "bytes": 100772,
+    "sha256": "bbdb2c2034b32d7166e4b58f005d3c8070ed011141ab4cbfeb409e1a9fd69377"
   },
   "r2": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Я спросила, к кому он. Не пояснил ничего, отвернулся. В подъезд не заходит.",
-    "bytes": 131701,
-    "sha256": "b4988f52c957f78961cff60300ed3bc05c510f7f37ede9cc849254e2073345fa"
+    "bytes": 113728,
+    "sha256": "c48433748389e39682b78bfef7a254806c94f5da24edf71e7af5b3c4e6ff3b26"
   },
   "r3": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Матвеевская улица, дом двадцать восемь, корпус один.",
-    "bytes": 99100,
-    "sha256": "7c7af59e457b5fa677cffc305ada0861eb88be9404448db4033516f120f767c0"
+    "bytes": 74022,
+    "sha256": "265bb3f62c479c3ebeb447282b599cd9bdd4064d4e28f5ad62fad10799232779"
   },
   "r4": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Пятый подъезд. Код домофона сто.",
-    "bytes": 57722,
-    "sha256": "a8461eaa85d4cbc8859281a641e18f2640edd66525cd40369223a641181774ad"
+    "bytes": 52288,
+    "sha256": "5893bc252e30ec57e764680f90f23a07a73047a1f48f9e44460c96f79ce1dac1"
   },
   "r5": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Москва, Очаково-Матвеевское.",
-    "bytes": 156360,
-    "sha256": "a3caf0efc5c48e4e2eeccf4a7cb1150627af6bb1aee62aedc8873b058ad1368d"
+    "bytes": 48527,
+    "sha256": "c3b3ad421fed162f404228952405b0ae1e4941d9f12fac00b87f19bcfb7f92c3"
   },
   "r6": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Пострадавших нет. Он никого не трогал.",
-    "bytes": 64827,
-    "sha256": "e18a75fd8ba31d1df58f692c79f8cf56895308b72372df7a38518077133c4df8"
+    "bytes": 47273,
+    "sha256": "769be8eeb394f1ca8bbdecaecc2858561f03849c46e667cfccbeb96ed83e8f00"
   },
   "r7": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Угрозы пока нет. Но стоит уже долго, и это не наш жилец.",
-    "bytes": 93248,
-    "sha256": "a9fc179cc3206288d8595f425d8032a6ebadd162d9b3318651e34ad00f544b7a"
+    "bytes": 74022,
+    "sha256": "a897cab298ec0e24c2cf1597293ed1fbcfa9790edb59a868f9deb9769ea2fe89"
   },
   "r8": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Он один. Больше у подъезда никого.",
-    "bytes": 65663,
-    "sha256": "d8edcc710d1381175e95b9cd61ddf1d3446df0df18d2bbc4475bfa680eef6725"
+    "bytes": 57304,
+    "sha256": "f0d8d9a5c78c35f6e5bde58de9a786a1d18e890821c69612b6af962646d299f7"
   },
   "r9": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Минут двадцать стоит. Я из окна вижу.",
-    "bytes": 64827,
-    "sha256": "8e8d778875b3a3b8567174e41e6257899e2fb3e42e8dd6c5676fce4455e7cd9c"
+    "bytes": 52288,
+    "sha256": "16e86fd7c3e4bf155e22a43b5ba99d4f004ead4522e2cef85f7093379c24da23"
   },
   "r10": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Иванова Инна Васильевна. Я старшая по подъезду.",
-    "bytes": 73186,
-    "sha256": "8943b63157c41c62034675a1b8a2a264f1a93a196b41a45748bdcc700175f7de"
+    "bytes": 59812,
+    "sha256": "55761da238964fc41c9d33acc6e9107be4f07750e106a4bbfaf355708049d32a"
   },
   "r11": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
-    "bytes": 132537,
-    "sha256": "e37d7ad58bff84dbd9d2b27c3745052ea45bdcac9ca3de5d98c013e6df6dcf32"
+    "bytes": 103279,
+    "sha256": "081d96fb8cb41e49423d86e847e5f1a8b7a504facbc34e032b08b9fa54c17d55"
   },
   "r12": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Я жилец, старшая по подъезду. Не родственница ему, конечно.",
-    "bytes": 88651,
-    "sha256": "236e717bba8d532a5901cd9fae2ec71b2f13ab325a473db9ba7f9e3bdcc583dd"
+    "bytes": 95756,
+    "sha256": "e8762d288f86f3bbe585ddc4336a1ba455c1940982abcadde59b0c36b963a7bf"
   },
   "r13": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Сейчас, сейчас... повторите, пожалуйста, я не разобрала.",
-    "bytes": 84889,
-    "sha256": "10fb63b16470071c8d170cdf677040342ac15b4348fae18d404e4aebbff79aca"
+    "bytes": 62319,
+    "sha256": "570c13b6d1fbca2c507e2c791c97d7bab4abfb82be1ac3216827a77c52584f89"
   },
   "r14": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Не знаю. Приметы такие: лет двадцать, синяя джинсовая куртка, синие джинсы, чёрные ботинки, славянской внешности.",
-    "bytes": 178094,
-    "sha256": "da6bce7322bdef9b76452edcb3f9359aa55dca934e1764fcaea5f4231caa43cc"
+    "bytes": 158450,
+    "sha256": "75a365156278503f1d241b9a5f8791ed6e2c3ab99ad3cee7c16263ae9465da7b"
   }
 }

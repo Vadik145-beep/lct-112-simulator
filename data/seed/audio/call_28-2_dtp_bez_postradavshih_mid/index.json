@@ -1,155 +1,172 @@
 {
   "opening": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Здравствуйте. ДТП на Садовом кольце, пежо и фольксваген. Пострадавших нет. Мы напротив министерства иностранных дел.",
-    "bytes": 108713,
-    "sha256": "507fc21207c54b569b017071bda51b4e62b4c42c2fea6645408cae4389b5a607"
+    "bytes": 131701,
+    "sha256": "f333ee6fd2c9b495a8db72d61650855f0e8102ddfec2f796562005e0e486d631"
   },
   "r1": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "ДТП, две машины. Пежо и фольксваген.",
-    "bytes": 36824,
-    "sha256": "a73a8427580e408ceb4e44bc367bf2e9f364546f92a8fc761d9deca4859ae5cd"
+    "bytes": 65245,
+    "sha256": "5368d9cf1dab142ad80134f6d1d1bb78d8d347904dc56f05d590bb1c8ae19cb6"
   },
   "r2": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Пострадавших нет, ранений нет. Обошлось железом.",
-    "bytes": 44347,
-    "sha256": "9cacabd6386a86276dfd29713929408364da311ea7f0dc9eff641154917823e3"
+    "bytes": 62319,
+    "sha256": "a9681a72f2709dac2d055923fbb46aa3cc0d548c0632e07ab1fb300cb2982cf0"
   },
   "r3": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Садовое кольцо, напротив министерства иностранных дел. Едем в сторону Тверской.",
-    "bytes": 76112,
-    "sha256": "b8c8f65c4c668ff8f546171ca23ff0141043e677b89186ed3c995ca5e831b1fc"
+    "bytes": 102026,
+    "sha256": "34946871a09c18eee766d1cc5b68dcdf56686f0ee4e72948b4f4f827309feb47"
   },
   "r4": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Площадь тут Смоленская-Сенная, если по названию.",
-    "bytes": 40586,
-    "sha256": "9f2318aacda270803fcab38308830e4edf1e8933ec92c9f959e5b980498fee51"
+    "bytes": 57304,
+    "sha256": "426976a2d89332d69c62c6de2dee7fbe1b68b016ee5ede7c625fc56bca14c476"
   },
   "r5": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Москва, район Арбат.",
-    "bytes": 21777,
-    "sha256": "6d7484ad56e4f700f65e271699cfa64a6b5e0e3dc93185d8fc67c514866a438a"
+    "bytes": 26793,
+    "sha256": "17becba386d490b0c731c8b663a2293ebe04335eee3b072df1bec1ff74b31ca4"
   },
   "r6": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Пострадавших нет. Оба водителя вышли, целы.",
-    "bytes": 37660,
-    "sha256": "366b97462da7b7a60e203986bed9e11c9eefbd596b1cc613b6b5b327854e599c"
+    "bytes": 49781,
+    "sha256": "7e738f06a2250ae3bf76dd8e42a90c16e5f2e94804deadf65f945ed4cdf8187f"
   },
   "r7": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Стоим в правом ряду. Ничего не течёт, не дымит.",
-    "bytes": 41004,
-    "sha256": "3b4dac05e7c2c65208f5970cd41de5d0f6b37ec199c071f2c540fec161360587"
+    "bytes": 62319,
+    "sha256": "9278450906d49f925828f10ee7fc2363fcd213a6edea1daefefb5d6e715802c6"
   },
   "r8": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Пежо серый и фольксваген белый. Обе легковые.",
-    "bytes": 44347,
-    "sha256": "746a99e158d54a9768e6bcea19c88dc952686dd20b65516439f57fdb72fdd4d7"
+    "bytes": 61066,
+    "sha256": "184127476c4e9d08b35de2baa6cfbf786527ae6d3e31c624803ddea87e1d6bef"
   },
   "r9": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Двое, по одному в машине.",
-    "bytes": 26375,
-    "sha256": "8a5b07346dece76a9b339579ac88a157e01367cc03cd2f829d248d88fdde5824"
+    "bytes": 34316,
+    "sha256": "b1b67818de34326ab184de0c58fb3d230c8c398439127dcb88cb9a63cfab3bab"
   },
   "r10": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Минуты две назад. Только что произошло.",
-    "bytes": 35988,
-    "sha256": "e29e55b2367985cc802c565c35690ed230e20a151dde26b9ed6b66e7e683dde3"
+    "bytes": 49781,
+    "sha256": "debbb70ff7b64f2bba79105ed444f985b17e0f6a45301c12c594d1df1b30a7ff"
   },
   "r11": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Иванова Елена Сергеевна.",
-    "bytes": 24285,
-    "sha256": "828cda17d167381eba3749934d68472bec50622907f06c34dd79b0c271053a89"
+    "bytes": 28047,
+    "sha256": "ad2a16ee60a86204a7462176d50dda4db09ab9d19760ec115e187e7aca5548ef"
   },
   "r12": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Девять один шесть, восемьсот девяносто семь, пятьдесят шесть, двадцать три.",
-    "bytes": 66499,
-    "sha256": "bc47dc19ea4dd774ef53be7e06f5a478031f7b77a57e95194b68f1af5f93b752"
+    "bytes": 76530,
+    "sha256": "bf4dd531c70fa797e44b7f6f5a4babacb00ab45b5fa558f7bfd5a8775965eea4"
   },
   "r13": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Я участник, за рулём была.",
-    "bytes": 24285,
-    "sha256": "60403e410bd182b0575887d44471cca08d56cc897f52c23c3fc14b80b679747f"
+    "bytes": 33062,
+    "sha256": "5d5c9fb67dcb00f97f952053e6f927bc0cd89e43b67f4a987ef44f8aa091fc05"
   },
   "r14": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Это проезжая часть, подъездов нет.",
-    "bytes": 31391,
-    "sha256": "404e1d2726f834dc33948178786660e751037e26a8621e94c42e9cc1690d3cf1"
+    "bytes": 53542,
+    "sha256": "ba66d31959c4d2821fcc1ce64231457a8fc1cec35c74dfd640e1348d5add6141"
   },
   "r15": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Повторите, пожалуйста, тут шумно.",
-    "bytes": 27629,
-    "sha256": "29274de82f12c0900f825fa096638f32ee7e53285e9c5c4a2a1a634366106da2"
+    "bytes": 36824,
+    "sha256": "cf08f35dd15b70333fabea2dcba22a65720c6d1827193958a9f146230cf242ad"
   },
   "r16": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Не знаю. Ждём вас на месте.",
-    "bytes": 27211,
-    "sha256": "21d2748fb96c0e47b56411022694701bf7da9a7368cc0702bd976c8c2fe3871d"
+    "bytes": 33062,
+    "sha256": "00a3e9c3e01d056d8d8b347c51aa2af1fc4d0a427f51c659edaa304257a493cc"
   }
 }

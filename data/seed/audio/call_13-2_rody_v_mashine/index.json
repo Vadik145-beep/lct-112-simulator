@@ -1,164 +1,182 @@
 {
   "opening": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Алло! У меня жена рожает прямо в машине! Воды отошли, мы едем, помогите!",
-    "bytes": 87397,
-    "sha256": "688174f507cb8870c5074a50795d54d71c3d20293880e80d0d6cc2a5059d0560"
+    "bytes": 70261,
+    "sha256": "40ec2942d36a564c4b448d70a9f340988d43f910b5cecce6c95bdd3cfee91242"
   },
   "r1": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Жена рожает! Воды отошли минуты две назад, схватки пошли.",
-    "bytes": 61902,
-    "sha256": "33047454b71ab31958efc845cb660ced8fbdb7dacf20c5ab865fead1f591522a"
+    "bytes": 65245,
+    "sha256": "978f8e099cfbcde0e3536aefe2cd0e4b4974615bc5bbe9027eec6c00edb87cd5"
   },
   "r2": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Срок сорок недель, доносила. Кровотечения нет, я смотрел.",
-    "bytes": 60648,
-    "sha256": "96ab07fac9b2be5e477a6041505680774b8faa5800ed585c4737444471733976"
+    "bytes": 61066,
+    "sha256": "4b0f3589ac18298a80d8d626b7928059ba1db04f4f8a0b73d9dfae05a3ff9a8c"
   },
   "r3": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Мы в машине, едем по Рублёвке от Кутузовского в сторону Жуковки.",
-    "bytes": 70261,
-    "sha256": "bdb9bb1a15d10ab034112f5ee4606ebd1cfed62eaedc57c45c74f4488e7914d3"
+    "bytes": 57304,
+    "sha256": "4037eb44efaeb0b6fb09a9486641b0d203c0f7b8fa3c79c8e63b776e0527d244"
   },
   "r4": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Речку Чеченку уже проехали, впереди автобусная остановка. Название не знаю, я тут редко езжу.",
-    "bytes": 84889,
-    "sha256": "e70fd856dcc1e10fa24cac29e8095b1c15b3bd7b2896fb67af9d2f4bcb973458"
+    "bytes": 90741,
+    "sha256": "5d782b8c14656af7fc12de850b76210ac639c464ad05177b81b96c28b767472a"
   },
   "r5": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Да могу встать на обочине, скажите где, я встану и включу аварийку.",
-    "bytes": 64409,
-    "sha256": "a836f535f98e6d76e5a0b16285265d5a453e4b0ce72468abbbf6d189f69a2da4"
+    "bytes": 63991,
+    "sha256": "b20501da1fd008053933f135911096f4a2004612488d21a9d82f84f6ac2d4ccb"
   },
   "r6": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Пока Москва, но мы к области едем, к Жуковке.",
-    "bytes": 49363,
-    "sha256": "fbb1977bade913a506d5413908876774451db8e34017163923ac534f93906e42"
+    "bytes": 46019,
+    "sha256": "32ff1ad6ec674e4743181d52b111024d213f6a38a1f454905a1a52bc6208e177"
   },
   "r7": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Жена. Ирина, Соколова Ирина Ивановна. В сознании, дышит часто.",
-    "bytes": 95338,
-    "sha256": "652160cb88a62cd3522764616eedcdb5d449e0f64843e6faceee28cdca1019e9"
+    "bytes": 81546,
+    "sha256": "24e3141c248769bdc7cd128bcb916ddd7eb5697d7b06f3376955a008dc176787"
   },
   "r8": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Ей сорок семь, вторые роды. Схватки каждые несколько минут.",
-    "bytes": 63573,
-    "sha256": "9b7f9d10b5aebe277b03d59791aa4a7f5d9858a716976a88112ad5a29239a531"
+    "bytes": 53542,
+    "sha256": "9b1036922edda622ffdc5aaa96710025a1470f2e72bfef32b1f0b189ce197d27"
   },
   "r9": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Ничего не горит, ничего не случилось, просто рожает.",
-    "bytes": 49363,
-    "sha256": "81f9051c0baf421fcb0922c9df1bc9050f7029d7556cd786f009746f6017fba0"
+    "bytes": 67753,
+    "sha256": "35b3f484a572ed9e26300cd3e7daaa29f54bfb37fb9ed2f4b17361742cd96fda"
   },
   "r10": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Нас двое, я и жена. Больше никого.",
-    "bytes": 38914,
-    "sha256": "d2aa97cbe60843598c2ac3f4f508a31f4f0b36a2e8307fdd07e6a07185bddc09"
+    "bytes": 35570,
+    "sha256": "4384fcf9a36c83c7b155fe1185fd78bc034d0a29223c777c5b420b2fa3ce12a8"
   },
   "r11": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Фольксваген, синий. Встану у обочины, аварийку включу, увидите.",
-    "bytes": 64409,
-    "sha256": "9dd24ffc582d6b343177bb55d91dffc2dc92a462f0d3f9a96aaccd67ed5e45cb"
+    "bytes": 77784,
+    "sha256": "c82dc6567640c7c89e9539cad89df29e064245c4eaf521c3cd21eab69cb83bee"
   },
   "r12": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Воды отошли две минуты назад, я сразу набрал.",
-    "bytes": 40586,
-    "sha256": "b0a06120eeff461d53b204d8e9c2b5e2b76708c25ad997a15e15263f5e97ab68"
+    "bytes": 41839,
+    "sha256": "28fe09e52e282e1612e1729c26743b68e7aa1a62695fe929fd99864d0f1e4878"
   },
   "r13": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Меня? Я муж. Жена — Соколова Ирина Ивановна, ей рожать.",
-    "bytes": 58140,
-    "sha256": "bb6a3bc9162ee02941d60808aff418a01daa45f96464de9d88d17fdbcbf4b3e6"
+    "bytes": 82799,
+    "sha256": "3c3d61f2e33734f5a69fe482cc82efb7afbcc166947ec0b42ebc91549e796f14"
   },
   "r14": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Девять один шесть, восемьсот девяносто семь, пятьдесят шесть, двадцать три.",
-    "bytes": 81964,
-    "sha256": "8f3e576bc45b738bd2f40eb5e8fe7d84bdd7e4d5832e9f3fb46a220197431be0"
+    "bytes": 65245,
+    "sha256": "c6a2038fc648a6fa3832d66ef3bd7dbd0893256fc8e681fd57c68a003e06f286"
   },
   "r15": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Муж я, за рулём сижу, она рядом на переднем.",
-    "bytes": 46437,
-    "sha256": "e50a162f3a519ad26285104b67880cc673eda534d421390b087115d6c725df65"
+    "bytes": 51035,
+    "sha256": "157ca2f12e9f9698bc0016a11eea24da3158ccab4b7f36dc0cc3566b7d79c116"
   },
   "r16": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Повторите, я за рулём, плохо слышно!",
-    "bytes": 35152,
-    "sha256": "5170882112359c9ae867c3db51c1852ededddd0efd9c1ce66fe66a95193ed320"
+    "bytes": 33062,
+    "sha256": "14435148e10f1a69e9fd727c12d6a8688d554c9687f66cd4c078b64c81bb17ac"
   },
   "r17": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Не знаю я таких подробностей, вы скорую шлите!",
-    "bytes": 38078,
-    "sha256": "1c2c6a972b389732d8548ce0f0ca443fec8dc57318fc00e3d746d2053ccb3c76"
+    "bytes": 46019,
+    "sha256": "7e3c9b302fccd0de8cc69e8dc222d0b994f883630e3abe17632cd2f54c5c3112"
   }
 }

@@ -1,164 +1,182 @@
 {
   "opening": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Жену затащили в машину! Двое, силой! Уехали в сторону третьего кольца!",
-    "bytes": 80710,
-    "sha256": "62522c8674fa113aeeb32efd695c63b81ce3cac72a7943f50ede9e65c24ffc60"
+    "bytes": 65245,
+    "sha256": "e38bc3a2d8c2ca8ddd0b381ece4301afae8af41304827311d324c390d4588a22"
   },
   "r1": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Жену мою в машину затащили! Силой, вдвоём! Она кричала!",
-    "bytes": 78202,
-    "sha256": "f2bd5ea142c7f967e6117f4812f371db115fb523730e550912427c9a3bf4a5ed"
+    "bytes": 70261,
+    "sha256": "1291969feb3318a3f6e23801a3237ac132c723bd951e5fd8cefe3d5a76c55564"
   },
   "r2": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
-    "text": "Я в двадцати метрах шёл, не успел добежать. Они захлопнули дверь и по газам.",
-    "bytes": 80710,
-    "sha256": "5ea5a13e9fe1353d7bd593767df2d218a076b8ee17d07e790f9eb4ff9ae78bbe"
+    "text": "Ой, они её силой в машину затолкали, она кричала!",
+    "bytes": 52288,
+    "sha256": "bf9377ee49d19db49e2c1080382bc5dd774fbc4073f38d17ccb0ab95804e46fa"
   },
   "r3": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Комсомольская площадь, дом два А. У Бургер Кинга, прямо у входа.",
-    "bytes": 80710,
-    "sha256": "78bbc89cc2b6f30657864f304c1c408c395f5ed0a2c16f7b00271d62fd4d332c"
+    "bytes": 65245,
+    "sha256": "1c5dde0fbd788591b07acbbb5adb8bde1c6f46c5016c511f45ec7e22d79d1c7c"
   },
   "r4": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Москва! Три вокзала, Комсомольская.",
-    "bytes": 51453,
-    "sha256": "2974f0e6094356ff5623f21d61adb809db7d3a42dc51d7c0e9936ac8fadef0d5"
+    "bytes": 34316,
+    "sha256": "4776179840ca524597899de7099a561b3b0306174afb2324bef9cd4bd4825173"
   },
   "r5": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Жена. Она вырывалась, кричала. Крови не видел, но её тащили за руки.",
-    "bytes": 90323,
-    "sha256": "6ae9e37430fe66f9cc5f6c7ea159028d7141d6da98bd4cff8b7884a96bb89134"
+    "bytes": 84471,
+    "sha256": "eacd31b6698f70f8c08452c4e50a167bda882f25f96cfc7e8b61e93e5ac48770"
   },
   "r6": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Тридцать четыре года ей. Была в красной куртке и джинсах.",
-    "bytes": 74440,
-    "sha256": "0080f7e984a8a66cf23034adb7e7b27089379e60a63281806bd7257ee0dc3688"
+    "bytes": 58558,
+    "sha256": "cb5178a0fdc065bd3cf2dcc092e5acfd4273430c43c645b457b7b38f9dffc271"
   },
   "r7": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Уехали уже. В сторону Третьего кольца свернули, на эстакаду.",
     "bytes": 66499,
-    "sha256": "2336e13e2782b7c18b72262508dbe92fbc86651ae485e82251e484dccadc8fdb"
+    "sha256": "5ee9fee1b312e15804deef4adcea056219a5dc209325ebd47566a086b37a5e22"
   },
   "r8": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Двое их было. Мужчины, крепкие, лет по тридцать, в тёмных куртках.",
-    "bytes": 83635,
-    "sha256": "548ca5343f406ba522f9e4f047c9c7dd146a4208d070782eb03fa95d3e85073a"
+    "bytes": 76530,
+    "sha256": "7f6a7197b09dc1894605834d738937e8a791cf2d33fe93b5f763efd969c5d130"
   },
   "r9": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Машина белая, иномарка. Номер не запомнил, всё быстро было.",
-    "bytes": 66499,
-    "sha256": "77afb1d8f45a044a30136098f9d210f548e42aca9f0992d96a2459d31c110186"
+    "bytes": 62319,
+    "sha256": "eff0f67274cc5444d982ebf3450e691b6b4064876eab05e019e0fac5d761103d"
   },
   "r10": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Двое нападавших и жена. Больше в машине никого не видел.",
-    "bytes": 64827,
-    "sha256": "4f76993316e5507f93c3fd255db3a16b5c24e0c767371fa629110591596bf22f"
+    "bytes": 53542,
+    "sha256": "c087e2fad34b8eb79a9770627781cca0c5c96549f5da34adef52bc3e82b992f1"
   },
   "r11": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Минуту назад! Прямо сейчас, я вам сразу звоню!",
-    "bytes": 51453,
-    "sha256": "db4a0b93c5af63032322a545274d35fa0c918def2fd5db0dc61386691e1a351f"
+    "bytes": 52288,
+    "sha256": "ec4518f049253ca4b6bd071c41a530ad7c0ace9d3292789ff65ff83dfac9a6fa"
   },
   "r12": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Иванов Илья Львович. Жена — Иванова, Ольга.",
-    "bytes": 53960,
-    "sha256": "4419e33289cc7a1ef861aad89df3b62c66fbb9da00f6122cd391213fb0dd159c"
+    "bytes": 53542,
+    "sha256": "027e5afb999ba9993323bb6846efe92ff26628f420496251c469ece388d53836"
   },
   "r13": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
-    "bytes": 81128,
-    "sha256": "2a5fcf57f07a3b5a4d7ce748981f85fbb487c58379123a5b758581bc78c46c66"
+    "bytes": 62319,
+    "sha256": "f6ea5fcc73d1e94de4ad83dea601ab224250bc041b4dce1efadfd8bc512ead3a"
   },
   "r14": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Муж я её! Рядом шёл, всё видел!",
     "bytes": 38078,
-    "sha256": "a7984d4a94ca35dec2dd762768c5bf7ca7e5e1b3da8697f19557758f2b61e214"
+    "sha256": "5523e7dbc41d4c64068d9619b783fc27518a60f5819b4b962c50c70c8f002144"
   },
   "r15": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Какой подъезд, это площадь, улица!",
-    "bytes": 48527,
-    "sha256": "4858b167955baf46ae97863dce9c9fa388290311e155641a66bf7b066ac54565"
+    "bytes": 47273,
+    "sha256": "fd278a201a6f78936ecf2064dfebcd5138997ea7188644b7d84ff9f0ced91925"
   },
   "r16": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Что?! Тут вокзал, шумно! Повторите!",
-    "bytes": 44347,
-    "sha256": "812db6c9038a68ef8f5c1c072dd20a51b5fffa3a002d837594f32e194ca8b7e3"
+    "bytes": 47273,
+    "sha256": "6a1e7fc5f7ee64650827e010191bbe8d29a30f849a7dee7e63a81160a5653c86"
   },
   "r17": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Не знаю я! Телефон у неё с собой был, может, дозвонитесь!",
-    "bytes": 53960,
-    "sha256": "331b6efe09d57cb6c7fdd805c5e017e67e7a48b9591e4215ba4a3bdcc8868d39"
+    "bytes": 57304,
+    "sha256": "47a8b64dd9a34e9158b06c13c8c739fd2ec31751158255997cfe826219b781b2"
   }
 }

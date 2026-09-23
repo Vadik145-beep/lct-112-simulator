@@ -1,146 +1,162 @@
 {
   "opening": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
-    "text": "Здравствуйте, у нас соседка за дверью кричит, просит помощи. Дверь закрыта, открыть не может.",
-    "bytes": 80710,
-    "sha256": "7ca0553994a70182bd805d5f8f311e6caabe2675dad2923ccaa46fae28f7403d"
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Господи, у нас соседка за дверью кричит, помощи просит! Дверь закрыта, открыть она не может.",
+    "bytes": 94502,
+    "sha256": "f4fd05cc291a782f435a4f529aa6ab7de0cc7706effddc06bf818e87c07783e6"
   },
   "r1": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Соседка за дверью кричит, зовёт на помощь. А дверь закрыта, изнутри.",
-    "bytes": 54378,
-    "sha256": "71b5c1b32383cdac1429067a5baaa1b5eb79b47b68d50e8d479d3f1e09aec50d"
+    "bytes": 89487,
+    "sha256": "2c46881657d212d16105b38c5a9ed78c47f90bee9767e4a9288d8f7029b23194"
   },
   "r2": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Голос слабый, еле слышно. Говорит, встать не может и до двери не дойдёт.",
-    "bytes": 69425,
-    "sha256": "33e68c4798d9149637dd85bff2247ea635c477290eb67118550a6550ccf7bdc7"
+    "bytes": 74022,
+    "sha256": "38525e9bfec76094f83df21812b46e66cacf33991673d17e5f12a1ee6e8a71ef"
   },
   "r3": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Проспект Маршала Жукова, дом двадцать, корпус два. Квартира пятьдесят семь.",
-    "bytes": 75276,
-    "sha256": "712a9583805b6c78a9b9f13a9ffde4259adf4d454c7ca2f514e716b9789e5ed6"
+    "bytes": 86979,
+    "sha256": "400e201a0e90585c955b7685bc10782378020d2f41e64379e644cf2e7f40aac5"
   },
   "r4": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Третий подъезд, пятый этаж. Код домофона пятьдесят семь вэ.",
-    "bytes": 56050,
-    "sha256": "fd9991cd921318dbe5211ac888a7b924b1a8ed6e3229761d8c600d130740ad88"
+    "bytes": 65245,
+    "sha256": "b544ed47e479c54a0f8597937ba8e2d05fbfa93de72a6af5dbdf38e7999ac893"
   },
   "r5": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Москва, Хорошёво-Мнёвники.",
-    "bytes": 26375,
-    "sha256": "4a8ed5564a4ea2240223ea24d5cb96274214376c752af3ea9b3f9a610100d4b3"
+    "bytes": 40586,
+    "sha256": "80585b7c1b227a1a409173020df99d7808149c9643fc542542b6b3d61c850838"
   },
   "r6": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Не знаю, что с ней. Мы её не видим, дверь же закрыта.",
-    "bytes": 47273,
-    "sha256": "0ff2777d1a9be9cfe4b1cca0053ce92eacf087dd5d07d9ad42f32722202edfb9"
+    "bytes": 67753,
+    "sha256": "2af31029d82d44111768c8083d6f2a93a95db48a4a78f3559a385ffb768ee9e4"
   },
   "r7": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Она одна живёт, лет восемьдесят с лишним. Ходит плохо.",
-    "bytes": 49363,
-    "sha256": "a618d327825b531009418e1e8c14135bac2852555641a774a9e5117152d7763e"
+    "bytes": 74022,
+    "sha256": "dd29541c36bcdc1c4bc7fef324c8d1155b6e2dca762cc91b06b0407eafe6a5ce"
   },
   "r8": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Полиция уже здесь, двое сотрудников. Говорят, вскрывать нечем.",
-    "bytes": 56050,
-    "sha256": "829cab9ea81aafb7d33d260226b3bb7dc8ad4222ddde14eac46298dea74ef2fd"
+    "bytes": 81546,
+    "sha256": "b265b4c9090f69d8bdfec22d8ff28a2aae811e23683d3de03394294ee5a45836"
   },
   "r9": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Она в квартире одна. На площадке мы с полицейскими стоим.",
-    "bytes": 51035,
-    "sha256": "4d039f2b2c60a959fecb579594e232a09db8d02a1f05838561d77e1a4582e105"
+    "bytes": 65245,
+    "sha256": "a43d76ee15d4324a0ad8f5494bee622a4ff8e82fd2e6ef390ac6c2ec5f3c143b"
   },
   "r10": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Минут двадцать уже слышим. Сначала думали телевизор, потом поняли, что зовёт.",
-    "bytes": 67335,
-    "sha256": "b6fa05ac241bfce33885276edfab090e53ac7d3406cab95f0b67893b1f314af7"
+    "bytes": 80292,
+    "sha256": "a2cf5ebbff84d9115e9b297e4d23b708760ff7697271865ca29d7bce55dd6f4e"
   },
   "r11": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Иванова Елена Сергеевна, соседка её.",
-    "bytes": 35152,
-    "sha256": "48732252389e51d832f3bc882bcf7206e61ef2a5100ac9b57b5746b969b0fc3b"
+    "bytes": 48527,
+    "sha256": "c616ae046cddd536e787d54b3ef598182b1332811f31346d6e74a9e2fa44f765"
   },
   "r12": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Девять один шесть, восемьсот девяносто семь, пятьдесят шесть, двадцать три.",
-    "bytes": 67335,
-    "sha256": "4f619982c23338676d0036538df74d0c75af4bbb858f19f5018eafebede41f7d"
+    "bytes": 84471,
+    "sha256": "c374706ea5e4ad9ddbfbf516a6d321a6e3d6aec90ecbd93c9ca9357fab6f6d2d"
   },
   "r13": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Соседка я, из квартиры напротив. Не родственница.",
-    "bytes": 46437,
-    "sha256": "fe266d632499563d0adb1d4eaa3c7bd688b98c4d461b334765e5436edba730f9"
+    "bytes": 59812,
+    "sha256": "0863c3743d490f82aebe6eaaab502f8d3a7634bbe310594e167fe7c19067bdc5"
   },
   "r14": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Повторите, пожалуйста, тут шумно на площадке.",
-    "bytes": 37660,
-    "sha256": "c9aba23af52b13ef1672b8ffba12e769c2088d7526edb5328d6ffba0ea566651"
+    "bytes": 40586,
+    "sha256": "e8ef0f532110849a61e78565cfd9cb281ade9bf7505285e2242d666a02b1093e"
   },
   "r15": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Не знаю я. Может, у неё родственники есть, но телефонов их не знаю.",
-    "bytes": 53124,
-    "sha256": "926f52d196cab4ede47665f0a4a5f2ee4ad5a64fe506b75304e579b4760627ad"
+    "bytes": 79038,
+    "sha256": "58b42999dc8ffc365bcb60749f904cc16f2c81c4b2634c4bebe4ff086ffb4f65"
   }
 }

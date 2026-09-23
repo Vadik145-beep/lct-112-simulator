@@ -1,146 +1,162 @@
 {
   "opening": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
-    "text": "Здравствуйте! У соседей крыша горит! Пламя из-под конька идёт, дым чёрный!",
-    "bytes": 74440,
-    "sha256": "aea253ce184695f2e21711ad07111b33bbceb5c95e7f71ebf8f2fa4adfc2f336"
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Господи, у соседей крыша горит! Пламя из-под конька идёт, дым чёрный!",
+    "bytes": 82799,
+    "sha256": "bbaaa65ca703b8f45573f5c5a195e4b7ca601fc30bcd4a8b3ae8401ac36f7744"
   },
   "r1": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Крыша горит у дома! Пламя открытое, из-под конька выбивается.",
-    "bytes": 55214,
-    "sha256": "189a2f2e4e0529d7fd601de4c431f812f1e4c81a8b5f545aa5693b8f2e2f618e"
+    "bytes": 74022,
+    "sha256": "d15d060538cfec4021de21f4db6d23659fad79770ffbd22eddf2f93bce3476be"
   },
   "r2": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Дым чёрный валит, уже пол крыши занялось. Само не потухнет.",
-    "bytes": 52288,
-    "sha256": "86f4fa71ed4508543cd357e39a13f6bddb8e691eb713f00ee16d9255ff96e995"
+    "bytes": 69007,
+    "sha256": "eef08c6d1f79bed4cd3c8c4a0393fc855dd18d3512add8153e35758a2e6af5a1"
   },
   "r3": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Улица Станционная, дом двадцать восемь. Частный дом, одноэтажный.",
-    "bytes": 62737,
-    "sha256": "a07cccf672efbcacf51a8e96bb34b59f4f5463fd2f126a8a388963464473860d"
+    "bytes": 75276,
+    "sha256": "f7c16bec25591d10f6c31ba67b4ec0cf63a6e37a6c3553f629f888910f6f5cfe"
   },
   "r4": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Королёв это, Московская область. Не Москва, нет.",
-    "bytes": 38078,
-    "sha256": "8394aaacc4384492c70acaa502af5fd50996d5c5784835f3597ad015cd02d900"
+    "bytes": 69007,
+    "sha256": "208077249e7648088f883c8549336f682580662f248405cf5bf5a26347b3c98a"
   },
   "r5": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Пострадавших нет. Хозяева на улице стоят, все вышли.",
-    "bytes": 49363,
-    "sha256": "c65d03b414c237e84b6eb74c1685460f2094b40be2c0b719523f4a2e1792cc08"
+    "bytes": 63991,
+    "sha256": "c346bb34d93a2f2ba4206df7232603be582d2dde51e8c806872b2c98c864654b"
   },
   "r6": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Газа в доме нет, не газифицирован. Печка у них.",
-    "bytes": 44765,
-    "sha256": "ec16da94feddf4bc26031500a15ce585b2033ef8c0bf2bf2dead381aa9469042"
+    "bytes": 62319,
+    "sha256": "d91f250523eb665d463d4bc3e5a6347d280a4f4673c52b075df1a1dbacb98f6f"
   },
   "r7": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Рядом сарай деревянный и соседский участок вплотную. Как бы не перекинулось.",
-    "bytes": 66499,
-    "sha256": "baa50807790496ec14376538c05dd233e55e6837f6c08a3113dcad14d0bc201f"
+    "bytes": 84471,
+    "sha256": "7d15f71a2dbd36dbbe92a09a3dbb9feabc5fa36823cf7ce7ef8cff9659d5770f"
   },
   "r8": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "В доме жили трое. Все на улице, я их вижу.",
-    "bytes": 41839,
-    "sha256": "693443a7e9d867eb869c22ed49a4c84044dd9644cc2e868fd7ca2eb95e1ac149"
+    "bytes": 62319,
+    "sha256": "1a3ca95bc289e2278f07844df837d4491a4bab7fd1d93b5d0ae500b350f5f12a"
   },
   "r9": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Минут пять назад загорелось. Сначала дым был, теперь пламя.",
-    "bytes": 51453,
-    "sha256": "0231a5c26eb9e2667cd017a8849c5d9ccfcd383a8e7c5591a5558d6667500bf4"
+    "bytes": 75276,
+    "sha256": "3856fdc717b07f777c638f444e1ba3637c491775da29c20c46a6b6ff485b6d50"
   },
   "r10": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Иванова Инна Степановна.",
-    "bytes": 26375,
-    "sha256": "c5c9e0f71b09e0056ac14f4e9ac81a93be66f1397109555ffb7a3124759ad8ca"
+    "bytes": 35570,
+    "sha256": "16cf178aef9c7d7cb22c55f4888a3b28785fb8a58b80e0af52e37d7af1a96090"
   },
   "r11": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Девять один шесть, сто двадцать шесть, тридцать четыре, семьдесят один.",
-    "bytes": 79038,
-    "sha256": "dcd393bb686aa15e482352cf57cd101ed87d2e61382592a2b7a4a2e5e18324f1"
+    "bytes": 76530,
+    "sha256": "0f28e821fcd9d19eee820e48b3d83944ba8f83404470849d5d5ffa750533f72d"
   },
   "r12": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Соседка я, через дорогу живу. Увидела и звоню.",
-    "bytes": 43511,
-    "sha256": "1c3771635cb72fdf6eeb6472a7fc8996c25545dd5fd1dbded031c502611adddf"
+    "bytes": 61066,
+    "sha256": "8eba7090b11a68b627c400c96bb56ee9a49074ca49e7305f5c03e4a7ac20a260"
   },
   "r13": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Частный дом, какой подъезд. Калитка со стороны улицы.",
-    "bytes": 48527,
-    "sha256": "eef09522379e56803db38e68b23924de5bdd0794068aec5a2050f949a488fdd8"
+    "bytes": 75276,
+    "sha256": "61ca1987b092108aa8c628b90e2f33e2b45ec70f99c5a92fb84af30ac46e58b6"
   },
   "r14": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Повторите, пожалуйста, тут гудит всё.",
-    "bytes": 33062,
-    "sha256": "4bd3993a4ba3bbd027336f203ef6fea9978d526e3174b52984b72ee86b8199cd"
+    "bytes": 41839,
+    "sha256": "6ca0da05edf6c290f884ae58513c458f90062656f593e35b2a88fd19450bb218"
   },
   "r15": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Не знаю я. Приезжайте скорее, пока на нас не пошло.",
-    "bytes": 44765,
-    "sha256": "3d114a92ea22b300e05fbf79c6ba147587ffa4f99a451d48b2d8d8913ad4920c"
+    "bytes": 59812,
+    "sha256": "dafde192d9561516f017f0ea7b79a35931d2721bd33a1e6f92a087e36c6af420"
   }
 }

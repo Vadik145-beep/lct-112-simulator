@@ -1,164 +1,182 @@
 {
   "opening": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Алло, девушка... я в лесу заблудилась. Грибы собирала и не пойму, куда идти.",
-    "bytes": 118326,
-    "sha256": "afb0a4ebce2230a869aa206a46d35a9fc46bc07469ff853b08b18fa09bbb53a2"
+    "bytes": 132955,
+    "sha256": "079dd7ccb6e81916a90dcf6857cbbfb653bd1540a8918b91eca7cea4abc2f8c4"
   },
   "r1": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Заблудилась я. Пошла за грибами и вышла не туда, всё лес да лес кругом.",
-    "bytes": 108713,
-    "sha256": "fc13e76609d338e9316a35fd9d7e389661d04d5f8b3855d2423be7a3b4de8276"
+    "bytes": 106205,
+    "sha256": "43b2ad3d8672fd8c41537d5a994ec1757aa8315cb08b5af9c911568b082accb2"
   },
   "r2": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Хожу уже часа полтора, дороги не вижу. Кричала — никто не отзывается.",
-    "bytes": 111639,
-    "sha256": "01d4774ce401e0f00fc553feb4d11525baf03f82f1c06e76000319232c92b71d"
+    "bytes": 93248,
+    "sha256": "309c44d6088e891b47ae70c1668db8f67fafab756f37229a94ac285cd5d1601d"
   },
   "r3": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Так лес за деревней Барыкино. Я оттуда и заходила, от крайних домов.",
-    "bytes": 160122,
-    "sha256": "c3114fb0319b1969bddee55a02604267e1048c8ca647316217d0609182fb235e"
+    "bytes": 82799,
+    "sha256": "fde21c4193c4212fb9cb826650fe72a4ca86bd6b9871fde229b58ca499edccc9"
   },
   "r4": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Сейчас, сейчас... Кольчугинский район это. Не доезжая до Бавлен, если от трассы ехать.",
-    "bytes": 137970,
-    "sha256": "2ea158b0e3ee368f3517e3aab7a65696d6908654a768b2628c4debc1cd687692"
+    "bytes": 116236,
+    "sha256": "84349560a9cbff9ccc877e2e337b074cb7794c50dcd1cdd1ed6b8aa3f76081ea"
   },
   "r5": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Владимирская область, милая. Какая же Москва, я тут живу.",
-    "bytes": 82799,
-    "sha256": "1659b812f29e7315bc94ffdd295b811d260501ff18279959d0f04d536fa6d8da"
+    "bytes": 79038,
+    "sha256": "172cc16cfdd20b8c3ad8141cd77f18db65bf85199fd684d5d9a79c7c7c296681"
   },
   "r6": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Нет-нет, я цела. Ноги устали, а так ничего не болит.",
-    "bytes": 90323,
-    "sha256": "e6ae9588d781df2d783d74f5573f21fe5770d7d570b6952cb1818f2e85a9c6cf"
+    "bytes": 76530,
+    "sha256": "6ee82c8cc59a30c2356b1de181f9683d36d62e06fef27360c34b2d3666984d6e"
   },
   "r7": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Скорую не надо, что вы. Мне бы выйти отсюда.",
-    "bytes": 66499,
-    "sha256": "93d94f3104b39311fa78e8827bf61ee64f132d21068a0e4fe3c9d702b4465a4c"
+    "bytes": 63991,
+    "sha256": "704b140c8b5593f63f0e932cb4bed765a8a9d0f71d1b11daa17c9ae2dcd6d77e"
   },
   "r8": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Телефон садится, десять процентов осталось. Боюсь, отключится и всё.",
-    "bytes": 97010,
-    "sha256": "e2be4fe3f8643193ad2becb53bbfaaacafeae8c4d87397e211cfd4462e5e931a"
+    "bytes": 95756,
+    "sha256": "eb421b9f159111b26b7156ba73382fe58827795fb0cc8ee7f446d0e83babdec1"
   },
   "r9": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Темнеть начнёт часа через три. Куртка на мне есть, но холодно будет.",
-    "bytes": 97846,
-    "sha256": "3b80efb9f75d6a7c37f19b40b90d3cf53c1614b528d6a2db81b6606cea1299b2"
+    "bytes": 82799,
+    "sha256": "9a739cb1786e998230ffb4fb4d73684c20725b08f711d57b9911fd9d0170cd3a"
   },
   "r10": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Одна я. Соседка со мной шла, да разошлись мы, она раньше повернула.",
-    "bytes": 92413,
-    "sha256": "6f5355735ce926e2ecf4ed9b39837cf4632d84dd10616e7dc34cdd2f53cf977e"
+    "bytes": 95756,
+    "sha256": "d4f002642ab43f2947d1fb6d408743563efacaba188a2224b8381d4bb87c2d4a"
   },
   "r11": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Зашла часов в десять утра. Сейчас, наверное, полдень уже.",
-    "bytes": 98264,
-    "sha256": "9aeea0bb997b2a1ebd95533aaf4c3fa0b11d2eaa003f55f5f7a497d9fb0331a5"
+    "bytes": 75276,
+    "sha256": "d64514de0bfb26bdfb76ef0b7feef7c5357853c8c57d05287fe486ba6956595f"
   },
   "r12": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Тимофеева Маргарита Михайловна. Шестьдесят три года мне.",
-    "bytes": 85725,
-    "sha256": "f5333c458ec42c219ce0e6be8fec43a973bb73d00a2678383d6c740f6dd15f56"
+    "bytes": 82799,
+    "sha256": "0638abf0866ed5748d7bba93365d00c7cf6e73ddcdc00bec38b37fb7e82fb1b9"
   },
   "r13": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре. Только он садится, вы уж быстрее.",
-    "bytes": 173497,
-    "sha256": "c7ad14b47f43446de75e9c98f699aa6c1d8a2d2a0282d1112b45726a6a3358df"
+    "bytes": 164719,
+    "sha256": "3b4b7accf3d97462d3ca5aa7304ec3f763bbbc101683aec3d4748a5220bcd63a"
   },
   "r14": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Так я сама и есть, кто же ещё. Сама звоню, сама заблудилась.",
-    "bytes": 127521,
-    "sha256": "e81b9dab4869976f8c0776dfa6fa13454c6e3503d339e7bc2709bf8e3eefb1c2"
+    "bytes": 85725,
+    "sha256": "8c108c0c3f3ad0a16b3d1839b6b2d65bd169d24bbe2d56c79ab56324352f3038"
   },
   "r15": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Какой подъезд, деточка, я в лесу стою.",
-    "bytes": 77784,
-    "sha256": "f855f16657b2ba067433d07540b554595cb2a4d10511f0f5eca03df8e1a3dfbe"
+    "bytes": 47273,
+    "sha256": "9646b82113afaf82957239b57eee099547ed61fba6144b8200436a5763ad4fa6"
   },
   "r16": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Что? Говорите погромче, я плохо слышу.",
-    "bytes": 67753,
-    "sha256": "02d0b2d51f5bb5d180694449151ab0455a704a4995d962d38378c411c34facea"
+    "bytes": 56050,
+    "sha256": "dbd6e95f67143182d55416d1b020a14e54d9c86c4d559b0818eebc41b3ce7dee"
   },
   "r17": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Не знаю я. Вы скажите, что делать, я сделаю.",
-    "bytes": 74440,
-    "sha256": "b003e9270557474b0d11bd1083f76f8cb1e3bca666cc09d888c0b2a890821a2e"
+    "bytes": 56050,
+    "sha256": "42d8bb4cd71836149dc04716bbaa0592fb2bf6da14ef183963440e49379603c0"
   }
 }

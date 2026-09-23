@@ -1,137 +1,152 @@
 {
   "opening": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Слушайте, сколько можно! Во дворе музыка орёт, второй час ночи, дети спать не могут!",
-    "bytes": 86561,
-    "sha256": "b3ce09fffe8f996f230caa469fc15e2919f076ac905349997a83dfc6bb1ff448"
+    "bytes": 90741,
+    "sha256": "b32be5513ff608a50485925d10012aacce3df3baf12fa6dbf6325c59aff93672"
   },
   "r1": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Музыка орёт на весь двор! Колонку поставили и врубили, полвторого ночи.",
     "bytes": 75276,
-    "sha256": "096ad05e5cb54f9358e3ba35723cc73819638badf8a1acd67f7cc68deef47935"
+    "sha256": "9eca12c4d2a89d1236af8890d652e1b920df3d2df2d2d0e5b0e302147590705d"
   },
   "r2": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Да что тут неясного? Шумят, пьют, музыка на всю округу. Уснуть невозможно.",
-    "bytes": 84889,
-    "sha256": "e6082d2e727ea21502d9f80612b63dd7aeea407b71a28e40996686ae55c80874"
+    "bytes": 89487,
+    "sha256": "3d06326517bc750530638050b4c0321a914ccc3a4b2cd269f81ea67f44a83202"
   },
   "r3": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Бульвар Маршала Рокоссовского, дом двадцать пять. Во дворе они.",
-    "bytes": 67753,
-    "sha256": "f9903b76dddf17d37543bfbaa6d733d6aec9c04e5c3300b404a5c5c9b58863a4"
+    "bytes": 61066,
+    "sha256": "55105016d0c4f850081b974d2a9f7318159fdf34d34187dd655a3f8af988a336"
   },
   "r4": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Да при чём тут подъезд, они на улице сидят, во дворе!",
-    "bytes": 46437,
-    "sha256": "72c674e7daae56fbbec20e00ccc9b1e213b45d5405232e4dc9669298e1ccc579"
+    "bytes": 58558,
+    "sha256": "c5d2cccc8632e55a725d08093c40bb4aaa9485e08c2c706a022c0d6de3455ec0"
   },
   "r5": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Москва, Богородское. Какая ещё область.",
-    "bytes": 47273,
-    "sha256": "440cebf30ba7415b8b854fa2011b7741510464ee873b0f569e8df36d4b6efd5e"
+    "bytes": 58558,
+    "sha256": "0a0f63251d9591d9a544686d4b9ce7867def67f9493bf206804495e0af2d2d65"
   },
   "r6": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Нет там никаких пострадавших. Скорая не нужна, полицию пришлите.",
-    "bytes": 67753,
-    "sha256": "cf9a172e6b7326064a47efb1cd8615882409f56c5faebf3fd56478dd9d2d2f48"
+    "bytes": 75276,
+    "sha256": "f7880e7c8ecf75fd7d26d99584f3aa181387cf3e9ba9e488050e9abc4f94a9fe"
   },
   "r7": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Драки нет. Сидят на лавке, пьют и музыку гоняют.",
-    "bytes": 53960,
-    "sha256": "96a9b2f5c51bda8b80dc87f362f1bc625e426e8aabef2267f21bc9cd10ed8ffc"
+    "bytes": 70261,
+    "sha256": "512e8f34c089402c3cb1e1f13498cec5890f88ec69dd515fce993200d7d5ffd7"
   },
   "r8": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Человек пять или шесть. Молодые, лет по двадцать.",
-    "bytes": 61066,
-    "sha256": "4eab3acb2b1eb2ba5f31b1b504a3f92f281731af3e195b8302671c949c51d566"
+    "bytes": 54796,
+    "sha256": "c8087d86eea80d428149079779192456d983c4c3fa7a77e9c4246d395a377b24"
   },
   "r9": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "С одиннадцати вечера сидят. Я сначала в окно кричал, бесполезно.",
-    "bytes": 63573,
-    "sha256": "e78f06d04d88f67c85b7a649cc0656cf05b906f82b3b118170a16d5629f4b776"
+    "bytes": 74022,
+    "sha256": "b5bf943ff740d53cc82de00c855ca0f6b3f210e26767d9eb17bd24d134e539d6"
   },
   "r10": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Соколов Иван Петрович.",
-    "bytes": 30137,
-    "sha256": "4ce86babd95ac3caaf08df5029fa46f4e89344e5993d06f2a2f111a5dded253c"
+    "bytes": 30555,
+    "sha256": "57db0bc6f716cabf24d8f1e46fbd1fd08d449524dab23a7da6bfccbbf69d8ea2"
   },
   "r11": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
-    "bytes": 85725,
-    "sha256": "adbfd3fc6e86fddf25990cb56334254bf0675ccbaa7ecb7f2d5520f66bfb1711"
+    "bytes": 65245,
+    "sha256": "2a7c187ce93dde7f1e9badb6885737609cf6f829923e86c2b99304e8c55f1c13"
   },
   "r12": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Жилец я, из этого дома. Окна во двор выходят.",
-    "bytes": 53960,
-    "sha256": "23cb9c73987a383c93997e229d5261fe45e63e6c0ebe4cbfd67981b8ab5572ce"
+    "bytes": 51035,
+    "sha256": "666aa57a4958c7ea62bb6c8caaba4b8697235ef409ea2f485bea09d7525f8d0e"
   },
   "r13": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Что? Говорите громче, тут музыка эта долбит.",
-    "bytes": 48527,
-    "sha256": "7e5ae67d00bf3f6effbc80b7dfd97589f7ef600e4909ae5c43d71be257f874b7"
+    "bytes": 54796,
+    "sha256": "cffa2038ba2a9ea966dc716590120a3bece871fb348ec3735ed36b6bae12a38e"
   },
   "r14": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Откуда я знаю? Вы наряд присылайте, а не вопросы задавайте.",
-    "bytes": 63573,
-    "sha256": "b44c7c98e345ee412559910e54427a2ff484db30b7a1cb33474d4bf14df1c328"
+    "bytes": 70261,
+    "sha256": "8bb0747aeb858c911dc76ddaecad13360ad8b0f1ad2724abd9f5226e2ce570f4"
   }
 }

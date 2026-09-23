@@ -1,146 +1,162 @@
 {
   "opening": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
-    "text": "Здравствуйте. Мужчина нырнул в пруд и ударился головой о камень. Голова рассечена, кровь идёт. Он в сознании.",
-    "bytes": 102026,
-    "sha256": "4f4acb8a9c5f182704e06f78a6d59942e3b96654f937027ed29f0d2784706ef9"
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Ой, беда! Мужчина нырнул в пруд и ударился головой о камень. Голова рассечена, кровь идёт, он в сознании.",
+    "bytes": 127939,
+    "sha256": "8ba7ea796584fc983c94d6077a6e966775433d5ca23e1aa3039c484173c10e57"
   },
   "r1": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Мужчина нырнул и ударился о камень. Головой, прямо об дно.",
-    "bytes": 53960,
-    "sha256": "fed1663c86e31b929b61e1bc53c09ba87732ad064e626c53448ec6f3a862a91e"
+    "bytes": 71515,
+    "sha256": "db7b86a5721b8a9f6501d682d7c2c47c06a1b2d176f0c8369ff4ecb74b1d927e"
   },
   "r2": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Голова рассечена, кровь идёт сильно. Его на берег вытащили.",
-    "bytes": 50199,
-    "sha256": "297568dbbcba4f8e34abb65c75aee1c50c73e9a1329129c1b0326d1d0d17e357"
+    "bytes": 70261,
+    "sha256": "d5d6b52a5a9310d35d42f4f065ad434080a919a6b372264f305da1633b315208"
   },
   "r3": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Московская область, Одинцовский район. Деревня Сколково.",
-    "bytes": 51035,
-    "sha256": "84da006237716e32459987fb6a9dc377643a61fe7d9b95363dcedb84cb81f361"
+    "bytes": 79038,
+    "sha256": "6b52516158aa7a6c3805521431499eaffa25f451fb4dfe985ce1b0b42cbcba8f"
   },
   "r4": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Дом семнадцать, пруд справа от дома. Мы на берегу.",
-    "bytes": 47273,
-    "sha256": "c0398c12a8b172fdfe30b212f31c3f8754b6869148498a3d8fa4ac264239a8ac"
+    "bytes": 59812,
+    "sha256": "1b0f9747cb8a4cdf0314e48d7588e693a825f61d5d4e726093de10a352d64307"
   },
   "r5": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Пострадавший один. Мужчина, друзья говорят, тридцать лет.",
-    "bytes": 52288,
-    "sha256": "8880cd698237e3ca9b56fdd8ea19523cc1b86496561f331a28ab7f73189a954b"
+    "bytes": 69007,
+    "sha256": "8835538a0438dbabf5f8c5d52c3f522dec277525de5b7403564043e227d5282d"
   },
   "r6": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "В сознании, говорит. Рана на затылке, прижимаем полотенцем.",
-    "bytes": 50199,
-    "sha256": "0b42ee8b5b4973a030fe2c8faf60051da43c56e0405f7282858cc92b44437e88"
+    "bytes": 71515,
+    "sha256": "53395e0f528238077230c396f411494fbfb120d7629bc07e041ba5dd1d0d3b53"
   },
   "r7": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Кровь не останавливается, полотенце уже мокрое. В воде его больше нет.",
-    "bytes": 62737,
-    "sha256": "388cca35daf40eaec39975bb37aedb038aeaa1b412d97bbfc28fa05aad85ce7e"
+    "bytes": 77784,
+    "sha256": "ba53ecfff0edc30f4f8893cece9d7672c1b76783c648d44f536ff1685595b97e"
   },
   "r8": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "С ним трое друзей. Я четвёртая, рядом стою.",
-    "bytes": 43511,
-    "sha256": "42ff7b6193b84df38dc55239cfe674ccedcccb301d2eda60d70a35578b074dde"
+    "bytes": 61066,
+    "sha256": "276d3b538f5570c7134e1097de4b91b84e207e5bc7cda8d376bbac2e6872ddb2"
   },
   "r9": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Минуты три назад нырнул. Вытащили сразу.",
-    "bytes": 35988,
-    "sha256": "fc036f7548e6953eea9fc048a70d35610703a0d66a98bc676d09d276f20080da"
+    "bytes": 58558,
+    "sha256": "5c7026d9307d1e336042686297f8dea243dd78e0709df7f89f9712eb0c829a24"
   },
   "r10": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Петрова Ирина Сергеевна.",
-    "bytes": 24285,
-    "sha256": "315f5cf4d4fcee5137c2b80cbf169f4dff9b24c8d35da39ad1224c6e7168f3b6"
+    "bytes": 36824,
+    "sha256": "18efde4e7318712ffe482496de6b8d69e5e667baa42a5a396029eca20ec8a7d1"
   },
   "r11": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Девять один шесть, восемьсот девяносто семь, пятьдесят шесть, двадцать три.",
-    "bytes": 68589,
-    "sha256": "7255540fceac10bf39f082f7dd4a7c278718f0ea69059ff55535d7b3a80bd47a"
+    "bytes": 76530,
+    "sha256": "e564e33514546c395bf44aa58f5da1a07a25999e9f4eecfbbba4039ddf618923"
   },
   "r12": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Я очевидец. Не родственница, рядом отдыхала.",
-    "bytes": 39750,
-    "sha256": "b21e350dd0bff186bc90e5380855c0b116598afe16710ced91a279e7cf8b6dff"
+    "bytes": 59812,
+    "sha256": "297a122e90f9bb1329cc00c25224999d5cacacd3b8a66b8dfdc2ca99a2bb77e6"
   },
   "r13": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Это пруд, подъездов нет. Подъехать можно к дому семнадцать.",
-    "bytes": 51035,
-    "sha256": "b68cc7e12a46a883b88c097afcb9657a96e081187d4f07fb2c12c6842b6309b6"
+    "bytes": 65245,
+    "sha256": "f3a808d83fafa40713f9726d5af25f19b01289bdfe9089d7074ebf02e1055302"
   },
   "r14": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Повторите, пожалуйста, тут все шумят.",
     "bytes": 34316,
-    "sha256": "78bbfb69572128d8877878ca9b3bc72d64c4b71d9bfe47efb4b23acc39a86b79"
+    "sha256": "b1dcef4f08dbfcb7e37c075506754341c1dce1346f5998e54706245ffbbeb522"
   },
   "r15": {
-    "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
-    "speed": 1.0,
-    "stability": 0.5,
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
     "text": "Не знаю. Его можно поворачивать или пусть лежит?",
-    "bytes": 47273,
-    "sha256": "086593bbbc0d5c1db9b6751edc6f0826608d4c55d09b768603523aa5df60c947"
+    "bytes": 56050,
+    "sha256": "a5093b96380e5e418642677799439d9a9c0e62f912e528b7dda67bf94c87ee96"
   }
 }

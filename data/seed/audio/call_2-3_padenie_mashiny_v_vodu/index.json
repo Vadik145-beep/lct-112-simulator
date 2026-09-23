@@ -1,155 +1,172 @@
 {
   "opening": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Машина в воду упала! Прямо с набережной, в Яузу! Я всё видела, она под воду ушла!",
-    "bytes": 75276,
-    "sha256": "ff3154b8ebe39336a2bb7257e4f91f7063131d0312198ef66fb4f7d29792a1ed"
+    "bytes": 100772,
+    "sha256": "7acdab1de5896d5940b21b4d87142e6ab9cb62284eb66568e3d19c2f82973bec"
   },
   "r1": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Машина в воду упала. Съехала с набережной и сразу под воду.",
-    "bytes": 51453,
-    "sha256": "4cb562b2961e97a49a87a9cbd4a9485c61da13988458ee5cc442597c702f6396"
+    "bytes": 74022,
+    "sha256": "aa862db1b70ec0f6dd67b2fc69a93ba9f15cb8ba527726d7e1cb1fb2eb07d579"
   },
   "r2": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
-    "text": "Крышу ещё видно. Она вот прямо на моих глазах ушла, я даже крикнуть не успела.",
-    "bytes": 72351,
-    "sha256": "68120139c5959f42451ea274f3bdb853921762d476cd82aff3e08cf3271b7e1e"
+    "text": "Господи, она же под воду ушла совсем! Только крыша видна!",
+    "bytes": 67753,
+    "sha256": "fadf5354a540188260f4b3908731a70181868bbf373cd63d28859001e853f4fe"
   },
   "r3": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Набережная Яузы. Погодите, тут табличка... Лефортовская набережная.",
-    "bytes": 62737,
-    "sha256": "73d2d2a0975bec2818c363579c62b750134251f567249f5955852764f0f6c2d5"
+    "bytes": 80292,
+    "sha256": "7b4fcef741b01b94ae0b90405b68b23bad25317227f43560ece5986c47f64756"
   },
   "r4": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Напротив Большого Нижнего пруда, сторона в область.",
-    "bytes": 44347,
-    "sha256": "d9d11a207d6b13d9b72ccc29288fcfbd3839793cec2448819fb135c2a5da4bce"
+    "bytes": 61066,
+    "sha256": "ad0bf30f10896a1f7272290d1fc4b31dcab4a01417c4e8d980b34f20700b30c6"
   },
   "r5": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Москва, Басманный.",
-    "bytes": 18016,
-    "sha256": "a765ab9ae18175668280c302d1e6600b8a07c94990f88ffd84444362714a445c"
+    "bytes": 31808,
+    "sha256": "e7bee14ef99372f9868143f08a346fc74b6490d64ebe09f03bedf7ebcfbcaba0"
   },
   "r6": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Водитель внутри остался. Никто не вылез, я бы увидела.",
-    "bytes": 48527,
-    "sha256": "af98625ed87150aeb98447d4a4ad7177afd89e08437392b27f6d946d6a3dd81d"
+    "bytes": 74022,
+    "sha256": "e5ad43763105ad5f5de607ca868f8bcd0e26613f57263e451abcbdfd7cfe365e"
   },
   "r7": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Машина под водой, течение сильное. С берега её не достать.",
-    "bytes": 48527,
-    "sha256": "5102c1a72f06d316a2268fe943a062183fad6e160f3bf5d0d6afcc0d0b5e1a92"
+    "bytes": 61066,
+    "sha256": "874bac8e875611bab91d0c33a527aac231748a385a4c3bc00674adcdad4db654"
   },
   "r8": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Рено, серая. Номер я не разглядела, всё быстро было.",
-    "bytes": 42675,
-    "sha256": "d0e4a3bda9204b00b26e2b164e4562446e2ddbd2c09c88e94667fafb3e742169"
+    "bytes": 77784,
+    "sha256": "d6a0c7900dd6e9b89621e42ca226359812ca489f2dd263aad5e7abe9fafe5825"
   },
   "r9": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Сколько их там было, не знаю. Водителя точно видела.",
-    "bytes": 41839,
-    "sha256": "18b49f92f7b8e883766d5eb7067a628ec9d73a1d650f4a15314f74ba13fd702b"
+    "bytes": 59812,
+    "sha256": "7f35310eefa651aba0d707677edea07936201c18d19c680416a4acf904fcfdff"
   },
   "r10": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Только что. Минуты не прошло, я сразу набрала.",
-    "bytes": 35988,
-    "sha256": "c650daaf19b4b6d37cca6ca889e94aaa19002dc5d99986780d97c8bd0e0da002"
+    "bytes": 56050,
+    "sha256": "134408405827c3a06a3ec923f20cee6ada1c07e775f5b5bb237428787b880636"
   },
   "r11": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Иванова Елена Сергеевна.",
-    "bytes": 26375,
-    "sha256": "e9e763b17e14967129173c329d1107060a1bce1c2d5cfa79a4a818fb9141beba"
+    "bytes": 28047,
+    "sha256": "d9a999d0c9d5cf8a65d6a762f00053ef1c96eb26062b47dc5e4d00b56bb89c9b"
   },
   "r12": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
-    "bytes": 67753,
-    "sha256": "ad8becf2238210842517b6c9001a72df6133338f4f80acbf9e7a0fa6f5e9d996"
+    "bytes": 81546,
+    "sha256": "4e268246b62891df05023b1f9aeb44907d799a2227a646ac2e0a98634608f34a"
   },
   "r13": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Я очевидец. Мимо шла, к воде близко не подхожу.",
-    "bytes": 41004,
-    "sha256": "98930c403a817cfab9a83112fb54e3d1416a81abfedd26bf782c31b5e5a5caf9"
+    "bytes": 71515,
+    "sha256": "386f20aa43cd0a9fb9462d5fa1a391ae1668cae1054e3fefb4fb98369a4f9011"
   },
   "r14": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Это набережная, тут нет подъездов.",
-    "bytes": 30973,
-    "sha256": "e79bce47196eeb7f7857f86744606be323570bb1779f6a115719167079c9e176"
+    "bytes": 40586,
+    "sha256": "6857c82849aaa7fc3cca27e5cc0061dd2b07f9d0d620f795202b91fec0bd98a8"
   },
   "r15": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Что? Повторите, у меня руки трясутся.",
-    "bytes": 31391,
-    "sha256": "b8042c37a185d67e79a80307f46cf2fa49444696960f44a6fad4ae161e2aa63a"
+    "bytes": 46019,
+    "sha256": "f100706724b224893629859eb4cff56a75e80d61d34ce748f1accea1849cbcbe"
   },
   "r16": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Не знаю. Я буду тут стоять, покажу место.",
-    "bytes": 33898,
-    "sha256": "fecf252fe01501e03eb7eb95237a18d3570ddd13f838b8772a3dfd7dfe7d80b5"
+    "bytes": 51035,
+    "sha256": "36910c039d0fe90e296eb4a0c172f85f0dbcea245092b875792bd0ed18ad28af"
   }
 }

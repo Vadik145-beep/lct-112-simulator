@@ -1,146 +1,162 @@
 {
   "opening": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Здравствуйте. В лесопарке горят деревья. Площадь примерно десять на десять метров, людей рядом нет.",
-    "bytes": 93248,
-    "sha256": "d0f16eb59304ba682bfbe0f14bcb7c7cb2a38062111d249b192244b57b2dd163"
+    "bytes": 103279,
+    "sha256": "9c24829af18b91c2ac080cada23f8961db774becadf9c29ee2feab1c7730227a"
   },
   "r1": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Горят деревья в лесопарке. Открытый огонь, не просто дым.",
-    "bytes": 50199,
-    "sha256": "e2ce6335613bc12317ed05a31eb5324d074f86692391d58a3c1471d24198f88f"
+    "bytes": 71515,
+    "sha256": "f15f7d57766538a4daeb006f398a7b4fa939940b0cd65899ee1a6cdf57eeab85"
   },
   "r2": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Площадь на глаз десять на десять метров. Горит низом и по стволам идёт.",
-    "bytes": 63573,
-    "sha256": "c95d910d698daadb0067878b46f5e2d05dd0a53c932ab77f2813d306b885b5e4"
+    "bytes": 75276,
+    "sha256": "9f4106ea94c883b9cb150b4fef5fabe12282a120f6f41b70ac9ef3b333429692"
   },
   "r3": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Кусковский лесопарк. Вход со стороны аллеи Первой Маёвки.",
-    "bytes": 51453,
-    "sha256": "a361e430374bb9f6b8503665b1cbae2491fce25df904d7690273c27bec6368f5"
+    "bytes": 62319,
+    "sha256": "3a84e42860dd10e8d0f141922129b81181620ebee7f9f5c7eebadd2ee097a898"
   },
   "r4": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Это рядом со стадионом Фрезер, метрах в трёхстах от входа.",
-    "bytes": 52288,
-    "sha256": "ad8ee8d81849080340593d396a3e32b72114d71a97042b8b7b7a59e3d4c239f5"
+    "bytes": 70261,
+    "sha256": "ca29f474d9e55e2b905a6914091a65c3c1c003aab76fd04fab484c30feff9d96"
   },
   "r5": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Москва, Вешняки.",
-    "bytes": 19688,
-    "sha256": "96df9846cfd02b210b380779ca664f3dea2d31b8d18376b1cd510b7a8158eb36"
+    "bytes": 26793,
+    "sha256": "15461cf6a377568b7ab96f9c8ec2f51ae32bc36a250746a3325da45fd0b8c43e"
   },
   "r6": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Пострадавших нет. Людей рядом я не вижу.",
-    "bytes": 34316,
-    "sha256": "156aadb31377881239b862fcb836060f133a893046b1e1b5291eb40f499d9415"
+    "bytes": 67753,
+    "sha256": "905d66da4b6eed656d3c19cdb0770b5e169a17a671f28901e2f426a41f18a2e7"
   },
   "r7": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Трава кругом сухая. Ветер тянет в сторону стадиона.",
-    "bytes": 50199,
-    "sha256": "59d44fd81856a71a7ebd52fbfd22b16f11b0148a8ff17a828c16ee580b093004"
+    "bytes": 69007,
+    "sha256": "c433129510cb3e609d3508837a9eaacf348d58decf49f10a8c48a5b373f6d777"
   },
   "r8": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Я тут одна с собакой. Гуляющих не встретила.",
-    "bytes": 37660,
-    "sha256": "51b81f40411ae3bda6ab1d2ae0b9d9da34c649a61a24f2309fbff4d01297a36e"
+    "bytes": 53542,
+    "sha256": "57a37f1e07fbb7767e2c40f1a1d01dfbeba7c7ec5a7b743a33c01203f54dea63"
   },
   "r9": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Увидела минут пять назад. Пока шла ближе, стало сильнее.",
-    "bytes": 50199,
-    "sha256": "24f0940e584816d26cfb42e2d19978d8e058e3704a45f76c8be4bdd98f6dcaca"
+    "bytes": 63991,
+    "sha256": "f4d27a642d01edda95ea412495745a2d4dfdad05f453893fa6fa96a34cc2e320"
   },
   "r10": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Сидорова Ольга Викторовна.",
-    "bytes": 26375,
-    "sha256": "09e75a7fef6e862a29b6526dba7723dba4615f966d6680a219acd8134d4c2d94"
+    "bytes": 26793,
+    "sha256": "1eb9158f0b590cad55ee2d18c5a5c495521e3e5df398bf3933aa93514b5bac79"
   },
   "r11": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
-    "bytes": 74022,
-    "sha256": "9f2551543cdbb36f2465a3bb57d564f1eb6bd570f7dcb51d51b41dd608704309"
+    "bytes": 75276,
+    "sha256": "e95719a6db62f65b25cf69898f885ba157f2f7ec5abc19f529546e6f683abeff"
   },
   "r12": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Я очевидец, тут гуляю. К пожару отношения не имею.",
-    "bytes": 50199,
-    "sha256": "f82d6a0c405cebd1e970bf2492903a87f07aa9560078356effde749bd283ac12"
+    "bytes": 69007,
+    "sha256": "017a1bdfc7e9b006104a710d028d7349ada88a19d6fce398e396a02bc62ab876"
   },
   "r13": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Это парк, подъездов нет. Машина проедет от аллеи Первой Маёвки.",
-    "bytes": 64827,
-    "sha256": "f54c3fac177a492ab048ab7bb8518593f8bc3bf072ee38437a22052b4663cb83"
+    "bytes": 81546,
+    "sha256": "1f8cca2a22196298f0a954d63e66a0f1ec7c1f84bdbd7da422f1532d8a5fb878"
   },
   "r14": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Повторите, пожалуйста, ветер в трубку дует.",
-    "bytes": 33898,
-    "sha256": "df9b10af66bfe665d98f86ba89cb2629874f4b44b67928dbb5b7dd041ee4d873"
+    "bytes": 48527,
+    "sha256": "5e3b2952add6cdaeee619624155423d6da2423422ac63486ed4f9c4c3e10323e"
   },
   "r15": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Не знаю. Я отойду к входу и встречу машину.",
-    "bytes": 36824,
-    "sha256": "d43f05fb19a493099cc64c46d4186efcb0a9af8aa2b40714c245ffcc2ef9e31d"
+    "bytes": 70261,
+    "sha256": "b52a2d6c595c2d0f7672cf96c547764bea8ffbb926188d577be3e0adf8d79d2d"
   }
 }

@@ -1,137 +1,152 @@
 {
   "opening": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Человек тонет! Прямо сейчас, на озере! Мужчина, он кричит, помогите, скорее!",
-    "bytes": 65663,
-    "sha256": "e0bce9aefcd3d379d1f9be0dafeadb527e6281b03f5f619e58423215ae52d80b"
+    "bytes": 106205,
+    "sha256": "80598d1e2763cb45157d73495f7555e19ad2e830ad749a1d6ca340e23265741a"
   },
   "r1": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Мужчина тонет! Он в воде, то уйдёт, то вынырнет.",
-    "bytes": 42675,
-    "sha256": "191d73add223227ddec878aeba086440f25f04f140526947e84578f9510f39c8"
+    "bytes": 74022,
+    "sha256": "4975de2d934228e0302df4e77a7812e481c6884a6746dab3f9ff5f2595ba2ed5"
   },
   "r2": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
-    "text": "Кричит о помощи. Люди на берегу стоят, никто не лезет.",
-    "bytes": 46437,
-    "sha256": "f36c6f4ae296579eb77c2571804a4d875a8583b148b7b9fb34ec2fd74f4c6dca"
+    "text": "Господи, он опять под воду ушёл! Вынырнул, кричит!",
+    "bytes": 65245,
+    "sha256": "7d007fbffe0be59145e8dad99de9f174885d5b761e4b5e7479791908d47ace68"
   },
   "r3": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Озеро Круглое, пляж. Рядом дом — Таманская улица, дом семьдесят пять, корпус два.",
-    "bytes": 78202,
-    "sha256": "677f7899723c433468ee61d605723632369bea56f4b62c3735e4be15dda5015f"
+    "bytes": 107459,
+    "sha256": "76d03ec92c2d8a523feab2812057dfeaa0a3770425bca6422571ea4d5bb2eab5"
   },
   "r4": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Москва, Хорошёво-Мнёвники.",
-    "bytes": 26375,
-    "sha256": "c08d462040f3a07b50db7fa56edadd1535fdf9d0993f788179da1cafb7b00834"
+    "bytes": 41839,
+    "sha256": "e59d9282efb6924dbb6a2e44f486f8818867dc3e649d6b6955be0fd006fa5244"
   },
   "r5": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "В воде он один. Пока держится, голову видно.",
-    "bytes": 39750,
-    "sha256": "e3757eecae55eb6d1cc9c5abc644c414530aab6bf1fed1508b280a3ce81900f1"
+    "bytes": 58558,
+    "sha256": "2df069aec2a06b17b24ce337e5c3c57e97956056b9dc39c0266c43a74180fca4"
   },
   "r6": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "От берега метров двадцать. Спасателей тут нет, будки закрыты.",
-    "bytes": 52288,
-    "sha256": "21bbfea21f2ad6c5e01bcdc5e6cd8a1827d5629537c63c9f60b3d0a6f46cbafe"
+    "bytes": 62319,
+    "sha256": "6ef5688bdf8be1d9151c9ba0a85d679cdcdc03c120d655665e92b057a6c04fab"
   },
   "r7": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "На берегу человек десять. В воду никто не идёт.",
-    "bytes": 41839,
-    "sha256": "97ed68990ab0bea49552a3b0ba1e37bc9d192d083383181d8242b713219af22e"
+    "bytes": 62319,
+    "sha256": "25121e91c32235fa3f2b72067dfaa6def68abaa0957c54bd95c0db4fb7dc7d51"
   },
   "r8": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Минуту назад начал тонуть. Сразу звоню.",
-    "bytes": 34316,
-    "sha256": "741006a3e52e03aaa9e9c3fef3249ccf6ac0e48f10d228a4c662787418c0e77d"
+    "bytes": 47273,
+    "sha256": "1d579285c406c42ced3c3c7ac5c852902e2a41b8c142906436996b18c2db4fa3"
   },
   "r9": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Иванова Елена Сергеевна.",
-    "bytes": 23449,
-    "sha256": "d137056e121792f3ae28127fd2ce1444e8974958cb295785689cb3f73061cc9d"
+    "bytes": 31808,
+    "sha256": "379c7fca5d0a29a5680831aa4ba2a550042022172d1c6aef055ac98896164d8a"
   },
   "r10": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
-    "bytes": 69425,
-    "sha256": "b503157a1d851d671cb6d8bc7974ebbd785db2f3ab450db97e5e2cc80b5d16f4"
+    "bytes": 86979,
+    "sha256": "3932b8425e02e11908236390e77a31a1f60f1c91b5739fb40e8a7dd8c8773d05"
   },
   "r11": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Я очевидец. На пляже была, не родственница ему.",
-    "bytes": 36824,
-    "sha256": "e32d48e9abfc4c160b623d2601885bc95bc63ee64c55cbf971697354ce324428"
+    "bytes": 56050,
+    "sha256": "25386aa4fc6dd7a1063479eec88541af9b3900682d6144bd1f34fd34ae992f09"
   },
   "r12": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Это пляж, подъездов нет. Заход со стороны Таманской.",
-    "bytes": 47273,
-    "sha256": "7cf3a06a6726f9cf07db13fa9a17dc01def6e4a70828bcb4b47cbed089bfd43c"
+    "bytes": 74022,
+    "sha256": "8411101dbcbfa8bef4c23efbfcb8f4851e887aef302e5f3aa4bf30bf74d83b85"
   },
   "r13": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Что? Повторите, я на воду смотрю!",
-    "bytes": 28465,
-    "sha256": "3cd0391c56eae0e592580e2f9fe6ecb5435baf1b52173017505c71290bd7ef4b"
+    "bytes": 49781,
+    "sha256": "18ee6dd9f92dcb63fd5d549bbfc62cdab25108d148ca17b2eedcf51160e9abbf"
   },
   "r14": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Не знаю! Мужчины тут круг ищут, найти не могут!",
-    "bytes": 42675,
-    "sha256": "0b84d4522fc0c8805e7b153040a3356cf24d6216b2cb021bdfa910afb9934c6a"
+    "bytes": 67753,
+    "sha256": "276fa7b1be609b6e8a045bf9e493eb775ac3107ab56ac811d06388a9f83e5478"
   }
 }

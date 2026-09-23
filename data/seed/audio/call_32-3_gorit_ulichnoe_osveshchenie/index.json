@@ -1,137 +1,152 @@
 {
   "opening": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Здравствуйте. На МКАД среди бела дня горит всё уличное освещение. И по внутренней стороне, и по внешней, на несколько километров.",
-    "bytes": 119998,
-    "sha256": "f768dba7cd96eb0d127c0202362e2c3a6c55ef430d047baa1753e5feb0dd62ce"
+    "bytes": 158450,
+    "sha256": "67b7dd4d3b16d914a5eb3b457404845170d612ccb5623bc53b59c41b6c187ae7"
   },
   "r1": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Уличное освещение горит днём. На МКАД, все фонари подряд.",
-    "bytes": 49363,
-    "sha256": "1a941272d295679ad88aab7dc44fe20959c514ff730cf543eb3831ad17ec56b9"
+    "bytes": 69007,
+    "sha256": "525c766d44feda7f5996f83d664020d10f324c029323972b0042fc09175cfd76"
   },
   "r2": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "И по внутренней стороне, и по внешней. Не один столб, а целый участок.",
-    "bytes": 66499,
-    "sha256": "66c42fd1d27c1f0acd36d5af18d57ee26ec0ac7ac45b2a6a4e644aec83ad6ed2"
+    "bytes": 84471,
+    "sha256": "7755462a27b8c50e737a771532823d28f1f1369b199570e6574c1243e1d62846"
   },
   "r3": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "От Ленинградского шоссе до Волоколамского. По столбам это между семьдесят четвёртым и шестьдесят восьмым километром.",
-    "bytes": 114146,
-    "sha256": "58807f4b2c82fe76a1dbd6692ae722a79c571c359675df0af9c1cd2f81f91061"
+    "bytes": 119998,
+    "sha256": "f8f0643b07085a1b5d9da9a94783a8eb3b0d8cbf59ea6950997328da5d16beae"
   },
   "r4": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Москва, Северное Тушино.",
-    "bytes": 25539,
-    "sha256": "11d2700c1e88e9daa66585225f21dec1ccd789a020f224842a82819a5d7166fb"
+    "bytes": 31808,
+    "sha256": "1c7ccc954c8c1c059e14c088190ed374d2787f8d05d401091692b6c9122b96dd"
   },
   "r5": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Пострадавших нет. Это не авария, просто свет горит.",
-    "bytes": 51035,
-    "sha256": "4c478d895b4424b6d26b85ff048e766e94368879b3d56e55f25c534f0869f96f"
+    "bytes": 72768,
+    "sha256": "64ba5c9020fd5ac88c2aa17e01613a943f702bab7f4858eaaaf0e3acb51c1f1e"
   },
   "r6": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Угрозы никакой. Ни искр, ни дыма, фонари целые.",
-    "bytes": 47273,
-    "sha256": "3c12bec1e5d1331a3c8e57624a0ca2cab3d5e1e8e65645765f675b7615a8e98f"
+    "bytes": 79038,
+    "sha256": "f494afaf1912c744438304c6152125d07c5fc16946889ab4c3ad0a62097c07a4"
   },
   "r7": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Людей это не касается. Я просто мимо еду и вижу.",
-    "bytes": 43511,
-    "sha256": "2fcd2d0742c81cf726d5861e680a5756e9f7539bb244a23ee156d419e30bb0dd"
+    "bytes": 65245,
+    "sha256": "ad82d17d756bec299398a8996d762d0295a2064fb49152b49abb503906103f9f"
   },
   "r8": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Сейчас день, светло. Горит всё время, пока я этот участок проезжаю.",
-    "bytes": 67335,
-    "sha256": "56b51f1b8452016ee3e0906a5fa0eb6a28f501220f6d188ce8126eeb5586d567"
+    "bytes": 112475,
+    "sha256": "91548c8de9d4aeecfb9d892b5a4efc09cef55af90aa659c021afdb2fc0e0a3fa"
   },
   "r9": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Зотова Алина Петровна.",
-    "bytes": 22613,
-    "sha256": "0ddd98774f94d5d7d8fce306ebbfcd2588673895f7c305d1769ed5b2c06ebeee"
+    "bytes": 35570,
+    "sha256": "b69357b04a36551aef65a4938552abe242e7e17afeecd6264631c5ac27bcb1b2"
   },
   "r10": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Девять один шесть, триста двадцать, двенадцать, восемьдесят три.",
-    "bytes": 59812,
-    "sha256": "ec55588207b0192f9f91e8096ed14a78df9628899f30e55c96b517694a6472d4"
+    "bytes": 67753,
+    "sha256": "48c385429e26fb7315aaa37c064c74a928e1b6c35e68c07e254b1308ab9c74fe"
   },
   "r11": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Я очевидец. Просто водитель, еду по МКАД.",
-    "bytes": 38914,
-    "sha256": "8674c54b448d375f850b080afda84bd3f0e150110bf4370f4de6e0ff25f15f55"
+    "bytes": 49781,
+    "sha256": "94a89e6f03a586da35403d1629105af858510b57113e827f1f9f23d7cb8011c2"
   },
   "r12": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Это МКАД, подъездов нет.",
-    "bytes": 24703,
-    "sha256": "367239de0bddb943833c78b21500f4f51b6346c83670a207091a4430ce36bec9"
+    "bytes": 29301,
+    "sha256": "ecc0680cf299328084e9fbf408c4fc922f8606bcc366683cd7397ecde17e419c"
   },
   "r13": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Повторите, пожалуйста, я за рулём.",
-    "bytes": 29301,
-    "sha256": "938e67d4c227666c26cf2588082efde651d81ff9360fb529a84f048979b4a63b"
+    "bytes": 31808,
+    "sha256": "b83219c152dd1c1bde656663c0c23e16b87d1f440137aa657e246c8a530e315a"
   },
   "r14": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Не знаю. Могу номер ближайшего столба посмотреть, если нужно.",
-    "bytes": 51453,
-    "sha256": "b5ffa5a72e1a33a9aa8d58d2353032eb92774e54508877767074f1e79f11233d"
+    "bytes": 90741,
+    "sha256": "ea02cb36c9445fec36021396916603500b8d7d927f0f56c5346742603b39a56e"
   }
 }

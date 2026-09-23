@@ -1,155 +1,172 @@
 {
   "opening": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Помогите! Тут женщину избили, у неё голова разбита, кровь идёт!",
-    "bytes": 56050,
-    "sha256": "449ffce8f461b765c1622d73fb86b16f64baf52707850dfc83a8ae095234dca3"
+    "bytes": 79038,
+    "sha256": "a478c4027c97ece3e243ecef254ef89569e402431cd46cb7ab647c955d333c4b"
   },
   "r1": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Женщину избили! Лежит у магазина, голова в крови.",
-    "bytes": 46437,
-    "sha256": "03a606d80ce2f15d90cc39fd75625e56e45bca63a032fec4b18c9d23a895a91b"
+    "bytes": 61066,
+    "sha256": "4b7253cef83f2cb7778238b1934c2872ed0d1c6b5f5aa7abe97957467c9b83b8"
   },
   "r2": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
-    "text": "Я подошла, а она уже на земле. Кто бил, я не видела, только конец застала.",
-    "bytes": 71515,
-    "sha256": "153cc64cb0d391769e6d5ec4a639da86156d3da4f0440733614e15f277946f0a"
+    "text": "Господи, у неё всё лицо в крови, она еле говорит.",
+    "bytes": 56050,
+    "sha256": "438e218803462687a57f9960065cc02499b734c2f49f7eea112cc2aed746df53"
   },
   "r3": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Дмитровское шоссе, дом сто пятьдесят пять. Около Пятёрочки.",
-    "bytes": 49363,
-    "sha256": "38075848de26f044148f840957e6c30bf7c1ae6120747dd2987823c0514b7716"
+    "bytes": 81546,
+    "sha256": "e8238f3ac684f69cf1b78db132ed3c5e3cd2fb115face9e20979981ecce6bfb4"
   },
   "r4": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Корпус первый. Магазин с торца, вход со двора.",
-    "bytes": 44347,
-    "sha256": "d53b97ca850edcea32cd575187628b39182b34b9a6db3b407c55c2d3749b1eae"
+    "bytes": 51035,
+    "sha256": "cd0423131791b8f86eef070c5a536649b7f78417e2cabe3c843ddd3481daaa33"
   },
   "r5": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Москва, Восточное Дегунино.",
-    "bytes": 27211,
-    "sha256": "06e362e8bdc0b22bf8ed4f79bf36dd5754a47f14fc8ba3bd39502f0f4358d47e"
+    "bytes": 48527,
+    "sha256": "d415104a51119be057d347c14f49d4c7265e3e09a93054f658a6d60f3f6c413c"
   },
   "r6": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Одна женщина, молодая, лет тридцать. Голова разбита, кровь идёт.",
-    "bytes": 54378,
-    "sha256": "9ad429e5afc2001b68eda5e5821d673f84d631b16e9d436dd8eea238f5d8b787"
+    "bytes": 76530,
+    "sha256": "256f1bf30eb61b183d1ad504ee9e3f122074ea7c04542b418c7f7b67aa3a3d1f"
   },
   "r7": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "В сознании, но говорит плохо, путается. Имени не назвала.",
-    "bytes": 52288,
-    "sha256": "361eda530f46b2dff6d1b158610e7b260bc718a69a794893b9928e6d56ac0e63"
+    "bytes": 72768,
+    "sha256": "29815620ee30b978ecfd673ad4804a02b162b83d7063b859af5b65824ccf58c3"
   },
   "r8": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Того, кто бил, рядом нет. Люди говорят, он во дворы ушёл.",
-    "bytes": 47273,
-    "sha256": "8859f8d1ddcb28ac6292e1b2a3e50f1deee8e51ebbff946c47f82595c98423eb"
+    "bytes": 65245,
+    "sha256": "8b7b5e2ca6995801f39676422a5af2c297c5b102601f2d690af432e54d9b45ef"
   },
   "r9": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Пострадавшая одна. Нас вокруг человека четыре стоит.",
-    "bytes": 47691,
-    "sha256": "23da3f01e8ca03488d82c194e09d92ebb73f13ddd215b2b9f7987acbb51e4330"
+    "bytes": 57304,
+    "sha256": "442156f932068a51aecdcb91e7e772b15401b46ec2c72c9301fa59549aa4638b"
   },
   "r10": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Минуты три назад. Я сразу вам звоню.",
-    "bytes": 31391,
-    "sha256": "d09efa7fa831f1f932878f7c52b4bdd2bb976b7e99dbca49eea813a2ed770900"
+    "bytes": 41839,
+    "sha256": "3c909bca98a2f33014e853d5cf4f8296c574ff07e748c4cb0039427f310a3286"
   },
   "r11": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Иванова Елена Сергеевна.",
-    "bytes": 24703,
-    "sha256": "63f9db41e3288c9edfac4e7b6798195f0de0736d9dc42446d02ba8c05dd53875"
+    "bytes": 31808,
+    "sha256": "0c49d3d6047815a06546477fcf08c630b5081f886887a49a35fa387503306bb1"
   },
   "r12": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
-    "bytes": 74022,
-    "sha256": "331181584d8c9b31f1b3ab24f45e0fa0646637b82e1b0e5b5b16ee74a53dc987"
+    "bytes": 75276,
+    "sha256": "986e05e3f778a801ccb1f54baddc6b323b43abf8b61c4a9500c478d9eab29888"
   },
   "r13": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Я прохожая. Шла мимо, увидела и подошла.",
-    "bytes": 33898,
-    "sha256": "10051c03f239828273f3c588bcb18c198f4208b46db565dbb87c724ed7b72e20"
+    "bytes": 67753,
+    "sha256": "278f7ec5adc01a7d1636c99209b654f9a8114a635dc2b9363b14fa5bc39ed2f2"
   },
   "r14": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "На улице она, у магазина. Никакого подъезда.",
-    "bytes": 35152,
-    "sha256": "cd31c3d241a70f19c5e2c89a3816f6d030fe2e2d21492898011bdf9d32c8bcfb"
+    "bytes": 71515,
+    "sha256": "8dfbd6836cca9931e3cbe2d794f35c3ac871d01d33addf087fce49bb1e1e8355"
   },
   "r15": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Что? Повторите, у меня руки трясутся, не соображу.",
-    "bytes": 39750,
-    "sha256": "a42d3a49d420fe904eebc04702fd5c160f981deba3a34abf11a4d7bf260e4569"
+    "bytes": 53542,
+    "sha256": "c7de1095323c505bf043ec5fb39cff8e13a10f245f6a1a73a8b0fecc9de37e50"
   },
   "r16": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Не знаю я! Скорую скорее, у неё кровь не останавливается!",
-    "bytes": 46437,
-    "sha256": "69157391f4163e57db33583297097e8b0815274994f16f4f6bbc63d8bb3ab16f"
+    "bytes": 74022,
+    "sha256": "c37fd1ab04bb6b731bd8cdd662ea6965f4b7cb105d7fd45abf25c4e5b91817a2"
   }
 }

@@ -1,146 +1,162 @@
 {
   "opening": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.35,
-    "text": "Здравствуйте, сын с велосипеда упал. Рука распухла и нога тоже. Он плачет, наступать не может.",
-    "bytes": 81128,
-    "sha256": "99b6fc8f49263194fd1515f01fd244230d07fbea95ce9d9f9fb66306f9b50e2d"
+    "text": "Ой, сын с велосипеда упал! Рука распухла и нога тоже. Он плачет, наступать не может.",
+    "bytes": 95756,
+    "sha256": "e727f901ff0c164d0232eb8c1a0168c21fd7a67559123ff33b98504982c12bf7"
   },
   "r1": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Сын упал с велосипеда. Сам упал, на повороте занесло.",
-    "bytes": 45601,
-    "sha256": "6142774cf2a69e26566d8e943183873f9ccbc6578ab91f4df138175e19c9759d"
+    "bytes": 63991,
+    "sha256": "cf909b9ade1bd10fb301e43d591ff971d04ae7cbe92d5fe292cc89a5bf29e017"
   },
   "r2": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Рука опухает прямо на глазах. И щиколотка тоже раздулась.",
-    "bytes": 49363,
-    "sha256": "be4e1a5cdb71591e73f21de2e23d4e2b89b70895ba0d0b605f5bc7dd845d8840"
+    "bytes": 69007,
+    "sha256": "9f184c45a1cfc7dd7f93837f66d941e7d9d591e05df20630f1b7dafa0d7f536a"
   },
   "r3": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Мы не в Москве. Волгоградская область, город Волжский.",
-    "bytes": 50199,
-    "sha256": "f33660e79598644c2ea7cf9986bd07380cf1e3eadc69cf6626a14197d91def43"
+    "bytes": 67753,
+    "sha256": "69e404c225dbdbead49fd56ed9a808183f63627fa2ac7606f916bb7e91e1ea66"
   },
   "r4": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Улица Карла Маркса, около молсыркомбината. На тротуаре сидим.",
-    "bytes": 53124,
-    "sha256": "d6df168f8629e8860d8bab6c4ba6473dd8ad04ca684d96622da5b1dec54d086b"
+    "bytes": 69007,
+    "sha256": "4484462e224cc539d493bfb65550255014d55567f9c5e668aca1379bfb31169a"
   },
   "r5": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Пострадавший один, сын. Смирнов Илья, одиннадцать лет.",
-    "bytes": 51453,
-    "sha256": "8ec5f50d2885a6fed53c40e37872632ff9b0a78144be8d3e4bdd2e16b647c7bc"
+    "bytes": 58558,
+    "sha256": "173628c9617d50ac49058ba387c028f7f8d3031d825cec06bfc5eb48d5d56d20"
   },
   "r6": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "В сознании, плачет. Головой не ударялся, был в шлеме.",
-    "bytes": 41839,
-    "sha256": "ce74b974d1b00351280171d7ec2c63a4120a58ec28159721864cad424fac3c77"
+    "bytes": 54796,
+    "sha256": "31646530e38793af8e6ad2875bd1bc5696d835884816bfc849a56f86f8851f56"
   },
   "r7": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "На ногу не наступает совсем. Руку держит и не даёт трогать.",
-    "bytes": 47691,
-    "sha256": "83bee08dfeb20525d53581a003ad8447a9cf7a67d94718fe252d6dc2d370be3b"
+    "bytes": 69007,
+    "sha256": "16994c83ac813bf31ff5360977dcab14d62b1127115efad96d62a6bcbf1e647d"
   },
   "r8": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Мы вдвоём. Машин рядом не было, он один ехал.",
-    "bytes": 38078,
-    "sha256": "fa7619fc7e6a617702dc54c8353cbd56f83d12c7aada9a1d17d76fea809e437b"
+    "bytes": 59812,
+    "sha256": "4ae7f11ae078ec2eaf79955913d8ed27ba87250ff16e3b16bc6ffdbc1f9a9c79"
   },
   "r9": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Минут пять назад упал. Я сразу к нему подбежала.",
-    "bytes": 41839,
-    "sha256": "667424dd49d1076c6d11448a5f9402b4091c8dd67b346e01851a4ee6d6897bc4"
+    "bytes": 52288,
+    "sha256": "e8a791b0284c8e6f1a75dc4dfd8b3c932319c3bfd2fca77d9744868ee24f1c9a"
   },
   "r10": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Смирнова, я его мама.",
-    "bytes": 22613,
-    "sha256": "8f5f7af195b4d321227c50b105f3f2ef640eaeda2cdadc76f3807e829042b697"
+    "bytes": 31808,
+    "sha256": "728ee2b932523c899142c095a0b7af980e9291d6a805a98c4062f26f92002781"
   },
   "r11": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Девять один шесть, триста двадцать, двенадцать, восемьдесят три.",
-    "bytes": 54378,
-    "sha256": "f68afd664712614edf19ecc96a38d9ecd45c54b7b21ebf30d8d5a3fb4168d93b"
+    "bytes": 57304,
+    "sha256": "3dcf31f9eb81ac3655f6ff32c09e5d5cb08ce189e6aeed7ea5091eff42399f17"
   },
   "r12": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Я мать. Рядом с ним сижу.",
-    "bytes": 24285,
-    "sha256": "e58950acda276a0f507c599fa777194a78a6256439467364ffa77c258cec821d"
+    "bytes": 44765,
+    "sha256": "d3b40d1809ac7162c767d14be8baf8b5103acc1b26940c42efc2af460fb402c3"
   },
   "r13": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Мы на улице, у дороги. В дом не заходили.",
-    "bytes": 36824,
-    "sha256": "97a14388b1db2886cc69c26d4cedba17710e9c2e0f786c2d8b50f6e3c31cd544"
+    "bytes": 44765,
+    "sha256": "8067d3f4d8a0f6822fcac15423ec27be99520ddd61171bd1d65721b12e9fe09e"
   },
   "r14": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Повторите, пожалуйста, он плачет, я не слышу.",
-    "bytes": 35988,
-    "sha256": "33098b7be9f328534677724451203efd326a23018fa80b941475f49834dc0a98"
+    "bytes": 44765,
+    "sha256": "125a01bb921a201297ddd1f6b42059cc0d7be1a26e34d0572399eb20d490e48b"
   },
   "r15": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Не знаю. Мне холодное приложить или не трогать?",
-    "bytes": 41004,
-    "sha256": "c6e5f2642427b797aa7882e6dd21ec63b43b7ab4d10d18af29eb43e77aedd5fe"
+    "bytes": 53542,
+    "sha256": "dfcbe976c2975189bab0ae96d16c791b46bc8ebf53b7d625141f6aa5d5f8e850"
   }
 }

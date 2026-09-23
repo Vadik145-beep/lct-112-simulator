@@ -1,137 +1,152 @@
 {
   "opening": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Здравствуйте. За деревней Варварино горит лес. Я мимо проезжала, дым столбом и огонь видно с дороги.",
-    "bytes": 101190,
-    "sha256": "eb09d64db4de7ea1b4dafaffffb366b7af630418e88b5342bc07edf79a920418"
+    "bytes": 131701,
+    "sha256": "bc984fbdd516ab22521a1db81f2bca2f79072486a0448b9934ad4186c984195a"
   },
   "r1": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Горит лес. Огонь открытый, по верхам местами идёт.",
-    "bytes": 46437,
-    "sha256": "3e30382ab3c07646466eea82d8e7fc6f5a96531c7c7e7ac10857c50a9b8f74ea"
+    "bytes": 69007,
+    "sha256": "8dddff1b932dcf391d5a0b1da73e4540de7357308b4c471e68c19c28d48a7642"
   },
   "r2": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Дым столбом, видно издалека. Я прямо с дороги смотрю.",
-    "bytes": 49363,
-    "sha256": "a0f7c9a473ea6c0d722471c00d055cc1eee6270fef84592a403758f9d97b4fec"
+    "bytes": 77784,
+    "sha256": "b4c5bb55b5ed671647a9d5f381ca44ec993a373854b61390b2bfbbc256ebf602"
   },
   "r3": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Это Московская область. Дмитровский городской округ.",
-    "bytes": 50199,
-    "sha256": "dda3f04fd0a0fbb58222bcbac45957918a15aadfb6ce73a999b0880fd4a81174"
+    "bytes": 57304,
+    "sha256": "49007ad473394e31015e8c8e2b46d7db108e5fad95833e205858bc8d7e7106b3"
   },
   "r4": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "За деревней Варварино, сразу за крайними домами.",
-    "bytes": 42675,
-    "sha256": "35ab910adcd626101d81290803d551841e0dca4b8afb57d79570359624efa038"
+    "bytes": 49781,
+    "sha256": "3bc62752f0eaa62947b8d2f772df8b36283493bc5c7570734bc938b0a4ef7ff6"
   },
   "r5": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Пострадавших нет. Людей в лесу я не вижу.",
-    "bytes": 36824,
-    "sha256": "af25318b6ffedbda72dd68e294dbd67001f1a0143952655ddd3cb6c3c450996d"
+    "bytes": 53542,
+    "sha256": "319e109c7e099cea50fcf4b35455c25deb8033897f2265d0ff88d61a1ff3c043"
   },
   "r6": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "От домов метров триста. Ветер как раз на деревню тянет.",
-    "bytes": 53960,
-    "sha256": "4822b5e019dc411c615d4b6fc0084dfbb0f308ab83e9a06c9b17c5656ab31c94"
+    "bytes": 62319,
+    "sha256": "3680a90089c31efc5177cc3d7debc8520b6fa137a211da62083d7aa93d6c7ece"
   },
   "r7": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Я тут одна на дороге. Машины мимо идут, не останавливаются.",
-    "bytes": 51453,
-    "sha256": "bf7872a966555e7b53360868329d4cf4b7f424ea7447d921c5579abed41a4bd3"
+    "bytes": 97010,
+    "sha256": "58dcfaacb62cc3f8e1ee2cd997750f01fcfaa2b45b0d176ebf64f757c62bef2b"
   },
   "r8": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Минут десять назад увидела. Пока ехала, стало сильнее.",
-    "bytes": 51035,
-    "sha256": "edc4d1cecc1bacf60c59967993e84de8a15073b407ed73fb795ddc82ad03a557"
+    "bytes": 57304,
+    "sha256": "7f491012f3488bbaf75205d46a96effa14890ba817b0bd4cfdfa4a2c292a1b16"
   },
   "r9": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Антонова Мария Петровна.",
-    "bytes": 24285,
-    "sha256": "a5e7a961df74d6233d507575d7c216e292ad95557152fded8b9508b150c1d847"
+    "bytes": 30555,
+    "sha256": "1ccc6329a517ab6b7cf4b0c95c884b161c564d4c86aaf20d92d86ba3213b52a3"
   },
   "r10": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
-    "bytes": 67753,
-    "sha256": "7d87d68d000933f14ae4e411344dbc47e79ce023bd0236ec313a62cac8c6350e"
+    "bytes": 80292,
+    "sha256": "3a3ad1fad1808165eab954e9c7a44380d98d81ec4987c1a6640cce3415c4f311"
   },
   "r11": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Я очевидец, проезжала мимо. В деревне не живу.",
-    "bytes": 44347,
-    "sha256": "6a7a87b80fc9d99d1ef20e6d2f864d433280f8d4bca459251962e17ed7a0175d"
+    "bytes": 59812,
+    "sha256": "d10fe478960756dab4c613b27ded47f59930065323d7e43a5b553ed1a4985e33"
   },
   "r12": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Это лес, никаких подъездов. Заезд по грунтовке от деревни.",
-    "bytes": 51035,
-    "sha256": "04f1289d3e7ade3cf5ac8415853cac97953b7b076d8d6fb351fd55c712dd98df"
+    "bytes": 80292,
+    "sha256": "78ddff2d9d17ad9c3f8069451ca27cbb3771f4fec8da38d294421809c5fb34e6"
   },
   "r13": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Повторите, пожалуйста, связь тут слабая.",
-    "bytes": 33062,
-    "sha256": "1691e9ac4da66bf11c00d276ff3971acf8b023415c5785f8aeb8ef88552088cc"
+    "bytes": 39332,
+    "sha256": "8f4d51af0fb985f972ea59b1b0461bf78c5a702317908184129488bc2633e9c8"
   },
   "r14": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Не знаю. Мне подождать вас у поворота?",
-    "bytes": 34316,
-    "sha256": "4016f305b8acb6ddf091356753140d5e711b9fc69ed06cf7e00b1ae2d6e0899a"
+    "bytes": 41839,
+    "sha256": "79ed76e04a289fad6fe5964ad503ae893c836ea913ca9c03f8e29e4e6d71b47d"
   }
 }
