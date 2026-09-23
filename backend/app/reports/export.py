@@ -46,7 +46,7 @@ ATTEMPT_COLUMNS = [
     "Закрыта",
     "Балл",
     "Зачтено",
-    "Время до статуса, с",
+    "Время, с",
     "Норматив, с",
     "Отличие от норматива, с",
     "Решение",
@@ -186,7 +186,7 @@ def _summary_rows(report: ReportOut, tz: ZoneInfo) -> list[tuple[str, str]]:
         ("Карточек оценено", str(s.evaluated)),
         ("Зачтено", str(s.passed)),
         ("Средний балл", _num(s.average)),
-        ("Среднее время до статуса, с", _num(s.average_seconds)),
+        ("Среднее время, с", _num(s.average_seconds)),
         ("Типичные ошибки группы", "; ".join(f"{e.title} ×{e.count}" for e in s.typical_errors)),
     ]
 

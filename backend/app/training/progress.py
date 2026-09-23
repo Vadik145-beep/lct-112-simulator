@@ -14,8 +14,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.analytics import service as analytics
 from app.analytics.schemas import RatingOut, WeekPointOut
-from app.domain.evaluation.timing import seconds_between
 from app.models import (
+    MODE_CALL_INTAKE,
     SESSION_DRAFT,
     Attempt,
     TrainingSession,
@@ -23,9 +23,12 @@ from app.models import (
     User,
 )
 from app.training import review
+from app.training import service as training
 
 MAX_FREQUENT_ERRORS = 5
 MAX_RECOMMENDATIONS = 4
+# Share of timed attempts over the norm that turns the pace into a recommendation.
+LATE_SHARE = 0.3
 
 
 class ProgressSession(BaseModel):
@@ -102,20 +105,19 @@ async def build_progress(session: AsyncSession, student: User) -> ProgressOut:
     errors: Counter = Counter()
     error_titles: dict[str, str] = {}
     error_refs: dict[str, str | None] = {}
-    late = 0
+    # Overdue and timed attempts per mode: the pace advice differs for a card and a call.
+    late: Counter = Counter()
+    timed: Counter = Counter()
     for sid, rows_of in by_session.items():
         ts = sessions.get(sid)
         if ts is None or ts.status == SESSION_DRAFT:
             continue
         totals = [float(a.result["total"]) for a in rows_of if a.result]
-        seconds = [
-            round(seconds_between(a.issued_at, a.primary_status_at), 1)
-            for a in rows_of
-            if a.primary_status_at is not None
-        ]
+        seconds = [s for s in (training.attempt_seconds(a) for a in rows_of) if s is not None]
         passed = sum(1 for a in rows_of if a.result and a.result.get("passed"))
         mean_seconds = _mean(seconds)
-        late += sum(1 for s in seconds if s > ts.norm_seconds)
+        late[ts.mode] += sum(1 for s in seconds if s > ts.norm_seconds)
+        timed[ts.mode] += len(seconds)
         for a in rows_of:
             for e in (a.result or {}).get("errors") or []:
                 code = str(e.get("code") or e.get("title"))
@@ -161,7 +163,7 @@ async def build_progress(session: AsyncSession, student: User) -> ProgressOut:
                 if f.code == te.code:
                     f.memo_ref = te.memo_ref
     extras = await analytics.progress_extras(session, student)
-    recommendations = _recommendations(frequent, late, len(all_seconds), all_totals)
+    recommendations = _recommendations(frequent, late, timed, all_totals)
     if extras.weakest_tip:
         recommendations = [extras.weakest_tip, *recommendations][:MAX_RECOMMENDATIONS]
     return ProgressOut(
@@ -179,8 +181,14 @@ async def build_progress(session: AsyncSession, student: User) -> ProgressOut:
     )
 
 
+def _overdue_mode(late: Counter, timed: Counter) -> str | None:
+    """The mode the trainee is slowest in, or ``None`` while the pace is within the norm."""
+    over = [mode for mode, total in timed.items() if total and late[mode] / total > LATE_SHARE]
+    return max(over, key=lambda mode: late[mode]) if over else None
+
+
 def _recommendations(
-    frequent: list[FrequentError], late: int, timed: int, totals: list[float]
+    frequent: list[FrequentError], late: Counter, timed: Counter, totals: list[float]
 ) -> list[str]:
     tips: list[str] = []
     for f in frequent[:2]:
@@ -188,7 +196,13 @@ def _recommendations(
             tips.append(f"«{f.title}» повторяется ({f.count}): перечитайте памятку, {f.memo_ref}.")
         else:
             tips.append(f"«{f.title}» повторяется ({f.count}): разберите примеры в справочнике.")
-    if timed and late / timed > 0.3:
+    overdue = _overdue_mode(late, timed)
+    if overdue == MODE_CALL_INTAKE:
+        tips.append(
+            "Карточка часто сохраняется позже норматива: спрашивайте по опросной карте "
+            "и заполняйте поля во время разговора, а не после него."
+        )
+    elif overdue is not None:
         tips.append(
             "Первичный статус часто ставится позже норматива: открывайте карточку сразу "
             "после «Добавлена», сначала ставьте «Принята» или «Не принята», потом остальное."
