@@ -128,6 +128,9 @@ async def test_service_call_is_played_by_the_cloud(
     assert "goodbye" in prompt.lower()
     assert "НЕ отвечаешь ничего" in prompt
     assert "как губка" in prompt
+    assert "НИЧЕГО НЕ ПРИДУМЫВАЕШЬ" in prompt
+    # Дежурный знает номер своего наряда и называет его сам.
+    assert "твой наряд" in prompt
     # Не отвечает на каждую паузу диспетчера: выдержка перед репликой.
     assert assistant["startSpeakingPlan"] == {"waitSeconds": 1.5}
     # Первую фразу говорит облако: своей реплики в записи звонка нет.

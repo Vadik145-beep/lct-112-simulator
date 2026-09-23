@@ -97,8 +97,11 @@ class ServiceCallRef(BaseModel):
     model_config = SCENARIO
 
     service: str
-    required_facts: list[str] = Field(default_factory=lambda: list(SERVICE_CALL_FACTS[:4]))
+    required_facts: list[str] = Field(default_factory=lambda: list(SERVICE_CALL_FACTS[:3]))
     norm_seconds: int = DEFAULT_SERVICE_CALL_NORM_SECONDS
+    # Наряд службы: его называет дежурный, диспетчер записывает в статус «Начало
+    # реагирования». Пустой — номер соберётся из сценария сам (officers.order_number).
+    order_number: str | None = None
 
 
 DEFAULT_REPORT_AFTER_SECONDS = 45

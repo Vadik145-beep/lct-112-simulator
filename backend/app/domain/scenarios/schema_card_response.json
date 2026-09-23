@@ -501,6 +501,18 @@
           "default": 120,
           "title": "Norm Seconds",
           "type": "integer"
+        },
+        "order_number": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Order Number"
         }
       },
       "required": [

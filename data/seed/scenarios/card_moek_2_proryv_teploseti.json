@@ -86,9 +86,9 @@
         "required_facts": [
           "address",
           "incident_type",
-          "injured",
-          "order_number"
-        ]
+          "injured"
+        ],
+        "order_number": "3264"
       }
     ],
     "reports": [

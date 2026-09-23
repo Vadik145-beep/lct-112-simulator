@@ -17,6 +17,7 @@ progress from the same state (``squad_state``, topic ``progress``).
 
 from __future__ import annotations
 
+import hashlib
 import re
 from collections.abc import Mapping
 
@@ -67,11 +68,11 @@ GENERIC_REPLIES: list[tuple[str, str]] = [
     ("incident_type", "Что именно произошло? Какой тип происшествия по карточке?"),
     ("injured", "Принято, по пострадавшим понял."),
     ("injured", "Пострадавшие есть?"),
-    ("order_number", "Наряд записал."),
-    ("order_number", "Номер наряда назовите."),
+    ("order_number", "Принял, направляю наряд {order}."),
+    ("order_number", "Наряд {order}, он и выезжает."),
     ("access", "Понял, доступ есть."),
     ("access", "Доступ на объект есть? Кто встретит бригаду?"),
-    ("confirm", "Информацию принял, бригаду направляю."),
+    ("confirm", "Информацию принял, направляю наряд {order}, бригада выезжает."),
     ("confirm", "Принято. Как будем на месте, доложу."),
     ("repeat", "Повторите, пожалуйста, плохо слышно."),
     ("unknown", "Это не ко мне, давайте по происшествию."),
@@ -110,7 +111,7 @@ REPORT_REPLIES: list[tuple[str, str]] = [
     ("incident_type", "По происшествию всё как в карточке, работаем."),
     ("injured", "Пострадавших нет, людей вывели."),
     ("injured", "Медпомощь никому не требуется."),
-    ("order_number", "Наряд тот же, что вы передавали."),
+    ("order_number", "Наряд {order}, по нему и работаем."),
     ("access", "Доступ есть, заявитель встретил."),
     ("access", "В подъезд попали, открыл консьерж."),
     ("repeat", "Повторяю: {report}"),
@@ -173,6 +174,15 @@ SERVICE_REPLIES: dict[str, list[tuple[str, str]]] = {
 }
 
 
+def order_number(scenario: CardResponseScenario, service: str) -> str:
+    """Номер наряда службы: свой у каждой карточки и службы, но всегда один и тот же, чтобы
+    диспетчер мог записать его в статус, а проверка — сверить. Наряд принадлежит службе,
+    диспетчер ДДС его не назначает и не передаёт (решение пользователя 23.09.2026)."""
+    key = f"{scenario.ticket_ref or scenario.title}|{service}".encode()
+    digest = hashlib.sha1(key).hexdigest()  # noqa: S324 - номер, а не защита
+    return str(1000 + int(digest[:4], 16) % 9000)
+
+
 def squad_state(delivered: list[str]) -> str:
     """The squad's state from the reports already delivered (progress status codes)."""
     for status in ("works_done", "works_started", "arrived", "response_started"):
@@ -192,7 +202,7 @@ def spoken_service(service: str, service_title: str) -> str:
 
 
 def builtin_replies(
-    service: str, service_title: str, state: str = SQUAD_STATE_PENDING
+    service: str, service_title: str, state: str = SQUAD_STATE_PENDING, order: str = ""
 ) -> list[Reply]:
     """The built-in replies of a service's officer, ids from ``BUILTIN_REPLY_ID_BASE``. The
     «progress» reply follows the squad's state, so its id changes with the state."""
@@ -202,7 +212,7 @@ def builtin_replies(
         Reply(
             id=BUILTIN_REPLY_ID_BASE + i,
             topic=topic,
-            text=text.format(service=spoken),
+            text=text.format(service=spoken, order=order or "наряд"),
             approved=True,
         )
         for i, (topic, text) in enumerate(rows)
@@ -231,7 +241,9 @@ def officer_replies(
         for r in scenario.service_replies
         if r.service in (None, "", service)
     ]
-    return [*own, *builtin_replies(service, service_title, state)]
+    ref = next((c for c in scenario.reference.service_calls if c.service == service), None)
+    order = (ref.order_number if ref else None) or order_number(scenario, service)
+    return [*own, *builtin_replies(service, service_title, state, order)]
 
 
 def greeting(service: str, service_title: str) -> str:
@@ -263,6 +275,7 @@ def officer_scenario(
     (``squad_state``): the officer answers about the progress from it."""
     facts = {
         "служба": service_title,
+        "твой наряд": ref.order_number or order_number(scenario, ref.service),
         "что знает": "о происшествии — только то, что сообщает диспетчер",
         "где бригада": PROGRESS_REPLIES[state],
     }
@@ -286,13 +299,13 @@ def officer_scenario(
     )
 
 
-def report_replies(report: BrigadeReport) -> list[Reply]:
+def report_replies(report: BrigadeReport, order: str = "") -> list[Reply]:
     """Replies of the squad leader in a report call: confirmations, the report again."""
     return [
         Reply(
             id=BUILTIN_REPLY_ID_BASE + i,
             topic=topic,
-            text=text.format(report=report.text),
+            text=text.format(report=report.text, order=order or "наш"),
             approved=True,
         )
         for i, (topic, text) in enumerate(REPORT_REPLIES)
@@ -315,10 +328,15 @@ def report_scenario(
             voice=OFFICER_VOICE,
             noise="street",
             opening=report.text,
-            facts={"служба": service_title, "доклад": report.text, "статус": report.status},
+            facts={
+                "служба": service_title,
+                "наряд": order_number(scenario, scenario.service),
+                "доклад": report.text,
+                "статус": report.status,
+            },
             behaviour=SQUAD_LEADER_BEHAVIOUR,
         ),
-        replies=report_replies(report),
+        replies=report_replies(report, order_number(scenario, scenario.service)),
         required_topics=[],
         reference_card=_reference_card(scenario),
     )
@@ -371,7 +389,8 @@ def default_service_calls(scenario_body: Mapping) -> list[dict]:
     card = scenario_body.get("card") or {}
     address = card.get("address") or {}
     flags = card.get("flags") or {}
-    facts = ["address", "incident_type", "injured", "order_number"]
+    # Наряд принадлежит службе: диспетчер его не передаёт, а записывает со слов дежурного.
+    facts = ["address", "incident_type", "injured"]
     if address.get("code") or flags.get("no_access"):
         facts.append("access")
     own = scenario_body.get("service")
