@@ -18,6 +18,7 @@ from app.providers.dialog import (
     HybridDialog,
     SelectDialog,
     build_dialog_provider,
+    canned_reply,
     select_messages,
     select_schema,
 )
@@ -78,6 +79,22 @@ async def test_buttons_unknown_topic_gets_canned_answer(ctx: DialogContext) -> N
     voice = ctx.scenario.caller.voice
     assert reply.text == fallback.pick("unknown", voice, set()).text(voice)
     assert reply.audio == f"tts/seed/_fallback/{voice}/dont_know.mp3"
+
+
+async def test_bank_answers_when_the_scenario_reply_was_already_said(ctx: DialogContext) -> None:
+    """The scenario has one «repeat» reply; the second time the operator asks, the caller takes
+    a phrase from the bank instead of saying the same line again."""
+    first = canned_reply(ctx, "repeat", [], "buttons")
+    assert first.reply_id == reply_by_topic(ctx.scenario, "repeat").id
+    ctx.used_reply_ids.add(first.reply_id)
+    ctx.history.append(DialogTurn(role="caller", text=first.text, topics=first.topics))
+
+    second = canned_reply(ctx, "repeat", [], "buttons")
+    assert second.reply_id is None
+    assert second.text != first.text
+    voice = ctx.scenario.caller.voice
+    assert second.text == fallback.pick("repeat", voice, {first.text}).text(voice)
+    assert second.audio == f"tts/seed/_fallback/{voice}/{fallback.pick('repeat', voice, {first.text}).id}.mp3"
 
 
 async def test_bank_phrase_matches_the_gender_of_the_voice() -> None:

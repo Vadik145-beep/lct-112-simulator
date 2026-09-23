@@ -199,17 +199,21 @@ def pick_reply(ctx: DialogContext, topic: str) -> Reply | None:
     candidates = replies_of_topic(ctx.scenario, topic)
     if not candidates:
         return None
-    unused = [r for r in candidates if r.id not in ctx.used_reply_ids]
-    return (unused or candidates)[0]
+    return (unused_replies(ctx, topic) or candidates)[0]
+
+
+def unused_replies(ctx: DialogContext, topic: str) -> list[Reply]:
+    return [r for r in replies_of_topic(ctx.scenario, topic) if r.id not in ctx.used_reply_ids]
 
 
 def canned_reply(
     ctx: DialogContext, topic: str, operator_topics: list[str], method: str
 ) -> CallerReply:
-    """A ``repeat`` / ``unknown`` answer: the approved reply of the scenario, then the bank."""
-    reply = pick_reply(ctx, topic)
-    if reply is not None:
-        return _from_reply(reply, operator_topics, method)
+    """A ``repeat`` / ``unknown`` answer: an approved reply of the scenario the caller has not
+    said yet, then the bank of universal phrases, and only then a phrase said twice."""
+    fresh = unused_replies(ctx, topic)
+    if fresh:
+        return _from_reply(fresh[0], operator_topics, method)
     voice = ctx.scenario.caller.voice
     said = {t.text for t in ctx.history if t.role == "caller"}
     phrase = fallback.pick(topic, voice, said)
@@ -221,6 +225,9 @@ def canned_reply(
             audio=phrase.audio(voice),
             method=method,
         )
+    reply = pick_reply(ctx, topic)
+    if reply is not None:
+        return _from_reply(reply, operator_topics, method)
     text = FALLBACK_REPEAT if topic == TOPIC_REPEAT else FALLBACK_UNKNOWN
     return CallerReply(text=text, topics=[topic], operator_topics=operator_topics, method=method)
 
