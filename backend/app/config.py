@@ -45,6 +45,11 @@ class Settings(BaseSettings):
     # the OpenAI-compatible transcription endpoint (deploy/stt).
     llm_dialog_url: str | None = None
     llm_gen_url: str | None = None
+    # A whole scenario in one answer is 2000+ tokens: a 1.5B model on the stand needs a
+    # couple of minutes, a 7B one on a CPU up to a quarter of an hour. Generation runs in a
+    # background job, so the wait costs nothing but the timeout has to allow for it —
+    # otherwise every request fails and the teacher silently gets a template scenario.
+    llm_gen_timeout_seconds: float = 900.0
     stt_url: str | None = None
     # How the caller answers (PRD 9.3): select | hybrid | generate | buttons | live.
     # Without a reachable dialog model every mode degrades to `buttons`.

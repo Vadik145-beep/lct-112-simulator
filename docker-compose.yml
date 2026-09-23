@@ -34,6 +34,7 @@ x-backend-env: &backend-env
   TTS_PROVIDER: ${TTS_PROVIDER:-auto}
   LLM_DIALOG_URL: ${LLM_DIALOG_URL:-http://llm-dialog:8080}
   LLM_GEN_URL: ${LLM_GEN_URL:-http://llm-gen:8080}
+  LLM_GEN_TIMEOUT_SECONDS: ${LLM_GEN_TIMEOUT_SECONDS:-900}
   STT_URL: ${STT_URL:-http://stt:9000}
   VAD_MODEL_PATH: /models/vad/silero_vad.onnx
   # Telephony (profile telephony): ARI of Asterisk, the folder of generated endpoints and

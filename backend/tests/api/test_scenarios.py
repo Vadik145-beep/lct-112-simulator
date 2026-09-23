@@ -749,3 +749,63 @@ async def test_student_cannot_delete_scenarios(client: AsyncClient) -> None:
     student = bearer(await login(client, "student1"))
     r = await client.delete(f"/api/scenarios/{created['id']}", headers=student)
     assert r.status_code == 403
+
+
+async def test_delivered_scenario_cannot_be_edited(client: AsyncClient) -> None:
+    """The 96 scenarios of the delivery are read-only in the interface: written by hand against
+    the customer's tickets, voiced in the studio, checked. The seeder is their only source."""
+    from tests.api.test_call_intake import GAS_PIPE
+
+    headers = bearer(await login(client, "teacher1"))
+    async with SessionLocal() as session:
+        scenario_id = str(
+            await session.scalar(select(Scenario.id).where(Scenario.seed_key == GAS_PIPE))
+        )
+
+    shown = (await client.get(f"/api/scenarios/{scenario_id}", headers=headers)).json()
+    assert shown["delivered"] is True
+
+    calls = [
+        client.put(f"/api/scenarios/{scenario_id}", headers=headers, json={"body": {"title": "x"}}),
+        client.post(
+            f"/api/scenarios/{scenario_id}/replies",
+            headers=headers,
+            json={"topic": "address", "text": "Улица Ленина, дом пять."},
+        ),
+        client.put(
+            f"/api/scenarios/{scenario_id}/replies/1", headers=headers, json={"text": "Другое."}
+        ),
+        client.delete(f"/api/scenarios/{scenario_id}/replies/1", headers=headers),
+        client.post(f"/api/scenarios/{scenario_id}/replies/approve", headers=headers, json={}),
+        client.post(
+            f"/api/scenarios/{scenario_id}/approve",
+            headers=headers,
+            json={"reference": True, "replies": True},
+        ),
+        client.post(
+            f"/api/scenarios/{scenario_id}/revise", headers=headers, json={"comment": "перепиши"}
+        ),
+    ]
+    for call in calls:
+        r = await call
+        assert r.status_code == 409, r.text
+        assert r.json()["error"]["code"] == "delivered_scenario_locked"
+
+    # The body on disk is untouched and the scenario still plays in lessons.
+    r = await client.get(f"/api/scenarios/{scenario_id}", headers=headers)
+    assert r.status_code == 200 and r.json()["status"] == "approved"
+
+
+async def test_delivered_scenario_can_still_be_hidden_from_lessons(client: AsyncClient) -> None:
+    """Hiding a scenario from lessons is the teacher's business; the archive is restorable."""
+    from tests.api.test_call_intake import GAS_PIPE
+
+    headers = bearer(await login(client, "teacher1"))
+    async with SessionLocal() as session:
+        scenario_id = str(
+            await session.scalar(select(Scenario.id).where(Scenario.seed_key == GAS_PIPE))
+        )
+    r = await client.delete(f"/api/scenarios/{scenario_id}", headers=headers)
+    assert r.status_code == 200 and r.json() == {"result": "archived"}
+    r = await client.post(f"/api/scenarios/{scenario_id}/restore", headers=headers)
+    assert r.status_code == 200 and r.json()["status"] == "approved"

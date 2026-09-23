@@ -4210,6 +4210,12 @@ export interface components {
         /** ScenarioListItem */
         ScenarioListItem: {
             /**
+             * Delivered
+             * @description Delivered with the product (data/seed/scenarios): shown, played, but never edited here.
+             * @default false
+             */
+            delivered: boolean;
+            /**
              * Id
              * Format: uuid
              */
@@ -4298,6 +4304,17 @@ export interface components {
         };
         /** ScenarioOut */
         ScenarioOut: {
+            /**
+             * Quality
+             * @description Remarks on the wording and the card: shown to the teacher, never block anything.
+             */
+            quality: string[];
+            /**
+             * Delivered
+             * @description Delivered with the product (data/seed/scenarios): shown, played, but never edited here.
+             * @default false
+             */
+            delivered: boolean;
             /**
              * Id
              * Format: uuid
