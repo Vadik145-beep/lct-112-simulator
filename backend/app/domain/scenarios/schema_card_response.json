@@ -457,6 +457,32 @@
       "title": "ReferenceStep",
       "type": "object"
     },
+    "ReplyVariant": {
+      "description": "Another wording of an approved reply with the same facts; a call plays one of them\nat random so the caller does not sound like a recording.",
+      "properties": {
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "audio": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Audio"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "ReplyVariant",
+      "type": "object"
+    },
     "ServiceCallRef": {
       "description": "A call the dispatcher must make to a service (issue #36, customer: «звено Б → В»):\nwhich service, which facts of the card must be passed, and how long the call may take.",
       "properties": {
@@ -514,6 +540,13 @@
           "default": false,
           "title": "Approved",
           "type": "boolean"
+        },
+        "variants": {
+          "items": {
+            "$ref": "#/$defs/ReplyVariant"
+          },
+          "title": "Variants",
+          "type": "array"
         },
         "service": {
           "anyOf": [

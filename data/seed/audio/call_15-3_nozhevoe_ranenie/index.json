@@ -1,0 +1,226 @@
+{
+  "opening": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Помогите! Он меня ножом ударил, кровь идёт, нога вся в крови!",
+    "bytes": 84471,
+    "sha256": "547ab41d3227870f34c3a33bd96c5b640eecbf86"
+  },
+  "r1": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Сожитель ножом в ногу ударил, кровь льёт, не останавливается!",
+    "bytes": 70261,
+    "sha256": "217a2ba8f98e9dea8654824393b31393252e1c49"
+  },
+  "r1-v1": {
+    "sha256": "329adbb626f8b09abce4f6d8048896d1764f0af4",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Мой сожитель ударил меня ножом, в ногу, кровь хлещет, не могу остановить!",
+    "bytes": 86979
+  },
+  "r1-v2": {
+    "sha256": "d1ef350fe05de8b4ebf7c86f480d97c692cf144f",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Он ножом ударил, в ногу! Кровь течёт и течёт, я зажимаю, а она не останавливается!",
+    "bytes": 108713
+  },
+  "r2": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Зверенецкая двадцать два, квартира семь... первый подъезд.",
+    "bytes": 62319,
+    "sha256": "604c7068288d65bafb1f30ecde0cf63252ae11b0"
+  },
+  "r2-v1": {
+    "sha256": "be0d321dde48aa7d4f288868159fa8283f961cdf",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Зверенецкая, дом двадцать два... седьмая квартира, подъезд первый.",
+    "bytes": 79038
+  },
+  "r2-v2": {
+    "sha256": "94dff37aa47ed1de5b222e50b3c5f80c32433d21",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Улица Зверенецкая, двадцать два, квартира семь. Подъезд первый.",
+    "bytes": 76530
+  },
+  "r3": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Второй этаж, код семь вэ. Семь и буква вэ.",
+    "bytes": 66499,
+    "sha256": "be94ed9a8a2bf89f7c6b5852037316c218c57e54"
+  },
+  "r3-v1": {
+    "sha256": "a91e5730d91d8185fbc5ac8346c74783ab7f4116",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Этаж второй, код на домофоне семь вэ. Семёрка и вэ.",
+    "bytes": 94502
+  },
+  "r3-v2": {
+    "sha256": "a02b604b52335fd300ac541b1ab996116f92d82f",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Второй этаж. Домофон семь вэ, буква вэ.",
+    "bytes": 67753
+  },
+  "r4": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Я одна ранена, в ногу, кровь сильно идёт, голова кружится.",
+    "bytes": 79038,
+    "sha256": "fc1a176a0635cd0879b53c565058115601aec124"
+  },
+  "r4-v1": {
+    "sha256": "7f9890b42cb24db1ae18129562e0f8d849acf6f3",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Только я. В ногу ранена, кровь сильная, мне плохо, голова кружится.",
+    "bytes": 95756
+  },
+  "r4-v2": {
+    "sha256": "10f61ea4aade842bd45dc11f8d779441c638e6a5",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Ранена я одна, нога, крови очень много. Меня трясёт, в глазах темнеет.",
+    "bytes": 79038
+  },
+  "r5": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Он тут, в комнате! С ножом! Я в ванной закрылась.",
+    "bytes": 59812,
+    "sha256": "864cf4b6e7a0c40c731c301376103b1f6fe0b852"
+  },
+  "r5-v1": {
+    "sha256": "55b2c27cfb72c0c0eb9e009df4961486938480a8",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Он в квартире, здесь, нож у него! Я закрылась в ванной!",
+    "bytes": 65245
+  },
+  "r5-v2": {
+    "sha256": "6ac6ecddb896e7477f362d0d9e0abbfa52e9da9d",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Он никуда не ушёл, он в комнате с ножом! Я заперлась в ванной, боюсь выйти!",
+    "bytes": 104951
+  },
+  "r6": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Иванова... Елена Сергеевна.",
+    "bytes": 39332,
+    "sha256": "9bd0647fa76100f532def5c06bf96bdb12e07e28"
+  },
+  "r6-v1": {
+    "sha256": "6567839f8d2ca5e83192df29a08f856a56d55ad1",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Елена... Иванова Елена Сергеевна.",
+    "bytes": 52288
+  },
+  "r6-v2": {
+    "sha256": "546766617eb980940b53fe0053ca1c16d210028f",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Иванова. Елена Сергеевна Иванова.",
+    "bytes": 58558
+  },
+  "r7": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Девять шестнадцать, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 74022,
+    "sha256": "7843500bd9e92c48ffceda9999f3b17385f3e337"
+  },
+  "r7-v1": {
+    "sha256": "2aa66847332ed6934f6c0e7c3b2640fcb96ca39f",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Девятьсот шестнадцать, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 80292
+  },
+  "r7-v2": {
+    "sha256": "280d4bc374d22674ef246c29f3612cd82ed5c3b3",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Девять один шесть, восемь девять шесть, три два, пять четыре.",
+    "bytes": 65245
+  },
+  "r8": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Что?! Я не понимаю, что вы говорите!",
+    "bytes": 47273,
+    "sha256": "a098bed3acbff3266e380551dafe493e2a3554b8"
+  },
+  "r8-v1": {
+    "sha256": "bc1603c764fe397962e829f8fec0da656623a11a",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Что?! Повторите, я не понимаю!",
+    "bytes": 43511
+  },
+  "r8-v2": {
+    "sha256": "f671325f17799a973060ff82d0e5b20cae8ae1eb",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Я не слышу вас! Что вы говорите?!",
+    "bytes": 53542
+  },
+  "r9": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Не знаю! Пришлите скорую!",
+    "bytes": 38078,
+    "sha256": "5d3d63fc19f8e1eb4b3ac6ea6fe52e3b23551803"
+  },
+  "r9-v1": {
+    "sha256": "c427a0d42ce2d22c7288058536e15420eae0e6d0",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Не знаю я! Скорую, быстрее!",
+    "bytes": 41839
+  },
+  "r9-v2": {
+    "sha256": "bd1684cf8f651ffd20589b471f2a09f3e593bd58",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[panicked] [in pain]",
+    "text": "Я не знаю! Пришлите кого-нибудь, мне плохо!",
+    "bytes": 67753
+  }
+}

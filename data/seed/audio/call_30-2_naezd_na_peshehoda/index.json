@@ -1,0 +1,202 @@
+{
+  "opening": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Тут человека сбили! Он лежит и не двигается!",
+    "bytes": 54796,
+    "sha256": "044bf13ed480ed5e124c9f709810c1d9a52f8b20"
+  },
+  "r1": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Машина сбила мужчину, он на дороге лежит, не двигается.",
+    "bytes": 62319,
+    "sha256": "d7929d6183143280951bfafa805d8f98251f9d7d"
+  },
+  "r1-v1": {
+    "sha256": "740c720e6a179aacebc787caa529068910e5082f",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Мужчину сбила машина, он лежит на дороге и не шевелится.",
+    "bytes": 70261
+  },
+  "r1-v2": {
+    "sha256": "b63622cac8e779ee68b3d3ae7515e3166c92c683",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Человека сбили, мужчину, он на асфальте лежит, не двигается.",
+    "bytes": 70261
+  },
+  "r2": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Тюменская улица, где она с Тюменским проездом пересекается.",
+    "bytes": 65245,
+    "sha256": "844ea2367bbade3b9e2307cb38b58ef0210f25c2"
+  },
+  "r2-v1": {
+    "sha256": "479c67afb8f10c86a2b29a9d2c0e4419f903d51f",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Улица Тюменская, перекрёсток с Тюменским проездом.",
+    "bytes": 69007
+  },
+  "r2-v2": {
+    "sha256": "89056d78c94d8d7f80cd6b7c51e85c1e515a4ba1",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Тюменская, там где Тюменский проезд пересекает.",
+    "bytes": 59812
+  },
+  "r3": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Один человек, мужчина. Без сознания, но вроде дышит.",
+    "bytes": 85725,
+    "sha256": "3871454f3e07606fdfc86cca4e2889a6a350e6b6"
+  },
+  "r3-v1": {
+    "sha256": "565cd8610024a684afb8001769fb2be8adecfd69",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Один, мужчина. Без сознания, дышит вроде.",
+    "bytes": 93248
+  },
+  "r3-v2": {
+    "sha256": "87a9b372f7ce19b18b5e491194e4922753d188f2",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Пострадавший один, мужчина. Он без сознания, но дышит, я видела.",
+    "bytes": 79038
+  },
+  "r4": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "ВАЗ десятка, красная. Номер А сто двадцать восемь АА, сто семьдесят семь. Водитель тут, вышел.",
+    "bytes": 140478,
+    "sha256": "5cceeeac2c16aae9e1fd15c2e2c353603435f9c1"
+  },
+  "r4-v1": {
+    "sha256": "06698330bd7f3152e0b8d01bc29dc64f7b074498",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "ВАЗ, десятая модель, красная. Номер А сто двадцать восемь АА, регион сто семьдесят семь. Водитель на месте.",
+    "bytes": 147165
+  },
+  "r4-v2": {
+    "sha256": "e70e4e3e32a7960a3eed6fe4ae8afced74279347",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Красная десятка, ВАЗ. Номер... А один два восемь, А А, сто семьдесят семь. Водитель тут стоит.",
+    "bytes": 182692
+  },
+  "r5": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Он прямо на проезжей части, машины объезжают.",
+    "bytes": 61066,
+    "sha256": "12ee517670d21ffafb39c400d386f97890fa539d"
+  },
+  "r5-v1": {
+    "sha256": "d650c4701345e1053c4b6eaedd0e3f721b289fce",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Лежит прямо на дороге, машины его объезжают.",
+    "bytes": 58558
+  },
+  "r5-v2": {
+    "sha256": "38ef743422ef4831bee0fdcf3fc7ddf928223279",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Он на проезжей части, машины мимо едут, объезжают.",
+    "bytes": 56050
+  },
+  "r6": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 29301,
+    "sha256": "c2677cd8977cf2ccea927a22a1ed91a71d716cd8"
+  },
+  "r6-v1": {
+    "sha256": "ef9f89675a6928dcf4626456e243e8b4bc9a1f8c",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Елена Сергеевна Иванова.",
+    "bytes": 29301
+  },
+  "r6-v2": {
+    "sha256": "7fd318ea4b37385ce62c40b100cbd6aa6159af1a",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Иванова. Елена Сергеевна.",
+    "bytes": 41839
+  },
+  "r7": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Девятьсот шестнадцать, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 94502,
+    "sha256": "3a92b0a440ddd9709e529ada6b17842d437cd0c4"
+  },
+  "r7-v1": {
+    "sha256": "037d17ffd0dfedbb28d9c889c6578ba74755031a",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 95756
+  },
+  "r7-v2": {
+    "sha256": "bb621095d53c050d575c80175bbf7d2bcb22f59a",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "text": "Девятьсот шестнадцать, восемь девять шесть, три два, пять четыре.",
+    "bytes": 75276
+  },
+  "r8": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Что? Не слышу!",
+    "bytes": 30555,
+    "sha256": "a41692647ca92b22bd11621b465b15437345861b"
+  },
+  "r8-v1": {
+    "sha256": "6d14b8667180c9739c03aca105e78fb62eb920a5",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Что? Повторите, не слышно!",
+    "bytes": 35570
+  },
+  "r8-v2": {
+    "sha256": "a483d2918c89a7a73094d2a9d6bf5ae59c27fc52",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Не расслышала, что вы сказали?",
+    "bytes": 38078
+  }
+}

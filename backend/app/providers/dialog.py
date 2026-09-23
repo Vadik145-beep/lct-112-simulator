@@ -159,6 +159,7 @@ class CallerReply:
     operator_topics: list[str]  # topics the operator's phrase touched (stored on their turn)
     reply_id: int | None = None  # approved reply used; None when generated or canned
     audio: str | None = None  # recorded audio of the approved reply, if any
+    variant: int = 0  # 0 = the reply's own text, n = its n-th other wording (``variants``)
     generated: bool = False  # new text: hybrid returns it «на утверждение»
     method: str = "buttons"  # how the reply was chosen, for logs and the benchmark
     latency_ms: int = 0
