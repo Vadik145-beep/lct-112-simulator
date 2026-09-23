@@ -90,6 +90,9 @@ PROGRESS_REPLIES: dict[str, str] = {
     "works_started": "Работы ведутся, пока без замечаний. По окончании доложу.",
     "works_done": "Работы завершены, докладывал. Всё по карточке отражено.",
 }
+# Состояния, в которых бригаду уже видно на месте: это знает и заявитель, если ему позвонить
+# (app.domain.scenarios.caller_back).
+SQUAD_STATES_ON_SCENE = frozenset({"arrived", "works_started", "works_done"})
 # Replies of the squad leader during a report call. After the report the dispatcher asks the
 # usual things: how long it will take, who is on site, whether help is needed, what about the
 # people. The set is universal — no address, no service, so it fits any card.

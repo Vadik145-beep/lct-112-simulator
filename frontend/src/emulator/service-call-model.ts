@@ -5,6 +5,10 @@ import { formatSeconds } from "@/emulator/time";
 
 export type ServiceCallOut = AttemptOut["service_calls"][number];
 
+/** The target of «Позвонить» that means the caller of the card, not a service
+ * (``officer.CALLER_TARGET`` on the server). */
+export const CALLER_TARGET = "caller";
+
 export const FACT_TITLES: Record<string, string> = {
   address: "адрес",
   incident_type: "тип происшествия",
@@ -27,14 +31,23 @@ export function isReport(call: ServiceCallOut): boolean {
   return call.kind === "report";
 }
 
-/** «Старший группы» for a report, «дежурный» for the officer of a service. */
-export function otherSide(call: ServiceCallOut): string {
-  return isReport(call) ? "старший группы" : "дежурный";
+/** A call back to the person who reported the incident (customer, 23.09.2026): the number is
+ * in the card, the talk goes past 112 and nothing has to be passed on. */
+export function isCaller(call: ServiceCallOut): boolean {
+  return call.kind === "caller";
 }
 
-/** «Доклад бригады: ОДС ЖКХ» / «Звонок в службу: ОДС ЖКХ». */
+/** «Старший группы» for a report, «заявитель» for a call back, «дежурный» otherwise. */
+export function otherSide(call: ServiceCallOut): string {
+  if (isReport(call)) return "старший группы";
+  return isCaller(call) ? "заявитель" : "дежурный";
+}
+
+/** «Доклад бригады: ОДС ЖКХ» / «Звонок заявителю: Ким О. Ю.» / «Звонок в службу: ОДС ЖКХ». */
 export function callTitle(call: ServiceCallOut): string {
-  return `${isReport(call) ? "Доклад бригады" : "Звонок в службу"}: ${call.service_title}`;
+  if (isReport(call)) return `Доклад бригады: ${call.service_title}`;
+  const what = isCaller(call) ? "Звонок заявителю" : "Звонок в службу";
+  return `${what}: ${call.service_title}`;
 }
 
 export function factTitle(code: string): string {
@@ -50,6 +63,10 @@ export function describeCall(call: ServiceCallOut): string {
     const about = status ? `: «${status}»` : "";
     if (call.ended_at && !call.answered) return `Доклад бригады не принят${about}`;
     return `Доклад бригады ${length}${about}`;
+  }
+  if (isCaller(call)) {
+    if (call.ended_at && !call.answered) return "Заявитель не ответил";
+    return `Звонок заявителю ${length}`;
   }
   const passed = call.facts_passed.map(factTitle).join(", ") || "ничего";
   return `Звонок ${length}, переданы: ${passed}`;

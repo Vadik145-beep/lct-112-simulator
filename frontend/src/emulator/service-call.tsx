@@ -7,6 +7,7 @@ import {
   END_REASON_TITLES,
   callTitle,
   factTitle,
+  isCaller,
   isReport,
   otherSide,
   type ServiceCallOut,
@@ -237,7 +238,9 @@ export function ServiceCallPanel({
           <Phone className="size-3.5" aria-hidden />
           {isReport(call)
             ? `Доклад бригады: ${call.service_title}`
-            : call.service_title}
+            : isCaller(call)
+              ? `Заявитель: ${call.service_title}`
+              : call.service_title}
         </span>
         <span className="text-[var(--arm-text-muted)]">
           {!open
@@ -280,7 +283,9 @@ export function ServiceCallPanel({
           <li className="text-[var(--arm-text-muted)]">
             {isReport(call)
               ? "Звонит старший группы: ответьте, чтобы выслушать доклад."
-              : "Соединение со службой…"}
+              : isCaller(call)
+                ? "Звоним заявителю…"
+                : "Соединение со службой…"}
           </li>
         )}
       </ol>
@@ -318,9 +323,11 @@ export function ServiceCallPanel({
           }}
         >
           <input
-            aria-label="Сказать дежурному"
+            aria-label={`Сказать: ${otherSide(call)}`}
             placeholder={
-              telephony ? "или напишите дежурному…" : "скажите дежурному…"
+              telephony
+                ? `или напишите: ${otherSide(call)}…`
+                : `скажите: ${otherSide(call)}…`
             }
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -329,7 +336,7 @@ export function ServiceCallPanel({
           />
           <button
             type="submit"
-            aria-label="Отправить дежурному"
+            aria-label={`Отправить: ${otherSide(call)}`}
             disabled={pending || !text.trim()}
             className="flex size-7 items-center justify-center rounded-sm bg-[var(--arm-blue)] text-white disabled:opacity-50"
           >
@@ -427,7 +434,7 @@ export function ServiceCallPanel({
       )}
       {open && call.answered && !telephony && !sttAvailable && (
         <span className="text-[10px] text-[var(--arm-text-muted)]">
-          Распознавание речи недоступно: пишите дежурному текстом.
+          Распознавание речи недоступно: пишите текстом ({otherSide(call)}).
         </span>
       )}
       {open && !call.answered && isReport(call) && (

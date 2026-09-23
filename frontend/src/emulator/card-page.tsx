@@ -45,7 +45,7 @@ import {
 } from "@/emulator/flag-field-model";
 import { ServiceCallPanel } from "@/emulator/service-call";
 import { CloudCall } from "@/softphone/cloud-call";
-import { describeCall } from "@/emulator/service-call-model";
+import { CALLER_TARGET, describeCall } from "@/emulator/service-call-model";
 import {
   acceptanceTimer,
   formatDate,
@@ -279,6 +279,10 @@ function CardView({
       },
     });
   };
+  // Звонок самому заявителю по номеру из карточки (ответ заказчика 23.09.2026): тот же
+  // разговор, что и со службой, только на другом конце — заявитель.
+  const callDisabled = finished || Boolean(openCall) || callBusy;
+  const callerBack = () => dial(CALLER_TARGET);
   // The squad's report is an incoming call (issue #103): the trainee answers it. The phone
   // carries the voice when it is the one ringing; otherwise the card answers over the API.
   const answerReport = () => {
@@ -505,14 +509,23 @@ function CardView({
               </div>
             </div>
           </div>
-          <PhoneBox label="АОН" value={card.phones.aon ?? ""} />
+          <PhoneBox
+            label="АОН"
+            value={card.phones.aon ?? ""}
+            onCall={callerBack}
+            busy={callDisabled}
+          />
           <PhoneBox
             label="предоставленный"
             value={card.phones.provided ?? ""}
+            onCall={callerBack}
+            busy={callDisabled}
           />
           <PhoneBox
             label="телефон на месте"
             value={card.phones.on_site ?? ""}
+            onCall={callerBack}
+            busy={callDisabled}
           />
           <div className="flex min-w-0 flex-1 flex-col justify-center bg-[var(--arm-panel)] px-3 py-1 text-[11px] leading-tight">
             <span className="text-sm font-semibold">
@@ -1326,10 +1339,52 @@ function CallButton({
   );
 }
 
-function PhoneBox({ label, value }: { label: string; value: string }) {
+/**
+ * A phone of the card with the handset of the live АРМ made to work: the dispatcher calls the
+ * number back himself (ответ заказчика 23.09.2026). Without a number, and while another call
+ * is on, the handset stays dead — exactly as the customer put it: «если номера нет, то только
+ * просто видит».
+ */
+function PhoneBox({
+  label,
+  value,
+  onCall,
+  busy,
+}: {
+  label: string;
+  value: string;
+  onCall?: () => void;
+  busy?: boolean;
+}) {
+  const canCall = Boolean(onCall) && value.trim().length > 0 && !busy;
   return (
     <div className="flex items-center gap-1.5 bg-[var(--arm-panel)] px-2 py-1">
-      <Phone className="size-4 text-[var(--arm-text-muted)]" aria-hidden />
+      {onCall ? (
+        <button
+          type="button"
+          aria-label={`Позвонить заявителю: ${label}`}
+          title={
+            value.trim()
+              ? busy
+                ? "Идёт разговор"
+                : `Позвонить заявителю: ${value}`
+              : "Номера нет: звонить некуда"
+          }
+          disabled={!canCall}
+          onClick={onCall}
+          data-testid={`call-${label === "АОН" ? "aon" : "phone"}`}
+          className={cn(
+            "flex size-6 items-center justify-center rounded-sm border",
+            canCall
+              ? "border-[var(--arm-green)] text-[var(--arm-green)] hover:bg-[var(--arm-green)] hover:text-white"
+              : "border-transparent text-[var(--arm-text-muted)] opacity-50",
+          )}
+        >
+          <Phone className="size-4" aria-hidden />
+        </button>
+      ) : (
+        <Phone className="size-4 text-[var(--arm-text-muted)]" aria-hidden />
+      )}
       <div className="flex w-[7.5rem] flex-col">
         <span className="text-[9px] text-[var(--arm-text-muted)]">{label}</span>
         <span className="border-b border-[#a9adb2] text-sm tabular-nums">

@@ -267,13 +267,15 @@ class ServiceCallTurnOut(BaseModel):
 
 
 class ServiceCallOut(BaseModel):
-    """A call on the card: the dispatcher's call to a service officer (issue #36, ``outgoing``)
-    or the squad leader's report to the dispatcher (``report``, customer 21.09.2026)."""
+    """A call on the card: the dispatcher's call to a service officer (issue #36, ``outgoing``),
+    the squad leader's report to the dispatcher (``report``, customer 21.09.2026) or the
+    dispatcher's call back to the person who reported the incident (``caller``, customer
+    23.09.2026)."""
 
     id: str
     service: str
     service_title: str
-    kind: Literal["outgoing", "report"] = "outgoing"
+    kind: Literal["outgoing", "report", "caller"] = "outgoing"
     report_status: str | None = None
     report_status_title: str | None = None
     started_at: datetime

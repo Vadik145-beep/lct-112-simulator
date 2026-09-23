@@ -145,3 +145,14 @@ def test_phrase_with_caller_hint() -> None:
     assert facts.what_happened == "Пожар в подземном паркинге"
     assert facts.caller.relation == "ребёнок"
     assert facts.address.street is None
+
+
+def test_caller_gender_reads_a_name_that_is_a_description() -> None:
+    """В карточке вместо ФИО бывает описание: «Соседка с 9 этажа» — женщина, и голос на
+    обратном звонке должен быть женским (замечание пользователя 24.09.2026)."""
+    from app.domain.scenarios.facts import caller_gender
+
+    assert caller_gender("Соседка с 9 этажа", "очевидец") == "female"
+    assert caller_gender("Дедушка из 5 квартиры", None) == "male"
+    # ФИО по-прежнему главнее слова роли.
+    assert caller_gender("Сухов Леонид Сергеевич", "жена") == "male"

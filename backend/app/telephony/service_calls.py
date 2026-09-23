@@ -23,6 +23,7 @@ from app.db import SessionLocal
 from app.dialog import officer
 from app.dialog import service as dialog
 from app.domain.evaluation.schemas import CardResponseScenario
+from app.domain.scenarios import caller_back
 from app.errors import ApiError
 from app.events import publish_events
 from app.models import MODE_CARD_RESPONSE, Attempt, Role, TrainingSession, User
@@ -40,6 +41,11 @@ router = APIRouter(tags=["telephony"])
 
 MAX_UTTERANCE_BYTES = 10 * 1024 * 1024
 SILENCE_PEAK = 0.01  # below this the microphone sent nothing but noise floor
+
+
+def caller_number(scenario: CardResponseScenario) -> str:
+    """The phone of the card's caller: the dispatcher calls it back directly."""
+    return (scenario.card.caller.phone or "").strip()
 
 
 def nothing_recognized_message(transcript: Transcript) -> str:
@@ -112,12 +118,23 @@ async def start_service_call(
     session: DbSession,
     request: Request,
 ) -> ServiceCallResponse:
-    """«Позвонить» a service from the card: one call at a time, only while the card is open."""
+    """«Позвонить» from the card: one call at a time, only while the card is open. The target
+    is a service of the strip or the caller of the card himself (``officer.CALLER_TARGET``,
+    ответ заказчика 23.09.2026: «диспетчер ДДС может напрямую выйти на заявителя»)."""
     attempt, ts, card, scenario = await card_attempt(session, attempt_id, user)
-    services = await training.load_services(session)
-    service = services.get(body.service)
-    if service is None:
-        raise ApiError(422, "unknown_service", f"Службы «{body.service}» нет в справочнике.")
+    to_caller = body.service == officer.CALLER_TARGET
+    if to_caller:
+        code, title = officer.CALLER_TARGET, caller_back.caller_name(scenario)
+        if not caller_number(scenario):
+            raise ApiError(
+                422, "no_caller_phone", "В карточке нет телефона заявителя: звонить некуда."
+            )
+    else:
+        services = await training.load_services(session)
+        service = services.get(body.service)
+        if service is None:
+            raise ApiError(422, "unknown_service", f"Службы «{body.service}» нет в справочнике.")
+        code, title = service.code, service.title
     live = telephony.telephony_active()
     # В облачном занятии без телефонии трубку снимает браузерный звонок: первую фразу
     # говорит сам провайдер (см. cloud_router.start_service_web_call).
@@ -128,10 +145,11 @@ async def start_service_call(
         ts,
         card.version,
         scenario,
-        service.code,
-        service.title,
+        code,
+        title,
         telephony=live,
         answer_now=not cloud,
+        kind=officer.KIND_CALLER if to_caller else officer.KIND_OUTGOING,
     )
     await write_audit(
         session,
@@ -140,7 +158,7 @@ async def start_service_call(
         actor_role=user.role,
         entity="attempt",
         entity_id=str(attempt.id),
-        details={"service": service.code, "call_id": call["id"], "telephony": live},
+        details={"service": code, "call_id": call["id"], "telephony": live},
         ip=client_ip(request),
     )
     await session.commit()
@@ -148,7 +166,12 @@ async def start_service_call(
     if live:
         manager = telephony.get_service()
         dialled = manager is not None and await manager.calls.dial_service(
-            attempt.id, call["id"], service.code, service.title
+            attempt.id,
+            call["id"],
+            code,
+            title,
+            kind=call["kind"],
+            number=caller_number(scenario) if to_caller else None,
         )
         if not dialled:
             # The phone could not be rung: fall back to the text path right away.

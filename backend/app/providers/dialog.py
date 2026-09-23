@@ -539,6 +539,15 @@ def _merge(operator_topics: list[str], topic: str) -> list[str]:
 
 # --- generate: free text from the fact sheet ---------------------------------------------------
 
+# Обратный звонок диспетчера ДДС заявителю (ответ заказчика 23.09.2026): роль та же, но
+# звонок начал не заявитель, поэтому правило ставится перед общим промптом.
+CALLBACK_RULE = """ВАЖНО: звонок начал не ты. Ты уже звонил в сто двенадцать раньше, а сейчас
+тебе перезвонил дежурный городской службы и уточняет подробности. Не рассказывай всё заново,
+отвечай на вопросы; если дежурный называет адрес или обстоятельства неверно — поправь его по
+фактам ниже. Номера карточки ты не знаешь и не спрашиваешь.
+
+"""
+
 GENERATE_SYSTEM_PROMPT = """Ты играешь ЗАЯВИТЕЛЯ, который позвонил в службу 112. Это учебный
 звонок для тренировки оператора. Ты не оператор, не помощник и не программа: ты человек, который
 звонит за помощью. Тип заявителя: {persona}. Поведение: {behaviour}.
@@ -608,6 +617,8 @@ def generate_messages(ctx: DialogContext, operator_text: str) -> list[Message]:
     template = (
         OFFICER_GENERATE_SYSTEM_PROMPT if ctx.role == ROLE_OFFICER else GENERATE_SYSTEM_PROMPT
     )
+    if ctx.role != ROLE_OFFICER and scenario.caller.calls_back:
+        template = CALLBACK_RULE + template
     system = template.format(
         persona=scenario.caller.persona,
         behaviour=scenario.caller.behaviour or "обычное",
