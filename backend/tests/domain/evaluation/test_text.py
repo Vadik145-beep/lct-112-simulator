@@ -103,3 +103,23 @@ def test_keyword_coverage_splits_found_and_missing() -> None:
 )
 def test_detect_topics(text: str, expected: list[str]) -> None:
     assert detect_topics(text) == expected
+
+
+def test_dispatcher_asks_the_name_in_the_words_a_dispatcher_uses() -> None:
+    """Живой диспетчер говорит «имя заявителя» и «назовитесь», а не «как вас зовут»;
+    без этих слов тему выбирала модель и путала её с отношением к происшествию."""
+    for question in (
+        "Имя заявителя",
+        "А имя вашего как?",
+        "Назовитесь, пожалуйста",
+        "ФИО ваше",
+        "Кто говорит",
+    ):
+        assert "caller_name" in detect_topics(question), question
+
+
+def test_role_question_is_not_taken_for_the_name() -> None:
+    for question in ("Вы кто", "Кем приходитесь пострадавшему", "Отношение к происшествию"):
+        topics = detect_topics(question)
+        assert "caller_role" in topics, question
+        assert "caller_name" not in topics, question
