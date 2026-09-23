@@ -1,0 +1,226 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Срочно! На Цюрупы квартира горит, на балконе двое кричат, помогите!",
+    "bytes": 65245,
+    "sha256": "4afa6efa9b4dd3181680e02713474160cbf191b1"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Окно на девятом горит, пламя открытое, а на балконе рядом двое машут, кричат!",
+    "bytes": 91995,
+    "sha256": "4fd4d1544225f777d7572b97906715c9e2f38cb2"
+  },
+  "r1-v1": {
+    "sha256": "f7d174140880aee0e338531e8e7e823d85618bbc",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "На девятом окно горит, пламя наружу, а на соседнем балконе двое, кричат, машут руками!",
+    "bytes": 85725
+  },
+  "r1-v2": {
+    "sha256": "e91ef80576d839619907e23d5332fa29e7914b0e",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Горит окно, девятый этаж, огонь открытый! Рядом на балконе два человека, зовут на помощь!",
+    "bytes": 91995
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Цюрупы, двенадцать, корпус шесть. Подъезд один всего.",
+    "bytes": 44765,
+    "sha256": "7ea4060601f31bec220805b40836d6c046c90122"
+  },
+  "r2-v1": {
+    "sha256": "70e8cc1977f982d4c4a0b83f1e75fe86df2dd1f7",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Улица Цюрупы, дом двенадцать, корпус шесть. Подъезд там один.",
+    "bytes": 61066
+  },
+  "r2-v2": {
+    "sha256": "461a6f8788677cf1bad7431954d2a334b024b44f",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Цюрупы, двенадцать, шестой корпус. Единственный подъезд.",
+    "bytes": 49781
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Девятый этаж, дом семнадцатиэтажный. Балкон со стороны подъезда.",
+    "bytes": 77784,
+    "sha256": "de1084a53ee28dcb52e3a11dac1728517f55dedb"
+  },
+  "r3-v1": {
+    "sha256": "9e3324cfd594c0f0568987882dc1b156ef5c57e5",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Этаж девятый, в доме семнадцать. Балкон со стороны подъезда.",
+    "bytes": 63991
+  },
+  "r3-v2": {
+    "sha256": "b682aff1b2dd0fe95d0ce513830989debb2c5745",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Девятый этаж, дом семнадцатиэтажный. Балкон с той стороны, где подъезд.",
+    "bytes": 65245
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Пока целы, но они на балконе, к ним огонь идёт!",
+    "bytes": 51035,
+    "sha256": "ff0acc1a448355733c12c598aa6f7d5e40d377ed"
+  },
+  "r4-v1": {
+    "sha256": "cd1ae9597314305f98f4378b92fb5f8e983a8144",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Пока никто не пострадал, но двое на балконе, огонь к ним подбирается!",
+    "bytes": 62319
+  },
+  "r4-v2": {
+    "sha256": "ab0a84097253e04cb1f40a41e54a627c24fff384",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Целы пока, но они на балконе, рядом огонь, к ним идёт!",
+    "bytes": 57304
+  },
+  "r5": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Люди на балконе, вот опасность! Газа в доме нет, электрический.",
+    "bytes": 61066,
+    "sha256": "0639c5253da9b7d5648456328c54fd0eca9be161"
+  },
+  "r5-v1": {
+    "sha256": "5adc15ca1bf2a2dfb9ae438c3f8894b7d9d7113d",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Двое на балконе рядом с огнём, вот что опасно! Газа нет, дом электрический.",
+    "bytes": 90741
+  },
+  "r5-v2": {
+    "sha256": "b000729bd49b0254afc19338389feaa143445bd8",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Опасность — люди на балконе, огонь рядом! Газа в доме нет, плиты электрические.",
+    "bytes": 70261
+  },
+  "r6": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Яшин Игорь Вадимович.",
+    "bytes": 39332,
+    "sha256": "e92e2263e24828fad75d9462e53952abf68c9058"
+  },
+  "r6-v1": {
+    "sha256": "c44edac5f6bd40b786b559fb26b5c8d68ab1c0da",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Яшин. Игорь Вадимович.",
+    "bytes": 35570
+  },
+  "r6-v2": {
+    "sha256": "d8e37e96acae112650df8fea28e1b226c98cdfa1",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Игорь Вадимович Яшин.",
+    "bytes": 34316
+  },
+  "r7": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Девять один шесть, сто двадцать шесть, тридцать четыре, семьдесят один.",
+    "bytes": 51035,
+    "sha256": "a117b4197838bc07466e8d13860bdca581462de8"
+  },
+  "r7-v1": {
+    "sha256": "e272d687650c9d3b60a43cb2b454b447937b7242",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Девятьсот шестнадцать, сто двадцать шесть, тридцать четыре, семьдесят один.",
+    "bytes": 63991
+  },
+  "r7-v2": {
+    "sha256": "0f0e92c0d1df078382a19ed143f933c38eca741f",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Девять один шесть, один два шесть, три четыре, семь один.",
+    "bytes": 52288
+  },
+  "r8": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Не слышу, повторите!",
+    "bytes": 28047,
+    "sha256": "974b5afd1bd5d91d82de9c44b286bbcb323ad123"
+  },
+  "r8-v1": {
+    "sha256": "e16f3da344b5791832aed66335f76339e82bd65d",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Что? Не слышно, повторите!",
+    "bytes": 48527
+  },
+  "r8-v2": {
+    "sha256": "b7398f0f55b6ee0da2ccfd4dafc12e684b8a0989",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Повторите, я не расслышал!",
+    "bytes": 35570
+  },
+  "r9": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Да не знаю я! Приезжайте!",
+    "bytes": 35570,
+    "sha256": "e85e5f839f0375432689a44e0316dc29bf8e2efa"
+  },
+  "r9-v1": {
+    "sha256": "59c72c50a8923cedeb2c0006dacff3f9448302b2",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Не знаю! Быстрее приезжайте!",
+    "bytes": 33062
+  },
+  "r9-v2": {
+    "sha256": "9f8e18eb7c403075e9821fca196b7f10a5606ef4",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "text": "Да откуда мне знать! Быстрее!",
+    "bytes": 35570
+  }
+}

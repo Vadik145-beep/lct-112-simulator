@@ -1,0 +1,202 @@
+{
+  "opening": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Помогите, сын упал с велосипеда, рука опухла, нога тоже!",
+    "bytes": 67753,
+    "sha256": "834f554be08ff8a588f9650006c3223206ad2af8"
+  },
+  "r1": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Сын с велосипеда упал, сам, никто не сбивал. Рука распухла и нога.",
+    "bytes": 74022,
+    "sha256": "b8147a6db7cc70ce495678f2a7606ea07d9840b2"
+  },
+  "r1-v1": {
+    "sha256": "17bea4ffceeeb800cfb33d99a8e3387145d8640a",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Упал с велосипеда, сам упал, никакой машины не было. Рука сразу опухла, и нога тоже.",
+    "bytes": 104951
+  },
+  "r1-v2": {
+    "sha256": "b9b5a50181e1c234ead77b24b9aedd2ff487e0cf",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Сын на велосипеде ехал и упал, сам, никто его не сбивал. У него рука раздулась и нога.",
+    "bytes": 104951
+  },
+  "r2": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Мы на Карла Маркса, около молсыркомбината.",
+    "bytes": 44765,
+    "sha256": "0823783e3a827d4d0a6ab4aac128f0233b841620"
+  },
+  "r2-v1": {
+    "sha256": "1f5d743799a0303081e0c69ebe5b9b50f324cfe6",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Карла Маркса, тут рядом молсыркомбинат, возле него.",
+    "bytes": 53542
+  },
+  "r2-v2": {
+    "sha256": "0e7a51a49035d0030044943e64759fba3a58c3e2",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Улица Карла Маркса, мы прямо у молсыркомбината стоим.",
+    "bytes": 69007
+  },
+  "r3": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Волжский, Волгоградская область. А что, вы не сюда?",
+    "bytes": 54796,
+    "sha256": "8993257c3f1964ec1404ac853d9049c5e393a1da"
+  },
+  "r3-v1": {
+    "sha256": "93a91fdf39b9ed9cac38411895822e17f004ec8f",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Город Волжский, Волгоградская область. Вы разве не наши?",
+    "bytes": 62319
+  },
+  "r3-v2": {
+    "sha256": "ca859ace118c7c8884af45095de74b2fb936727b",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Мы в Волжском, это Волгоградская область. А куда я попала?",
+    "bytes": 67753
+  },
+  "r4": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Илья, одиннадцать лет, в сознании, плачет.",
+    "bytes": 53542,
+    "sha256": "fa423884612bd09aa107b353de32fc966eff8018"
+  },
+  "r4-v1": {
+    "sha256": "ee16f28a907e16c242144f6452eb3020e741e87a",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Один ребёнок, Илья, ему одиннадцать. В сознании, плачет сильно.",
+    "bytes": 77784
+  },
+  "r4-v2": {
+    "sha256": "a777dab7968be168722a25a5517f6f3ad2151ff5",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Сын, Илья Смирнов, одиннадцать лет. Он в сознании, просто плачет от боли.",
+    "bytes": 81546
+  },
+  "r5": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Смирнова Анна, я мама.",
+    "bytes": 31808,
+    "sha256": "d9e43054d46b316a85a1bf782e76633b58099129"
+  },
+  "r5-v1": {
+    "sha256": "9bd906692a94acfc39db6a08e2430c90e4e68950",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Анна Смирнова, мама его.",
+    "bytes": 33062
+  },
+  "r5-v2": {
+    "sha256": "b2d5d62244cf3f4da6a25556d6551c9620b3d0c9",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Смирнова, Анна. Я его мама.",
+    "bytes": 30555
+  },
+  "r6": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Девять один шесть, три два ноль, один два восемь три.",
+    "bytes": 52288,
+    "sha256": "8c8dac4b6e0385372da20ef81a0e8877a2d5cfc3"
+  },
+  "r6-v1": {
+    "sha256": "3419e0eca4b524c704a6caef71c0d6b6bbe5ae73",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Девятьсот шестнадцать, триста двадцать, двенадцать, восемьдесят три.",
+    "bytes": 49781
+  },
+  "r6-v2": {
+    "sha256": "633a37931e869c99a0a3ac757b3b19f2e5a4f032",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Девять один шесть, три два ноль, один два, восемь три. Записали?",
+    "bytes": 80292
+  },
+  "r7": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Что? Говорите громче!",
+    "bytes": 26793,
+    "sha256": "5378d2197452543a10d757f0c991a22b752915e7"
+  },
+  "r7-v1": {
+    "sha256": "9ff49a9a4ffe95d1655719391a800e750cd9abd0",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "Что вы сказали? Не слышу, громче!",
+    "bytes": 43511
+  },
+  "r7-v2": {
+    "sha256": "b870ada71c1c4a0ea161423a56494ab6d14b8d17",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[shouting]",
+    "text": "А? Повторите, я не расслышала!",
+    "bytes": 39332
+  },
+  "r8": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Не знаю, просто пришлите скорую!",
+    "bytes": 33062,
+    "sha256": "d2fe3e892c7f1b2e8f76f49bb352312a3323b572"
+  },
+  "r8-v1": {
+    "sha256": "8ac0e4fbae90cd107ef0865a87155b0a2f3b04f0",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Я не знаю! Пришлите кого-нибудь скорее!",
+    "bytes": 41839
+  },
+  "r8-v2": {
+    "sha256": "23144d9f646e4774763bc93182582194b07f1fa1",
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "text": "Откуда мне знать, просто скорую пришлите!",
+    "bytes": 40586
+  }
+}

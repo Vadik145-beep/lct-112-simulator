@@ -240,6 +240,18 @@
           "title": "Opening",
           "type": "string"
         },
+        "opening_audio": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Opening Audio"
+        },
         "facts": {
           "additionalProperties": {
             "type": "string"
@@ -362,6 +374,13 @@
           "default": false,
           "title": "Approved",
           "type": "boolean"
+        },
+        "variants": {
+          "items": {
+            "$ref": "#/$defs/ReplyVariant"
+          },
+          "title": "Variants",
+          "type": "array"
         }
       },
       "required": [
@@ -370,6 +389,32 @@
         "text"
       ],
       "title": "Reply",
+      "type": "object"
+    },
+    "ReplyVariant": {
+      "description": "Another wording of an approved reply with the same facts; a call plays one of them\nat random so the caller does not sound like a recording.",
+      "properties": {
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "audio": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Audio"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "ReplyVariant",
       "type": "object"
     }
   },
