@@ -28,7 +28,7 @@ from app.db import SessionLocal
 from app.dialog import service as dialog
 from app.domain.evaluation.schemas import CallIntakeScenario, DialogTurn, parse_scenario
 from app.domain.reference_data import CALLER_TOPICS
-from app.domain.scenarios import validate
+from app.domain.scenarios import quality, validate
 from app.domain.scenarios.facts import parse_ticket
 from app.domain.scenarios.personas import NOISES, PERSONAS
 from app.domain.scenarios.template import ServiceInfo, build_card_from_student
@@ -302,6 +302,7 @@ async def present(session: AsyncSession, loaded: Loaded, refs: ReferenceCodes) -
         difficulty=scenario.difficulty,
         status=scenario.status,  # type: ignore[arg-type]
         source=scenario.source,
+        delivered=bool(scenario.seed_key),
         current_version=scenario.current_version,
         author=author,
         created_at=scenario.created_at,
@@ -310,6 +311,7 @@ async def present(session: AsyncSession, loaded: Loaded, refs: ReferenceCodes) -
         reference_approved=validate.reference_approved(body),
         fully_approved=validate.is_fully_approved(body),
         problems=validate.check_body(body, refs),
+        quality=quality.review(body),
         services=[NoiseOut(code=c, title=titles.get(c, c)) for c in expected],
         versions=[
             VersionOut(
@@ -386,6 +388,7 @@ async def list_scenarios(
                 difficulty=scenario.difficulty,
                 status=scenario.status,
                 source=scenario.source,
+                delivered=bool(scenario.seed_key),
                 current_version=scenario.current_version,
                 replies_total=len(replies),
                 replies_approved=sum(1 for r in replies if r.get("approved")),
@@ -450,11 +453,28 @@ def _sync_columns(scenario: Scenario, body: dict) -> None:
         setattr(scenario, name, value)
 
 
+DELIVERED_LOCKED = "delivered_scenario_locked"
+
+
+def guard_delivered(scenario: Scenario) -> None:
+    """Scenarios that come from ``data/seed/scenarios`` are the delivered material: written by
+    hand against the customer's tickets, voiced in the studio and checked. Nobody edits them
+    from the interface — the seeder is their only source, otherwise a stand and a delivery
+    would drift apart. A teacher who needs something else writes their own scenario."""
+    if scenario.seed_key:
+        raise ApiError(
+            409,
+            DELIVERED_LOCKED,
+            "Сценарий поставки менять нельзя. Создайте свой сценарий или сгенерируйте новый по билету.",
+        )
+
+
 async def update_body(
     session: AsyncSession, loaded: Loaded, new_body: dict, refs: ReferenceCodes, actor: User
 ) -> Loaded:
     """Edits the current version in place. Approved replies and an approved reference cannot
     change (409): the teacher revises instead."""
+    guard_delivered(loaded.scenario)
     scenario, version = loaded.scenario, loaded.version
     if new_body.get("kind") != version.body.get("kind"):
         raise ApiError(422, "kind_locked", "Режим сценария изменить нельзя.")
@@ -540,6 +560,7 @@ async def edit_reply(
     topic: str | None,
     actor: User,
 ) -> Loaded:
+    guard_delivered(loaded.scenario)
     version = loaded.version
     _require_call_intake(version.body)
     replies = _replies(version.body)
@@ -573,6 +594,7 @@ async def edit_reply(
 async def add_reply(
     session: AsyncSession, loaded: Loaded, *, topic: str, text: str, actor: User
 ) -> int:
+    guard_delivered(loaded.scenario)
     version = loaded.version
     _require_call_intake(version.body)
     if topic not in TOPIC_TITLES:
@@ -599,6 +621,7 @@ async def add_reply(
 
 
 async def delete_reply(session: AsyncSession, loaded: Loaded, reply_id: int, actor: User) -> None:
+    guard_delivered(loaded.scenario)
     version = loaded.version
     _require_call_intake(version.body)
     reply = _find_reply(version.body, reply_id)
@@ -629,6 +652,9 @@ async def remove(session: AsyncSession, loaded: Loaded, actor: User) -> str:
     Attempts keep ``scenario_id`` (RESTRICT) so reports and reviews of past lessons stay
     readable; an archived scenario is hidden from lists, not offered to new lessons and
     cannot be edited until restored. Returns ``"deleted"`` or ``"archived"``.
+
+    A delivered scenario is archived rather than deleted and can be restored: hiding it from
+    lessons is the teacher's business, changing its text is not (``guard_delivered``).
     """
     scenario = loaded.scenario
     used = await session.scalar(
@@ -758,6 +784,7 @@ async def approve(
 ) -> list[int]:
     """Approves the reference and/or all replies; returns the ids of newly approved replies
     (to voice). The scenario becomes ``approved`` when everything is approved."""
+    guard_delivered(loaded.scenario)
     scenario, version = loaded.scenario, loaded.version
     body = dict(version.body)
     problems = validate.check_body(body, refs)
@@ -803,6 +830,7 @@ async def approve_replies(
     confirm_grammar: bool,
     actor: User,
 ) -> list[int]:
+    guard_delivered(loaded.scenario)
     scenario, version = loaded.scenario, loaded.version
     _require_call_intake(version.body)
     body = dict(version.body)
@@ -911,6 +939,7 @@ async def store_uploaded_audio(
     session: AsyncSession, loaded: Loaded, reply_id: int, filename: str, data: bytes, actor: User
 ) -> str:
     """The teacher's own recording of a reply replaces the synthesized voice."""
+    guard_delivered(loaded.scenario)
     version = loaded.version
     _require_call_intake(version.body)
     reply = _find_reply(version.body, reply_id)

@@ -23,7 +23,7 @@ from typing import Any, Protocol
 from pydantic import BaseModel, ValidationError
 
 from app.config import get_settings
-from app.domain.scenarios import distort, template
+from app.domain.scenarios import distort, examples, template
 from app.domain.scenarios.classify import rank_types
 from app.domain.scenarios.facts import TicketFacts, parse_ticket
 from app.domain.scenarios.generated import (
@@ -48,7 +48,7 @@ log = get_logger(__name__)
 
 JSON_RETRIES = 2  # PRD 9.6: up to two more tries on an invalid answer
 GENERATION_MAX_TOKENS = 2200
-GENERATION_TIMEOUT_SECONDS = 240.0
+GENERATION_TIMEOUT_SECONDS = 900.0  # default; the stand sets LLM_GEN_TIMEOUT_SECONDS
 GENERATION_TEMPERATURE = 0.4
 TYPE_CANDIDATES = 12  # classifier rows offered to the model
 
@@ -289,6 +289,13 @@ def build_messages(
             "(начало реагирования с номером наряда, проведение работ, работы завершены), при "
             "reject один."
         )
+    sample = examples.sample_for(request.kind, [str(r["code"]) for r in rows])
+    sample_text = (
+        "Образец готового сценария — так должны звучать реплики и так заполняется карточка. "
+        f"Ситуация в нём другая, факты копировать нельзя:\n{sample}\n\n"
+        if sample
+        else ""
+    )
     user = (
         f"{source}\n"
         f"Пожелания: {'; '.join(wishes) or 'нет'}.\n\n"
@@ -297,6 +304,7 @@ def build_messages(
         f"Персонажи: {personas_text}.\n\n"
         f"Фрагменты памятки:\n{_chunks_text(ctx.memo_chunks)}\n\n"
         f"Похожие билеты:\n{_chunks_text(ctx.similar_tickets)}\n\n"
+        f"{sample_text}"
         f"{task}"
     )
     return [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": user}]
@@ -529,7 +537,8 @@ _provider: GenerationProvider | None = None
 
 def build_generation_provider(llm_gen_url: str | None) -> GenerationProvider:
     if llm_gen_url:
-        chat = LlamaCppChat(llm_gen_url, name="llm-gen", timeout=GENERATION_TIMEOUT_SECONDS)
+        timeout = get_settings().llm_gen_timeout_seconds or GENERATION_TIMEOUT_SECONDS
+        chat = LlamaCppChat(llm_gen_url, name="llm-gen", timeout=timeout)
         return LlmGeneration(chat)
     return TemplateGeneration()
 

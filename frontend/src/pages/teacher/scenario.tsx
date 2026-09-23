@@ -119,10 +119,22 @@ export function TeacherScenarioPage() {
           </ul>
         </div>
       )}
-      {/* An archived scenario is read-only: every editor below is inert until it is restored. */}
+      {scenario.quality.length > 0 && (
+        <div className="space-y-1 rounded-lg border border-amber-500/40 bg-amber-500/5 p-3 text-sm">
+          <p className="font-medium">
+            Замечания к сценарию — утверждению не мешают, но в занятии будут заметны:
+          </p>
+          <ul className="ml-5 list-disc">
+            {scenario.quality.map((q) => (
+              <li key={q}>{q}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {/* An archived scenario is read-only until it is restored; a delivered one always is. */}
       <div
         className="grid gap-6 lg:grid-cols-2"
-        inert={scenario.status === "archived" || undefined}
+        inert={scenario.status === "archived" || scenario.delivered || undefined}
       >
         <div className="space-y-6">
           {scenario.kind === "call_intake" ? (
@@ -158,6 +170,7 @@ function Header({ scenario }: { scenario: ScenarioOut }) {
   const [needConfirm, setNeedConfirm] = useState(false);
   const [confirmRemove, setConfirmRemove] = useState(false);
   const archived = scenario.status === "archived";
+  const delivered = scenario.delivered;
 
   const doRemove = () =>
     remove.mutate(undefined, {
@@ -245,7 +258,7 @@ function Header({ scenario }: { scenario: ScenarioOut }) {
             )}{" "}
             Проверить грамотность
           </Button>
-          {archived ? (
+          {delivered ? null : archived ? (
             <Button
               variant="outline"
               onClick={() => restore.mutate()}
@@ -268,7 +281,7 @@ function Header({ scenario }: { scenario: ScenarioOut }) {
               <Trash2 /> Удалить
             </Button>
           )}
-          {!scenario.fully_approved && !archived && (
+          {!scenario.fully_approved && !archived && !delivered && (
             <Button
               onClick={() => void doApprove(false)}
               disabled={approve.isPending || scenario.problems.length > 0}
@@ -283,6 +296,13 @@ function Header({ scenario }: { scenario: ScenarioOut }) {
           )}
         </div>
       </div>
+      {delivered && (
+        <p className="text-sm text-muted-foreground" role="status">
+          Сценарий поставки: написан по билету заказчика, озвучен и проверен.
+          Менять его здесь нельзя — создайте свой сценарий или сгенерируйте новый
+          по билету.
+        </p>
+      )}
       {archived && (
         <p className="text-sm text-muted-foreground" role="status">
           Сценарий в архиве: он не предлагается занятиям и не редактируется.

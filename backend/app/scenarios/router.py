@@ -239,7 +239,8 @@ async def generate_scenario(body: GenerateIn, user: Teacher, session: DbSession)
 async def revise_scenario(
     scenario_id: uuid.UUID, body: ReviseIn, user: Teacher, session: DbSession
 ) -> JobAcceptedOut:
-    await scenarios.load(session, scenario_id)
+    loaded = await scenarios.load(session, scenario_id)
+    scenarios.guard_delivered(loaded.scenario)
     job_id = await jobs.create("revise", user.id, {"scenario_id": str(scenario_id)})
     await scenarios.revise(job_id, scenario_id, body.comment.strip(), user.id)
     return JobAcceptedOut(job_id=job_id)
