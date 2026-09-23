@@ -304,9 +304,12 @@ function JournalRow({
   const active = ACTIVE_STATES.has(item.state);
   const cell = "bg-[var(--arm-row)] px-1 py-1.5 align-middle";
   const own = item.services.find((s) => s.is_own);
-  // The dispatcher's own reaction status, as on the live АРМ-112. A card the controller
-  // sees in red («Не оповещено», «Отказ», «Не завершено») shows that word instead.
-  const serviceStatus = item.card_status_alert ? item.card_status_title : (own?.status_title ?? "Добавлена");
+  // The dispatcher's own reaction status and nothing else, as on the live АРМ-112.
+  // «Не оповещено», «Отказ» and «Не завершено» are card statuses — a different list
+  // (memo pp. 21-22 vs 27), shown in the «Статус карточки» column of the controller's
+  // screen (memo p. 13), which the ДДС journal has no column for. The card status stays
+  // in the tooltip and the expanded row; the overdue itself is the red timer of the row.
+  const serviceStatus = own?.status_title ?? "Добавлена";
   return (
     <>
       <tr
@@ -355,7 +358,7 @@ function JournalRow({
         <td className={cn(cell, "truncate text-[13px] font-semibold")} title={item.address}>{item.address}</td>
         <td className={cn(cell, "text-center")}><BellOff className="mx-auto size-3.5 text-[var(--arm-red)]" aria-hidden /></td>
         <td
-          className={cn(cell, "truncate text-[11px]", item.card_status_alert ? "bg-[var(--arm-red)] font-semibold text-white" : "text-[var(--arm-on-dark-muted)]")}
+          className={cn(cell, "truncate text-[11px] text-[var(--arm-on-dark-muted)]")}
           title={`Статус карточки: ${item.card_status_title}`}
         >
           {serviceStatus}
@@ -394,7 +397,12 @@ function JournalRow({
               <span className="text-[var(--arm-on-dark-muted)]">Информация:</span>
               <span>{[item.incident_group, ...item.signs].filter(Boolean).join(" · ") || "—"}</span>
               <span className="text-[var(--arm-on-dark-muted)]">Статус карточки:</span>
-              <span className={cn(item.card_status_alert && "font-semibold text-[var(--arm-red)]")}>{item.card_status_title}</span>
+              <span
+                data-testid="card-status"
+                className={cn(item.card_status_alert && "font-semibold text-[var(--arm-red)]")}
+              >
+                {item.card_status_title}
+              </span>
             </div>
           </td>
         </tr>
