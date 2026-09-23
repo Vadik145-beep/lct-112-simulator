@@ -515,6 +515,8 @@ def with_studio_audio(scenario: CallIntakeScenario, service: str) -> CallIntakeS
         for r in scenario.replies
     ]
     return scenario.model_copy(update={"replies": replies})
+
+
 def _reply_stem(call: dict, reply: CallerReply) -> str:
     if is_report(call):
         # Report replies quote the report itself: cache per phrase, so every trainee who
