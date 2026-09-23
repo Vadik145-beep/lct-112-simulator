@@ -213,8 +213,10 @@ function CardView({
       try {
         keys = await cloudKeys.mutateAsync(callId);
       } catch {
-        // 503 или 409: бэкенд записал отказ, разговор продолжается текстом и микрофоном.
+        // 503 или 409: облака нет. Звонок нельзя оставить неотвеченным — иначе в панели
+        // ни собеседника, ни поля ввода; отвечаем локально, дальше разговор текстом.
         setCloudState("failed");
+        answerCall.mutate(callId);
         return;
       }
       const call = new CloudCall();
@@ -226,6 +228,8 @@ function CardView({
           void call.stop();
           cloudCall.current = null;
           setCloudState("failed");
+          // Медиа не поднялось: возвращаем разговор в текст, чтобы карточка не зависла.
+          answerCall.mutate(callId);
         })
         .on("ended", () => {
           if (cloudCall.current !== call) return;
@@ -238,7 +242,7 @@ function CardView({
         /* о причине сообщит событие failed */
       }
     },
-    [cloudKeys],
+    [cloudKeys, answerCall],
   );
   // Whether the stt service answers comes with every service-call response.
   const [sttAvailable, setSttAvailable] = useState(false);
