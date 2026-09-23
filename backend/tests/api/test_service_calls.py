@@ -41,6 +41,12 @@ async def say(
     )
 
 
+async def answer(client: AsyncClient, token: dict, attempt_id: uuid.UUID, call_id: str):
+    return await client.post(
+        f"/api/attempts/{attempt_id}/service-call/{call_id}/answer", headers=bearer(token)
+    )
+
+
 async def end(client: AsyncClient, token: dict, attempt_id: uuid.UUID, call_id: str):
     return await client.post(
         f"/api/attempts/{attempt_id}/service-call/{call_id}/end", headers=bearer(token)

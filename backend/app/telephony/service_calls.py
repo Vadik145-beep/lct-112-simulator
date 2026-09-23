@@ -1,10 +1,12 @@
 """API of the dispatcher's calls to service officers (issue #36, «звено Б → В»).
 
 ``POST /attempts/{id}/service-call`` starts a call to the officer of a service from the card;
-``…/say`` is the text path (also used by the softphone panel as a fallback), ``…/end`` hangs
-up. With telephony on, the start rings the trainee's phones from the officer's number
+``…/answer`` picks up the squad's incoming report in the card (issue #103), ``…/say`` is the
+text path (also used by the softphone panel as a fallback), ``…/end`` hangs up. With
+telephony on, the start rings the trainee's phones from the officer's number
 (``CallManager.dial_service``) and the conversation goes over the SIP leg; without it the
-officer answers at once in the training panel.
+officer answers at once in the training panel. A report is never answered for the trainee:
+it rings in the card until «Ответить» (issue #103).
 """
 
 from __future__ import annotations
@@ -239,6 +241,33 @@ async def speak_to_officer(
         applied=result.applied,
         heard_text=transcript.text,
     )
+
+
+@router.post(
+    "/attempts/{attempt_id}/service-call/{call_id}/answer", response_model=ServiceCallResponse
+)
+async def answer_service_call(
+    attempt_id: uuid.UUID, call_id: str, user: ActiveUser, session: DbSession, request: Request
+) -> ServiceCallResponse:
+    """«Ответить» on the squad's incoming report (issue #103). With telephony the trainee
+    answers the phone and Asterisk reports it; this is the path of the card without
+    telephony. Answering twice changes nothing."""
+    attempt, ts, card, scenario = await _card_attempt(session, attempt_id, user)
+    call, events = await officer.answer(session, attempt, ts, card.version, scenario, call_id)
+    if events:
+        await write_audit(
+            session,
+            action="service_call.answer",
+            actor_id=user.id,
+            actor_role=user.role,
+            entity="attempt",
+            entity_id=str(attempt.id),
+            details={"service": call["service"], "call_id": call_id, "kind": call.get("kind")},
+            ip=client_ip(request),
+        )
+    await session.commit()
+    await publish_events(events)
+    return await _respond(session, attempt, ts, card.body, call_id)
 
 
 @router.post(

@@ -116,6 +116,8 @@ class BrigadeReport(BaseModel):
     status: str  # progress status the report stands for (response_started, arrived, …)
     text: str  # what the squad leader says when the dispatcher picks up
     after_seconds: int = DEFAULT_REPORT_AFTER_SECONDS
+    # Recording of the text, as a reply has one; empty means the stand voices it itself.
+    audio: str | None = None
 
 
 class CardResponseReference(BaseModel):
@@ -205,6 +207,7 @@ class ServiceCallLog(BaseModel):
     report_status: str | None = None  # the status a report stands for
     answered: bool = False
     ended_at: datetime | None = None
+    end_reason: str | None = None  # hangup, no_answer, not_taken, card_closed…
     dialog: list[DialogTurn] = Field(default_factory=list)
     # Facts the live dialog counted as passed; the engine recomputes them from the turns.
     facts_passed: list[str] = Field(default_factory=list)
