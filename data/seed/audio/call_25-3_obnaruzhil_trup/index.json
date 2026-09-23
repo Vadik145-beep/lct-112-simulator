@@ -1,0 +1,146 @@
+{
+  "opening": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Здравствуйте... Я пришёл в квартиру бывшей жены, она на полу. Мёртвая. Рядом кровь, много. Я не знаю, что делать.",
+    "bytes": 108713,
+    "sha256": "21dffdad4ef41445cdcf1e197dc96ad6c8e8c6daf8535f4fc1b38ed63df1234e"
+  },
+  "r1": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Я нашёл бывшую жену мёртвой. Лежит на полу в комнате.",
+    "bytes": 51453,
+    "sha256": "b554aefc9cee053f99a03b0fe7b2caed5dc1317cf2765b968ced2c4f993a8686"
+  },
+  "r2": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Соседи позвонили, сказали, четыре дня собака воет. Я приехал и открыл.",
+    "bytes": 82799,
+    "sha256": "da767154aa82616319a7fc84405800fd74208ad1079096a57527f8f2b79a84fd"
+  },
+  "r3": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Это область. Московская область, город Домодедово.",
+    "bytes": 55214,
+    "sha256": "aa8d7e57dea961a8ff39904559df8438fa6a8cd6597e0d635fd735a59f29a918"
+  },
+  "r4": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Улица Текстильщиков, дом тридцать один, квартира пять.",
+    "bytes": 60648,
+    "sha256": "a42ce95b535cfae3c6dcf03dc758cf2e364f8cc596aa1511eb3e8a73e9fba408"
+  },
+  "r5": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Первый подъезд, первый этаж. Дверь я открыл, она не заперта теперь.",
+    "bytes": 74022,
+    "sha256": "a9f7739c039dd6560b52a0313ebce71493901144a836c302fbda05dc170ae6a2"
+  },
+  "r6": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Она одна. Признаков жизни нет, я проверял, не дышит.",
+    "bytes": 53960,
+    "sha256": "64466f2aed945e18a5bcb3038d0b0aa9c9abbaf6bf6305e315201974b956d549"
+  },
+  "r7": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "На теле пятна тёмные. Похоже, давно уже.",
+    "bytes": 40586,
+    "sha256": "95acfe1947093a411dfd55410f38db28a7a18910dd2683aa088ac7d455ccd0e4"
+  },
+  "r8": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Рядом с ней большая лужа крови. Я к ней не подходил близко.",
+    "bytes": 53960,
+    "sha256": "a01fcbb71d5aae8bcab5c58fdeafe10f3cd179e8108b10581bf5a97714030ef5"
+  },
+  "r9": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "В квартире она и собака. Больше никого, я обошёл комнаты.",
+    "bytes": 58140,
+    "sha256": "7b300ff7f7f9b9509200993eb49b4ea67d9033a12a01355c31e9790ebbe8fa3d"
+  },
+  "r10": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Я минут пять как зашёл. А она, судя по всему, несколько дней.",
+    "bytes": 57722,
+    "sha256": "8bf97afd4f6c7620ecbe8493ef69f00ecb94197ba247d7358138c5e6c0f2f853"
+  },
+  "r11": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Титов Игорь Романович.",
+    "bytes": 23449,
+    "sha256": "d92ad7fa8e25d1a784e44cd08772523f61efcc44fd61dc6ce6ad2b8fbf23ee94"
+  },
+  "r12": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Девять ноль три, сто двадцать восемь, двенадцать, двадцать три.",
+    "bytes": 66499,
+    "sha256": "e99beed2a760abb49af64830ee56599ca924cab9affea8ea7670400638696c62"
+  },
+  "r13": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Я бывший муж. Мы давно в разводе, но ключи у меня были.",
+    "bytes": 51453,
+    "sha256": "fd8b4cf9120e86b7543de5d099753bf8cd87f4eee1f1bdaed4213af54d3cdc00"
+  },
+  "r14": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Повторите, пожалуйста... я плохо соображаю.",
+    "bytes": 37660,
+    "sha256": "66db1be95510490473b0443a393e8002f1eee914c08a97c1c26cadd90634f9f8"
+  },
+  "r15": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Не знаю. Я выйду на площадку, в квартире тяжело.",
+    "bytes": 48527,
+    "sha256": "64f24aaf07d3b840826c155e0825c54ae5f1921d37432b0468e3cfca0d2b64e0"
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "opening": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. У меня отец ушёл в поликлинику шесть часов назад и не вернулся. Ему восемьдесят пять, он памятью страдает.",
+    "bytes": 104951,
+    "sha256": "d7d1b6247e3ca22498c9944e9e5ee1b7c8516fd8358237568b81b0aad2c5a97a"
+  },
+  "r1": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Отец ушёл в поликлинику утром и до сих пор не вернулся. Шесть часов прошло.",
+    "bytes": 72351,
+    "sha256": "5c9ea00e8abac18e9c3b0158c41e0e9c8e7337cf7f6550196ac51120d8f17f70"
+  },
+  "r2": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Он памятью страдает. Может забыть, куда шёл, и уехать не в ту сторону.",
+    "bytes": 64409,
+    "sha256": "2f543b3be667c5039713094cde4fbf9c5f88591369376412f8e6b82cb4266aa8"
+  },
+  "r3": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Улица Маршала Соколовского, дом один, квартира пять. Мы тут живём.",
+    "bytes": 53124,
+    "sha256": "63357b35b34719327344912416b39e37acc9627e35b99150fe3073669beafcd6"
+  },
+  "r4": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Первый подъезд, второй этаж. Код домофона пять вэ.",
+    "bytes": 50199,
+    "sha256": "a0e5ece6c0fdad083e23728f7621326906a161d4939b923c0076fda3b5f0bfd8"
+  },
+  "r5": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Москва, Щукино.",
+    "bytes": 17598,
+    "sha256": "e3a9134b00d2a1010e9d4d6afb864e5b2c53bf5ad960cd3d868d95ee81553336"
+  },
+  "r6": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не пострадал, надеюсь. Просто потерялся, он так уже уходил однажды.",
+    "bytes": 57722,
+    "sha256": "8ac7445513bb734b774c0a4fb53265fddefd57af2a9563abc5548cb01e421c04"
+  },
+  "r7": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Марков Илья Кузьмич, восемьдесят пять лет. Рост невысокий, седой, в очках.",
+    "bytes": 72351,
+    "sha256": "a993dd3bc95df1ac170fb8bf2df100c7012d55d98243f4d258f97ef954d832a0"
+  },
+  "r8": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Телефона с собой нет, документов тоже. На улице холодно, а он в лёгкой куртке.",
+    "bytes": 77784,
+    "sha256": "925edb3cce890f899501ba5ad70261a5d36016a7c2df25496c32a6b8667b5580"
+  },
+  "r9": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Одет в серую куртку, тёмные брюки, кепка коричневая. С палочкой ходит.",
+    "bytes": 67753,
+    "sha256": "28a3b9b0ab80c19b37d811a804f8a23cf1ade5935f24bf49229542e12f9612c7"
+  },
+  "r10": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Он один ушёл. Я дома была, думала, вернётся к обеду.",
+    "bytes": 46437,
+    "sha256": "7d8dd887b88af896567ad72b4b8f8413c940a6e2f411cb1e94cd7c1ef2d8c5a2"
+  },
+  "r11": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Вышел в девять утра, сейчас третий час. Шесть часов уже.",
+    "bytes": 51035,
+    "sha256": "0980281e19d09a7c1ea542fb9e977615ca545cf004bb62b28930f725bc9864d5"
+  },
+  "r12": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Маркова Ирина Сергеевна, дочь его.",
+    "bytes": 35988,
+    "sha256": "722e16a785ecf688abd9be393abd18d6fe838d13bf16ccc78a7afea9c12c59e0"
+  },
+  "r13": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 76948,
+    "sha256": "d3b962bd14649a1a7df1ed7ac91c077f79c0326508f52bf75a78b34f413a50c5"
+  },
+  "r14": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Дочь я. Мы вместе живём.",
+    "bytes": 24285,
+    "sha256": "f9a35a9381eb42dfc962afdc60c561b4d1ccf675c72df11e37eba85a79827851"
+  },
+  "r15": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, я разволновалась.",
+    "bytes": 34316,
+    "sha256": "dbad3c41a53ab297e9f96c332bd12ee7ca3189351a71164e90e6b68e8857d844"
+  },
+  "r16": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. В поликлинику я звонила, там его не было сегодня.",
+    "bytes": 51453,
+    "sha256": "95d047acb5c0cf2a0ff0e9ed6e46a05c3845a10db4155d952edde4ed3ae34bd3"
+  }
+}

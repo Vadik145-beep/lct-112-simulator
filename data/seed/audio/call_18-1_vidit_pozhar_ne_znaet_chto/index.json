@@ -1,0 +1,146 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. Я с дороги вижу пожар. Что именно горит, сказать не могу, далеко. Огонь большой.",
+    "bytes": 88651,
+    "sha256": "fbf0d3cd9c020840ac42d71033fb8ba4bdb197d8e29323b0666a39bb80fa0500"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Вижу пожар. Что горит, не знаю, я с дороги смотрю.",
+    "bytes": 42675,
+    "sha256": "eeeca1aa67b57c247ecbf434f92e51dc8dc3f04fd4bf4b8ed4702c473fc5fcb2"
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пламя высокое, выше деревьев. Дым серый, тянет вдоль дороги.",
+    "bytes": 57722,
+    "sha256": "ec3f72f495c9f733acb5815507a62c649a571352b27a5f26da66c64d68832ba6"
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Дорога от Киевского шоссе в сторону Минского, через Крекшино.",
+    "bytes": 50199,
+    "sha256": "d3827c7bec1a7fdeb0971cff19f9adf7603cc4428c43782ae5f1b6fefaa4782f"
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Примерно полтора километра от железнодорожного переезда, напротив пруда.",
+    "bytes": 61902,
+    "sha256": "48d6a47721620f277aec13c410168929e47b409e165a11bfb8a1a4fe2fbdc14a"
+  },
+  "r5": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Это Москва, Новомосковский округ. Крекшино уже московское.",
+    "bytes": 46437,
+    "sha256": "2963a8c3b90c75ebb1755c6f7383e9b897598213f687fb2ddbcf07becfe60631"
+  },
+  "r6": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Про пострадавших не скажу. Людей я отсюда не вижу.",
+    "bytes": 44347,
+    "sha256": "41e6eecc57973459537a7c4aafcba67bc538f2041ce589fdce27779505696ffc"
+  },
+  "r7": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Рядом деревья, может перекинуться. Строений поблизости не вижу.",
+    "bytes": 49363,
+    "sha256": "34c234d885a3802fb9483e0d3816a473436c4bd56efb22025f74368bc5be9707"
+  },
+  "r8": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я один остановился. Другие машины проезжают мимо.",
+    "bytes": 40586,
+    "sha256": "1599fb59c1a24bee96d42c08c3c55b88519221c3fe25043944e4cdb0fbf0d4bd"
+  },
+  "r9": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Минуты две назад заметил. Сразу съехал на обочину.",
+    "bytes": 41839,
+    "sha256": "81d50f88408db9fc14926953b8958996f26b0f943618070f4ffb7f3c2804fdf6"
+  },
+  "r10": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Слобода Юрий Петрович.",
+    "bytes": 22613,
+    "sha256": "6c6b247109e561e3e24a9291e03d836ca1a7ff5ebae0355fba2ef50854558b12"
+  },
+  "r11": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+    "bytes": 67753,
+    "sha256": "ccd58ed089a71986aa42e9cdb2a997e55456a0619a3d875c518fbb84a361239d"
+  },
+  "r12": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я очевидец, проезжал мимо. К этому месту отношения не имею.",
+    "bytes": 51453,
+    "sha256": "d1fc396db3bdb3cc1f097a137034585ce73ae4ef087dfa8041cafb7ee1b4ee21"
+  },
+  "r13": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Тут дорога, никаких подъездов.",
+    "bytes": 28465,
+    "sha256": "cff5571c976ca5efc79dd14fd5fc5475f72304e74114c22318a08733cd8c0109"
+  },
+  "r14": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, связь рвётся.",
+    "bytes": 31391,
+    "sha256": "3d491d9d700b39db85e19b467710a837432a9742db2f54eb1ef40e17b6aea322"
+  },
+  "r15": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Ближе подъехать и посмотреть?",
+    "bytes": 38914,
+    "sha256": "30015df8c498b6708943e5e54468e0b633591cecf02ca19d351140f4b82767dc"
+  }
+}

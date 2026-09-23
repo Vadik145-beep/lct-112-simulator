@@ -1,0 +1,146 @@
+{
+  "opening": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Здравствуйте, тут человек десять тумбу с афишей ломают! Стекло разбили, битами колотят!",
+    "bytes": 85725,
+    "sha256": "ab486ba51fb15857a04d8e42ffe13462f5a1a9c808a8ce80de428b5c609e5b87"
+  },
+  "r1": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Молодёжь тумбу с афишей ломает. Стекло уже вынесли, теперь битами добивают.",
+    "bytes": 79874,
+    "sha256": "601d4b704056107e4bef82025ff637b1b37796c5eeb48a71923030ce5b1aa3bf"
+  },
+  "r2": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Человек десять, может двенадцать. В капюшонах, орут.",
+    "bytes": 58140,
+    "sha256": "a8eccf3e64cdc64492590bd8436025561f3b484f2babf0495bba0455653117a9"
+  },
+  "r3": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "У дворца спорта Мегаспорт, на Ходынском поле. Прямо у входа.",
+    "bytes": 71097,
+    "sha256": "9d29c33d1b6b519691ab84aa917f371146796ba43469dd03479c1a057ccedfe9"
+  },
+  "r4": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Ходынский бульвар, дом три. Это адрес дворца.",
+    "bytes": 58976,
+    "sha256": "7667011251be13af0b733864759cb143b8c4ea370bf6c1a3d9e804f85134f327"
+  },
+  "r5": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Москва, Хорошёвский район.",
+    "bytes": 34316,
+    "sha256": "5945bd3aa8382ade3ab4d0c2d44b2bfeff1c498022ee8dba456e7d8160e2b726"
+  },
+  "r6": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Людей не трогают пока. Пострадавших нет.",
+    "bytes": 46437,
+    "sha256": "1c088f3c31bc664b231890ede03b723728b1cbf1429d5859d346833dea33936a"
+  },
+  "r7": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "У них биты и палки железные. Прохожие обходят стороной.",
+    "bytes": 57722,
+    "sha256": "62cdbfab5d513b475d0096297b2988e1db4be2b072a923bcfbdd26f3c0ff2cce"
+  },
+  "r8": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Десять-двенадцать человек. Я один звоню, остальные мимо идут.",
+    "bytes": 69425,
+    "sha256": "cf84b8845cfee7a1f0ed050ad48dd7e8d9e8b18b61b434b3e82cd4c9ab1e294d"
+  },
+  "r9": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Минут пять как начали. Сначала просто стояли, потом стекло разбили.",
+    "bytes": 68589,
+    "sha256": "68f7ce40628f1fa46190bc050f096b0a5bdbdbb5eca9668ae0d9da930ecabf7e"
+  },
+  "r10": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Соколов Иван Петрович.",
+    "bytes": 33898,
+    "sha256": "a6ce45c3ed7ccc7f16d8e9573f246f194cbf99c29ba80d623529cbb94c336e8d"
+  },
+  "r11": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 83635,
+    "sha256": "85ef9b43e3cb762fae9da5bb60522dc08c98bb3687621290983306c2e9264996"
+  },
+  "r12": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Очевидец. Я на автобус шёл, увидел и отошёл подальше.",
+    "bytes": 61902,
+    "sha256": "3c86e624091971fe89a53523fd9cb10a9a2d7436958ee1ea76aa1c119aa6b6f5"
+  },
+  "r13": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Улица это, никаких подъездов. У главного входа всё.",
+    "bytes": 53960,
+    "sha256": "9b1cd5520bf56a42fd47d074b2311351bb2613486e595c3de4f9042b295e4e3f"
+  },
+  "r14": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Не слышу, они орут. Повторите.",
+    "bytes": 34316,
+    "sha256": "ae84666b22d0e2d4d6211a8d5e3ca35057b34e3614ad0801a54cabaff08ba13a"
+  },
+  "r15": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Не знаю я, кто такие. Наряд пришлите, пока не разошлись.",
+    "bytes": 54378,
+    "sha256": "6de5a7023d9b197456ec3fd36a33472ea74aae2b1aee1c2ddac48af6d5ad5caf"
+  }
+}

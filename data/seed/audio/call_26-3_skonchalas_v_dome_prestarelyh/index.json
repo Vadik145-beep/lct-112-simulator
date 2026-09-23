@@ -1,0 +1,146 @@
+{
+  "opening": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. У нас в центре для пожилых людей скончалась женщина. После инсульта, была лежачая. Нужна констатация.",
+    "bytes": 120834,
+    "sha256": "970eff6356a76e06a535b4d936667750d2752389336d23b69f4057d6963152f1"
+  },
+  "r1": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "У нас скончалась женщина. Постоялица, была после инсульта.",
+    "bytes": 55214,
+    "sha256": "5afd2daa56c0f647b9c69b6064b6fc25555695a2902d373643c650403e9ed78e"
+  },
+  "r2": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Лежачая была, за ней ухаживали. Сиделка зашла, а она уже не дышит.",
+    "bytes": 61066,
+    "sha256": "acd7d957015af0ef78a7d83b7564da03c33970a34d7acd90cc62ea8ac0e8b0ad"
+  },
+  "r3": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Улица Лескова, дом шесть Б. Центр для пожилых людей Союз.",
+    "bytes": 52288,
+    "sha256": "87d4a36978fdb25ce879c30db48442cec25b54e65d99efa5d634ccade9ea3275"
+  },
+  "r4": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Первый этаж. Охрана вас встретит у входа и проводит.",
+    "bytes": 47691,
+    "sha256": "8058b0d90e91f5b75e51df4767ed420ff636be77d23500cd82a584de89f32f22"
+  },
+  "r5": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Москва, Бибирево.",
+    "bytes": 19688,
+    "sha256": "5b09986db37ed77ed25318cd67ea3e3ae59907ac5a6733f6d556e3dbab304b10"
+  },
+  "r6": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Умершая одна. Кривенко Лариса Степановна.",
+    "bytes": 47273,
+    "sha256": "0e4b1e4325b9a03127e25bd616093d49fc704f658a55b77e9fb1142f61448849"
+  },
+  "r7": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Признаков жизни нет. Ни дыхания, ни пульса, сиделка проверяла.",
+    "bytes": 55214,
+    "sha256": "0d239af96efb5bda112bd4c10b3b882dbd0ea82267f4c3429d5212a2e12543ea"
+  },
+  "r8": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Никакой угрозы. Она в своей палате, мы никого туда не пускаем.",
+    "bytes": 57722,
+    "sha256": "e40811ecd75e3681eef2d0ae627900ae88441eb3527524f4d283a5c108edde02"
+  },
+  "r9": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "В палате она была одна. У нас в центре сейчас двадцать восемь человек.",
+    "bytes": 66499,
+    "sha256": "2e5961f19ac82c8fa404c0893c4a6844e8b96de321006ad48d8d6a9511f211df"
+  },
+  "r10": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Обнаружили минут двадцать назад, днём. Утром она ещё отзывалась.",
+    "bytes": 61066,
+    "sha256": "ca55b7dd53be17c3a79f3318cad1cb4dffb02e9e14de4a14e39993a41a759274"
+  },
+  "r11": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Щеглова Ирина Ивановна, администратор центра.",
+    "bytes": 44347,
+    "sha256": "1246af9f5404646aff828700a4e43152e01a28fefb825e81bc7fbdda377f40a6"
+  },
+  "r12": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять ноль три, сто двадцать восемь, двенадцать, двадцать три.",
+    "bytes": 56050,
+    "sha256": "c885bc4ca571f3158681571ee780844f4e6abcb46a022e0620470b40d8397680"
+  },
+  "r13": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я администратор, не родственница. Родных мы уже оповестили.",
+    "bytes": 53124,
+    "sha256": "1d1cc42595422f1820f87c2f228b44381daa201f6d9afda10b57b36794d6c9ab"
+  },
+  "r14": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, у меня вторая линия звонит.",
+    "bytes": 43511,
+    "sha256": "801033b6fb1b198e34f9fafa425b0db60d4daf0dbc4588c8446a56230c08be76"
+  },
+  "r15": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Документы её подготовить к вашему приезду?",
+    "bytes": 47691,
+    "sha256": "5a30d85f8812507c834bd006a426849c3c0068533e80fd55a1f5655841a64a00"
+  }
+}

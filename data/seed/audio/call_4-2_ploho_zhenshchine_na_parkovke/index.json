@@ -1,0 +1,155 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Помогите, женщина на парковке сознание потеряла! Лежит, я её на бок повернула!",
+    "bytes": 67753,
+    "sha256": "75ef42947c551f0dda3e21421e5b1c05d126587c7159721555378e596c50b6a6"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Женщина сознание потеряла. Шла к машине и осела прямо на асфальт.",
+    "bytes": 58140,
+    "sha256": "db05b5ce91aa074f7cfbdd6127b50b7ad713cf139a800ed4b24b715cd05610b4"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я подбежала, она не отвечает. Дышит вроде, я её на бок повернула.",
+    "bytes": 54378,
+    "sha256": "ff7500fccc935d0e26fb1d941f3bfda7a46d8669ef41f9c98c0557a441cb260e"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мирской проезд, дом шестнадцать. Мы на парковке.",
+    "bytes": 41004,
+    "sha256": "8f87584ae25a2f8b26c5b7aa04835a78471eac2106d40066e76a12ffcdbb62ae"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Со стороны мусорной площадки заезжать, там шлагбаума нет.",
+    "bytes": 49363,
+    "sha256": "67f2e07930f89099ddd4b25915d656a8139e5adfec322162eef5e6afd523ef82"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Балашиха это, Московская область. Не Москва.",
+    "bytes": 35152,
+    "sha256": "2ae115e27322a3784ab952ef32e7da58953164fd4ce02e8f1fbdd3b5f87b4441"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Одна женщина, на вид лет сорок. Без сознания.",
+    "bytes": 38914,
+    "sha256": "27ae4db89d8b00c0e6b494d30dede00121b24cd5d2e767f1132815bfcb8d1a0c"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Имени не знаю, я её первый раз вижу. Сумка рядом лежит.",
+    "bytes": 46437,
+    "sha256": "3bf8f9a19f75ed2d19822dc0d437d45374a21583d557a4906dc11108eae11bc4"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Лежит между машинами, проезд узкий. Я рядом стою, машу, чтобы не задели.",
+    "bytes": 63573,
+    "sha256": "35b0470651e7c2180e1a4c9ef3a59fb76e243d6ee2ba8d18988247cb3b1a82e8"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Она одна. Я и ещё мужчина подошёл, помогает.",
+    "bytes": 39750,
+    "sha256": "1e8dcc119de2cf7ac38859324ea0f69040850599ca62e49b72b685c1ac1c7876"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Минуты две назад упала. Я сразу набрала.",
+    "bytes": 33898,
+    "sha256": "29fc411678e701056c85a57cb937d8ba605c8bab0f6af905f412a0742fa11147"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Иванова Ирина Петровна.",
+    "bytes": 23449,
+    "sha256": "da87de44d6dd866a75cdb78d4546d01577bdcb78340237f8ada2b99a45bf647d"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто семь, пятьдесят шесть, двадцать три.",
+    "bytes": 67753,
+    "sha256": "b0dd7d7eb1e2fd9c46d76801b866138f1382658accc0d7cf4d4554fa652f938f"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Прохожая я. Мимо шла, увидела.",
+    "bytes": 33062,
+    "sha256": "cac842ece48f7145a9cd81ee8d6c6ba2da9820276984d754702b86bcf678c7f1"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мы на улице, на парковке. Подъезд ни при чём.",
+    "bytes": 38914,
+    "sha256": "2640072b604992f116183ba5be1d0871d930db5f025d765de872e9d1d282d201"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Что? Повторите, я плохо соображаю сейчас.",
+    "bytes": 36824,
+    "sha256": "a5a00f0a0485694008ac04c11a1bc6fd240a37d1fc19e9213b724a94e956d488"
+  },
+  "r16": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю! Скажите, что делать, пока скорая едет?",
+    "bytes": 41004,
+    "sha256": "a421d5da805c347ff7e03ad436176e0f6f7834d9746c002cc7f7a6473d04eb3f"
+  }
+}

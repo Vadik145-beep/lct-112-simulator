@@ -1,0 +1,137 @@
+{
+  "opening": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. За деревней Варварино горит лес. Я мимо проезжала, дым столбом и огонь видно с дороги.",
+    "bytes": 101190,
+    "sha256": "eb09d64db4de7ea1b4dafaffffb366b7af630418e88b5342bc07edf79a920418"
+  },
+  "r1": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Горит лес. Огонь открытый, по верхам местами идёт.",
+    "bytes": 46437,
+    "sha256": "3e30382ab3c07646466eea82d8e7fc6f5a96531c7c7e7ac10857c50a9b8f74ea"
+  },
+  "r2": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Дым столбом, видно издалека. Я прямо с дороги смотрю.",
+    "bytes": 49363,
+    "sha256": "a0f7c9a473ea6c0d722471c00d055cc1eee6270fef84592a403758f9d97b4fec"
+  },
+  "r3": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Это Московская область. Дмитровский городской округ.",
+    "bytes": 50199,
+    "sha256": "dda3f04fd0a0fbb58222bcbac45957918a15aadfb6ce73a999b0880fd4a81174"
+  },
+  "r4": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "За деревней Варварино, сразу за крайними домами.",
+    "bytes": 42675,
+    "sha256": "35ab910adcd626101d81290803d551841e0dca4b8afb57d79570359624efa038"
+  },
+  "r5": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пострадавших нет. Людей в лесу я не вижу.",
+    "bytes": 36824,
+    "sha256": "af25318b6ffedbda72dd68e294dbd67001f1a0143952655ddd3cb6c3c450996d"
+  },
+  "r6": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "От домов метров триста. Ветер как раз на деревню тянет.",
+    "bytes": 53960,
+    "sha256": "4822b5e019dc411c615d4b6fc0084dfbb0f308ab83e9a06c9b17c5656ab31c94"
+  },
+  "r7": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я тут одна на дороге. Машины мимо идут, не останавливаются.",
+    "bytes": 51453,
+    "sha256": "bf7872a966555e7b53360868329d4cf4b7f424ea7447d921c5579abed41a4bd3"
+  },
+  "r8": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Минут десять назад увидела. Пока ехала, стало сильнее.",
+    "bytes": 51035,
+    "sha256": "edc4d1cecc1bacf60c59967993e84de8a15073b407ed73fb795ddc82ad03a557"
+  },
+  "r9": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Антонова Мария Петровна.",
+    "bytes": 24285,
+    "sha256": "a5e7a961df74d6233d507575d7c216e292ad95557152fded8b9508b150c1d847"
+  },
+  "r10": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+    "bytes": 67753,
+    "sha256": "7d87d68d000933f14ae4e411344dbc47e79ce023bd0236ec313a62cac8c6350e"
+  },
+  "r11": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я очевидец, проезжала мимо. В деревне не живу.",
+    "bytes": 44347,
+    "sha256": "6a7a87b80fc9d99d1ef20e6d2f864d433280f8d4bca459251962e17ed7a0175d"
+  },
+  "r12": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Это лес, никаких подъездов. Заезд по грунтовке от деревни.",
+    "bytes": 51035,
+    "sha256": "04f1289d3e7ade3cf5ac8415853cac97953b7b076d8d6fb351fd55c712dd98df"
+  },
+  "r13": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, связь тут слабая.",
+    "bytes": 33062,
+    "sha256": "1691e9ac4da66bf11c00d276ff3971acf8b023415c5785f8aeb8ef88552088cc"
+  },
+  "r14": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Мне подождать вас у поворота?",
+    "bytes": 34316,
+    "sha256": "4016f305b8acb6ddf091356753140d5e711b9fc69ed06cf7e00b1ae2d6e0899a"
+  }
+}

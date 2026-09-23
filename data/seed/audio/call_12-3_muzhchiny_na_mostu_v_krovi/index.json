@@ -1,0 +1,155 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Здравствуйте. Тут на мосту двое мужчин на ограждении сидят, оба в крови. Лица разбиты, я мимо ехала и встала.",
+    "bytes": 97010,
+    "sha256": "26bf190e052967e506d89af977ec53543a6264921cc11d19ecf1794b5dcf6ad8"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Двое мужчин на ограждении моста. Оба в крови, лица разбиты.",
+    "bytes": 48527,
+    "sha256": "d92f99c6e4cbb39d5a01b3489d28b218f8c2cb0eae3481ea4bd56b36e59ed93f"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Сидят прямо на перилах, свесились. Внизу МКАД идёт.",
+    "bytes": 47691,
+    "sha256": "bfebfb8abc39f10465b037ebc49dc1c9a076f72361c2e764b3c5bc7246ad58de"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мост над МКАД, семьдесят третий километр. Между улицей Свободы и заправкой.",
+    "bytes": 67335,
+    "sha256": "2522c769a6bac21b26e63c35955cff451ed9c05dcc9a648148fea3183efd0f2e"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Внешняя сторона, если от улицы Свободы ехать.",
+    "bytes": 38914,
+    "sha256": "1050236ef8ca351cb506f24ed65da1d4769afc4e196c6719960dad6c0fbc7596"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, Северное Тушино.",
+    "bytes": 23449,
+    "sha256": "4379eb8c40ec28597bcac4046a59a36dab76598179db3071034c7e464b7a9d06"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Их двое. Оба в крови, но сидят сами, держатся.",
+    "bytes": 40586,
+    "sha256": "fee01ba654846e461241cf85952e2491a27555fa8acb9da52d0e4ae70cb5de22"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я окликнула, они не отвечают. Один рукой лицо вытирает.",
+    "bytes": 45601,
+    "sha256": "63dfb575d68529f84c03ff5fae631ad6a59cb0a56000070bbbb6eaf6f3f668a0"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Могут сорваться вниз. Там высоко, прямо над потоком.",
+    "bytes": 45601,
+    "sha256": "78986627059cc43d69f88706b1bc7dea81e9a0af8f73ce5111a9bd2d4966a04d"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Их двое. Кроме меня рядом никого.",
+    "bytes": 30973,
+    "sha256": "3211e605b185f5a1027fc6428fbe254c21eeb510bb1b939aa072bf0206907404"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Минуты две назад увидела. Сразу встала и звоню.",
+    "bytes": 41004,
+    "sha256": "88401cc632025d4444443d1bda543ac4fb657c4ec774e7cd41287afab958ee95"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 26375,
+    "sha256": "e0d6a343d56eee7ce3d6b279e2ece01863e396cffe448803cd28a76dd8d68c76"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 70261,
+    "sha256": "a14966124912af4c58a0f076a065ed346ff35994ab9a6f04a350a9590aa7ba26"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я очевидец, мимо ехала. Не знаю их.",
+    "bytes": 33062,
+    "sha256": "48e08803fcbf387d166649da4f438ac24499338031aa3bb013da8dd9301b368b"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Это мост, подъездов нет.",
+    "bytes": 21777,
+    "sha256": "6985a7c51de0194a64cebc5f693cf109bf5d87f97d9259087eca7fa557f351cc"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Повторите, пожалуйста, я говорю тихо, чтобы их не спугнуть.",
+    "bytes": 48527,
+    "sha256": "ff196f4b7c9de070ee129bef36c5ea5201f06cea1a0d24a198160682d09eddf3"
+  },
+  "r16": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю. Подходить к ним я боюсь, буду на расстоянии.",
+    "bytes": 47691,
+    "sha256": "57a3101f02c6e263e47efa2f47d1e36629bb25a02588ac80bf64e2c53e4e3551"
+  }
+}

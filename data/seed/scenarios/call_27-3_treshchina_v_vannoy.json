@@ -1,0 +1,172 @@
+{
+  "kind": "call_intake",
+  "title": "Соседи делают ремонт, в ванной отлетела плитка и пошла трещина",
+  "ticket_ref": "27-3",
+  "difficulty": 2,
+  "norm_seconds": 60,
+  "caller": {
+    "persona": "worried_resident",
+    "voice": "ru_female_1",
+    "noise": "indoor",
+    "opening": "Здравствуйте. У меня в ванной плитка со стены отлетела и трещина пошла, метр длиной. Соседи сверху ремонт делают.",
+    "facts": {
+      "what_happened": "у соседей ремонт, в ванной комнате отлетела плитка и появилась трещина в стене около метра",
+      "address": "Ленинский проспект, дом 57, квартира 28, подъезд 1, этаж 5, код домофона 57В",
+      "injured": "пострадавших нет",
+      "danger": "трещина около метра, что за ней, непонятно; соседи сверху долбят стену",
+      "caller_name": "Селезнева Наталья Петровна",
+      "callback_phone": "903-226-13-83"
+    },
+    "behaviour": "говорит обстоятельно; сама сообщает, что пострадавших нет и что соседи продолжают долбить; про этаж соседей и про то, что дом панельный, скажет по вопросу",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "В ванной плитка со стены отлетела, а под ней трещина. Длиной с метр, наверное.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "what_happened",
+      "text": "Соседи сверху ремонт затеяли, стену долбят третий день. Вот у меня и посыпалось.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "address",
+      "text": "Ленинский проспект, дом пятьдесят семь, квартира двадцать восемь.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "entrance_floor_code",
+      "text": "Первый подъезд, пятый этаж. Код домофона пятьдесят семь вэ.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "region",
+      "text": "Москва, Гагаринский район.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "injured",
+      "text": "Нет, никто не пострадал. Я в ванной была, когда плитка упала, но меня не задело.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "danger",
+      "text": "Трещина широкая, палец пролезает. Сверху до сих пор долбят, я боюсь, дальше пойдёт.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "count_people",
+      "text": "Я дома одна. У соседей рабочие, трое кажется.",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "time",
+      "text": "Плитка сегодня утром упала. А стучат они с понедельника.",
+      "approved": true
+    },
+    {
+      "id": 10,
+      "topic": "caller_name",
+      "text": "Селезнева Наталья Петровна.",
+      "approved": true
+    },
+    {
+      "id": 11,
+      "topic": "callback_phone",
+      "text": "Девятьсот три, двести двадцать шесть, тринадцать, восемьдесят три.",
+      "approved": true
+    },
+    {
+      "id": 12,
+      "topic": "caller_role",
+      "text": "Я хозяйка квартиры, тут живу.",
+      "approved": true
+    },
+    {
+      "id": 13,
+      "topic": "repeat",
+      "text": "Повторите, пожалуйста, сверху долбят, не слышно.",
+      "approved": true
+    },
+    {
+      "id": 14,
+      "topic": "unknown",
+      "text": "Не знаю. В управляющую компанию я звонила, там трубку не берут.",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "entrance_floor_code",
+    "injured",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "Дом многоквартирный",
+      "Элементы конструкции здания Кровля крыша фасад балкон"
+    ],
+    "incident_type": "5.6.2.0",
+    "flags": {
+      "injured": false
+    },
+    "address": {
+      "street": "Ленинский проспект",
+      "house": "57",
+      "apartment": "28",
+      "entrance": "1",
+      "floor": "5",
+      "code": "57В",
+      "okrug": "ЮЗАО",
+      "district": "Гагаринский район"
+    },
+    "caller": {
+      "name": "Селезнева Наталья Петровна",
+      "role": "жилец",
+      "phone": "903-226-13-83"
+    },
+    "description_keywords": [
+      "отлетела плитка",
+      "трещина",
+      "соседи делают ремонт",
+      "пострадавших нет"
+    ],
+    "description": "Соседи делают ремонт, в ванной комнате отлетела плитка и образовалась трещина около метра. Пострадавших нет.",
+    "expected_services": [
+      "101",
+      "102",
+      "gkh",
+      "mosvodokanal",
+      "oek",
+      "codd",
+      "duty_arm112",
+      "mkp_analytics",
+      "mayor_office",
+      "oati",
+      "rosgvardia",
+      "territorial_oiv",
+      "territorial_oiv_tinao",
+      "dep_construction",
+      "moszhilinspection",
+      "ntu",
+      "fso",
+      "dgp_integration",
+      "dgp_arm112",
+      "cukb_mo",
+      "dep_civil_construction"
+    ]
+  }
+}

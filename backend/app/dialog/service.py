@@ -469,7 +469,7 @@ async def reply_audio(
     """Path (relative to STORAGE_DIR) of the reply's audio: the stored recording of an
     approved reply, or a Piper synthesis cached per scenario version and reply; ``None``
     without a voice."""
-    if reply.audio:
+    if reply.audio and (storage_root() / reply.audio).is_file():
         return reply.audio
     tts = get_tts_provider()
     if tts.method == "text" or not reply.text:

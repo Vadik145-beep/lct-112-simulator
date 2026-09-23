@@ -1,0 +1,146 @@
+{
+  "opening": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Помогите, жена таблетки не те выпила и сознание потеряла! Лежит, не отвечает!",
+    "bytes": 74440,
+    "sha256": "739c16ca26c561964f474c2b547c98ae8cd013dd13b3273ac612c20e9f9571f8"
+  },
+  "r1": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Жена выпила не те таблетки и отключилась. Лежит, не отвечает мне.",
+    "bytes": 64409,
+    "sha256": "ee27a735b6b7d2898309f90663d1374dcffce98f5be8dab9cdf2c7b942c65376"
+  },
+  "r2": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Я её зову, трясу за плечо — никакой реакции. Дышит, но тяжело.",
+    "bytes": 78202,
+    "sha256": "1e560de8e98c512fa2bd7ac2c15abcae10f2e650b488385902456a6b9f145baf"
+  },
+  "r3": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Коломенская набережная, дом восемнадцать, квартира сто сорок два.",
+    "bytes": 66499,
+    "sha256": "a965e5ef88bbecd89acf4634e8a1ab2a365155f6a155dbab6d555e25d68880a6"
+  },
+  "r4": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Третий подъезд, четвёртый этаж. Код домофона сто сорок два.",
+    "bytes": 76948,
+    "sha256": "cf0a6cc9b237834775a1a30b1bd2338fca7d6403246c7bc933dcc0a58877f20c"
+  },
+  "r5": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Москва, конечно. Нагатинский Затон.",
+    "bytes": 38914,
+    "sha256": "4bd80d502cb1b6d8f158249466ee03f47a4c88590318a1640e31dd11f8796cf9"
+  },
+  "r6": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Жена, Иванова Ирина Петровна. Пятьдесят один год ей.",
+    "bytes": 61902,
+    "sha256": "ba51a928bc728b8e7c4b3d8a55e478bcd2be3af82612d4fcbaf88a8ba589ac31"
+  },
+  "r7": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Без сознания она. Дышит, я проверил, но не просыпается.",
+    "bytes": 59812,
+    "sha256": "702cdc731deed2a3d37051e4d0369d25c01c0f585e8e7c4238d6ae4e0834626a"
+  },
+  "r8": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Упаковка на столе лежит, могу прочитать название, если надо.",
+    "bytes": 53124,
+    "sha256": "821aadcc86bb987629031bf7bcd50d9926571218fc2d605227c763e2bd16b404"
+  },
+  "r9": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Мы вдвоём дома, я и она. Дети у бабушки.",
+    "bytes": 52288,
+    "sha256": "4b1cc69a019a0d6eb1c3a7c636550e07e7123b557160653c137c22135b647ead"
+  },
+  "r10": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Минут десять назад упала. Я сразу вам звоню.",
+    "bytes": 40586,
+    "sha256": "0a7faca76abe7707be85bd751b03f485828928070a4181cc62013156b023da46"
+  },
+  "r11": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Я муж её. Жена — Иванова Ирина Петровна.",
+    "bytes": 49363,
+    "sha256": "803f3e9fe47c91fbc3142813e716806bcbd873f192aea419b1efbcbba9bba414"
+  },
+  "r12": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Девять один шесть, восемьсот девяносто семь, пятьдесят шесть, двадцать три.",
+    "bytes": 81128,
+    "sha256": "27c7d25ce9ab123b2dae30084a05ad9d775053ed9f34976d5bdcd55050161ebb"
+  },
+  "r13": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Супруг я, рядом с ней стою.",
+    "bytes": 28465,
+    "sha256": "d8bdd7b72ef67ef4ab28ba36615ecd81e180fa888caaf80c10677a6053667229"
+  },
+  "r14": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Повторите, пожалуйста, я не расслышал.",
+    "bytes": 35152,
+    "sha256": "a8cc97260c6c30cfbd85fcd6c886b4475c4ee40a2c28fd22262056951e8c78fc"
+  },
+  "r15": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Не знаю я! Вы скорую шлите быстрее!",
+    "bytes": 40586,
+    "sha256": "a9ef09bf2a4f04428092cf0e8de0b9c14653954af5119cf7466672a74f21a542"
+  }
+}

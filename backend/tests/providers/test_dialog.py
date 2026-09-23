@@ -7,7 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from app.domain.evaluation.schemas import CallIntakeScenario, DialogTurn
+from app.domain.evaluation.schemas import CallIntakeScenario, DialogTurn, Reply
+from app.domain.scenarios import fallback
 from app.providers.dialog import (
     FALLBACK_UNKNOWN,
     ButtonsDialog,
@@ -73,7 +74,34 @@ async def test_buttons_unknown_topic_gets_canned_answer(ctx: DialogContext) -> N
     reply = await ButtonsDialog().reply(ctx, "Какая у вас погода?")
     assert reply.reply_id is None
     assert reply.topics == ["unknown"]
-    assert reply.text == FALLBACK_UNKNOWN
+    # A scenario without an «unknown» reply is answered from the bank, in the caller's voice.
+    voice = ctx.scenario.caller.voice
+    assert reply.text == fallback.pick("unknown", voice, set()).text(voice)
+    assert reply.audio == f"tts/seed/_fallback/{voice}/dont_know.mp3"
+
+
+async def test_bank_phrase_matches_the_gender_of_the_voice() -> None:
+    male = fallback.pick("repeat", "ru_male_1", set())
+    female = fallback.pick("repeat", "ru_female_1", set())
+    assert male.text("ru_male_1").endswith("не расслышал.")
+    assert female.text("ru_female_1").endswith("не расслышала.")
+
+
+async def test_bank_does_not_repeat_a_phrase_said_in_this_call() -> None:
+    voice = "ru_male_1"
+    first = fallback.pick("unknown", voice, set())
+    second = fallback.pick("unknown", voice, {first.text(voice)})
+    assert second is not None and second.id != first.id
+
+
+async def test_scenario_reply_wins_over_the_bank(ctx: DialogContext) -> None:
+    scenario = ctx.scenario.model_copy(deep=True)
+    scenario.replies.append(
+        Reply(id=99, topic="unknown", text="Не знаю, я только подошёл.", approved=True)
+    )
+    reply = await ButtonsDialog().reply(DialogContext(scenario=scenario), "Какая у вас погода?")
+    assert reply.reply_id == 99
+    assert reply.audio is None
 
 
 async def test_buttons_prefers_unused_reply_of_topic(ctx: DialogContext) -> None:

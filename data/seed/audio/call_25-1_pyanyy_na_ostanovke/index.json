@@ -1,0 +1,137 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. На остановке нетрезвый мужчина, сильно ругается и хватает прохожих за руки. Скорая не нужна, он на ногах.",
+    "bytes": 111639,
+    "sha256": "ce3bf3bea82562fde4753ca2be91aad8b83e40e486755ac6f62466fb9418ca58"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "На остановке мужчина нетрезвый. Ругается матом на всю улицу.",
+    "bytes": 52288,
+    "sha256": "c2ab02a86efe7a770d77be0b1e0d973ede92c478841b4d8d6c6ab7485156f26d"
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Хватает прохожих за руки. Люди шарахаются, кто-то уже ушёл.",
+    "bytes": 51453,
+    "sha256": "f2b356bbdf013b2065af59273894b4ba6c9b0ec5d6269cca7b7670823c41657c"
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Улица Фабрициуса, дом восемнадцать. Остановка шестьдесят второго автобуса, называется улица Штурвальная.",
+    "bytes": 101190,
+    "sha256": "e1acfaeea5dd41cf45b6a51f0bcbc254707a7bbb6658df7617527f912afd0bd8"
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Москва, Южное Тушино.",
+    "bytes": 22613,
+    "sha256": "d276ae7f77469962139925a5f5e1da94674f03474388cfaaf432187685dd1de3"
+  },
+  "r5": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пострадавших нет. Скорая не требуется, он сам на ногах.",
+    "bytes": 45601,
+    "sha256": "a83ed63bbb7d92e73518e3422132dd7cf1909a34065ffc5928708243391911b7"
+  },
+  "r6": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пока только руками хватает. Ничего в руках у него нет.",
+    "bytes": 48527,
+    "sha256": "4a697ddc0ee87716f83cae82d8ca2cd771d8ccf541941780a6fb9a1735db536c"
+  },
+  "r7": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Он один такой. На остановке ещё человек шесть стоит.",
+    "bytes": 45601,
+    "sha256": "171984cf4b971ec6300b1773d02517d8a9b805f54f042904f93cf4ca61f3d14b"
+  },
+  "r8": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Минут десять уже. Я автобус жду и смотрю на это.",
+    "bytes": 39750,
+    "sha256": "6fea4dd8ea029667bca7bc65e2b04f2fe628bc1da7169efd23c4331626858684"
+  },
+  "r9": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Соколов Иван Петрович.",
+    "bytes": 22613,
+    "sha256": "597b7d794267238c515fff7bd866cedd3bcbf859ad857cb433a500d0f984359f"
+  },
+  "r10": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 71097,
+    "sha256": "41d90b8341a9bd0e5fc4ec03d954bb9e3f0b485d2e957568b503ca37cd922f51"
+  },
+  "r11": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я очевидец. Просто на остановке стою.",
+    "bytes": 34316,
+    "sha256": "3b4a0566115b399057a01715adcf74c7c31028b1d322240b68471ebb8475d03f"
+  },
+  "r12": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Это остановка на улице, подъездов нет.",
+    "bytes": 33062,
+    "sha256": "edc692d03e2d7e98131eb26733b2b8c1ce060ae8840ef2405beb376757b20d44"
+  },
+  "r13": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, автобус подошёл.",
+    "bytes": 33898,
+    "sha256": "416e5bd7337b11ecc6bb35e81afc1ca0a9c693efadb4a921dfc94ee687620941"
+  },
+  "r14": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Приметы такие: куртка тёмная, без шапки, лет сорок.",
+    "bytes": 49363,
+    "sha256": "c53877256ce42f93df04599b4ee14e9c44318aad68023bd166b7f23248e41639"
+  }
+}

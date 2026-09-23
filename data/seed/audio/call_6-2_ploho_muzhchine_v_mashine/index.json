@@ -1,0 +1,155 @@
+{
+  "opening": {
+    "voice_id": "9AjtU6o19uipv7QL8dLL",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Алло... мне плохо. Я в машине сижу, на стоянке. Голова кружится, в глазах темнеет.",
+    "bytes": 83635,
+    "sha256": "413aab106c040c79d9996cff356e38138fea2509bc9e66c8898ef9d7c5d353c2"
+  },
+  "r1": {
+    "voice_id": "9AjtU6o19uipv7QL8dLL",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Плохо мне. Сижу в машине, выйти не могу, голова кружится.",
+    "bytes": 63573,
+    "sha256": "9d4160c1dbcf140dc561ead7f114c2c7e30565b6440bce4140a2f110bc0565f9"
+  },
+  "r2": {
+    "voice_id": "9AjtU6o19uipv7QL8dLL",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "В глазах темнеет, потом отпускает. Слабость такая, что руль держать не могу.",
+    "bytes": 68589,
+    "sha256": "74043fb30b3afbe60eb1cedd79623d650e4edc51d45c23075fa38af80a9d1919"
+  },
+  "r3": {
+    "voice_id": "9AjtU6o19uipv7QL8dLL",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Улица Красный Казанец, дом девятнадцать Б. Стоянка напротив дома.",
+    "bytes": 63573,
+    "sha256": "76f5182372026d0030892589cf041f91dbaa2767c406014e6c9863d9b00d8a10"
+  },
+  "r4": {
+    "voice_id": "9AjtU6o19uipv7QL8dLL",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Москва, Вешняки.",
+    "bytes": 24285,
+    "sha256": "330939bd4a566e13821b39e135705320ed6b32e8d14f6258e0615e17c734413a"
+  },
+  "r5": {
+    "voice_id": "9AjtU6o19uipv7QL8dLL",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Я сам и есть пострадавший. Больше никого нет.",
+    "bytes": 39750,
+    "sha256": "d72a08e8b15cbb09ef2a015977fc2d021de5295bd228a26ecd3af268e725c14f"
+  },
+  "r6": {
+    "voice_id": "9AjtU6o19uipv7QL8dLL",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Сорок лет мне. Сознание пока не терял, но близко к тому.",
+    "bytes": 57722,
+    "sha256": "305fc7b9875ce6bed1fac0bbb7d852910878497527100fda2971d2487138631f"
+  },
+  "r7": {
+    "voice_id": "9AjtU6o19uipv7QL8dLL",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Дверь я открыл, чтобы воздух был. Сижу на водительском.",
+    "bytes": 56886,
+    "sha256": "86056f34b4897c53ab8846d1d64f3663bad2aada686e31ca676e01b32cbcd2e1"
+  },
+  "r8": {
+    "voice_id": "9AjtU6o19uipv7QL8dLL",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Форд, синий. Номер а двести восемьдесят четыре тэ ка, регион семьсот семьдесят семь.",
+    "bytes": 86561,
+    "sha256": "a1268ed6bf1e0eb1bca7952adf2f6253ff3081ee28a830759341379ee7423723"
+  },
+  "r9": {
+    "voice_id": "9AjtU6o19uipv7QL8dLL",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Один я. На стоянке машин много, а людей нет.",
+    "bytes": 47273,
+    "sha256": "9fde6ebddf33e40d6001f4bcef7c44335ab3641d863fa1c28c56af62390e754c"
+  },
+  "r10": {
+    "voice_id": "9AjtU6o19uipv7QL8dLL",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Минут пятнадцать так сижу. Думал, отпустит, не отпускает.",
+    "bytes": 56886,
+    "sha256": "458ccabb28db517e90c220ffd8e3fe2b627e7a58be12758c1848de1f681235f2"
+  },
+  "r11": {
+    "voice_id": "9AjtU6o19uipv7QL8dLL",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Иванов Павел Сергеевич.",
+    "bytes": 29301,
+    "sha256": "fe663b17f95b624d68d4f3af01953ffd6336d1ae6d397669626f03134eff604f"
+  },
+  "r12": {
+    "voice_id": "9AjtU6o19uipv7QL8dLL",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Девять один шесть, восемьсот девяносто семь, пятьдесят шесть, двадцать три.",
+    "bytes": 90323,
+    "sha256": "a9be019b563e6c1694f4408bd6de0482f5fbfd9f856bd237e1459b1cacfac533"
+  },
+  "r13": {
+    "voice_id": "9AjtU6o19uipv7QL8dLL",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Себе вызываю. Мне и плохо.",
+    "bytes": 28465,
+    "sha256": "7e72927f1fe52f9ecedeb1fab22bc9922c67faa464c8f1719c016791c167b850"
+  },
+  "r14": {
+    "voice_id": "9AjtU6o19uipv7QL8dLL",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Я не в доме, на стоянке. Подъезда никакого.",
+    "bytes": 43511,
+    "sha256": "ebaffd6bdca9e1d26ed4df01e992bc78372b3738dd89c21f6a5bb902999f16eb"
+  },
+  "r15": {
+    "voice_id": "9AjtU6o19uipv7QL8dLL",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Повторите... не расслышал, тяжело мне говорить.",
+    "bytes": 40586,
+    "sha256": "1eb6898eea5d3c5c4c0ebfc245245772232cdadd2915188d8ae6cbcf6742d97c"
+  },
+  "r16": {
+    "voice_id": "9AjtU6o19uipv7QL8dLL",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Не знаю. Вы скорее давайте, а то я отключусь.",
+    "bytes": 44765,
+    "sha256": "412c13d9e5e14cb4fc108d5a7a580fb06bc1b62194f357372ff9d83020bf961d"
+  }
+}

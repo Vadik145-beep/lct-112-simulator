@@ -1,0 +1,137 @@
+{
+  "opening": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Здравствуйте. У меня в доме пахнет газом. От трубы на вводе в дом, и шум в трубе слышно. Скорая не нужна.",
+    "bytes": 186035,
+    "sha256": "70c8e7c6aeccf153698e9c65fa2f0bfa1a6ecd0d0df1561f69f673cbf885e7b6"
+  },
+  "r1": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "В доме пахнет газом. От трубы, где ввод в дом идёт.",
+    "bytes": 87815,
+    "sha256": "4e15b234ec092efd95034d370db71174859f2b236c4c5c14b42c007def382f51"
+  },
+  "r2": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "И шум в трубе слышно, шипит будто. Газ у нас магистральный, баллонов нет.",
+    "bytes": 121252,
+    "sha256": "905b9578f11fe4453997b165a2630c2baeb6926d48a0b5501b814c455b38d96f"
+  },
+  "r3": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Поселение Вороновское, посёлок ЛМС, микрорайон Солнечный, дом двадцать.",
+    "bytes": 150509,
+    "sha256": "9e736e8a7ca08f103b529161c2869a8613ced380d7e3123d824f514deb58968f"
+  },
+  "r4": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Это Новая Москва, Троицкий округ.",
+    "bytes": 131283,
+    "sha256": "47d7d8f5929f5a3c757a58db3b6180d2481368d5f8a6c77a086e8e3fc92d99d0"
+  },
+  "r5": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Пострадавших нет. Скорая не требуется, мне не плохо.",
+    "bytes": 86561,
+    "sha256": "fad3ed8e065d2359760cee6cdd1d8dd675008f14fe2364d5bf20cc6ab5f64b18"
+  },
+  "r6": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Запах сильный у самой трубы. Кран я не трогала, боюсь.",
+    "bytes": 94502,
+    "sha256": "7b7833c472846831608028030df54673fdef748075eae6676bbef621c321788d"
+  },
+  "r7": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Я в доме одна. Соседи через забор, дома они.",
+    "bytes": 74440,
+    "sha256": "c096e9d04c0752552d5aca2a6c9fc920d17b16502903a49420870bd74a528295"
+  },
+  "r8": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Почуяла минут двадцать назад. Думала, показалось, потом шум услышала.",
+    "bytes": 99100,
+    "sha256": "ea5f9b8461d4418797ef7693ee85542550455374feac3958f6cf1a34a24e434f"
+  },
+  "r9": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Соколова Вера Ивановна.",
+    "bytes": 42675,
+    "sha256": "803e5b212ec6ebee5c4c758f54124bc99355f9b5c117a635a9c4e7a361e9bcf3"
+  },
+  "r10": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Девять один шесть, триста двадцать, двенадцать, восемьдесят три.",
+    "bytes": 86561,
+    "sha256": "afbfa7aef19e543e3ef8c286a6710c3214f11327b108794ced90252c49dc2145"
+  },
+  "r11": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Я хозяйка дома. Тут и живу.",
+    "bytes": 51453,
+    "sha256": "423b04e988f45c2897b35b2c9e5eb199a9c85699d0d652d7e1aec6183aa62bb9"
+  },
+  "r12": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Дом частный, один этаж. Калитка открыта, собака во дворе на привязи.",
+    "bytes": 147583,
+    "sha256": "8213209d5a3c67a24158e35a2d23345c00c7daa22bc79c27eabfdd4568169f23"
+  },
+  "r13": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Сейчас, сейчас... повторите, пожалуйста, я не расслышала.",
+    "bytes": 97010,
+    "sha256": "0bbb18b3de92cf7904f6a1c28ccc3717d0f04e5718a8235217e0c491d6ae8f2c"
+  },
+  "r14": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_flash_v2_5",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Не знаю, милая. Мне окна открыть и на улицу выйти?",
+    "bytes": 79874,
+    "sha256": "47f64c02a218f2c7e3c1cc58bcf757a71a24a6011ec44d3bc8d891d1ee6cf098"
+  }
+}

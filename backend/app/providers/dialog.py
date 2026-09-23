@@ -36,6 +36,7 @@ from typing import Any, Protocol
 from app.domain.evaluation.schemas import CallIntakeScenario, DialogTurn, Reply
 from app.domain.evaluation.text import detect_service_facts, detect_topics, normalize_text
 from app.domain.reference_data import CALLER_TOPICS, OFFICER_PROGRESS_KEYWORDS, OFFICER_TOPICS
+from app.domain.scenarios import fallback
 from app.logging import get_logger
 from app.providers.llm import ChatModel, Message, ModelOutputError, ModelUnavailableError
 
@@ -205,10 +206,21 @@ def pick_reply(ctx: DialogContext, topic: str) -> Reply | None:
 def canned_reply(
     ctx: DialogContext, topic: str, operator_topics: list[str], method: str
 ) -> CallerReply:
-    """A ``repeat`` / ``unknown`` answer: the approved one when the scenario has it."""
+    """A ``repeat`` / ``unknown`` answer: the approved reply of the scenario, then the bank."""
     reply = pick_reply(ctx, topic)
     if reply is not None:
         return _from_reply(reply, operator_topics, method)
+    voice = ctx.scenario.caller.voice
+    said = {t.text for t in ctx.history if t.role == "caller"}
+    phrase = fallback.pick(topic, voice, said)
+    if phrase is not None:
+        return CallerReply(
+            text=phrase.text(voice),
+            topics=[topic],
+            operator_topics=operator_topics,
+            audio=phrase.audio(voice),
+            method=method,
+        )
     text = FALLBACK_REPEAT if topic == TOPIC_REPEAT else FALLBACK_UNKNOWN
     return CallerReply(text=text, topics=[topic], operator_topics=operator_topics, method=method)
 

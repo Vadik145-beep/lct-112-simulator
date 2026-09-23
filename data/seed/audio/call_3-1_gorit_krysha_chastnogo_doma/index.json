@@ -1,0 +1,146 @@
+{
+  "opening": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте! У соседей крыша горит! Пламя из-под конька идёт, дым чёрный!",
+    "bytes": 74440,
+    "sha256": "aea253ce184695f2e21711ad07111b33bbceb5c95e7f71ebf8f2fa4adfc2f336"
+  },
+  "r1": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Крыша горит у дома! Пламя открытое, из-под конька выбивается.",
+    "bytes": 55214,
+    "sha256": "189a2f2e4e0529d7fd601de4c431f812f1e4c81a8b5f545aa5693b8f2e2f618e"
+  },
+  "r2": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Дым чёрный валит, уже пол крыши занялось. Само не потухнет.",
+    "bytes": 52288,
+    "sha256": "86f4fa71ed4508543cd357e39a13f6bddb8e691eb713f00ee16d9255ff96e995"
+  },
+  "r3": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Улица Станционная, дом двадцать восемь. Частный дом, одноэтажный.",
+    "bytes": 62737,
+    "sha256": "a07cccf672efbcacf51a8e96bb34b59f4f5463fd2f126a8a388963464473860d"
+  },
+  "r4": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Королёв это, Московская область. Не Москва, нет.",
+    "bytes": 38078,
+    "sha256": "8394aaacc4384492c70acaa502af5fd50996d5c5784835f3597ad015cd02d900"
+  },
+  "r5": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пострадавших нет. Хозяева на улице стоят, все вышли.",
+    "bytes": 49363,
+    "sha256": "c65d03b414c237e84b6eb74c1685460f2094b40be2c0b719523f4a2e1792cc08"
+  },
+  "r6": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Газа в доме нет, не газифицирован. Печка у них.",
+    "bytes": 44765,
+    "sha256": "ec16da94feddf4bc26031500a15ce585b2033ef8c0bf2bf2dead381aa9469042"
+  },
+  "r7": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Рядом сарай деревянный и соседский участок вплотную. Как бы не перекинулось.",
+    "bytes": 66499,
+    "sha256": "baa50807790496ec14376538c05dd233e55e6837f6c08a3113dcad14d0bc201f"
+  },
+  "r8": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "В доме жили трое. Все на улице, я их вижу.",
+    "bytes": 41839,
+    "sha256": "693443a7e9d867eb869c22ed49a4c84044dd9644cc2e868fd7ca2eb95e1ac149"
+  },
+  "r9": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Минут пять назад загорелось. Сначала дым был, теперь пламя.",
+    "bytes": 51453,
+    "sha256": "0231a5c26eb9e2667cd017a8849c5d9ccfcd383a8e7c5591a5558d6667500bf4"
+  },
+  "r10": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Иванова Инна Степановна.",
+    "bytes": 26375,
+    "sha256": "c5c9e0f71b09e0056ac14f4e9ac81a93be66f1397109555ffb7a3124759ad8ca"
+  },
+  "r11": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, сто двадцать шесть, тридцать четыре, семьдесят один.",
+    "bytes": 79038,
+    "sha256": "dcd393bb686aa15e482352cf57cd101ed87d2e61382592a2b7a4a2e5e18324f1"
+  },
+  "r12": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Соседка я, через дорогу живу. Увидела и звоню.",
+    "bytes": 43511,
+    "sha256": "1c3771635cb72fdf6eeb6472a7fc8996c25545dd5fd1dbded031c502611adddf"
+  },
+  "r13": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Частный дом, какой подъезд. Калитка со стороны улицы.",
+    "bytes": 48527,
+    "sha256": "eef09522379e56803db38e68b23924de5bdd0794068aec5a2050f949a488fdd8"
+  },
+  "r14": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, тут гудит всё.",
+    "bytes": 33062,
+    "sha256": "4bd3993a4ba3bbd027336f203ef6fea9978d526e3174b52984b72ee86b8199cd"
+  },
+  "r15": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю я. Приезжайте скорее, пока на нас не пошло.",
+    "bytes": 44765,
+    "sha256": "3d114a92ea22b300e05fbf79c6ba147587ffa4f99a451d48b2d8d8913ad4920c"
+  }
+}

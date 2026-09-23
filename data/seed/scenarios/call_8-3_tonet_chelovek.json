@@ -1,0 +1,159 @@
+{
+  "kind": "call_intake",
+  "title": "Тонет человек на озере",
+  "ticket_ref": "8-3",
+  "difficulty": 3,
+  "norm_seconds": 60,
+  "caller": {
+    "persona": "witness_shaken",
+    "voice": "ru_female_3",
+    "noise": "street",
+    "opening": "Человек тонет! Прямо сейчас, на озере! Мужчина, он кричит, помогите, скорее!",
+    "facts": {
+      "what_happened": "мужчина тонет на озере в настоящее время, кричит о помощи",
+      "address": "Таманская улица, дом 75, корпус 2, пляж на озере Круглое",
+      "injured": "один человек в воде, мужчина, пока на поверхности, кричит",
+      "danger": "человек в воде, до берега метров двадцать, спасателей на пляже нет",
+      "caller_name": "Иванова Елена Сергеевна",
+      "callback_phone": "916-896-32-54"
+    },
+    "behaviour": "кричит, торопит, отвлекается на воду; адрес называет через дом рядом с пляжем; сама говорит, что спасателей нет, круг бросить некому",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Мужчина тонет! Он в воде, то уйдёт, то вынырнет.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "what_happened",
+      "text": "Кричит о помощи. Люди на берегу стоят, никто не лезет.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "address",
+      "text": "Озеро Круглое, пляж. Рядом дом — Таманская улица, дом семьдесят пять, корпус два.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "region",
+      "text": "Москва, Хорошёво-Мнёвники.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "injured",
+      "text": "В воде он один. Пока держится, голову видно.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "danger",
+      "text": "От берега метров двадцать. Спасателей тут нет, будки закрыты.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "count_people",
+      "text": "На берегу человек десять. В воду никто не идёт.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "time",
+      "text": "Минуту назад начал тонуть. Сразу звоню.",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "caller_name",
+      "text": "Иванова Елена Сергеевна.",
+      "approved": true
+    },
+    {
+      "id": 10,
+      "topic": "callback_phone",
+      "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+      "approved": true
+    },
+    {
+      "id": 11,
+      "topic": "caller_role",
+      "text": "Я очевидец. На пляже была, не родственница ему.",
+      "approved": true
+    },
+    {
+      "id": 12,
+      "topic": "entrance_floor_code",
+      "text": "Это пляж, подъездов нет. Заход со стороны Таманской.",
+      "approved": true
+    },
+    {
+      "id": 13,
+      "topic": "repeat",
+      "text": "Что? Повторите, я на воду смотрю!",
+      "approved": true
+    },
+    {
+      "id": 14,
+      "topic": "unknown",
+      "text": "Не знаю! Мужчины тут круг ищут, найти не могут!",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "injured",
+    "danger",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "Человек в воде, на льдине",
+      "Человек тонет (в настоящее время)"
+    ],
+    "incident_type": "17.7.2.0",
+    "flags": {
+      "injured": true
+    },
+    "address": {
+      "street": "Таманская улица",
+      "house": "75",
+      "building": "2",
+      "okrug": "СЗАО",
+      "district": "район Хорошёво-Мнёвники",
+      "descriptive": "пляж на озере Круглое"
+    },
+    "caller": {
+      "name": "Иванова Елена Сергеевна",
+      "role": "очевидец",
+      "phone": "916-896-32-54"
+    },
+    "description_keywords": [
+      "тонет человек",
+      "мужчина",
+      "кричит о помощи"
+    ],
+    "description": "Тонет человек в настоящее время, мужчина кричит о помощи на озере.",
+    "expected_services": [
+      "101",
+      "ods_psc",
+      "mgpss",
+      "102",
+      "103",
+      "cemp",
+      "mayor_office",
+      "territorial_oiv",
+      "territorial_oiv_tinao",
+      "ntu",
+      "cukb_mo"
+    ]
+  }
+}

@@ -102,7 +102,8 @@ async def test_say_opens_the_call_and_answers(client: AsyncClient) -> None:
     assert "address" in body["operator"]["topics"]
     assert body["caller"]["topics"] == ["address"]
     assert body["caller"]["reply_id"] == 2
-    assert body["caller"]["text"].startswith("Вавилова")
+    # The reply has other wordings and one of them is played at random (pick_variant).
+    assert "Вавилова" in body["caller"]["text"]
     # Without a model server the session's «select» degrades to buttons.
     assert body["caller"]["method"] == "buttons"
     assert body["dialog"]["mode"] == "buttons"

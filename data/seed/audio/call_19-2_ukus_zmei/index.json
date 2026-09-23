@@ -1,0 +1,146 @@
+{
+  "opening": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Здравствуйте. Тут мужчину змея укусила, прямо у входа в монастырь. Он в сознании, нога распухает.",
+    "bytes": 111639,
+    "sha256": "3ab7604a828e4988eb1118a5682c4bb905d5dc03b78d50d3477956e0dbaa47ca"
+  },
+  "r1": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Мужчину змея укусила. В ногу, чуть выше щиколотки.",
+    "bytes": 60648,
+    "sha256": "79c23b609e4057a3a67b9416f3d6c6f0616bcf38ee7f000fcbcac9fd7723ecf0"
+  },
+  "r2": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Змею не поймали, ушла в траву. Серая была, с узором, я толком не разглядел.",
+    "bytes": 81128,
+    "sha256": "d4557743eeaaa93ccb2a1ad550705623dabec1c012dd8cefeede5759e2528755"
+  },
+  "r3": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Рязанская область. Свято-Иоанно-Богословский мужской монастырь.",
+    "bytes": 74022,
+    "sha256": "ca239daa7ef4c723dc8308f85d2ca0e018f79b2d987dcae3b2593677c668fb36"
+  },
+  "r4": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Мы прямо у входа, у ворот. Тут его на лавку посадили.",
+    "bytes": 52288,
+    "sha256": "e09fba500d7268efc39ee00e7e134f470fbf1a211fba1b05036e12f518ea9d01"
+  },
+  "r5": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Пострадавший один. Сизов Иван Петрович, шестьдесят лет.",
+    "bytes": 58976,
+    "sha256": "b31e0c63eda1c056e7a9f10b2bc3fcf0dff09e301f59136e270640a98b7731ac"
+  },
+  "r6": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "В сознании, разговаривает. Нога опухает, он говорит, жжёт сильно.",
+    "bytes": 64409,
+    "sha256": "59de6eaee58e06abe3717ff288ba1a91b0754a6805863e0240bb60fab378e349"
+  },
+  "r7": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Змея где-то в траве рядом. Люди тут ходят, могут наступить.",
+    "bytes": 56050,
+    "sha256": "71fa754473db279b18a083343ca1a41fa2aaa0e5fe202d257aa9692367a450d8"
+  },
+  "r8": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Пострадавший один. Вокруг человек пять собралось.",
+    "bytes": 54378,
+    "sha256": "ec91235f0869b07350627f120d4ce4b512b9c0d9b2dd82f69ee6ee8880e63b8e"
+  },
+  "r9": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Минут пять назад укусила. Он сразу закричал.",
+    "bytes": 44347,
+    "sha256": "a8e9861341ca949bfb2d224a6c8e5a474800a46fdfbb180fe69a93408bfc1b1f"
+  },
+  "r10": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Петров Илья Владимирович. Я прохожий.",
+    "bytes": 40586,
+    "sha256": "d01337015c42508ff78e311b967b3c7d42eaabcf1af9e999eea6cd47a8ccd15a"
+  },
+  "r11": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 79874,
+    "sha256": "07b71a99e999ad35e8c3586eaae19429274b0aaa6464ccd6adfde2ee6a1f47ca"
+  },
+  "r12": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Я не родственник. Мимо шёл, остановился помочь.",
+    "bytes": 44347,
+    "sha256": "90cfd6e3f468ad9075362c59c7ed97e5b839e19a1657a0c844e91ccedcd64f15"
+  },
+  "r13": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Это монастырь, подъездов нет. Мы у главных ворот.",
+    "bytes": 53124,
+    "sha256": "c0cbf44ae7af15fb997ee494aa74ece0571f63fd5b41cea49d27b42086aef198"
+  },
+  "r14": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Повторите, пожалуйста, я не расслышал.",
+    "bytes": 33062,
+    "sha256": "1780c0d667820243d51af7ee37cab3552bc8c675e687c23bddd761cc521ed470"
+  },
+  "r15": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Не знаю. Ему ногу перетянуть или не надо?",
+    "bytes": 42675,
+    "sha256": "ff1278361190ae90498f01da6de2543d088a5ec35b083876f406ba3a5134315f"
+  }
+}
