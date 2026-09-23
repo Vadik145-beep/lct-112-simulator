@@ -291,8 +291,17 @@ async def seed_history(session: AsyncSession, *, now: datetime | None = None) ->
                     ]
                     result = _result(mode, o, errors, norm)
                     issued = at
+                    answered = issued + timedelta(seconds=3)
                     primary = issued + timedelta(seconds=o.seconds)
-                    submitted = primary + timedelta(minutes=25 if mode == MODE_CARD_RESPONSE else 0)
+                    # A card is closed long after the primary status, a call ends when the
+                    # card is saved. The demo keeps the saved card the span the stored
+                    # evaluation scored, so the report shows the same seconds
+                    # (``training.attempt_seconds``).
+                    submitted = (
+                        primary + timedelta(minutes=25)
+                        if mode == MODE_CARD_RESPONSE
+                        else answered + timedelta(seconds=o.seconds)
+                    )
                     counter += 1
                     attempt = Attempt(
                         session_id=ts.id,
@@ -303,9 +312,7 @@ async def seed_history(session: AsyncSession, *, now: datetime | None = None) ->
                         card_number=str(_CARD_NUMBER_BASE + counter),
                         issued_at=issued,
                         received_at=issued + timedelta(seconds=3),
-                        answered_at=issued + timedelta(seconds=3)
-                        if mode == MODE_CALL_INTAKE
-                        else None,
+                        answered_at=answered if mode == MODE_CALL_INTAKE else None,
                         primary_status_at=primary if mode == MODE_CARD_RESPONSE else None,
                         submitted_at=submitted,
                         draft=_call_draft(body) if mode == MODE_CALL_INTAKE else None,

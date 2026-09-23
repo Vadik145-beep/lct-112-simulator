@@ -20,6 +20,7 @@ from app.domain.analytics.adaptive import order_queue
 from app.domain.evaluation import evaluate_attempt
 from app.domain.evaluation import status_machine as machine
 from app.domain.evaluation.data_check import FIELD_TITLES
+from app.domain.evaluation.timing import seconds_between
 from app.errors import ApiError
 from app.events import append_event
 from app.models import (
@@ -92,6 +93,22 @@ class Transition:
 
 def status_title(code: str) -> str:
     return machine.title(code)
+
+
+def attempt_seconds(attempt: Attempt) -> float | None:
+    """How long the trainee worked on the attempt, measured against the session norm.
+
+    The two modes end on different actions, so they are timed over different spans — the
+    same ones the evaluation scores (``domain.evaluation.card_response``, ``call_intake``):
+    responding to a card runs from issuing it to the primary status («Принята» / «Не
+    принята»), taking a call runs from answering to saving the card. ``None`` while the
+    attempt has not reached that action yet.
+    """
+    if attempt.mode == MODE_CALL_INTAKE:
+        seconds = seconds_between(attempt.answered_at, attempt.submitted_at)
+    else:
+        seconds = seconds_between(attempt.issued_at, attempt.primary_status_at)
+    return None if seconds is None else round(seconds, 1)
 
 
 async def load_services(session: AsyncSession) -> dict[str, Service]:

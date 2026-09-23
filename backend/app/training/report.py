@@ -1,9 +1,9 @@
 """Session report and monitoring snapshot for the teacher (PRD 13.7).
 
-The report aggregates stored evaluations (``attempts.result``): mean score, time to the
-primary status against the norm, wrong decisions, typical errors, grammar; each trainee
-expands to attempts. The monitoring snapshot is the same data for a running session with the
-cards in work, updated on the client from session events.
+The report aggregates stored evaluations (``attempts.result``): mean score, time on the
+attempt against the norm (``service.attempt_seconds``), wrong decisions, typical errors,
+grammar; each trainee expands to attempts. The monitoring snapshot is the same data for a
+running session with the cards in work, updated on the client from session events.
 """
 
 from __future__ import annotations
@@ -56,12 +56,6 @@ class _Acc:
 
 def _mean(values: list[float]) -> float | None:
     return round(sum(values) / len(values), 1) if values else None
-
-
-def _primary_seconds(attempt: Attempt) -> float | None:
-    if attempt.primary_status_at is None:
-        return None
-    return round(seconds_between(attempt.issued_at, attempt.primary_status_at), 1)
 
 
 def _decision(result: dict | None) -> tuple[str | None, str | None]:
@@ -201,7 +195,7 @@ def report_attempt(
 ) -> ReportAttempt:
     result = attempt.result
     expected, actual = _decision(result)
-    seconds = _primary_seconds(attempt)
+    seconds = training.attempt_seconds(attempt)
     errors = [e for e in (result or {}).get("errors") or []]
     comments = comments or []
     return ReportAttempt(
