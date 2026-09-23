@@ -97,6 +97,24 @@ async def test_bank_answers_when_the_scenario_reply_was_already_said(ctx: Dialog
     assert second.audio == f"tts/seed/_fallback/{voice}/{fallback.pick('repeat', voice, {first.text}).id}.mp3"
 
 
+async def test_repeat_plays_the_recording_of_the_phrase_again(ctx: DialogContext) -> None:
+    """«Повторите» must not lose the recording: the same file plays, not a fresh synthesis."""
+    address = reply_by_topic(ctx.scenario, "address")
+    address.audio = "tts/seed/call_31-3/r2.mp3"
+    ctx.history.append(DialogTurn(role="caller", text=address.text, topics=["address"]))
+    again = await ButtonsDialog().reply(ctx, "Повторите, пожалуйста")
+    assert again.text == address.text
+    assert again.audio == address.audio
+
+
+async def test_repeat_of_a_bank_phrase_keeps_its_recording(ctx: DialogContext) -> None:
+    voice = ctx.scenario.caller.voice
+    phrase = fallback.pick("unknown", voice, set())
+    ctx.history.append(DialogTurn(role="caller", text=phrase.text(voice), topics=["unknown"]))
+    again = await ButtonsDialog().reply(ctx, "Повторите, пожалуйста")
+    assert again.audio == phrase.audio(voice)
+
+
 async def test_bank_phrase_matches_the_gender_of_the_voice() -> None:
     male = fallback.pick("repeat", "ru_male_1", set())
     female = fallback.pick("repeat", "ru_female_1", set())

@@ -50,3 +50,8 @@ def pick(topic: str, voice: str, said: set[str]) -> FallbackPhrase | None:
         return None
     unused = [p for p in candidates if p.text(voice) not in said]
     return (unused or candidates)[0]
+
+
+def by_text(text: str, voice: str) -> FallbackPhrase | None:
+    """The phrase the caller said, so a repeat plays the same recording."""
+    return next((p for p in phrases() if p.text(voice) == text), None)

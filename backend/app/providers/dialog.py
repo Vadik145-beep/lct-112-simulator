@@ -243,6 +243,20 @@ def _from_reply(reply: Reply, operator_topics: list[str], method: str) -> Caller
     )
 
 
+def audio_of_phrase(ctx: DialogContext, text: str) -> str | None:
+    """Recording of a phrase the caller has already said: an approved reply, one of its other
+    wordings, or a phrase of the universal bank."""
+    for reply in approved_replies(ctx.scenario):
+        if reply.text == text:
+            return reply.audio
+        for variant in reply.variants:
+            if variant.text == text:
+                return variant.audio
+    voice = ctx.scenario.caller.voice
+    phrase = fallback.by_text(text, voice)
+    return phrase.audio(voice) if phrase else None
+
+
 def keyword_topic(ctx: DialogContext, operator_text: str) -> str | None:
     """First keyword topic of the phrase that has an approved reply; unused replies first."""
     detected = [t for t in ctx.vocabulary.detect(operator_text) if t not in SERVICE_TOPICS]
@@ -335,13 +349,15 @@ class ButtonsDialog:
         return _with_latency(_from_reply(reply, [topic], self.mode), started)
 
     def _repeat_last(self, ctx: DialogContext, operator_topics: list[str]) -> CallerReply:
-        """«Повторите» from the operator: say the last caller phrase again."""
+        """«Повторите» from the operator: say the last caller phrase again, with its own
+        recording — otherwise the phrase would be synthesized and the voice would change."""
         for turn in reversed(ctx.history):
             if turn.role == "caller":
                 return CallerReply(
                     text=turn.text,
                     topics=list(turn.topics),
                     operator_topics=operator_topics,
+                    audio=audio_of_phrase(ctx, turn.text),
                     method=self.mode,
                 )
         return canned_reply(ctx, TOPIC_UNKNOWN, operator_topics, self.mode)
