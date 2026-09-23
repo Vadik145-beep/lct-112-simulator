@@ -113,7 +113,12 @@ async def test_service_call_is_played_by_the_cloud(
     assert keys.status_code == 200, keys.text
     assistant = api.assistants[keys.json()["assistant_id"]]
     prompt = assistant["model"]["messages"][0]["content"]
-    assert "дежурный" in prompt.lower()
+    # Роль именно дежурного службы: облако принимает информацию, а не допрашивает
+    # диспетчера, как заявителя в приёме вызова (замечание пользователя 23.09.2026).
+    assert prompt.startswith("Ты дежурный службы")
+    assert "ЗАЯВИТЕЛЯ" not in prompt
+    assert "номер наряда: наряд твой" in prompt
+    assert "где он находится" in prompt
     # Первую фразу говорит облако: своей реплики в записи звонка нет.
     attempt = await load(attempt_id)
     record = next(c for c in attempt.service_calls if c["id"] == call_id)
