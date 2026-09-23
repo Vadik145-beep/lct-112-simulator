@@ -72,6 +72,8 @@ class SessionIn(BaseModel):
     weights: dict[str, int] = Field(default_factory=dict)
     # Call-intake settings (PRD 9.3): the operator speaks through the softphone, and how the
     # caller answers (select | hybrid | generate | buttons | live). Kept on card sessions too.
+    # ``voice_enabled`` is legacy: a lesson is voiced whenever the voice is up (docs/DECISIONS.md),
+    # so nothing reads the field; it stays for older clients and stored lessons.
     voice_enabled: bool = False
     dialog_mode: str = "select"
     # Adaptive selection (PRD 9.7): each trainee's next card comes from the weakest incident
