@@ -1,155 +1,172 @@
 {
   "opening": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Здравствуйте, сыну четыре года, живот болит сильно. И рвота с кровью была, прямо в машине. Мы в дороге.",
-    "bytes": 100772,
-    "sha256": "5a589cb4b736e0ab22c627e68d442a4c3ae4813c89172acdb0bb24b61fdd044c"
+    "bytes": 102026,
+    "sha256": "39e7862f97bbec9ede44f95d534891b1c633a8d82d13656fc12eac82803c4e34"
   },
   "r1": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "У сына живот болит. Сильно, он согнулся и кричит.",
-    "bytes": 58976,
-    "sha256": "3990d43c8e0e3dfa39da54ab1e82870de47068954af6bd6cca56abc6f5b1ca03"
+    "bytes": 59812,
+    "sha256": "10e9be615dbb68f38937f71e2fe89d7211abe9b3084ef7a059d9034161fbe43b"
   },
   "r2": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Рвота была с кровью. Два раза уже, прямо в машине.",
-    "bytes": 51453,
-    "sha256": "49c30d23e4a13c49ba75fd5ac6b01fe3e7511d567abaede8ae1b92aa9462fcd1"
+    "bytes": 59812,
+    "sha256": "3b107b71e8ec248f8c25cf03370713ccc258e11189c151e023ac3298b81eb529"
   },
   "r3": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Мы не в Москве. Тверская область, у Ржева.",
-    "bytes": 47691,
-    "sha256": "7fddfe92abba7d295c1cdccf889ef853ca7845e386021f8434a11bec7df0a289"
+    "bytes": 49781,
+    "sha256": "e96f02ac4a37e20a220b7cfb88bb402a5537e750953e2f2a0d3ec3d6d9367dfe"
   },
   "r4": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Стоим на Ленинградском шоссе, около памятника Ленину, напротив вокзала Ржев-один.",
-    "bytes": 91577,
-    "sha256": "d3df78209ac4b48ce5debec942cecd5e77628cd50ccef3e7134b86da7418b83b"
+    "bytes": 75276,
+    "sha256": "2c73c6c89d0ec00bbd63de1007899be7776530bb291c91f7fb8aa1e4c8b9132d"
   },
   "r5": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Ехали из Зубцова в сторону Селижарова, встали на обочине.",
-    "bytes": 55214,
-    "sha256": "a54a71cff9340a7bc51a73c40d258794eaaf803921fa25a391c1b64d66b98054"
+    "bytes": 49781,
+    "sha256": "2fe70db5415396a3d723967c2a8b59bda290ebcb63e7ecf7063e4907043782fa"
   },
   "r6": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Ребёнок один, сын. Соловьёв Максим, четыре года.",
-    "bytes": 52288,
-    "sha256": "a09c711b26faf8fce111e8e34e199e527394ea7dd567d00e51e61fdc4dc25e89"
+    "bytes": 61066,
+    "sha256": "b1f9ecfe99c7c5c9fd406c7fdc5ea9563834732c3c4a51712aacd24370c5d67f"
   },
   "r7": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "В сознании, плачет. Бледный весь, лоб холодный.",
-    "bytes": 53124,
-    "sha256": "6af7dd7d6b3b623f67e5175c5a95e698e0f0c04d575943a2d508cb5bb6fa87a0"
+    "bytes": 53542,
+    "sha256": "0dba7135b0be10ed991ab0452ff7ba6aeefd0c7286f0dcc79e39cf545ff5b355"
   },
   "r8": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Кровь в рвоте — вот это меня и пугает. Больше ничего не ел.",
-    "bytes": 68589,
-    "sha256": "e5a67c76553e3bac8d9b70aed168dc3340f4f76d957e36d491b52befb9e2ee3c"
+    "bytes": 72768,
+    "sha256": "2916d1b7cf16522f32adfb1b029261f3fa06bee8a709907945fe1184f4254e4a"
   },
   "r9": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Мазда шесть, белая. Номер один три два пять ноль эр, регион сто девяносто семь.",
-    "bytes": 92413,
-    "sha256": "d51cfa30b7091cfbffa198bf9db6ee30ac4d844fb9d9433a85d5cdfba84087c8"
+    "bytes": 75276,
+    "sha256": "3d99911a518530246d4804d9f79482637930d72539840e07f68740c84c7a77ff"
   },
   "r10": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "В машине мы втроём. Я, жена и сын.",
-    "bytes": 38078,
-    "sha256": "94fb93f8223178aa3158c3e9583c89b7a35031ccc55d05febc6ef1f15e2ff915"
+    "bytes": 40586,
+    "sha256": "df427e424221c1dfca2844003bdaa8f6504fdaba421ad653a50459c08e30f8ff"
   },
   "r11": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Живот минут сорок болит. Рвота началась минут двадцать назад.",
-    "bytes": 58976,
-    "sha256": "18bea954cf6248e017366ccb4ade2d6686fbe2049759267909d27dff40a2da37"
+    "bytes": 63991,
+    "sha256": "02fff1fe5429849edfb03c73b74b5da8c12320cba8ecbdde335f110d73df1a39"
   },
   "r12": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Соловьёв, я отец. Вызываю сыну.",
-    "bytes": 42675,
-    "sha256": "b2830938d25da4b84743218977bcc9db09b886f5a2b37fccbf09e191caebbf12"
+    "bytes": 47273,
+    "sha256": "40c05a05aca58ae330655b5eaf9dccf5f49c37a3c36d72203b87c5026c702e73"
   },
   "r13": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
-    "bytes": 73186,
-    "sha256": "1a891189bb6c2b4be1758c1007cff29e99d43f1aed22d6379f821d92841d3c8c"
+    "bytes": 67753,
+    "sha256": "e3a01c2217eaafcc6665123f44e42dc6dd70263642392774c1aa7d44565cd420"
   },
   "r14": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Я папа. За рулём был, сейчас рядом с ним.",
-    "bytes": 50199,
-    "sha256": "9a001a85c258a35e28649fc75a25acde738c9b3ada0ce68b16ae059b002ae292"
+    "bytes": 44765,
+    "sha256": "ec2fb2f09d712db5de5a99e447e26ebbbfc57b11916c3af8d344bae23ce0b9fa"
   },
   "r15": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Повторите, пожалуйста, он плачет громко.",
-    "bytes": 35152,
-    "sha256": "64a44ee195de0f24336dbb2aab1f2808049d502342b14a79afd95cf545e9f1cc"
+    "bytes": 38078,
+    "sha256": "4c058521731d58fc41cb16165904e82b3fe724f534f9d385e5ac9c36d425e780"
   },
   "r16": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Не знаю. Нам ехать в больницу самим или ждать?",
-    "bytes": 53124,
-    "sha256": "b41ee3dccd6250153632c2c1bb9e95623b551a31dd04c33b0b355d2feb8e3aed"
+    "bytes": 46019,
+    "sha256": "6e682cb452cb3d4445b4b1210a2f52601e349344b90fe4ae8b33e50f9f0467b4"
   }
 }

@@ -5,10 +5,10 @@
   "difficulty": 3,
   "norm_seconds": 60,
   "caller": {
-    "persona": "worried_resident",
-    "voice": "ru_female_1",
+    "persona": "witness_shaken",
+    "voice": "ru_female_3",
     "noise": "street",
-    "opening": "Здравствуйте! У соседей крыша горит! Пламя из-под конька идёт, дым чёрный!",
+    "opening": "Господи, у соседей крыша горит! Пламя из-под конька идёт, дым чёрный!",
     "facts": {
       "what_happened": "горит крыша частного дома, открытое пламя, дом не газифицирован",
       "address": "улица Станционная, дом 28",

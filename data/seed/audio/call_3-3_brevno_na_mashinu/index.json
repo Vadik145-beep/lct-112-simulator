@@ -1,155 +1,172 @@
 {
   "opening": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
-    "text": "Здравствуйте! С грузовика бревно слетело и упало на машину. Там водитель, он зажат, сам не выйдет!",
-    "bytes": 87397,
-    "sha256": "242a2f597d4ee63a55fa89a8b1a7cb7719ede5753d79f12ba711f15b52d49dd1"
+    "text": "Ой, беда! С грузовика бревно слетело и упало на машину! Там водитель, он зажат, сам не выйдет!",
+    "bytes": 123759,
+    "sha256": "065abeb9f65d9aeadb410986f3a40048aa81d93c0f72b135758d13fba844020f"
   },
   "r1": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "С лесовоза бревно слетело. Упало прямо на легковую, сверху на крышу.",
-    "bytes": 64409,
-    "sha256": "a3c92ce62402eb0110b0b6f87c9906b148ee323c5f0860439e66d883682f994d"
+    "bytes": 84471,
+    "sha256": "ef1f796834b9c32720769420c66cdad300f6712afdc6788c9342cf9a0ddb6401"
   },
   "r2": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Водитель внутри. Мы дверь дёргали, она не идёт, крышу вдавило.",
-    "bytes": 55214,
-    "sha256": "2ec0e11164bc0aecac38c80614b34a6741e889f2f6f96a5114645182074e4af9"
+    "bytes": 76530,
+    "sha256": "579117dcf41269133e21a3f1ba7145b9060d96edef8a7c24dd7772a0c520f13b"
   },
   "r3": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "МКАД, тридцать третий километр. Съезд на Симферопольское шоссе, в область.",
-    "bytes": 61066,
-    "sha256": "ce8b0525f7ae8724d2b5ea14ce2557625951a2e1c000a8656ac3f5c52d129351"
+    "bytes": 86979,
+    "sha256": "58b890cc5ee8a0d07d2cf849d1f230632eb5d89347eaa4baae011bf9fd5a41e3"
   },
   "r4": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Стоим на обочине, метров сто не доезжая до съезда.",
-    "bytes": 44347,
-    "sha256": "9b74768b4670e5d55205536583399bddf9d87ae801d70ace6c8b379db345b810"
+    "bytes": 66499,
+    "sha256": "77f2fd370aeaa06755ded68ffa8268d402dd5a124a6e01b5bad3584d29c95135"
   },
   "r5": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Москва, Чертаново Южное.",
-    "bytes": 24285,
-    "sha256": "a0b09da35c38c67ccbf60e1f8ee5be2e84c7f36d287bc578db8eb6eff69b6be2"
+    "bytes": 38078,
+    "sha256": "6124e2802c215858149e2d76289d56ed923b1962252641f1027ced2c007f838d"
   },
   "r6": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Пострадавший один, водитель. В сознании, отвечает нам.",
-    "bytes": 47691,
-    "sha256": "8141367a7a132e02252d7212cd6ab3e73212e27b1ee1b3330ed99eeab1b09ba4"
+    "bytes": 66499,
+    "sha256": "1603cef01b14fa88a743d14aa77468f74bf1ab3f99baaafaead89b7881e84bc0"
   },
   "r7": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Говорит, ноги придавило. Крови на лице нет, но он зажат.",
-    "bytes": 47273,
-    "sha256": "027cbac4e347e27e4eb70fec5efdf064b4f453677aed10aa613ddb38c1c12a50"
+    "bytes": 61066,
+    "sha256": "3e571931449140749ab065b6079d786629ad12430e11ca171f85d6c1a8db2e26"
   },
   "r8": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Бревно на крыше лежит. Бензином не пахнет, дыма нет.",
-    "bytes": 47273,
-    "sha256": "1e08a5a24e9ffb67ddb46031625d6d480695cc653ce97fce9b96943debec183f"
+    "bytes": 66499,
+    "sha256": "c044f2bd8f6701512e7ba9c17773ab2b4d41a2f40e8d6e360c6d34644959beec"
   },
   "r9": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "ВАЗ красный. Грузовик впереди встал, водитель к нам подошёл.",
-    "bytes": 47691,
-    "sha256": "4182b1e51aeb6da9ced7058401f6ca7b6128bb24543bdff137c385ddb9341fb6"
+    "bytes": 80292,
+    "sha256": "7a76a5d071fcde59ddd9ab449c4e011a153bd43b6c14349d8a571c3090cc8258"
   },
   "r10": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "В машине он один. Рядом нас трое остановилось.",
-    "bytes": 40586,
-    "sha256": "132f191d56cd111e6de5e715f0b2ddc8eb1900ab9987ec95aac8fc9be5d25914"
+    "bytes": 62319,
+    "sha256": "1f23d31849329fa1dd76e1e67267809037ed5b6e99aa6b845425523eb78ab3f6"
   },
   "r11": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Минуты три назад. Я сразу остановилась и звоню.",
-    "bytes": 39750,
-    "sha256": "35835a8ed29e778214d050cc961ea682ab0429901959f6df3b8d3417450bf631"
+    "bytes": 56050,
+    "sha256": "059387c4137b01182c5da2a197036bdf355714bd953480c31e121d544d49ed4a"
   },
   "r12": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Иванова Елена Сергеевна.",
-    "bytes": 25539,
-    "sha256": "8cd62477eaf03fdea8e463aa3d2e9a8aec94f6d2214a611b49ce8b00256a4003"
+    "bytes": 30555,
+    "sha256": "edb194bd5246cb3c04a96d804e7d7ba82a1bd1b3167e6a03ecd909e6baaedd56"
   },
   "r13": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
-    "bytes": 75276,
-    "sha256": "d1e9f1047ee13d9dfc693897672c0ad374a38e862c1f2d3ae54828fdb389ec2c"
+    "bytes": 72768,
+    "sha256": "6a16c03d7155415046c0ddf3d07a4b8c1f5d4a6db56d78742bbd056ad1c59b34"
   },
   "r14": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Я мимо ехала. Не родственница, просто остановилась.",
-    "bytes": 44347,
-    "sha256": "701e16b84a7d798a861ac3a54c56304c9061c7aa2660cbbbabb7ac2670e0a7c3"
+    "bytes": 63991,
+    "sha256": "df91051a155a7abcc19e4b696e1f58c75c5dcd21cce4a115666e2715859daf99"
   },
   "r15": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Повторите, пожалуйста, тут машины гудят.",
-    "bytes": 33898,
-    "sha256": "80609b711902c9a2e9300adf8eeecc91c73fb7df6e1fa78b841ed053d07d93fc"
+    "bytes": 39332,
+    "sha256": "f84c50422dcabee6eba94d0ef5258abb8aa81825e491f6cca85dc5996d2c995b"
   },
   "r16": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Не знаю. Мы аварийку включили, стоим рядом.",
-    "bytes": 38078,
-    "sha256": "422685e1a950fdb9a58c0bf415376157e01beb52206ec13063babb231cce9289"
+    "bytes": 54796,
+    "sha256": "ba1ca7a060f332529c77bf1982a838fad6086b5bdec0aba3437ac7887c438b7e"
   }
 }

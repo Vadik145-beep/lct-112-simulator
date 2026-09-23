@@ -1,146 +1,162 @@
 {
   "opening": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Брат задыхается! У него астма, ингалятор не помогает, дышать не может!",
-    "bytes": 65663,
-    "sha256": "5a2974e55ee263eabc914a2a69fd8bca72e86e2d65b56e664096f928dbbb2950"
+    "bytes": 74022,
+    "sha256": "ef3be0c5cbde695528076b76ecff65bb370e01911bc295d3817be305ff583fa3"
   },
   "r1": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Брат задыхается. Астма у него, приступ. Ингалятор не помогает.",
-    "bytes": 71515,
-    "sha256": "90efb31a62bc24436e6f72f3bfa22ef1651d851310757f4ae644dd808948a30b"
+    "bytes": 65245,
+    "sha256": "2928161e9a2499823c9ab1e8f4bccd769669e276dcefcb9b6e700a626e394fe3"
   },
   "r2": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.4,
-    "text": "Два раза пшикнул ингалятор — не легче. Сидит, за грудь держится, хрипит.",
-    "bytes": 70261,
-    "sha256": "533a2a1c338f3c8ddde1595475ad21657d0d0587c9b59ed397c9703e0540a06e"
+    "text": "Господи, он синеть начинает! Губы синие!",
+    "bytes": 46019,
+    "sha256": "d9fd875f07894d120d1e2ff2c8d1aeb7fdb2992adaeab82514704e3576e09889"
   },
   "r3": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Ленинградское шоссе, дом сто двенадцать, корпус четыре. Квартира триста восемьдесят пять.",
-    "bytes": 87397,
-    "sha256": "0779a79daf479c7bcffec9b481b7f69c4f279abeb70fa2cf45e161544f224deb"
+    "bytes": 82799,
+    "sha256": "bae4e53c59a2d9d62ff5b99897f61482e0281421eb65a75126f5d8365c9283cb"
   },
   "r4": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Подъезд двадцать девять, третий этаж, код триста восемьдесят пять вэ.",
-    "bytes": 68589,
-    "sha256": "540986796834dd1d7f1223bd04c6d16a8f45bc3b84e074b936b0cdf219bd6cd9"
+    "bytes": 70261,
+    "sha256": "80bf44933e9d5c5e512ef30d5f3455828b63160214ec435c01e8aca9ddd5a2ab"
   },
   "r5": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Москва это, Ленинградка. Не область.",
-    "bytes": 41839,
-    "sha256": "ecd8d080ca48e0511340bc470c63eafb0b55190081698b1937d7bf7839327a7b"
+    "bytes": 51035,
+    "sha256": "d5c4d8228a4cafb18615e11ad91de6823c9a5f7e45b8c9c0e76f0ef0ae8b260d"
   },
   "r6": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Брат, Ковалев Иван Сергеевич. Двенадцать лет ему.",
-    "bytes": 50199,
-    "sha256": "b2715778e22082760e137e2ef7f2f0625d1e4e430ec1834ed302c79febad1036"
+    "bytes": 49781,
+    "sha256": "ac68c52415c4f75d7cbbe0f7144f3c16cccf2f3ebc78112229d1dccb3d993509"
   },
   "r7": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "В сознании, но говорить не может, только хрипит. Губы синеть начали.",
-    "bytes": 67753,
-    "sha256": "282d8cac4d2caeaaa537d76bfb81a135f1f4ac31752dfef8424dcfa14c031d7b"
+    "bytes": 75276,
+    "sha256": "8bc5f847e931d30c4d144251d7509c37fb454a9d74b3a9f4d83d1b59dc56fa78"
   },
   "r8": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Родителей дома нет, я один с ним. Мне девятнадцать.",
-    "bytes": 54378,
-    "sha256": "e93fe9a2672166e4c278b1991f4cc9b89b0633f88a9a128714f95a37b0c9d245"
+    "bytes": 51035,
+    "sha256": "adf82a5ae1c4f2a428b4041afc8999ea2453184120922903e7bce11548349bbe"
   },
   "r9": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Нас двое в квартире, я и брат.",
-    "bytes": 33898,
-    "sha256": "8247934dd3d10dab310ee50e62fb55173b1e108791a9703034d636968130b0ef"
+    "bytes": 35570,
+    "sha256": "0566b243ace41f4e74c63503ca01e4ab7f5c741faced2039f03bb993b6cd103b"
   },
   "r10": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Минут пять как началось. Сначала кашлял, потом дышать перестал нормально.",
-    "bytes": 77784,
-    "sha256": "5d4a1371830e2f008fbd731c95cab4135825a22a4a01d631c4383a4c44e286f3"
+    "bytes": 70261,
+    "sha256": "3c20c52729bcc5452c3a6c484285f1a17a14bf0506f613cbbe20170ea42276b0"
   },
   "r11": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Я брат его старший. Больного зовут Ковалев Иван Сергеевич.",
-    "bytes": 56050,
-    "sha256": "5a08516c0443c78b574d56c39057406e717076b187e5b87b08b80d36a67a0fb5"
+    "bytes": 72768,
+    "sha256": "681a3e8b5e4bc2387a8b58dd74011408f7c6d56aab9e2784646d7da716fd3b56"
   },
   "r12": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Девять один шесть, восемьсот девяносто семь, пятьдесят шесть, двадцать три.",
-    "bytes": 81128,
-    "sha256": "1c0bb93c99ba78608b5616292b801ce406963a1d27a2e36540137af4b77cd82a"
+    "bytes": 69007,
+    "sha256": "f5282fcb036ce34064ce275f197260e7ab8a39b5b43bf3eb5bf66dcc89972803"
   },
   "r13": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Брат я ему, родной. Дома вместе живём.",
-    "bytes": 41839,
-    "sha256": "a021e7d0907dd6825f7482be449fa37a1e3346809d98d42e168ffa678f83be81"
+    "bytes": 40586,
+    "sha256": "ca2dd0f01cb094542bfa081251fb884f369846c179ed18ef1c8925ed41f1158c"
   },
   "r14": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Что? Повторите, я не понял!",
-    "bytes": 38914,
-    "sha256": "920e9fe469c0944149243500e56c07567bfc358c48f4d3a82f65252fb4818579"
+    "bytes": 33062,
+    "sha256": "07c2360a4005460bc65e2350ac8f4b24888fdc0d1fe3d0fb6b9ed6f81b45d632"
   },
   "r15": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Не знаю я! Что мне делать, он же задыхается!",
-    "bytes": 41839,
-    "sha256": "ca84bab24165cfb20715243d19f55839bf5caf43b602738dd78c4cd111d9dd6a"
+    "bytes": 44765,
+    "sha256": "d25fa3fa165debf02483f6d740e4e620e8a04a4c0a5bcea809fd094859f92742"
   }
 }

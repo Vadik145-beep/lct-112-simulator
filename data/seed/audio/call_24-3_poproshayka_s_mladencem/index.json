@@ -1,146 +1,162 @@
 {
   "opening": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Здравствуйте. Тут женщина с младенцем на руках попрошайничает, пристаёт к людям. У ребёнка всё лицо в крови.",
-    "bytes": 100772,
-    "sha256": "35a558d29c80cd1c5b3a3e9e6298cf90a6c19146d63453197be636b65f0962f9"
+    "bytes": 103279,
+    "sha256": "bd51abc91603190d9530b3accee210b183d48d590aced1cbd1fdff5542c42a89"
   },
   "r1": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Женщина попрошайничает с младенцем. Хватает людей за рукава, денег просит.",
-    "bytes": 65663,
-    "sha256": "cd98fd0435a5384dfd0b8374bd26eccae4d288010c028b12b4211cb50f765551"
+    "bytes": 88233,
+    "sha256": "ba0c0e375e79dcc8b89685db81c00f966f0042939e8236c218b264adfccb321f"
   },
   "r2": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "У ребёнка лицо в крови. Откуда — не знаю, но кровь свежая, размазана.",
-    "bytes": 83635,
-    "sha256": "4ae08e1e269171394c01092aa9338cf7542ef9f69cac9b1de3debdfaaea0ace9"
+    "bytes": 71515,
+    "sha256": "ad6437550d3fc6a02fd8f2fedb900a2bd6d619f4502fda022e6fdbea89ec9700"
   },
   "r3": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Улица Красная Пресня, напротив метро тысяча девятьсот пятого года.",
-    "bytes": 55214,
-    "sha256": "e6c3e3b577613b2876659638dee14a87ff3c587c22f3e7bcf76b1577d242d557"
+    "bytes": 62319,
+    "sha256": "76bfb0afd022cb7838689e5419423ff775b5d69f070d0065cee7017ca0476135"
   },
   "r4": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Москва, Пресненский район.",
-    "bytes": 24285,
-    "sha256": "43a57917e40bf027c198b560077960b40bb942814676297799ed60a67ae55c43"
+    "bytes": 29301,
+    "sha256": "af13af272192e438bb86b9231897f79fd6f521c9e1dd1a97710f2d0cd35b2ae0"
   },
   "r5": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Ребёнок совсем маленький, месяцев шесть. Лицо в крови, плачет.",
-    "bytes": 59812,
-    "sha256": "a20a58f913f91d6d1e6191f2c58d277dd0a705f4a12ea52243a894879d61cd20"
+    "bytes": 71515,
+    "sha256": "7dceba43c8e22f88d31df39cd9d7dafbb488581b15b49c25bc50816ece804f18"
   },
   "r6": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Женщина на вид целая. Ни ран, ни крови на ней.",
-    "bytes": 38914,
-    "sha256": "a9d2d458b9822eba789f9355b1cb8a3951d45a58176a70d70368c76fc58d5df0"
+    "bytes": 57304,
+    "sha256": "a8dbbb4c53261d49aaaf4e0506ddfc766342ae427c845dc7d8a3eaf70e1b6b59"
   },
   "r7": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Она ребёнка на руках трясёт, когда идёт. Людей за одежду хватает.",
-    "bytes": 56050,
-    "sha256": "6af8a0c1ff4fc1df1a6230290fc4a3ad0efbd2746e42d3e830d9b357c902fb77"
+    "bytes": 71515,
+    "sha256": "df31d69af64a9000fe6a9b5ff92da1eb8c8755c81ab472364856731f65cd8585"
   },
   "r8": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Она одна с ребёнком. Вокруг прохожие, человек десять.",
-    "bytes": 50199,
-    "sha256": "a4ef1cfe4906832387cac34e18c90199a9754c4fb491b3dc36c3971a4ea5d47a"
+    "bytes": 57304,
+    "sha256": "1185dbb82e1320a78bba22312e52935caeefbd2c7229e9c754685b17e3088aea"
   },
   "r9": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Минут двадцать она тут ходит. Я наблюдаю от магазина.",
-    "bytes": 47273,
-    "sha256": "8c8f7996fcf91342abd864b83f9e11b6dac8cd4acb6d1eeb7a34892eaddc8d3d"
+    "bytes": 63991,
+    "sha256": "6471d21ff29dac23ca75e16b02dd8b90b9778dbe353b7cbda18281bcee92dc0e"
   },
   "r10": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Степанова Антонина Марковна.",
-    "bytes": 27629,
-    "sha256": "17ce478e9b44ebed609e558162f630bff9a2c13bf845e3e23da58b6cf212239d"
+    "bytes": 28047,
+    "sha256": "3ce7231642fe61674bedbf2f41880eec89de38a17ba507c73edc3cf4b0d486c8"
   },
   "r11": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
-    "bytes": 79038,
-    "sha256": "60490ba7978781bdb7225272d5ab519880a228f8c22642ecab5698f73a4f5032"
+    "bytes": 66499,
+    "sha256": "5f27afaa6dd09e66f45937b5df19ab2361e19e4aefd74336c8ad40daa0dd96e1"
   },
   "r12": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Я очевидец, прохожая. Отношения к ней не имею.",
-    "bytes": 40586,
-    "sha256": "18611f230b142f56e488a705321603bdaea5bcf267c697203945575851f9c9b0"
+    "bytes": 57304,
+    "sha256": "1c87e0e0632412dc26761012d67c0f6cdf66053e92240217330bb70a59c5153a"
   },
   "r13": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Это улица, подъездов нет. Стоят у перехода.",
-    "bytes": 41004,
-    "sha256": "82899e68e0f0e0852b3ee9c475e55c210d511e0d2c2c4fc53ac2a5b55545063e"
+    "bytes": 53542,
+    "sha256": "b1703655e8153d29b7841d542e2dcf500c5e8f31ed9c33fbabd43609c5e11b31"
   },
   "r14": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Повторите, пожалуйста, тут поток людей.",
-    "bytes": 35152,
-    "sha256": "5ae22771d36a0982bfccc0896792742a3f7cabb11386ab1678e780e5aab179ab"
+    "bytes": 39332,
+    "sha256": "ffef4621b7ed89bae273cee1a310177f968271272410346f37819055b7b02b5d"
   },
   "r15": {
     "voice_id": "p6vKV7V6zDIyRuF9f39P",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Не знаю. Я постою, посмотрю, куда она пойдёт.",
-    "bytes": 37660,
-    "sha256": "0ed2d9660e6321adcedafcc93cb8874e39eedce9b9398edc77218193a2a55497"
+    "bytes": 47273,
+    "sha256": "d507ef2f69916886a08b8bbc4d864f82e96bd758e0c445c7821dbb6895cc3e7b"
   }
 }

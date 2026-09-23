@@ -1,155 +1,172 @@
 {
   "opening": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
-    "text": "Здравствуйте. Тут на мосту двое мужчин на ограждении сидят, оба в крови. Лица разбиты, я мимо ехала и встала.",
-    "bytes": 97010,
-    "sha256": "26bf190e052967e506d89af977ec53543a6264921cc11d19ecf1794b5dcf6ad8"
+    "text": "Ой, тут на мосту двое мужчин на ограждении сидят, оба в крови. Лица разбиты, я мимо ехала и встала.",
+    "bytes": 125431,
+    "sha256": "b467ecb9d198881d318a7bd42697c324fe53d78186a7c96bf199c76b05ea10c8"
   },
   "r1": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Двое мужчин на ограждении моста. Оба в крови, лица разбиты.",
-    "bytes": 48527,
-    "sha256": "d92f99c6e4cbb39d5a01b3489d28b218f8c2cb0eae3481ea4bd56b36e59ed93f"
+    "bytes": 77784,
+    "sha256": "7b988d777e3a7beed5bbf37c2c6d16e7bcb1f89377fdc27d7d5092c5f80b2ff3"
   },
   "r2": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Сидят прямо на перилах, свесились. Внизу МКАД идёт.",
-    "bytes": 47691,
-    "sha256": "bfebfb8abc39f10465b037ebc49dc1c9a076f72361c2e764b3c5bc7246ad58de"
+    "bytes": 76530,
+    "sha256": "d54b3918013954fff118f4b498925bd01b6ee7fc07a2730b4b48b6d25ae0444f"
   },
   "r3": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Мост над МКАД, семьдесят третий километр. Между улицей Свободы и заправкой.",
-    "bytes": 67335,
-    "sha256": "2522c769a6bac21b26e63c35955cff451ed9c05dcc9a648148fea3183efd0f2e"
+    "bytes": 86979,
+    "sha256": "dcf92f42abaf59b1642c7919d71f83d6e816ccbd4c909b134a6d3d41ef3977d6"
   },
   "r4": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Внешняя сторона, если от улицы Свободы ехать.",
-    "bytes": 38914,
-    "sha256": "1050236ef8ca351cb506f24ed65da1d4769afc4e196c6719960dad6c0fbc7596"
+    "bytes": 53542,
+    "sha256": "3de97163b0ec0da9c2ceb9d00ffdb07e534db11ce52445f418dcf2dc5bd911b6"
   },
   "r5": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Москва, Северное Тушино.",
-    "bytes": 23449,
-    "sha256": "4379eb8c40ec28597bcac4046a59a36dab76598179db3071034c7e464b7a9d06"
+    "bytes": 39332,
+    "sha256": "19ba914f8b879839d82eaac7ad9e7d2d6bdc84dea787bd2193a83fb362169d9b"
   },
   "r6": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Их двое. Оба в крови, но сидят сами, держатся.",
-    "bytes": 40586,
-    "sha256": "fee01ba654846e461241cf85952e2491a27555fa8acb9da52d0e4ae70cb5de22"
+    "bytes": 69007,
+    "sha256": "65f9a95acfd54069e5242ac4fb308c347f703bbdcdaf63fe04313ec8a648c77e"
   },
   "r7": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Я окликнула, они не отвечают. Один рукой лицо вытирает.",
-    "bytes": 45601,
-    "sha256": "63dfb575d68529f84c03ff5fae631ad6a59cb0a56000070bbbb6eaf6f3f668a0"
+    "bytes": 74022,
+    "sha256": "7ae2257017852e6dc1406be9896b8ced7a7c787b37b6778811c977cab826ed09"
   },
   "r8": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Могут сорваться вниз. Там высоко, прямо над потоком.",
-    "bytes": 45601,
-    "sha256": "78986627059cc43d69f88706b1bc7dea81e9a0af8f73ce5111a9bd2d4966a04d"
+    "bytes": 69007,
+    "sha256": "ff8807250b1e97653018a3ddf11032c5a4992355c5d1c80c665acadfe429f82f"
   },
   "r9": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Их двое. Кроме меня рядом никого.",
-    "bytes": 30973,
-    "sha256": "3211e605b185f5a1027fc6428fbe254c21eeb510bb1b939aa072bf0206907404"
+    "bytes": 58558,
+    "sha256": "6047e977921977daaeb5e35cb0cd785b8f7c4a75e472437c48d10eda42950c83"
   },
   "r10": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Минуты две назад увидела. Сразу встала и звоню.",
-    "bytes": 41004,
-    "sha256": "88401cc632025d4444443d1bda543ac4fb657c4ec774e7cd41287afab958ee95"
+    "bytes": 58558,
+    "sha256": "8623d838d7603582e0a173f69f403ddeeb430bbefbf7350d026a2f937304750b"
   },
   "r11": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Иванова Елена Сергеевна.",
-    "bytes": 26375,
-    "sha256": "e0d6a343d56eee7ce3d6b279e2ece01863e396cffe448803cd28a76dd8d68c76"
+    "bytes": 31808,
+    "sha256": "76432840f18e0d92c1a772f0a864371b4d31c9228bcd3fac2a1b3d0c17ed447e"
   },
   "r12": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
-    "bytes": 70261,
-    "sha256": "a14966124912af4c58a0f076a065ed346ff35994ab9a6f04a350a9590aa7ba26"
+    "bytes": 79038,
+    "sha256": "0d26988049f3aba419a5256224348257c4c0d973b9594dc42d9467f0e4b7683d"
   },
   "r13": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Я очевидец, мимо ехала. Не знаю их.",
-    "bytes": 33062,
-    "sha256": "48e08803fcbf387d166649da4f438ac24499338031aa3bb013da8dd9301b368b"
+    "bytes": 49781,
+    "sha256": "8e485191da2f162049ad23d96e4c15ad42457a0c3a68cd393085abd7e660ff97"
   },
   "r14": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Это мост, подъездов нет.",
-    "bytes": 21777,
-    "sha256": "6985a7c51de0194a64cebc5f693cf109bf5d87f97d9259087eca7fa557f351cc"
+    "bytes": 35570,
+    "sha256": "4ffe65a63099bd7ff0d3798067fac96c88e955c0ae2db59831bc57de66caeb0b"
   },
   "r15": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Повторите, пожалуйста, я говорю тихо, чтобы их не спугнуть.",
-    "bytes": 48527,
-    "sha256": "ff196f4b7c9de070ee129bef36c5ea5201f06cea1a0d24a198160682d09eddf3"
+    "bytes": 58558,
+    "sha256": "df1153bdfea35926e2b8453fd6cf2373a65dee591586ae7fe9a4ba17925ae457"
   },
   "r16": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Не знаю. Подходить к ним я боюсь, буду на расстоянии.",
-    "bytes": 47691,
-    "sha256": "57a3101f02c6e263e47efa2f47d1e36629bb25a02588ac80bf64e2c53e4e3551"
+    "bytes": 65245,
+    "sha256": "9e9f723bd1cc391073761c99181bdbbbcfdddffe8e2826334cc13c581a8b9f55"
   }
 }

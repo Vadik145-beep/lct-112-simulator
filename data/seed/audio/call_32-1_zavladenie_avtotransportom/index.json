@@ -1,155 +1,172 @@
 {
   "opening": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Меня из машины вытащили и уехали на ней! Перегородили дорогу, выдернули за руку. Скорая не нужна, машину ищите!",
-    "bytes": 112475,
-    "sha256": "13277d001a91f30440f85edb9712d6d683b9b89e2eb4ee717f42e1606d5911f4"
+    "bytes": 114982,
+    "sha256": "f6456d98ef2e681d7fb516e3462a0ac164e9e9185c2cd776e22be125bee6a723"
   },
   "r1": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Меня из машины вытащили. Перегородили проезд и выдернули за руку.",
-    "bytes": 70261,
-    "sha256": "6b64b3874a9b3ca1989310b86a2ab55dbcd521c1a8f113e719fc14c307387777"
+    "bytes": 74022,
+    "sha256": "729c586533c531a7b955969fecade749d58bc41af20288520923332195d42a10"
   },
   "r2": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Сели в мою и уехали. В сторону Ходынского бульвара ушли.",
-    "bytes": 60648,
-    "sha256": "8a835b2be2e0e920cb514fca1aa86d3700ac097567c5882a8325c11ff06c17d8"
+    "bytes": 70261,
+    "sha256": "8c1dc84d2d0f741feffa1c31032bbaf520f255d928d2ea7ac60525c2eec9cc7e"
   },
   "r3": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Улица Маргелова, перед перекрёстком с улицей Гризодубовой.",
-    "bytes": 60648,
-    "sha256": "30448b9ea8cf7a4457686c9b6645372dfd404703a275f59f69af360b048b88c5"
+    "bytes": 59812,
+    "sha256": "28fc6997cbac414a5d530d16ffcb86e601fb17ac3f634dd1ace9b1e168b5ea7b"
   },
   "r4": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Москва, Хорошёвский район.",
-    "bytes": 34316,
-    "sha256": "aff0ec3f3f070cb91fc30c92749cae44b51a88772f0d67521ea5f3a7dfad500d"
+    "bytes": 31808,
+    "sha256": "8c52a74c4c364bee5a25d81335d155a9c7345035074ba349aae051ec25931766"
   },
   "r5": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Пострадавших нет. Скорая не требуется, меня только дёрнули.",
-    "bytes": 69425,
-    "sha256": "758ba50e40a17cb930952aff921700354e7748c7088827be96f4531047fae1fb"
+    "bytes": 61066,
+    "sha256": "1593ac06456bdf84c84245be0bb60771434823015a14d833330180dcd7d78133"
   },
   "r6": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Угнали мерседес чёрный. Номер а сто двадцать восемь а а, регион сто семьдесят семь.",
-    "bytes": 100772,
-    "sha256": "d928047d3f724c0fe24a3f95334f4e11efd6d941b03fe79a558e8a1c5ce67510"
+    "bytes": 93248,
+    "sha256": "dd08c7960ff879592a5d547a0171387b88ee964452bce68dad3205a0aed16655"
   },
   "r7": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Подъехали они на ВАЗ, пятнадцатой, чёрной и грязной. Её бросили прямо на проезжей части.",
-    "bytes": 96174,
-    "sha256": "fde1bec292a6d0981aaa0f73a59df9cf6d26207a0976c5cecea26bce307295e7"
+    "bytes": 93248,
+    "sha256": "764e3b66c14cfeec7c4997b6f1b56d56d273bc9e1d667f5a26893e7700871699"
   },
   "r8": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Брошенная машина посреди дороги стоит, все объезжают.",
-    "bytes": 55214,
-    "sha256": "07e836f863da499f4149cd111514e24ebe41934436cfbe044b9c06c3cce86e1f"
+    "bytes": 62319,
+    "sha256": "29d4d20f017533596ea6fd463669eb16bb79a14146193b81698d79bb50382366"
   },
   "r9": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Их было двое. Лиц я не разглядел, оба в тёмном.",
-    "bytes": 66499,
-    "sha256": "a961e9c44b84193a44de22c46e50d7bca0712e8728b767f214c6c06293793476"
+    "bytes": 65245,
+    "sha256": "2f3f3c07e682baefc21c10afc2de7ffe0686e6b3b7d4028c2a2ac2e83d8cc737"
   },
   "r10": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Минуты две назад! Они только что ушли, перехватывайте.",
-    "bytes": 56050,
-    "sha256": "fe55d0b4bda2e22b47aac23ee275bbeeeeadf5520ec15aa91d7dbe446e2cc1dd"
+    "bytes": 63991,
+    "sha256": "1dcd03b6b539bb7ca870fd3f99684ab7a5bd1bb791e6e22f30c7a5fbf24722ee"
   },
   "r11": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Соколов Иван Петрович.",
-    "bytes": 31391,
-    "sha256": "0202ce6457942988f77a5bc2d9408d4298b501cdf94f4aa0302ce3cce7f3be82"
+    "bytes": 33062,
+    "sha256": "f482ee2cdff2ffaa432c50de1cdb028863fc6c7e07439d1c6bb29e51c29d3a1d"
   },
   "r12": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
-    "bytes": 84889,
-    "sha256": "850a834609285c8ddc51884611f398ff8a6bd27fa13bcf85f14ee95c57bb099d"
+    "bytes": 72768,
+    "sha256": "a56ebe602bfe07ed2146c2adba29c3a7e280e02bf819bcb3a014077fd99b0dd4"
   },
   "r13": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Я владелец машины и пострадавший. Был за рулём.",
-    "bytes": 60648,
-    "sha256": "e74592568725b92997028ef259312fb286f1b20a2ecd9210e8fca41bab6f842e"
+    "bytes": 58558,
+    "sha256": "0411c9cb3c8fa9dd84bce92c485b67b6e6be4c3fb8231f15f1b4e3d63f2a2dca"
   },
   "r14": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Это улица, какие подъезды.",
-    "bytes": 33898,
-    "sha256": "be81103bd5648c224382626b3d993198e312db4d725ec55a6e83cc4f5342dadb"
+    "bytes": 39332,
+    "sha256": "5a51790bcfe0cd878181b642b98c441fa5a63833ff0a78fdfe17b3048660d678"
   },
   "r15": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Что? Быстрее, они уходят!",
-    "bytes": 31391,
-    "sha256": "cd5ad9e83b6fb6567df963951680f4e59e84b282f0f8c2a03891def4e3c1c9ab"
+    "bytes": 36824,
+    "sha256": "f850c238d50502306e7521cb8daa0e59c94a53fcfac53726420c657100f23f0c"
   },
   "r16": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Откуда я знаю. Я стою у их брошенной машины, никуда не уйду.",
-    "bytes": 70261,
-    "sha256": "dc11f22715e8322690aa75335fb05d96e4a9a3633bd445d33c7a7532a8201236"
+    "bytes": 71515,
+    "sha256": "91feaddcb2e9fc1d41b5d738a1b90550ad54f9c067ccf8077e080023d8a213a3"
   }
 }

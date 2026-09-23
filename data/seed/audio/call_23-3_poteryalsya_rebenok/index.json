@@ -1,164 +1,182 @@
 {
   "opening": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Помогите, внук пропал! Пять лет ему, гуляли во дворе, я отвернулась — и нет его!",
-    "bytes": 131283,
-    "sha256": "e8dd6a077320c421fb9e43b06b5fe7b85d57da440db29008eea746a45fe0940f"
+    "bytes": 100772,
+    "sha256": "4b1f40377b5372daabdb862b3ac176d670e0966ff157d476c3a3ba7b64ffbd43"
   },
   "r1": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Внук пропал! Гриша, пять лет. Гуляли во дворе, отвернулась на минуту — и нету.",
-    "bytes": 174333,
-    "sha256": "348d8e819dc43c7631adde4ec51210eec82f623b717852a28d97c08195c72f0b"
+    "bytes": 97010,
+    "sha256": "8e1900201618488e02999b7cc0be0e8adc8031830b154df91e7dfbd78b8a9dad"
   },
   "r2": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
     "speed": 0.85,
     "stability": 0.6,
-    "text": "Я весь двор обошла, у качелей нет, у песочницы нет. Соседей спрашивала — не видели.",
-    "bytes": 146747,
-    "sha256": "97eead7afa1c192889089067ebf41255d35afe8674ced498ce3bf504da4af315"
+    "text": "Господи, я на минуту отвернулась, а его уже нет!",
+    "bytes": 49781,
+    "sha256": "8cbe861e9f70180bbf9e2691e498e7f5f756aa498ee299cb70ff2ee007f313cc"
   },
   "r3": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Домодедовская улица, дом тридцать четыре. Двор у третьего подъезда.",
-    "bytes": 122924,
-    "sha256": "fcfc988a28e58c18e2a6869fa35b83f1c5c5bc3c4464da4a4a16397f7f48cb04"
+    "bytes": 76530,
+    "sha256": "a4aa0d36c86256da926d6280a3d734031816b55046b0235954ecb127319324de"
   },
   "r4": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Корпус первый, да. Дом длинный, мы в первом корпусе живём.",
-    "bytes": 89487,
-    "sha256": "cc86f5a5fc1acf5617438dd57906f997326294cd346c6bd496e03c898b06822d"
+    "bytes": 65245,
+    "sha256": "c429022f62a612f3743f84be0aac609b8c50246d6844b23f850145ef6d7dbdaf"
   },
   "r5": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Москва, батюшки, какая ещё область. Орехово-Борисово.",
-    "bytes": 113311,
-    "sha256": "aab7834befd533a6dcd97fad5e131890d620a4c1c837e390c9deee937adb8e90"
+    "bytes": 62319,
+    "sha256": "0a90b27227566f6868f2b6ebb8ec89c8a2ab76764dd3feb942d51c4f85f47c9a"
   },
   "r6": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Да здоровый он был, когда гуляли! Господи, только бы ничего не случилось.",
-    "bytes": 107459,
-    "sha256": "19bb319c2afadb8dbb316711334beeeac291932d9cf8ea2db766390e60bf3960"
+    "bytes": 80292,
+    "sha256": "705b1722389306a0759136c00c9bd25216dbfb799b09e21a8459a7c367fd4b47"
   },
   "r7": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Степанов Гриша, пять лет. Роста мне по пояс, светленький.",
-    "bytes": 88651,
-    "sha256": "253a28ef7470399b8614d05349fb4fd3d1d21398a9678d63281319cc4187db40"
+    "bytes": 75276,
+    "sha256": "795ef0a9e9183afa7a2ef940599278ca13e1df8fc5822db563d7ac18e8345f26"
   },
   "r8": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Так у нас дорога рядом! И к метро тропинка, он туда мог пойти.",
-    "bytes": 111221,
-    "sha256": "d51eff93a8409c0b9caf66b64904c5b0a46c8bf89de97de94e13233c8269d519"
+    "bytes": 69007,
+    "sha256": "2ea609dde852df5b953120d8d78184f0c57f847dd546f93ab1b1c5d6f3532337"
   },
   "r9": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Одет в синюю куртку, жёлтую шапку, жёлтый шарф и варежки. Брюки синие, ботинки чёрные.",
-    "bytes": 151763,
-    "sha256": "88ce4577fd4db85792419c7e54456f2bf88ba15861be93cb65cf159fcb7981ff"
+    "bytes": 130447,
+    "sha256": "2608a4c2e4ecfd02ab9cb9e0f044cd92831607f5a7896a938d6e4470aef31de8"
   },
   "r10": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Один он был, со мной гулял. Больше детей во дворе не было.",
-    "bytes": 87815,
-    "sha256": "8d339c600055646263164a65489cf65c2e76599cef120c36065a15f0b06ee75c"
+    "bytes": 69007,
+    "sha256": "70f14f1d427f615e66e76ecb6f660373865655ad37217eedac010b7d9391d244"
   },
   "r11": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Полчаса назад, тридцать минут. Я сначала сама искала, потом вам звоню.",
-    "bytes": 120834,
-    "sha256": "711f35b74afc186add31820bcff702ee5b7e3ba8fb538e2daccac1cdbd52dee6"
+    "bytes": 77784,
+    "sha256": "90c5ad1543d0234acadb175f35f549ccdff62ea6941dc8aff38bb2c0efda2e84"
   },
   "r12": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Степанова Антонина Марковна. Бабушка я ему.",
-    "bytes": 79038,
-    "sha256": "cfa953c44f45709f59d7ea460d107456edc53d39a60e80521544530e3005d3a3"
+    "bytes": 54796,
+    "sha256": "2d51b31308ee562838aa6026420e2ec5aa3ffcfb6ec0275417fc9da6222341ff"
   },
   "r13": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
-    "bytes": 138388,
-    "sha256": "605c425f10079b55a04543619ed65457d9bbfeaf774f58c7e7a8d71103f3d935"
+    "bytes": 90741,
+    "sha256": "912a22abed29c67a536925d6c700d53f432945978f066d440d877ff2c816c419"
   },
   "r14": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Бабушка я. С ним и гуляла, вот и недоглядела.",
-    "bytes": 86561,
-    "sha256": "d1a7a1b21065522db72bd764fb90da0a01cacac4a76e456345d54002d132e579"
+    "bytes": 59812,
+    "sha256": "3f09fa368a9bfeb5785e99aec7dc8e99cfcba27d42e442180dfbe869a837b9ab"
   },
   "r15": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Мы во дворе, не в подъезде. Третий подъезд — это где я стою.",
-    "bytes": 102862,
-    "sha256": "1b03b29b3b755cc3a0640038b2316e57ee407fbd0123362fa62626fa699b67af"
+    "bytes": 71515,
+    "sha256": "a9f700b2f81ab48842ac265f1731e33d6ab02dc3d5923109ea73507202c61823"
   },
   "r16": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Что, милая? Повтори, я не расслышала.",
-    "bytes": 51035,
-    "sha256": "e6906813caa0c7124662789a0356179eefe185b63acb3ad544dddd241c1f7e0a"
+    "bytes": 41839,
+    "sha256": "15d55f4ef92f8e327ff292afccbe9d083c5d043a2fbf62a4b3fa9c45f0e3d9a9"
   },
   "r17": {
     "voice_id": "q22qntNqQAvTaBoqE089",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[panicked] [shaky voice]",
     "speed": 0.85,
     "stability": 0.6,
     "text": "Не знаю я! Вы найдите его, пожалуйста!",
-    "bytes": 70261,
-    "sha256": "5bacd0fc6d8d2dec309a99cc5694c1a30c7b089a1cde19dd323721f1356eb7fa"
+    "bytes": 53542,
+    "sha256": "6f4e83318ac84d6c6c5d87a1b34a1d0a04d8299255daefa0acc0bd5e7d3e82a3"
   }
 }

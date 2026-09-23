@@ -1,137 +1,152 @@
 {
   "opening": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Здравствуйте. Мы в ресторане, тут сильное задымление в зале. Дым идёт со стороны кухни, людей выводят.",
-    "bytes": 106623,
-    "sha256": "707cc6f592ae68b1f1f9abf267ed084126de1c4fc44331f74e523881bee27b03"
+    "bytes": 100772,
+    "sha256": "7d40a9341ba70964dd551bd38738f407a79539820a73140b3993b771c77a4704"
   },
   "r1": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "В зале сильное задымление. Дым со стороны кухни идёт, уже глаза режет.",
-    "bytes": 67335,
-    "sha256": "ddcfcbe770b636c95111eb30fcad03f90aad493d2dbad341231d5d7183e67c03"
+    "bytes": 69007,
+    "sha256": "b6a1cca854f775ab386a5cd7c00e53e6436f6a513e51f40493011dea4f802961"
   },
   "r2": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Огня я не видел. Только дым, но плотный, стен уже не разглядеть.",
-    "bytes": 56886,
-    "sha256": "7e34625b1a5b73821616ff013a821707d087cf5cb23c8d05099ef38a245be36e"
+    "bytes": 76530,
+    "sha256": "1af289a2d238cdef59a251ca951b8f3151f6adaedaa34659afc5014547533953"
   },
   "r3": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Это область. Московская область, Рублёво-Успенское шоссе, деревня Жуковка.",
-    "bytes": 87397,
-    "sha256": "e4625f1d912ec8ab52164bd11e9cc46de07646ee024ad68da76029d7be6a0ffc"
+    "bytes": 72768,
+    "sha256": "ec2fa6888b3faf04be5cf62150bbc196d36115a07b32530275d2a72a1edc7757"
   },
   "r4": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Ресторан Веранда у Дачи. Если по адресу, то дом семьдесят.",
     "bytes": 56050,
-    "sha256": "38331f9d7740be1b02ad36bcec1f7fe9f25ca6e6455b1d3cd44874dd2a1c2cdb"
+    "sha256": "9490e1dd8604dc74f9965db8892230c27c1c34807e4d16093315a9ee9e02064a"
   },
   "r5": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Про пострадавших точно не скажу. Вроде все вышли, но зал большой.",
-    "bytes": 64409,
-    "sha256": "e9c9191f3f86a7f4daa1191e24b08b528c7ac10cde9d4c7a489082189408c573"
+    "bytes": 69007,
+    "sha256": "f6cf98c584dab541af7b905f39f80b199a1c3f00b7b18d9aaa1da7dfd19392d7"
   },
   "r6": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Дым плотный, тянет в зал. Персонал двери на улицу открыл.",
-    "bytes": 58140,
-    "sha256": "b6a58b3a3b004c1f022fcfb3dc2ef8a46aaaeb898dd04c4faaf2853d9c948dbc"
+    "bytes": 57304,
+    "sha256": "d5e7fd6021bec4acd28381c82e08be057827c35dd126b58a4dfa1f86805d3095"
   },
   "r7": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "В зале было человек сорок. Сейчас выходят, кто-то ещё внутри.",
-    "bytes": 60648,
-    "sha256": "d4bc503e87b07c239931057801b75e55f148b3b05e62f54523a76afb91c271c3"
+    "bytes": 62319,
+    "sha256": "9f0412d33d44e3bcb90aa13d1b712f9df14a37b8a27b59098dc1a2f8310b3a46"
   },
   "r8": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Минуты три назад задымило. Сначала запах, потом сразу дым.",
-    "bytes": 61902,
-    "sha256": "a37b0b3e1e66eda35cbe777bec8c4a44549c02a98f0a007a578c7446a28d47bb"
+    "bytes": 63991,
+    "sha256": "0265458db3d0ebc4493c3f94a575cbb56c510d30fed34c4f140c31917c2ff0b3"
   },
   "r9": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Никитин Илья Вадимович. Я посетитель.",
-    "bytes": 44765,
-    "sha256": "65d2e640a117d453f29100550c829d2b5d5d4870d31ee71404f9fcaa01456e1f"
+    "bytes": 47273,
+    "sha256": "1d05bbe908c404d2603dc89ac6e20dbd22811df23311839ca2ebd77f4e9106da"
   },
   "r10": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
-    "bytes": 78202,
-    "sha256": "668ff4940fca83d082a52b3b813aef097df03786a50ed4021ce3bda4a0c5338f"
+    "bytes": 63991,
+    "sha256": "c6eda53eb558fe5484656510995c32ecf63d70ee6cdbef6bc49ce5e5786c0c44"
   },
   "r11": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Я посетитель, не работник. За столиком сидел.",
-    "bytes": 43511,
-    "sha256": "1577c94b30c81ec6f83a197295c0dafc3489cbbaa9eefdf6dff35b85de42474b"
+    "bytes": 54796,
+    "sha256": "9fe0bd52736c7b7281ad6e66e45f9c7ea0b863b177cf85fdc01bb46bd9322315"
   },
   "r12": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Один этаж, вход с парковки. Ворота на въезд открыты.",
-    "bytes": 49363,
-    "sha256": "7ee83b7178b126a6302f97bdf3eb4c9487fce3e03a0e223f04c48b431a08b8f8"
+    "bytes": 56050,
+    "sha256": "5684db49541f9c4ca7e8d165b3e467fdc431fbf419526b29ff066f09dd85e86d"
   },
   "r13": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Повторите, пожалуйста, тут все кричат.",
-    "bytes": 34316,
-    "sha256": "4e59fd04f9c6e686c32518679fdd0c86ec456b39b36b2e1fac8648df70419d14"
+    "bytes": 35570,
+    "sha256": "331dd1fee0411acfa20f2d145dc524f631e54e9a7990f2a932eb24405d9aba07"
   },
   "r14": {
     "voice_id": "drOVtcvHhJKNEXv5h1l5",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
     "speed": 1.1,
     "stability": 0.4,
     "text": "Не знаю. Администратора найти?",
-    "bytes": 32226,
-    "sha256": "76a30e176dbc7a38cbed938590db3eadd5224db125fe871298f2572667fbe685"
+    "bytes": 35570,
+    "sha256": "921b6d938fe79b4998c362977e718d5f038d5d8d07e512e3ce7a7d8e7b2f2bc2"
   }
 }

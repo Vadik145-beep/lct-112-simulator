@@ -1,155 +1,172 @@
 {
   "opening": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Здравствуйте! Тут человек пятнадцать дерутся, палками и прутами железными! Пятеро уже лежат в крови!",
-    "bytes": 114146,
-    "sha256": "8b76dde4682c65188999fc5a3fa42da9448cb92a1f4e813a0a5e444b1411d27e"
+    "bytes": 106205,
+    "sha256": "c81631cc8540a7be36b9481ec593bccd452011b62560cca0fdd9887a972e9f6d"
   },
   "r1": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Массовая драка! Человек десять, а то и пятнадцать!",
-    "bytes": 56886,
-    "sha256": "b0e7b1d21d4da7ec8e252b53e036c2ce37321f1f0cd72722783e2fcb75931bdb"
+    "bytes": 56050,
+    "sha256": "85bfee33004a3f4e115f5facd30339a20094861e6c84571c735bf951db82da62"
   },
   "r2": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Дерутся палками и железными прутами. Не кулаками, слышите!",
-    "bytes": 66499,
-    "sha256": "d7e3d9a20f146c82818af018110805507baeb3ade8c1441841b4e019b20e8848"
+    "bytes": 77784,
+    "sha256": "238e72a201764044b69888eb07ead48b6ebda5198ead812006bf0eca66752203"
   },
   "r3": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Леонтьевский переулок, дом шестнадцать, строение один. Рядом посольство Азербайджана.",
-    "bytes": 100772,
-    "sha256": "17327ccb67cf9a7a020ae633d5a33c626f112ae349c965484242415ed46abe3d"
+    "bytes": 90741,
+    "sha256": "9012322e95ff16c95c9aa4fe122745663d4ee7dfb0a5af01b807ca00f5977c1f"
   },
   "r4": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Прямо на тротуаре всё, не во дворе.",
-    "bytes": 33898,
-    "sha256": "eeb44f4a09e757b6ed4e51f8f10aae9618d39ba806cba24d652d0a743b9bb31e"
+    "bytes": 36824,
+    "sha256": "46311caa99abcf76168f141923ef7fd82ee3b9981f67999bb0c0c7641e049c6c"
   },
   "r5": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Москва, Тверской район.",
-    "bytes": 38078,
-    "sha256": "3a49e4637a59870a6e6cd7892d2cfe2710e17bc8432e4b2a4277ce42f5264642"
+    "bytes": 33062,
+    "sha256": "433e3e573cdbd16416c93a1ee31b75af4153a84c3efbfdff7c836e23f5bc14c2"
   },
   "r6": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Пострадавших пятеро. Травмы разные, кто-то лежит и не встаёт.",
-    "bytes": 61902,
-    "sha256": "4c2e5d10b430ba1d705a53a208ac3b44bedd095c3508a30b260eaf3e5fa26ccf"
+    "bytes": 62319,
+    "sha256": "240b9aaf46724db41c004dc8e3966d7f36fbb62efb1bed4eedbcb243402e7e5b"
   },
   "r7": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Одному голову рассекли, кровь на лице. Остальные держатся за руки и рёбра.",
-    "bytes": 76948,
-    "sha256": "980056abdf9698194a50043a0fa6f845b3482ab7cfa2ac32144b94fcb31943b1"
+    "bytes": 77784,
+    "sha256": "3b560e9ce310c4761fd17183ec5a1941a290bf92d8ea2a713e6aaefd31bbf016"
   },
   "r8": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "У них прутья железные! Драка идёт прямо сейчас, никто не расходится.",
-    "bytes": 74022,
-    "sha256": "7ff2880c98e810cd9ec9a6deb201fb52e6766bf1872b866a6abc39ce12cbcd76"
+    "bytes": 79038,
+    "sha256": "1283952718bba22ef7d117535f0ad45a6b3a1bd292d5407fa0444843296b11c7"
   },
   "r9": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Дерущихся от десяти до пятнадцати. Считать некогда.",
-    "bytes": 71097,
-    "sha256": "0d7b0f021df91b03f5c42ff915d21186f33052d4fd7dcaa33f29a74e3d32e8d6"
+    "bytes": 58558,
+    "sha256": "5abd27ccc98f481fe3b6eeeecad13176507a5b30dac44c63beb68f4336476c08"
   },
   "r10": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Минут пять назад началось. И только хуже становится.",
-    "bytes": 58976,
-    "sha256": "98591dd6553b836f5fbd7d4d7d3b74231ea6e9d8bf0650aafa368dc2815ff770"
+    "bytes": 58558,
+    "sha256": "b38c314a3ad4a947035da16438ab112cc0c3b8cf98bb726ac4af7020fa9388ae"
   },
   "r11": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Иванов Пётр Иванович.",
-    "bytes": 26375,
-    "sha256": "bad1694b964000f5b5d3c3f23e2bd5e4140f1ef10ca7cec70900e45411ada979"
+    "bytes": 30555,
+    "sha256": "34d5bb4210db50b03ddf0364cd96bc51bc33fee33a179cecb0fc8362d55f098c"
   },
   "r12": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
-    "bytes": 83635,
-    "sha256": "192d60b98790712d94c62e90a68423d929c9c6f7a7b52696164f12d65e267e55"
+    "bytes": 67753,
+    "sha256": "3f9e9015c21f374d48e868038ce2bb9f96a86b03abaa9ea4e8618351e8ccce52"
   },
   "r13": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Я очевидец! Стою через дорогу, не лезу туда.",
-    "bytes": 49363,
-    "sha256": "566b34d1b6afd51e168b9d081de14ebb76b54c730088244be153e218df6faf42"
+    "bytes": 57304,
+    "sha256": "a566609dd997126d45dc4e044bf2adba8c3e493aa42feef1010da3aa737a6df9"
   },
   "r14": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Тротуар это, какие подъезды.",
-    "bytes": 30973,
-    "sha256": "53529852ecd77b550253e3cab9861eed7ee40907ab70e8579fa080222a79e0fe"
+    "bytes": 33062,
+    "sha256": "9018f68b627209a5f329e5b80a636e3b5482fa1bb6c7e7e52c1267bf5f456c78"
   },
   "r15": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Что? Громче говорите, тут орут все!",
-    "bytes": 35988,
-    "sha256": "62ff02ed8c16fab5c89f25288d1c6a8100c56c43876b5c886dc5a328a40ae71a"
+    "bytes": 46019,
+    "sha256": "9cb27e11430d2de0091c9bcac1c95dfde7eb964fb9fcaab20e4b96df7b94b189"
   },
   "r16": {
     "voice_id": "3EuKHIEZbSzrHGNmdYsx",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
     "speed": 1.05,
     "stability": 0.4,
     "text": "Откуда я знаю! Вы наряд шлите, потом разберётесь!",
-    "bytes": 51453,
-    "sha256": "8b6bcd37b5cca1c00b0e706142f4bce5ebccfc710125af69a4d31ccf598d5cb2"
+    "bytes": 56050,
+    "sha256": "f207e4e0d83312295640b0b17131027108763639058595cf448865a81f3bbd4e"
   }
 }

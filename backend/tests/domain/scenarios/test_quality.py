@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from app.domain.scenarios import quality
@@ -13,12 +14,12 @@ AUDIO_DIR = SCENARIOS_DIR.parent / "audio"
 
 
 def _studio(key: str) -> bool:
-    """The ten reference scenarios voiced with eleven_v3 before these checks existed."""
+    """The ten reference scenarios: every reply of theirs is recorded in several wordings
+    (``r1-v1``), and they were written before these checks existed."""
     index = AUDIO_DIR / key / "index.json"
     if not index.is_file():
         return False
-    records = json.loads(index.read_text(encoding="utf-8")).values()
-    return any(str(r.get("model", "")).startswith("eleven_v3") for r in records)
+    return any(re.fullmatch(r"r\d+-v\d+", stem) for stem in json.loads(index.read_text(encoding="utf-8")))
 
 
 BODY = {

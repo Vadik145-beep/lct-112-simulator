@@ -22,6 +22,18 @@ from app.scripts.voice_elevenlabs import AUDIO_DIR, CAST, MODEL, REPO_DIR, api_k
 PHRASES_FILE = REPO_DIR / "data" / "seed" / "fallback_phrases.json"
 FALLBACK_KEY = "_fallback"
 
+# The bank must sound like the caller of that voice usually sounds, or the general phrase would
+# stand out against the scenario's own replies.
+VOICE_TAGS = {
+    "ru_female_1": "[calm]",
+    "ru_female_2": "[calm] [slowly]",
+    "ru_female_3": "[shaky voice] [nervous]",
+    "ru_male_1": "[calm]",
+    "ru_male_2": "[angry] [irritated]",
+    "ru_male_3": "[calm] [slowly]",
+    "ru_male_4": "[anxious] [fast]",
+}
+
 
 def run(dry_run: bool) -> int:
     phrases = json.loads(PHRASES_FILE.read_text(encoding="utf-8"))["phrases"]
@@ -32,10 +44,15 @@ def run(dry_run: bool) -> int:
         index_file = folder / "index.json"
         index = json.loads(index_file.read_text(encoding="utf-8")) if index_file.exists() else {}
         gender = "female" if "female" in slot else "male"
+        tag = VOICE_TAGS.get(slot, "[calm]")
         todo = [
             (p["id"], p[gender])
             for p in phrases
-            if not ((folder / f"{p['id']}.mp3").exists() and (index.get(p["id"]) or {}).get("text") == p[gender])
+            if not (
+                (folder / f"{p['id']}.mp3").exists()
+                and (index.get(p["id"]) or {}).get("text") == p[gender]
+                and (index.get(p["id"]) or {}).get("model") == MODEL
+            )
         ]
         if not todo:
             skipped += len(phrases)
@@ -47,11 +64,12 @@ def run(dry_run: bool) -> int:
             continue
         folder.mkdir(parents=True, exist_ok=True)
         for phrase_id, text in todo:
-            audio = synthesize(key, voice, text)
+            audio = synthesize(key, voice, text, model=MODEL, tag=tag)
             (folder / f"{phrase_id}.mp3").write_bytes(audio)
             index[phrase_id] = {
                 "voice_id": voice.voice_id,
                 "model": MODEL,
+                "tag": tag,
                 "speed": voice.speed,
                 "stability": voice.stability,
                 "text": text,

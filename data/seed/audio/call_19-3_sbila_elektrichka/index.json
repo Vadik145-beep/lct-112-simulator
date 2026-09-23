@@ -1,146 +1,162 @@
 {
   "opening": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
-    "text": "Здравствуйте... тут мужчину электричка сбила. На переходе через пути. Он лежит, к нему подойти можно.",
-    "bytes": 90323,
-    "sha256": "5417bb29c0b76a92e80c00d13b6adf076f953beac4b0f9a6388707cd4b8e0350"
+    "text": "Господи... тут мужчину электричка сбила. На переходе через пути. Он лежит, к нему подойти можно.",
+    "bytes": 118744,
+    "sha256": "ca10c61696df9aa26c85233a6ef7e3ee43ac0235acf1cc084a3ab87789148b79"
   },
   "r1": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Мужчину сбила электричка. Он на переходе был, через пути шёл.",
-    "bytes": 48527,
-    "sha256": "07a71c38b7f18178f77c7537458c5a0a627cd647e2e76aaafaf6447d2d2947c4"
+    "bytes": 76530,
+    "sha256": "f5301486e9fac12df03d08095df3faf4d5037f378c67455c19073d127ce6b366"
   },
   "r2": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Состав уже остановился. Пострадавший лежит сбоку от путей.",
-    "bytes": 50199,
-    "sha256": "d11064c1ba9aca503001e081cef7664cb698663c0e15c47c21d51fa00d952429"
+    "bytes": 61066,
+    "sha256": "5b602011b15ccaa58b4b5746fa0bf05e200ab2f6b66123e68d9004d27f4ae271"
   },
   "r3": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Платформа Лианозово. Переход со стороны Лианозовского рынка.",
-    "bytes": 51453,
-    "sha256": "4e3705a89354897c719a2acfa65eb84c8ef81d47fbb8053426791c9ed4504ef4"
+    "bytes": 59812,
+    "sha256": "b60998b22219b3fe9adb738424dee1b83f06dadb24423812fbaa8d97c5c5afc6"
   },
   "r4": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Москва, район Лианозово.",
-    "bytes": 26375,
-    "sha256": "a711baae643cf00b058b8d9da7af87292e9ddd3d30ce3ae8a3e60693690b43b8"
+    "bytes": 36824,
+    "sha256": "bfde2650a59a71020185ceba01f82eafcea19cdd008035b390415dc7bc793b9a"
   },
   "r5": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Пострадавший один, мужчина. Доступ к нему есть, он не под вагоном.",
-    "bytes": 58140,
-    "sha256": "734590dd78b685d592885890b9ad950648ebd7841a50518f1074b2cee6a0e437"
+    "bytes": 72768,
+    "sha256": "b134c289b88cacd163de5a3a57b8d70c5e215f31428026259e64a11819e1508b"
   },
   "r6": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Стонет, значит, живой. Нога вывернута, на голове кровь.",
-    "bytes": 46437,
-    "sha256": "f0c73327286cd9d41d9935b8f65995d3e7d411789079211b33585f03b37b78db"
+    "bytes": 74022,
+    "sha256": "9b5c3a2afe52b7c72d85b0e66778c67594fd1334ce927fdc703963a84a22144e"
   },
   "r7": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "По соседнему пути поезда идут. Люди на пути выходят, их отгоняют.",
-    "bytes": 60648,
-    "sha256": "8f5ddf39c39cb4f26c21c9dd82a8cc07af1075e4d79a99d1fda806873d034abd"
+    "bytes": 82799,
+    "sha256": "90abd54a0dfc7215fd70aeed7c71476dacbad8df406588dc3f9b278692e4b0c9"
   },
   "r8": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Пострадавший один. Вокруг человек двадцать собралось.",
-    "bytes": 44765,
-    "sha256": "279e33f858583e1bd80eb992ee8423a16994e738831c9f3ae9d1c5cbe36d033e"
+    "bytes": 61066,
+    "sha256": "7c0cb7f36e59a30ff3aac438d68da2d808da007513f9416e0fa181e2a8f79865"
   },
   "r9": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Минуты две назад. Я на платформе стояла, всё видела.",
-    "bytes": 48527,
-    "sha256": "71611ffdfcce2f2c731ccef8d8222ed0c6fddcb40d2fb451a54d98775ab8be67"
+    "bytes": 69007,
+    "sha256": "cfaaa9306af04f57a038331793c019b435c603c9b6caa9198af570ba9a0a60b6"
   },
   "r10": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Иванова Елена Сергеевна.",
-    "bytes": 24285,
-    "sha256": "63284e2b552c57354a65bfa03f592928b7aa6911b6863886c4fbea50e67078bb"
+    "bytes": 31808,
+    "sha256": "04264f4703dcd5ab6a188b5677fd8db7befaefdaf93327a41d6209e18730d063"
   },
   "r11": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
-    "bytes": 67335,
-    "sha256": "9ad6e966c5be60d8fdec477b354afef168ef93ec5fcc9607caa7cf82b0503735"
+    "bytes": 81546,
+    "sha256": "63eb362ec18afb684fe69144adb9152cea8ef3cd895031f7fd2f08e8f681f59e"
   },
   "r12": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Я очевидец. Не знаю его, просто рядом была.",
-    "bytes": 38078,
-    "sha256": "6b346bef6ba1bde7df3cacf4676fe359057663daf87f8ded2bc673d1a5285094"
+    "bytes": 52288,
+    "sha256": "60ac98efa1a23737e3c781deaed23feabfb0719301ffce9ab9c5756c2d8130a0"
   },
   "r13": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Это платформа, подъездов нет. Заход со стороны рынка.",
-    "bytes": 44765,
-    "sha256": "9466fd2e8cc3f53b39f9a8ba547961e6418e599d8a6812fa557a8e0b73c35509"
+    "bytes": 63991,
+    "sha256": "03efa114a2dd3f658412affc60b4a03e6643657d68c4f9ed717606c49fb790fb"
   },
   "r14": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Повторите, пожалуйста, тут объявления и люди кричат.",
-    "bytes": 46437,
-    "sha256": "aa12f50c4e5542a914beda12d46737122e66760d9bb36f65898b6e3d4d9c0ed9"
+    "bytes": 58558,
+    "sha256": "9ddbd410a7d91e4994259ce336d2e2f6030ca15b002a09615848a6b0ae146b17"
   },
   "r15": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Не знаю. Мы его не трогаем, стоим рядом.",
-    "bytes": 34316,
-    "sha256": "9f5e178135901ffa6badf8ff380f96e150f71980c6817e848112fe796cf787a2"
+    "bytes": 46019,
+    "sha256": "70676e4dd180e2b1829bcb70ebb4aea880cfd8b93226c1ab4f7e010d1bc096de"
   }
 }

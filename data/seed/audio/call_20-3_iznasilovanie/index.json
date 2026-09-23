@@ -1,155 +1,172 @@
 {
   "opening": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
-    "text": "Здравствуйте... тут женщину изнасиловали. Она просит полицию вызвать, у неё травмы. Я с ней рядом.",
-    "bytes": 80710,
-    "sha256": "d56830f51ead298b821d45fc79c2af33eefdc18deb08ecf03ab18dce39aa5be0"
+    "text": "Господи... тут женщину изнасиловали. Она просит полицию вызвать, у неё травмы. Я с ней рядом.",
+    "bytes": 103279,
+    "sha256": "2d2585569562fae19a09bd84372f8c3fe4d604fd1e29d3ca14619df06777f0ca"
   },
   "r1": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Женщину изнасиловали. Она сама ко мне подошла, в слезах.",
-    "bytes": 46437,
-    "sha256": "fd9c6a131184ce64e56ab6d64b6cd65c3512c22eead9df779f1de2183cb0cfe7"
+    "bytes": 75276,
+    "sha256": "f531c45271b70dd91bac49636a1b8d605a7f0105d6a606847fa903dd88da0adc"
   },
   "r2": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Просит полицию. Говорит, это случилось только что, тут же, во дворе.",
-    "bytes": 57722,
-    "sha256": "c404617586b6c6b37266a8eea0d709ba97c05df8b1250937f339da1c56b02c01"
+    "bytes": 74022,
+    "sha256": "a57efc0a9f0793a6ef56881d82d004adb0af0a5e409ca47e3872ba8aa0911468"
   },
   "r3": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Кастанаевская улица, дом сорок два, корпус два. Мы во дворе.",
-    "bytes": 50199,
-    "sha256": "538741d2adff20cdf094d68ec34c301a099e7782750ce1f5617cbf0733e25d4c"
+    "bytes": 74022,
+    "sha256": "d52798642082056816fe9c43afcc9a49465aa277eb03d2b061f466faa569d5fa"
   },
   "r4": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Москва, Фили-Давыдково.",
-    "bytes": 22613,
-    "sha256": "c60f866e0792f256d26e9bb645aa20c2c856e32ae698da710a115eee7a878105"
+    "bytes": 38078,
+    "sha256": "823ac3942b420f02cf72e7ea6b8775fcc10d704c5226009268181f6c9b67dabc"
   },
   "r5": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Она одна пострадала. Около тридцати лет, в сознании.",
-    "bytes": 47273,
-    "sha256": "ec6daa8772b79ee452ad7f53091a4f64dd6ccac84a059d1f9b31d1598786f0d6"
+    "bytes": 59812,
+    "sha256": "312b733b715719795e2cf847cb9e8622dbba543dc11184544d0664097d0c8e68"
   },
   "r6": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Есть травмы, губа разбита и руки в ссадинах. Скорая нужна.",
-    "bytes": 53124,
-    "sha256": "00bfa80edcc607ebb5b2ccb8a641f4ae3de0176503c46f9420a4d88bd4c6f197"
+    "bytes": 75276,
+    "sha256": "3d217594cc873bef0ea43856b0a5f172cf562474e978ff4ceac1ff194b5c0b0e"
   },
   "r7": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Имя своё она называть не хочет. Говорит, скажет только полиции.",
-    "bytes": 52288,
-    "sha256": "7d7db69aef1b82101cbeb7b1ef51f45bb842d3030ff764a376c3675045e0d115"
+    "bytes": 62319,
+    "sha256": "0354ed6cfcb8509ab30e7195c2618653d86680db597625248a3c799f9d4c1c7f"
   },
   "r8": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Нападавший ушёл. Куда — она не видела, ей плохо было.",
-    "bytes": 46437,
-    "sha256": "3e7a2350b8f1d607d00725a98c776dfde4b81ea1621f714d59f10d955a829bf1"
+    "bytes": 62319,
+    "sha256": "3350f3612c45bd5b0716510bdfa490a9f7accc1afb315da4e028be18a53036c4"
   },
   "r9": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Она одна. Я рядом, больше никого во дворе нет.",
-    "bytes": 38078,
-    "sha256": "635224b71e7864d2a56e6c393fd32ddc2ede7237c5ded84e5f9380ea1ce09870"
+    "bytes": 69007,
+    "sha256": "b075963d4352573565b1f7a5c736b5588bf42d29f53543041ca48e1d5de5c73f"
   },
   "r10": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Минут десять назад, она говорит. Ко мне подошла только что.",
-    "bytes": 47691,
-    "sha256": "07753ee21b53334fc3add09d545f9be1f63db6f714c83aaa5caed7417c112978"
+    "bytes": 56050,
+    "sha256": "febea0b55b51917c9f431c48a7aae9f6af440397b6cf50ef2997a90f66610c00"
   },
   "r11": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Иванова Елена Сергеевна. Я тут живу.",
-    "bytes": 33062,
-    "sha256": "9b96a503abe9ca50314b3f914312a3fe2c785b70ac35e391926aef038480fe73"
+    "bytes": 44765,
+    "sha256": "210a6a33a0fb6d9109af54ae3b3784dfa439ea9f9e329e3d199ce78f4796579e"
   },
   "r12": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
-    "bytes": 76948,
-    "sha256": "2920cd3c80d646c85f088a612a7c0931ac90bd27ee6cba32d3bd641b36fd1ae6"
+    "bytes": 84471,
+    "sha256": "b645919619f1ceb2c0ba2c2cc5571edfbe5f8a921494e9221224aaad7824ce07"
   },
   "r13": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Я не пострадавшая. Просто рядом оказалась, она ко мне обратилась.",
-    "bytes": 56050,
-    "sha256": "5488ebfb77008ce28113527e4376ca69178d995a1a8db6526e66702674ecfb50"
+    "bytes": 71515,
+    "sha256": "b9a3e66e4c64b7a4ba95191d07be82049e1bd531c9fca2a5c92256b8ff345b13"
   },
   "r14": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Мы во дворе, у скамейки. В подъезд не заходили.",
-    "bytes": 43511,
-    "sha256": "a741f79a90102427e4e62ca59777867978fab2dc769f4dbeeb649f5ac43708f0"
+    "bytes": 61066,
+    "sha256": "8c3a61fa7c8ade178cb49fde0b70b38f538e09803e2d532504f4a4b9bab3f6fc"
   },
   "r15": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Повторите, пожалуйста, я говорю тихо, чтобы её не тревожить.",
-    "bytes": 47691,
-    "sha256": "da37ec45adebafd46447dd0995d365050f2008b44bb985412dcec9635f68b494"
+    "bytes": 59812,
+    "sha256": "d0eafff7b8e349cb30d123c3a911478120b60590950e92c65faa82b454588f57"
   },
   "r16": {
     "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
     "speed": 1.1,
     "stability": 0.35,
     "text": "Не знаю. Мы с ней подождём, никуда не уйдём.",
-    "bytes": 37660,
-    "sha256": "4bf5b40a62ff7ab375015c20025765a59411d0e8e45d02b00ecbe0d619c44bee"
+    "bytes": 51035,
+    "sha256": "0ac6ff50b19b4a63c29f4af632a1177819ab6958b3ad318d990aa5f1452decc3"
   }
 }

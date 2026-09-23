@@ -19,7 +19,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import subprocess
+import re
 import sys
 import time
 import urllib.error
@@ -32,9 +32,28 @@ SCENARIOS_DIR = REPO_DIR / "data" / "seed" / "scenarios"
 AUDIO_DIR = REPO_DIR / "data" / "seed" / "audio"
 ENV_FILE = REPO_DIR / ".env.elevenlabs"
 
-# eleven_flash_v2_5 takes the language explicitly, so short Russian phrases keep the accent;
-# the studio scenarios use eleven_v3 with emotion tags, which this script does not write.
-MODEL = "eleven_flash_v2_5"
+# eleven_v3 is the only model that hears the emotion tags ([panicked], [angry]…), and a caller
+# of 112 lives on them; it costs about twice as much per character as eleven_flash_v2_5, which
+# stays available for a cheap re-run (--model). The tag comes from the persona of the scenario,
+# from the set the studio voicing of the reference scenarios proved on these voices.
+MODEL = "eleven_v3"
+CHEAP_MODEL = "eleven_flash_v2_5"
+
+TAGS: dict[str, str] = {
+    "calm": "[calm]",
+    "worried_resident": "[anxious] [fast]",
+    "elderly_calm": "[calm] [slowly]",
+    "elderly_panicked": "[panicked] [shaky voice]",
+    "mother_anxious": "[urgent] [fast]",
+    "witness_shaken": "[shaky voice] [nervous]",
+    "angry_customer": "[angry] [irritated]",
+    "witness_urgent": "[urgent] [fast]",
+    "victim_panicked": "[panicked] [in pain]",
+    "calm_commuter": "[calm]",
+    "child": "[nervous]",
+    "drunk": "[tired] [exhales]",
+}
+DEFAULT_TAG = "[calm]"
 API = "https://api.elevenlabs.io/v1/text-to-speech"
 
 
@@ -64,19 +83,21 @@ def api_key() -> str:
     raise SystemExit(f"нет ELEVENLABS_API_KEY в {ENV_FILE}")
 
 
-def synthesize(key: str, voice: Voice, text: str) -> bytes:
-    body = json.dumps(
-        {
-            "text": text,
-            "model_id": MODEL,
-            "language_code": "ru",
-            "voice_settings": {
-                "stability": voice.stability,
-                "similarity_boost": 0.75,
-                "speed": voice.speed,
-            },
+def synthesize(key: str, voice: Voice, text: str, *, model: str = MODEL, tag: str = "") -> bytes:
+    payload: dict[str, object] = {"model_id": model}
+    if model.startswith("eleven_v3"):
+        # v3 reads the tags as directions, not as words, and has no speed of its own.
+        payload["text"] = f"{tag} {text}".strip()
+        payload["voice_settings"] = {"stability": 0.5, "similarity_boost": 0.75}
+    else:
+        payload["text"] = text
+        payload["language_code"] = "ru"
+        payload["voice_settings"] = {
+            "stability": voice.stability,
+            "similarity_boost": 0.75,
+            "speed": voice.speed,
         }
-    ).encode()
+    body = json.dumps(payload).encode()
     req = urllib.request.Request(
         f"{API}/{voice.voice_id}",
         data=body,
@@ -99,19 +120,13 @@ def synthesize(key: str, voice: Voice, text: str) -> bytes:
 
 
 def studio_keys() -> set[str]:
-    """Scenario keys already voiced in the studio — their folders may live only in another branch."""
-    keys = {p.name for p in AUDIO_DIR.iterdir()} if AUDIO_DIR.exists() else set()
-    try:
-        out = subprocess.run(
-            ["git", "ls-tree", "--name-only", "origin/main", "data/seed/audio/"],
-            cwd=REPO_DIR,
-            capture_output=True,
-            text=True,
-            timeout=30,
-        )
-        keys |= {Path(line).name for line in out.stdout.split() if line.strip()}
-    except (OSError, subprocess.SubprocessError):
-        pass
+    """Scenarios voiced in the studio before this script existed: their replies have several
+    wordings (``r1-v1``, ``r1-v2``) recorded one by one, and nothing here reproduces that."""
+    keys = set()
+    for index_file in AUDIO_DIR.glob("*/index.json"):
+        records = json.loads(index_file.read_text(encoding="utf-8"))
+        if any(re.fullmatch(r"r\d+-v\d+", stem) for stem in records):
+            keys.add(index_file.parent.name)
     return keys
 
 
@@ -124,7 +139,7 @@ def phrases(body: dict) -> list[tuple[str, str]]:
     return items
 
 
-def run(only: str | None, dry_run: bool, limit: int | None) -> int:
+def run(only: str | None, dry_run: bool, limit: int | None, model: str = MODEL) -> int:
     files = sorted(SCENARIOS_DIR.glob("call_*.json"))
     if only:
         files = [f for f in files if f.stem.startswith(only)]
@@ -137,7 +152,7 @@ def run(only: str | None, dry_run: bool, limit: int | None) -> int:
     made = skipped = chars = 0
     for path in files:
         if path.stem in studio and not only:
-            skipped += 1
+            skipped += 1  # десятка со студийной озвучкой v3 и тремя формулировками на реплику
             continue
         body = json.loads(path.read_text(encoding="utf-8"))
         slot = body["caller"]["voice"]
@@ -145,29 +160,39 @@ def run(only: str | None, dry_run: bool, limit: int | None) -> int:
         if voice is None:
             print(f"{path.stem}: нет голоса для {slot}, пропуск")
             continue
+        tag = TAGS.get(str(body["caller"].get("persona")), DEFAULT_TAG)
         folder = AUDIO_DIR / path.stem
         index_file = folder / "index.json"
         index = json.loads(index_file.read_text(encoding="utf-8")) if index_file.exists() else {}
         todo = [
             (stem, text)
             for stem, text in phrases(body)
-            if not ((folder / f"{stem}.mp3").exists() and (index.get(stem) or {}).get("text") == text)
+            if not (
+                (folder / f"{stem}.mp3").exists()
+                and (index.get(stem) or {}).get("text") == text
+                and (index.get(stem) or {}).get("model") == model
+                and (index.get(stem) or {}).get("tag", "") == tag
+            )
         ]
         if not todo:
             skipped += len(phrases(body))
             continue
-        print(f"{path.stem} [{voice.name}]: {len(todo)} записей, {sum(len(t) for _, t in todo)} симв.")
+        print(
+            f"{path.stem} [{voice.name} {tag}]: {len(todo)} записей, "
+            f"{sum(len(t) for _, t in todo)} симв."
+        )
         if dry_run:
             made += len(todo)
             chars += sum(len(t) for _, t in todo)
             continue
         folder.mkdir(parents=True, exist_ok=True)
         for stem, text in todo:
-            audio = synthesize(key, voice, text)
+            audio = synthesize(key, voice, text, model=model, tag=tag)
             (folder / f"{stem}.mp3").write_bytes(audio)
             index[stem] = {
                 "voice_id": voice.voice_id,
-                "model": MODEL,
+                "model": model,
+                "tag": tag,
                 "speed": voice.speed,
                 "stability": voice.stability,
                 "text": text,
@@ -192,8 +217,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--only", default=None, help="начало имени сценария")
     parser.add_argument("--dry-run", action="store_true", help="только посчитать символы")
     parser.add_argument("--limit", type=int, default=None, help="остановиться после N записей")
+    parser.add_argument(
+        "--model", default=MODEL, help=f"модель озвучки ({MODEL} или {CHEAP_MODEL})"
+    )
     args = parser.parse_args(argv)
-    return run(args.only, args.dry_run, args.limit)
+    return run(args.only, args.dry_run, args.limit, args.model)
 
 
 if __name__ == "__main__":

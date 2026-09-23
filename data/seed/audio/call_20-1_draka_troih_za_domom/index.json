@@ -1,146 +1,162 @@
 {
   "opening": {
     "voice_id": "4R4ha50vLnNdjMQDY20a",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Здравствуйте. За домом трое дерутся. Оружия не вижу, но машут крепко.",
-    "bytes": 67335,
-    "sha256": "d5e9dc26ada1cd88258a6dd1003377455d7f9cb875ce0b8b20ae151162267450"
+    "bytes": 81546,
+    "sha256": "a37dd94f2c5aabc21910e068704de1351826f9a6341f15823f630f8d44165658"
   },
   "r1": {
     "voice_id": "4R4ha50vLnNdjMQDY20a",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Трое мужчин дерутся. Толкаются, кулаками машут.",
-    "bytes": 41839,
-    "sha256": "2abb8d80d4499d558be285997598838ff3aa22c7b36064541c4930ef55d306fe"
+    "bytes": 79038,
+    "sha256": "5bfd19f80de08307bde0b1f25113e77eec8422b5fdd18955d6038fe9abd34ddb"
   },
   "r2": {
     "voice_id": "4R4ha50vLnNdjMQDY20a",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Началось с крика, потом сцепились. Никто не разнимает.",
-    "bytes": 44765,
-    "sha256": "0ca5eaab0bb349db8f1bd173bb1b53c601ecab1ce8c14025c4fd0d10dc13679b"
+    "bytes": 66499,
+    "sha256": "d711409f3cfcb43e3cda54933acce902e0df91df9e766220b056838864d205f8"
   },
   "r3": {
     "voice_id": "4R4ha50vLnNdjMQDY20a",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Олонецкий проезд, дом четыре. Это за домом, на дорожке.",
-    "bytes": 47273,
-    "sha256": "a6cb94d1d8ff8c841dac38c2f46e3a3ab0f4d60075d946e36e6956bc0939881e"
+    "bytes": 58558,
+    "sha256": "bb295f764012d4d58e23a8674f52b853f609596777ac10958ea634e1b89a8abd"
   },
   "r4": {
     "voice_id": "4R4ha50vLnNdjMQDY20a",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Дорожка в сторону кладбища идёт. От подъездов метров пятьдесят.",
-    "bytes": 54378,
-    "sha256": "08c14ad8dab950b68570b2e95108533d5df07797d3e845a4725e4f2d5e18d007"
+    "bytes": 62319,
+    "sha256": "009ce317b222818e8d01378fa05c688addf8ba3940eeb0f55792731bd10897ee"
   },
   "r5": {
     "voice_id": "4R4ha50vLnNdjMQDY20a",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Москва, Бабушкинский район.",
-    "bytes": 25539,
-    "sha256": "1c6765f40a3ecd0ab7275f38ebd442a5f13d0101f9401969e2083bd1b13f247f"
+    "bytes": 44765,
+    "sha256": "62103062028f454e9f1d3874b229ed1404d39e88ca8cab25f90a797c23d98203"
   },
   "r6": {
     "voice_id": "4R4ha50vLnNdjMQDY20a",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Пострадавших нет. Все трое на ногах, крови не вижу.",
-    "bytes": 47273,
-    "sha256": "9cf08c7d29032b3bac8ecfd981e7d90b608b5200c94ba9663f413e243775ee4e"
+    "bytes": 51035,
+    "sha256": "92cfc1b9cf9634f7d4bc3606dec6a56bd607d3644b7c9c3ac587aa423b8a0f0b"
   },
   "r7": {
     "voice_id": "4R4ha50vLnNdjMQDY20a",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Оружия нет. Ни палок, ни ножей, руками дерутся.",
-    "bytes": 47273,
-    "sha256": "b59eef0de75176b02d5d222c71917ed4f75ade73a499dd43c267146572b32683"
+    "bytes": 67753,
+    "sha256": "50cb542ad10cbae570630bcebfbf9f6b0578f9ab9f69a14712fd66df33d833b7"
   },
   "r8": {
     "voice_id": "4R4ha50vLnNdjMQDY20a",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Трое. Ещё двое стоят в стороне, смотрят.",
-    "bytes": 35152,
-    "sha256": "1cc30bb352caeca790e381d3445221c0ae986acf6a2b4dd994afe4d276141a39"
+    "bytes": 56050,
+    "sha256": "79b5c632ade9189613a82b1482c116eed3ad5440d27b0025d76e9905b3f90a3e"
   },
   "r9": {
     "voice_id": "4R4ha50vLnNdjMQDY20a",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Минуты две назад началось. Я сразу позвонил.",
     "bytes": 41839,
-    "sha256": "94a2247e9a921e7f2d746996773dfabe683ad5a7377a7c0f63a7f406c8fb6adc"
+    "sha256": "08be7c8b110e064e60d2092b404d4aaed81ed787c9c88b632f6d09da5f754f73"
   },
   "r10": {
     "voice_id": "4R4ha50vLnNdjMQDY20a",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Иванов Сергей Петрович.",
-    "bytes": 21777,
-    "sha256": "ee5c2f0860eec218e32e2285cf63db71f35538884387484e73c081d857a517a2"
+    "bytes": 30555,
+    "sha256": "619537af623f744744a268fe47277b465b729e643b561bb037cecef4ae21cd91"
   },
   "r11": {
     "voice_id": "4R4ha50vLnNdjMQDY20a",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
-    "bytes": 62737,
-    "sha256": "ed075ce177b4c7f46a8febfe7de680383e76dc541beba1b1ef9ff25b5ecdaa38"
+    "bytes": 62319,
+    "sha256": "534cb8784d1b130e7f91c951ebe7fbc536dcd24b211a986d53d32966d7dce71b"
   },
   "r12": {
     "voice_id": "4R4ha50vLnNdjMQDY20a",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Очевидец я. Мимо шёл, увидел.",
-    "bytes": 25539,
-    "sha256": "d96c699883642b9d7dc17137e136f86f2060e5211e4fb057212440498fadbf72"
+    "bytes": 51035,
+    "sha256": "ea1877fbf2b7c22e9a5b597355019b45a006c624fcfb8eab5f793bc923df10ae"
   },
   "r13": {
     "voice_id": "4R4ha50vLnNdjMQDY20a",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Это на улице, за домом. Подъезда нет.",
-    "bytes": 33062,
-    "sha256": "9362c1a21d1880eff6a9f5ac97277905a4fc45591340dbe88178c6110b888e44"
+    "bytes": 48527,
+    "sha256": "e45fb809878bd2537ac86fa710ff29f0c245b1d32ec6b0afe52443f103e118c4"
   },
   "r14": {
     "voice_id": "4R4ha50vLnNdjMQDY20a",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Повторите, пожалуйста, не расслышал.",
-    "bytes": 30973,
-    "sha256": "ad28f6bba49c6d003ab63cfb85e808bdb41035ca9de45c1405020fbcdab31fd2"
+    "bytes": 47273,
+    "sha256": "167d95c9e56631ce5d7d136f8afc467c98a2502777c4f6749f3c4fa8849f78d3"
   },
   "r15": {
     "voice_id": "4R4ha50vLnNdjMQDY20a",
-    "model": "eleven_flash_v2_5",
+    "model": "eleven_v3",
+    "tag": "[calm]",
     "speed": 1.0,
     "stability": 0.5,
     "text": "Не знаю. Могу подождать наряд, я недалеко стою.",
-    "bytes": 40586,
-    "sha256": "eca07c7150a8c2c7dcbfe18f247f7d1a93dd91c441a7c962fe55599e7612793a"
+    "bytes": 52288,
+    "sha256": "ccab5e343920d3730db5b4f3ae5a16a56a0401278cb2941ef6b135fee704859c"
   }
 }
