@@ -1,0 +1,538 @@
+{
+  "0313d1bf": {
+    "sha256": "220c4676be62a2fa82e3addd51b7bef2bacc342c",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Повторяю: улица Вавилова, дом восемьдесят один, корпус один.",
+    "bytes": 69007
+  },
+  "17718a25": {
+    "sha256": "7441ebbb4f9513e48c8cb0c71647d5e39c4a9c4d",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Из колодца на тротуаре у дома девяносто три фонтаном идёт холодная вода, заливает тротуар и проезд во двор.",
+    "bytes": 113728
+  },
+  "1862f4b3": {
+    "sha256": "c5d8c6fead00b81db4d75c05854739d0134f16ae",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Повторяю: улица Берзарина, дом двадцать один, корпус один.",
+    "bytes": 72768
+  },
+  "1b34bd46": {
+    "sha256": "bd128b802e1aa297fc984308eb84773744319a29",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Коломенская набережная, дом восемнадцать.",
+    "bytes": 35570
+  },
+  "1f8dbb2a": {
+    "sha256": "74df4d16e30ea757583b986a28e89b6be11dc757",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Приехали, уже работают, я их вижу.",
+    "bytes": 39332
+  },
+  "25e652be": {
+    "sha256": "a2e83c9f673417be9c7aa01d071247bdae22ca4a",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Смирнов Алексей Иванович.",
+    "bytes": 43511
+  },
+  "27b48eec": {
+    "sha256": "2190f66dcda8c3bdd365e8f9d9014b962e0bd631",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Задымление мусоропровода, в доме семнадцать этажей, заявитель на седьмом этаже, открытого пламени не видит, пострадавших нет.",
+    "bytes": 109967
+  },
+  "2e01896a": {
+    "sha256": "a17a772f09292dbb396daaa3c54d15c4a3bb6b27",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Свист от газовой трубы в квартире на кухне, запаха газа нет, скорая не требуется.",
+    "bytes": 82799
+  },
+  "34d3556d": {
+    "sha256": "b2a0a27a279373d91d8695efa514566cf82f712f",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "А вы откуда звоните? Я номер не знаю.",
+    "bytes": 41839
+  },
+  "378656e4": {
+    "sha256": "04cd5f893ef69ec2f91f8fd84ab9b43f9af0d51b",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Алло? Кто это?",
+    "bytes": 30555
+  },
+  "3a3c4f9a": {
+    "sha256": "8c0c78607ae9385874789b51719bbc3e30e0f290",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Пока никого нет, я бы увидел, я тут стою.",
+    "bytes": 51035
+  },
+  "42129999": {
+    "sha256": "7cfab3852930fea90f81baf7aa946f580ce2ead9",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Началось незадолго до того, как я позвонил в сто двенадцать.",
+    "bytes": 52288
+  },
+  "44493272": {
+    "sha256": "a5102234a6317f9e2bf07e200561e5c032c9b5bf",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Большой Сухаревский переулок, дом девятнадцать.",
+    "bytes": 44765
+  },
+  "472adf8c": {
+    "sha256": "576066e99358e2d9fa86095ecb452d52da7af201",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Повторяю: улица Полевая, дом семь.",
+    "bytes": 47273
+  },
+  "4c4fd019": {
+    "sha256": "ac7d2147049d6b84f510f1e7d06469c6ee17a5d1",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Так вы на него и звоните, я с него и звонил. Другого у меня нет.",
+    "bytes": 65245
+  },
+  "4ceadd31": {
+    "sha256": "89cf41a2f6eddb03ead6014a6d8e985aaba7e4b4",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Женщина случайно выпила не те лекарственные препараты, потеряла сознание.",
+    "bytes": 72768
+  },
+  "4fe5d719": {
+    "sha256": "5eb193af2bc9ce0416f8b5bf444474989f96adc9",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Сухов Леонид Сергеевич.",
+    "bytes": 35570
+  },
+  "5851a271": {
+    "sha256": "ac2fbc86546087594c882eace7e81ab178ed2530",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "В четвёртом подъезде нет освещения на всех этажах с вечера, лифт работает, в квартирах свет есть.",
+    "bytes": 97010
+  },
+  "6042b38a": {
+    "sha256": "59087ccc26a555e3e8af34a02881d41b0fbcccc9",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Гусев Павел Андреевич.",
+    "bytes": 34316
+  },
+  "62498168": {
+    "sha256": "ca8ca784df7814ced1c707351fb0daef1e58e9e5",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "улица Полевая, дом семь.",
+    "bytes": 41839
+  },
+  "6866542a": {
+    "sha256": "7a306b13e827bb00116893fb06d7491087bb9e5f",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Ким Олег Юрьевич.",
+    "bytes": 44765
+  },
+  "6e503cc9": {
+    "sha256": "f213f64ce482fcfa82f200c09b8438e620b8f4cc",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "улица Берзарина, дом двадцать один, корпус один.",
+    "bytes": 48527
+  },
+  "7157457d": {
+    "sha256": "c568039c22ba7315758b1ce9127cc8762c5a310b",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Алло, вы меня слышите? Плохо слышно.",
+    "bytes": 48527
+  },
+  "728063f2": {
+    "sha256": "7611708c764e17182e76bb995f9bb9ef2638f761",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Я жилец.",
+    "bytes": 21359
+  },
+  "74fc96f8": {
+    "sha256": "cc87b56cb7600c2cd15748f7cf08510c0ca2ab62",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "улица Вавилова, дом восемьдесят один, корпус один.",
+    "bytes": 44765
+  },
+  "7a60c77d": {
+    "sha256": "cb9bdd6f1b5c679148515fda53401f887996f5b2",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Подъезд три, этаж четыре, квартира сто сорок два.",
+    "bytes": 56050
+  },
+  "7bbbfebb": {
+    "sha256": "1bb7c473c0326a60bd5360f7a19b05567bd65e4c",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "В жилом доме сработала пожарная сигнализация, дыма и возгорания нет.",
+    "bytes": 70261
+  },
+  "828876bc": {
+    "sha256": "7aac061f52bb6e7556cee038cf932e02e72f72a3",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Подъезд один.",
+    "bytes": 33062
+  },
+  "847b12f2": {
+    "sha256": "e0b6582a00d5219d9894dc1be04d003a93fec1a4",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[tired]",
+    "text": "Да я всё уже рассказал, когда звонил.",
+    "bytes": 40586
+  },
+  "85a18275": {
+    "sha256": "865a60239e4bac6357775a085bee868fa9c230d0",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Захаров Игорь Павлович.",
+    "bytes": 40586
+  },
+  "89864e80": {
+    "sha256": "453d0de3b88012ca71cff72179c4d8042e760f48",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Тут несколько человек рядом.",
+    "bytes": 31808
+  },
+  "8e06feda": {
+    "sha256": "e3c6f002e3e01dbe2190a6e18a2fa04c7d770000",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Подъезд один, этаж два, квартира пять.",
+    "bytes": 53542
+  },
+  "8f1c7734": {
+    "sha256": "135734f56df13690e21f552d013160abf6491709",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Я же уже вызывал, зачем опять спрашиваете?",
+    "bytes": 41839
+  },
+  "925edf5a": {
+    "sha256": "0b38c9a3da2d91c736af3296880443af3ad703d1",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Соседка с девятого этажа.",
+    "bytes": 34316
+  },
+  "96957ce8": {
+    "sha256": "22d4cdac2c22f75f266aecf096e5d6783f0ad09f",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Иванов Пётр Сергеевич.",
+    "bytes": 46019
+  },
+  "98af642b": {
+    "sha256": "373da1ba848c2914c649158a3b53423e38304794",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Этого я не знаю, я вижу только то, что происходит на месте.",
+    "bytes": 63991
+  },
+  "99164e60": {
+    "sha256": "e2efcfb94e5a36e0547fc278233b04d94be5f4dc",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Повторяю: Профсоюзная улица, дом девяносто три.",
+    "bytes": 48527
+  },
+  "9992b518": {
+    "sha256": "7e882c94e452bb312f4c8a38ae1757ae84668297",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Во дворе дома четырнадцать корпус два из канализационного колодца на газоне идёт холодная вода, залит тротуар и часть проезда.",
+    "bytes": 123759
+  },
+  "9a62452a": {
+    "sha256": "89819df84ced4315e912a4fa90920f360fce1d80",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Ленинградский проспект, дом тридцать семь.",
+    "bytes": 40586
+  },
+  "9d2f9a85": {
+    "sha256": "e1d9b81f276f60b11900b8be39f6e88c6ea0051b",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Я муж.",
+    "bytes": 24285
+  },
+  "a2a6d164": {
+    "sha256": "6a033b1f089b18a58a047a9f59309eaeca0379e1",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "улица Молостовых, дом десять, корпус один.",
+    "bytes": 43511
+  },
+  "a8bb416a": {
+    "sha256": "95d6ad5c88b9bbd307f7ee83469b39ba49a348ce",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Трунов Олег Егорович.",
+    "bytes": 33062
+  },
+  "aa6415a8": {
+    "sha256": "d13769ebb19ff205397f22fda15f52e77e748057",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Фомин Игорь Валерьевич.",
+    "bytes": 40586
+  },
+  "abaf91d7": {
+    "sha256": "45d70b4f3ede23eb576807a3c373532bc1b31926",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Титов Виктор Семёнович.",
+    "bytes": 39332
+  },
+  "af4f4d17": {
+    "sha256": "e0c0ea868e200165bda4773de06169adc1878970",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Пока ничего не изменилось, помощи на месте ещё не видел.",
+    "bytes": 54796
+  },
+  "b5117354": {
+    "sha256": "b22942a6ae5a34deafcff86b07a2e6bd93078560",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Подъезд назвать не могу, это не в квартире.",
+    "bytes": 43511
+  },
+  "b55182ee": {
+    "sha256": "ac6b3fe13b4676c22ee28958ebbe72d7f5871679",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Повторяю: Волгоградский проспект, дом сто тринадцать, корпус три.",
+    "bytes": 72768
+  },
+  "baaf6081": {
+    "sha256": "f67330b776a19eed514c9f361599b9a1f4459e82",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Волгоградский проспект, дом сто тринадцать, корпус три.",
+    "bytes": 52288
+  },
+  "be97577e": {
+    "sha256": "afe92a09321affa338916d20022a3e5af803c229",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Повторяю: Ленинградский проспект, дом тридцать семь.",
+    "bytes": 49781
+  },
+  "c08599af": {
+    "sha256": "018f7bc5e88aa8e000529ddde9150e840ba14153",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "В подземном переходе у метро Динамо резкий запах газа, людей много, дурноты ни у кого нет.",
+    "bytes": 82799
+  },
+  "c4394980": {
+    "sha256": "41ce61aa4dccd9fe5bde61d43ca1788658260a0b",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Да, пострадавшие есть, им нужна помощь.",
+    "bytes": 48527
+  },
+  "c7f6355b": {
+    "sha256": "b15e195485924c066b7cdbc832437d177abc705f",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Повторяю: Большой Сухаревский переулок, дом девятнадцать.",
+    "bytes": 65245
+  },
+  "c89fc499": {
+    "sha256": "2761663ca067f989ddf9bbd883634b4a33247a54",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Людям ничего не угрожает, все стоят в стороне.",
+    "bytes": 47273
+  },
+  "cb4ca11c": {
+    "sha256": "4f24e5d5c60e1724480b7884bf5665a70aff0d7c",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Подъезд четыре.",
+    "bytes": 25539
+  },
+  "cf6b6ff3": {
+    "sha256": "a6491a8fb9fbfb8a9ce6732125e4ba55c8afbac0",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Повторяю: улица Молостовых, дом десять, корпус один.",
+    "bytes": 58558
+  },
+  "cf8df3ec": {
+    "sha256": "13d22eeff849b16554f77c9afeb998b32bf81a56",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Я очевидец.",
+    "bytes": 25539
+  },
+  "d13572b6": {
+    "sha256": "e85c522bf7580e78dcdd1bd1a409d8a7d4d4c9ff",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Дым в подъезде из мусоропровода, жильцы вышли на лестницу.",
+    "bytes": 57304
+  },
+  "db77da3f": {
+    "sha256": "c3b20838ff87da246682e7b6ccfef9ddf9cffcb8",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "В частном доме запах газа от трубы на вводе, слышен шум в трубе.",
+    "bytes": 63991
+  },
+  "e05b3994": {
+    "sha256": "c8a922faa2612acf0855caade82d99573902dfd5",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "улица Академика Волгина, дом четырнадцать, корпус два.",
+    "bytes": 53542
+  },
+  "e116f2f1": {
+    "sha256": "047eba118ac79afcb84b81d56f22d423c5b1a51b",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Повторяю: улица Академика Волгина, дом четырнадцать, корпус два.",
+    "bytes": 71515
+  },
+  "ea5b94ee": {
+    "sha256": "94f55837ff9be304db91e819b4ceb77caf4313a4",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Подъезд три.",
+    "bytes": 30555
+  },
+  "f635cbc6": {
+    "sha256": "4b229aef3949334f990008972a730b359dd77ccd",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Лебедев Сергей Николаевич.",
+    "bytes": 31808
+  },
+  "f8810f5b": {
+    "sha256": "b10b6b8572ff006c91dddd046579bdb13724fb28",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Повторяю: Коломенская набережная, дом восемнадцать.",
+    "bytes": 51035
+  },
+  "fd6ed477": {
+    "sha256": "54607afe43fbd2740a98fcba8187640da2504c6f",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[tired]",
+    "text": "Мне сейчас неудобно говорить, перезвоните попозже.",
+    "bytes": 48527
+  },
+  "fdf44315": {
+    "sha256": "63aa2ec0a1c5ff7dbb4226170950753601ce5c1c",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "С ночи холодные батареи в домах десять корпус один, десять корпус два и двенадцать по улице Молостовых, горячая вода есть.",
+    "bytes": 125431
+  },
+  "fe8bff0e": {
+    "sha256": "ac6def545d9266aabd6751f2f04506b14bec5f20",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Профсоюзная улица, дом девяносто три.",
+    "bytes": 39332
+  },
+  "ff88f2f5": {
+    "sha256": "bd6fd0fa3c1b5bf796f4d10f7f34ae3a09ae2375",
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Нет, пострадавших нет, все целы.",
+    "bytes": 36824
+  }
+}

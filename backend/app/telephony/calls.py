@@ -317,11 +317,14 @@ class CallManager:
         service: str,
         service_title: str,
         kind: str = officer.KIND_OUTGOING,
+        number: str | None = None,
     ) -> bool:
         """Rings the trainee's phones from the officer's number for a service call the
         dispatcher started from the card (issue #36) or for a squad's report (issue #103;
-        ``kind`` says which, so the softphone knows whether to answer by itself). Returns
-        False when nothing could be dialled (the API then answers in text)."""
+        ``kind`` says which, so the softphone knows whether to answer by itself). ``number``
+        overrides the caller id: a call back to the caller of the card shows his own phone,
+        the one written in the card. Returns False when nothing could be dialled (the API
+        then answers in text)."""
         if call_id in self.calls:
             return True
         async with SessionLocal() as session:
@@ -363,7 +366,7 @@ class CallManager:
                     VAR_SERVICE_CALL_KIND: kind,
                     VAR_RING_TIMEOUT: str(timeout),
                     VAR_CALLER_NAME: service_title or service,
-                    VAR_CALLER_NUM: service_number(service),
+                    VAR_CALLER_NUM: dialled_digits(number) or service_number(service),
                 },
             )
             await self.ari.dial(call.channel_id, ring_seconds=timeout)
@@ -760,10 +763,15 @@ def _end_reason(call: Call, cause: int | None) -> str:
     return CALL_END_NO_ANSWER
 
 
+def dialled_digits(phone: str | None) -> str:
+    """A phone as the softphone shows it: digits only, empty when there is no number."""
+    return "".join(ch for ch in (phone or "") if ch.isdigit())
+
+
 def _caller_id(scenario: CallIntakeScenario) -> tuple[str, str]:
     """Name and number the softphone shows: the caller's phone from the reference card,
     else 112."""
     phone = scenario.reference_card.caller.phone or scenario.caller.facts.get("callback_phone")
-    digits = "".join(ch for ch in (phone or "") if ch.isdigit()) or DEFAULT_CALLER_NUMBER
+    digits = dialled_digits(phone) or DEFAULT_CALLER_NUMBER
     name = scenario.reference_card.caller.name or "Заявитель"
     return name, digits

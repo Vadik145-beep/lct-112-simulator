@@ -200,13 +200,14 @@ class FlaggedField(BaseModel):
 
 class ServiceCallLog(BaseModel):
     """One call on the card (``attempts.service_calls[]``): the dispatcher's call to a service
-    officer (``outgoing``) or the squad leader's report to the dispatcher (``report``)."""
+    officer (``outgoing``), the squad leader's report to the dispatcher (``report``) or the
+    dispatcher's call back to the person who reported the incident (``caller``)."""
 
     model_config = STRICT
 
     service: str
     started_at: datetime
-    kind: Literal["outgoing", "report"] = "outgoing"
+    kind: Literal["outgoing", "report", "caller"] = "outgoing"
     report_status: str | None = None  # the status a report stands for
     answered: bool = False
     ended_at: datetime | None = None
@@ -241,6 +242,9 @@ class CallerProfile(BaseModel):
     behaviour: str | None = None
     drops_call: bool = False  # the caller hangs up before the operator finishes
     no_contact: bool = False  # nobody answers the call back
+    # Разговор идёт в обратную сторону: заявителю перезвонил диспетчер ДДС по номеру из
+    # карточки (ответ заказчика 23.09.2026). Меняет роль в промптах, но не персону и голос.
+    calls_back: bool = False
 
 
 class ReplyVariant(BaseModel):

@@ -1,0 +1,442 @@
+{
+  "1862f4b3": {
+    "sha256": "976bc67559d4d48af42349fcc33dc2102f7a8e22",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Повторяю: улица Берзарина, дом двадцать один, корпус один.",
+    "bytes": 74022
+  },
+  "1be7b760": {
+    "sha256": "fb9932e7b6753a2d09fea6aa6c22db5bbe82bd18",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Орлова Наталья Сергеевна.",
+    "bytes": 31808
+  },
+  "1f8dbb2a": {
+    "sha256": "ff85a540b9766163e1e19df91ff19bad31a3855d",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Приехали, уже работают, я их вижу.",
+    "bytes": 41839
+  },
+  "24e5ed79": {
+    "sha256": "ba9b426441f99e32a473104cfc755b9c5e28038c",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Зеленодольская улица, дом двадцать четыре, корпус один.",
+    "bytes": 53542
+  },
+  "27b3eea8": {
+    "sha256": "799ae11d87053d2f8f1f703e3406922995ec3feb",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Лебедева Ольга Викторовна.",
+    "bytes": 36824
+  },
+  "31442724": {
+    "sha256": "da4198d7392164a4f7f0031dbb93367454caa609",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Повторяю: улица Героев Панфиловцев, дом двадцать семь, корпус один.",
+    "bytes": 70261
+  },
+  "3270626e": {
+    "sha256": "2518438fcc4405a21d79eef2e75ba05da0ef8180",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Повторяю: улица Молодёжная, дом четырнадцать.",
+    "bytes": 52288
+  },
+  "34d3556d": {
+    "sha256": "3570cbe86eb1e5ca4a44bf4d10a9486124567e15",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "А вы откуда звоните? Я номер не знаю.",
+    "bytes": 44765
+  },
+  "378656e4": {
+    "sha256": "e43416cdfd402971ec00075bdf58cc5cbc8e934c",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Алло? Кто это?",
+    "bytes": 34316
+  },
+  "3c01df51": {
+    "sha256": "99c57853588726fa607bffccb4ede6d874f38e8f",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "В подъезде два на четвёртом этаже течёт стояк горячей воды, вода идёт по стене на третий этаж, в квартирах сухо.",
+    "bytes": 121252
+  },
+  "46d08846": {
+    "sha256": "1ad0b9e14fa9e35ffdb58d54fdded6dc8d65d2d7",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Повторяю: улица Свободы, дом сорок два, корпус два.",
+    "bytes": 69007
+  },
+  "4c173603": {
+    "sha256": "94b0b7a1b649cead63dbc423a8bb42eb6e8fb909",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Подъезд один, этаж три.",
+    "bytes": 41839
+  },
+  "4dc850dd": {
+    "sha256": "131e128ba3b7981b4e1e9c31d7ee3a6d0cc3afd2",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[tired]",
+    "text": "Да я всё уже рассказала, когда звонила.",
+    "bytes": 44765
+  },
+  "550eeca7": {
+    "sha256": "e76dc07aba1b160dd842ac2b8b12c246b07dc16e",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "С утра холодные батареи во всех подъездах дома семнадцать по Зелёному проспекту, горячая вода есть.",
+    "bytes": 99518
+  },
+  "63f8a716": {
+    "sha256": "4c1fd2f7c03388e8f449525e5ef48961d1155479",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "На лестничной клетке третьего этажа течёт стояк холодной воды, вода уходит по ступеням на второй этаж, в квартирах пока сухо.",
+    "bytes": 135462
+  },
+  "63fe2af5": {
+    "sha256": "13e76a313693b39419aec38aa7ef892867b95d8f",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Повторяю: Зеленодольская улица, дом двадцать четыре, корпус один.",
+    "bytes": 77784
+  },
+  "661da161": {
+    "sha256": "0054d873ff5ad7d0ea3b8cd6b675462454d63c57",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Повторяю: шоссе Энтузиастов, дом пятьдесят два.",
+    "bytes": 56050
+  },
+  "6c3f9022": {
+    "sha256": "32d042991f830bb0036c7fac7769df1a86b18588",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Пока никого нет, я бы увидела, я тут стою.",
+    "bytes": 48527
+  },
+  "6e503cc9": {
+    "sha256": "a2ac9e93cffeba2776976b9ae2c2512c4c5dbccd",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "улица Берзарина, дом двадцать один, корпус один.",
+    "bytes": 48527
+  },
+  "7047e972": {
+    "sha256": "ed51ea48c7bdf8a361b7b596b0b812d96ce93e13",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Началось незадолго до того, как я позвонила в сто двенадцать.",
+    "bytes": 56050
+  },
+  "7157457d": {
+    "sha256": "26f37b73d12242e66ebf2b7d8e5a8eafbe738aba",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Алло, вы меня слышите? Плохо слышно.",
+    "bytes": 52288
+  },
+  "728063f2": {
+    "sha256": "c4d478c0bf7c7a0f49dd6fae80f2b2ec940f3ba9",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Я жилец.",
+    "bytes": 28047
+  },
+  "77e9d512": {
+    "sha256": "956fdbe263bed066f67798a1c1502e4d1b2e23ee",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "шоссе Энтузиастов, дом пятьдесят два.",
+    "bytes": 39332
+  },
+  "83b4e611": {
+    "sha256": "3cf05f352acbdcd34cc7ae14df2f0860778d68e0",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Подъезд два, этаж пять, квартира тридцать семь.",
+    "bytes": 48527
+  },
+  "84f0c85a": {
+    "sha256": "7dab13ff4a3d1536050830373aa39c050aa71420",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Так вы на него и звоните, я с него и звонила. Другого у меня нет.",
+    "bytes": 72768
+  },
+  "873d142d": {
+    "sha256": "9a38e6669c2b25c532cc4dca84071334ffbf9db5",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Орлова Марина Петровна.",
+    "bytes": 31808
+  },
+  "8818587e": {
+    "sha256": "6c311272a4246f57045c028036aba31ac2945a5e",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Повторяю: улица Красного Маяка, дом пятнадцать, корпус один.",
+    "bytes": 65245
+  },
+  "89864e80": {
+    "sha256": "8336535eb9a1a385cf140dbc48c0b94ae685932f",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Тут несколько человек рядом.",
+    "bytes": 33062
+  },
+  "925edf5a": {
+    "sha256": "0c2d4ed2236e516f3c990d34d54c8ab738aa57bd",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Соседка с девятого этажа.",
+    "bytes": 34316
+  },
+  "98af642b": {
+    "sha256": "cb958c2c683c0044934ba6db711d2f7695625629",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Этого я не знаю, я вижу только то, что происходит на месте.",
+    "bytes": 61066
+  },
+  "98c02c8d": {
+    "sha256": "9a3a680705a8f12609a416f3deb18263cdafc6de",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Захарова Елена Дмитриевна.",
+    "bytes": 40586
+  },
+  "a5e459ee": {
+    "sha256": "db5827ae9f45b838ae1e1b18bceb17198cf00806",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Подъезд два, этаж четыре.",
+    "bytes": 38078
+  },
+  "a9b104ea": {
+    "sha256": "7d004b3136a00a99eb98a8d41d770f6ff870e854",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Зелёный проспект, дом семнадцать.",
+    "bytes": 39332
+  },
+  "ae66d6bb": {
+    "sha256": "f1a9debaac616b0fd97df6c1fff5e2ba666539d3",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Пока ничего не изменилось, помощи на месте ещё не видела.",
+    "bytes": 59812
+  },
+  "b5117354": {
+    "sha256": "2912a4d0a6a66a33f99984e001f0d1d6b2084806",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Подъезд назвать не могу, это не в квартире.",
+    "bytes": 40586
+  },
+  "b83c7403": {
+    "sha256": "194292e17a6e984557b23634ba19ae8c692e3526",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "улица Свободы, дом сорок два, корпус два.",
+    "bytes": 48527
+  },
+  "b98d161b": {
+    "sha256": "8b7f7721de1436e8a9f7af7497425cf9b73c3d53",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "В квартире течёт труба под раковиной, заливает соседей снизу.",
+    "bytes": 56050
+  },
+  "c51063a3": {
+    "sha256": "b1b90add8c15743880da2852ac1c640990f862d1",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "улица Героев Панфиловцев, дом двадцать семь, корпус один.",
+    "bytes": 54796
+  },
+  "c582084b": {
+    "sha256": "5385674a215ad6d7449c30a939fdb3e196c25203",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent]",
+    "text": "Повторяю: Зелёный проспект, дом семнадцать.",
+    "bytes": 57304
+  },
+  "c5b9dde8": {
+    "sha256": "5d7cf6c3c56ff254ba29040f375f4b3d6a0d1f3a",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Я старшая по дому.",
+    "bytes": 35570
+  },
+  "c89fc499": {
+    "sha256": "9b9e8a110524ff703020e60308e64ef3c32169ec",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Людям ничего не угрожает, все стоят в стороне.",
+    "bytes": 46019
+  },
+  "ca204907": {
+    "sha256": "ebff1066b0ffc0fea105570c26c64658493e8ba8",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Во дворе у первого подъезда сильный запах канализации, у люка мокрый асфальт.",
+    "bytes": 82799
+  },
+  "cb731722": {
+    "sha256": "be7a1a4f8d75b2d4b75119414db2907e072ae16e",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "На газоне у дома пятьдесят два из под земли идёт пар и горячая вода, рядом детская площадка.",
+    "bytes": 109967
+  },
+  "cf042544": {
+    "sha256": "2dd3b4b742159a29270a2bc02cf28d609a0af278",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Я же уже вызывала, зачем опять спрашиваете?",
+    "bytes": 48527
+  },
+  "cf7eedf9": {
+    "sha256": "b545900a98718e5aee013c572067e098049e5fc2",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Ковалёва Анна Игоревна.",
+    "bytes": 34316
+  },
+  "cf8df3ec": {
+    "sha256": "a8e66879a1123d58502d7d007cd9a4e6af35c7dc",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Я очевидец.",
+    "bytes": 28047
+  },
+  "d13572b6": {
+    "sha256": "2645282880de58ae3968cd43df70df698d704453",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "Дым в подъезде из мусоропровода, жильцы вышли на лестницу.",
+    "bytes": 61066
+  },
+  "d570b188": {
+    "sha256": "2486e93b664c55bc7b237d717f5e5c1fc4f93aba",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "улица Красного Маяка, дом пятнадцать, корпус один.",
+    "bytes": 48527
+  },
+  "e44b0e6d": {
+    "sha256": "869958398eca830c51802fe33fd244d5a9ed4a3f",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Никитина Ольга Владимировна.",
+    "bytes": 35570
+  },
+  "ea5b94ee": {
+    "sha256": "eb016a257dcba1ad2fa6a66719503e2a9578d00d",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Подъезд три.",
+    "bytes": 21359
+  },
+  "edec49cb": {
+    "sha256": "38906c0ce3a9d4419014cca89a2ee9e018922e0b",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Белова Татьяна Юрьевна.",
+    "bytes": 35570
+  },
+  "f223de9c": {
+    "sha256": "8dda7d8ef410830ea959c254646319ec3aea0058",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "улица Молодёжная, дом четырнадцать.",
+    "bytes": 36824
+  },
+  "f88d119b": {
+    "sha256": "89bc4df35f41815fba2fb5a85efcfa48a9ae97f3",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[anxious]",
+    "text": "В доме с утра нет ни холодной, ни горячей воды во всех подъездах, объявлений нет, в соседних домах вода есть.",
+    "bytes": 106205
+  },
+  "fd6ed477": {
+    "sha256": "de540c9ef5b9cc8239a8f9c355f35735574d95ff",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[tired]",
+    "text": "Мне сейчас неудобно говорить, перезвоните попозже.",
+    "bytes": 49781
+  },
+  "ff88f2f5": {
+    "sha256": "1a04bc636e33db317bc51ecc45aeb1e9e6cfcd66",
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[nervous]",
+    "text": "Нет, пострадавших нет, все целы.",
+    "bytes": 40586
+  }
+}

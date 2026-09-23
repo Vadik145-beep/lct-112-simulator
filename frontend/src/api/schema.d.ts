@@ -716,7 +716,9 @@ export interface paths {
         put?: never;
         /**
          * Start Service Call
-         * @description ����������� a service from the card: one call at a time, only while the card is open.
+         * @description ����������� from the card: one call at a time, only while the card is open. The target
+         *     is a service of the strip or the caller of the card himself (``officer.CALLER_TARGET``,
+         *     ����� ��������� 23.09.2026: ���������� ��� ����� �������� ����� �� ����������).
          */
         post: operations["start_service_call_api_attempts__attempt_id__service_call_post"];
         delete?: never;
@@ -4211,7 +4213,6 @@ export interface components {
         ScenarioListItem: {
             /**
              * Delivered
-             * @description Delivered with the product (data/seed/scenarios): shown, played, but never edited here.
              * @default false
              */
             delivered: boolean;
@@ -4305,21 +4306,15 @@ export interface components {
         /** ScenarioOut */
         ScenarioOut: {
             /**
-             * Quality
-             * @description Remarks on the wording and the card: shown to the teacher, never block anything.
-             */
-            quality: string[];
-            /**
-             * Delivered
-             * @description Delivered with the product (data/seed/scenarios): shown, played, but never edited here.
-             * @default false
-             */
-            delivered: boolean;
-            /**
              * Id
              * Format: uuid
              */
             id: string;
+            /**
+             * Delivered
+             * @default false
+             */
+            delivered: boolean;
             /**
              * Kind
              * @enum {string}
@@ -4371,6 +4366,8 @@ export interface components {
             fully_approved: boolean;
             /** Problems */
             problems: string[];
+            /** Quality */
+            quality: string[];
             /** Services */
             services: components["schemas"]["NoiseOut"][];
             /** Versions */
@@ -4397,8 +4394,10 @@ export interface components {
         };
         /**
          * ServiceCallOut
-         * @description A call on the card: the dispatcher's call to a service officer (issue #36, ``outgoing``)
-         *     or the squad leader's report to the dispatcher (``report``, customer 21.09.2026).
+         * @description A call on the card: the dispatcher's call to a service officer (issue #36, ``outgoing``),
+         *     the squad leader's report to the dispatcher (``report``, customer 21.09.2026) or the
+         *     dispatcher's call back to the person who reported the incident (``caller``, customer
+         *     23.09.2026).
          */
         ServiceCallOut: {
             /** Id */
@@ -4412,7 +4411,7 @@ export interface components {
              * @default outgoing
              * @enum {string}
              */
-            kind: "outgoing" | "report";
+            kind: "outgoing" | "report" | "caller";
             /** Report Status */
             report_status?: string | null;
             /** Report Status Title */

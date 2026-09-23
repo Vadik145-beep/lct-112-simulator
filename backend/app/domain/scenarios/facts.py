@@ -135,20 +135,27 @@ _MALE_WORDS = ("муж", "супруг", "отец", "папа", "брат", "с
 _FEMALE_WORDS = ("жена", "супруга", "мама", "мать", "сестра", "дочь", "бабушка", "соседка")
 
 
+def _gender_by_word(text: str | None) -> str | None:
+    """«супруга» before «супруг», «мать» before «муж»: the longer word wins."""
+    word = (text or "").lower().strip()
+    if not word:
+        return None
+    if any(word.startswith(w) for w in _FEMALE_WORDS):
+        return "female"
+    if any(word.startswith(w) for w in _MALE_WORDS):
+        return "male"
+    return None
+
+
 def caller_gender(name: str | None, relation: str | None) -> str | None:
     if name:
         if _FEMALE_PATRONYMIC.search(name):
             return "female"
         if _MALE_PATRONYMIC.search(name):
             return "male"
-    word = (relation or "").lower()
-    if word:
-        # «супруга» before «супруг», «мать» before «муж»: the longer word wins.
-        if any(word.startswith(w) for w in _FEMALE_WORDS):
-            return "female"
-        if any(word.startswith(w) for w in _MALE_WORDS):
-            return "male"
-    return None
+    # Имя в карточке бывает описанием, а не ФИО: «Соседка с 9 этажа» — тоже женщина
+    # (замечание пользователя 24.09.2026, карточка card_2-1_dubl).
+    return _gender_by_word(name) or _gender_by_word(relation)
 
 
 def parse_caller(situation: str) -> CallerFacts:
