@@ -859,7 +859,7 @@ test.describe("Доклады бригады диспетчеру по теле�
     await expect(page.getByTestId("service-call-panel")).toHaveCount(0);
     await setStatus(page, "Принята");
     await expect(
-      page.getByText(/Старший наряда будет звонить с докладами/),
+      page.getByText(/Старший группы реагирования будет звонить с докладами/),
     ).toBeVisible();
 
     const report = page.locator(

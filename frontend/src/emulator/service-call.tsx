@@ -273,7 +273,7 @@ export function ServiceCallPanel({
         {call.turns.length === 0 && (
           <li className="text-[var(--arm-text-muted)]">
             {isReport(call)
-              ? "Звонит старший наряда: ответьте, чтобы выслушать доклад."
+              ? "Звонит старший группы: ответьте, чтобы выслушать доклад."
               : "Соединение со службой…"}
           </li>
         )}
