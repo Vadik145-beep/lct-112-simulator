@@ -110,6 +110,10 @@ async def test_journal_issues_cards_by_difficulty(client: AsyncClient) -> None:
     assert "задымление: мусоропровод" in titles
     own = [s for s in first["services"] if s["is_own"]]
     assert own and own[0]["code"] == "territorial_oiv" and own[0]["status"] == "added"
+    # The tab names the district's own ДДС and the prefecture from the card address, as on
+    # the live АРМ-112 (customer's answer of 21.09 to question 4); the code stays abstract.
+    assert own[0]["short_title"].startswith("Упр. ") and "район" in own[0]["short_title"]
+    assert own[0]["title"].startswith("ДДС управы: ") and "префектура" in own[0]["title"]
     others = {s["code"]: s for s in first["services"] if not s["is_own"]}
     assert "101" in others and others["101"]["short_title"] == "101"
     assert others["101"]["status"] in ("received", "accepted")

@@ -462,6 +462,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/reference/materials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Materials
+         * @description Methodical materials the trainee can read in full: the memo and the documents a
+         *     teacher uploaded to the reference (��: �������������� ���������� � ������������
+         *     ����������).
+         */
+        get: operations["list_materials_api_reference_materials_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/reference/materials/{name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Material */
+        get: operations["read_material_api_reference_materials__name__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/grammar/check": {
         parameters: {
             query?: never;
@@ -815,6 +854,28 @@ export interface paths {
         /** Update Scenario */
         put: operations["update_scenario_api_scenarios__scenario_id__put"];
         post?: never;
+        /**
+         * Remove Scenario
+         * @description Deletes a scenario, or archives it when past attempts refer to it (��: ��������
+         *     ������������ �������� without losing the history of lessons).
+         */
+        delete: operations["remove_scenario_api_scenarios__scenario_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/scenarios/{scenario_id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restore Scenario */
+        post: operations["restore_scenario_api_scenarios__scenario_id__restore_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1568,6 +1629,52 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/attempts/{attempt_id}/cloud-call": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Web Call
+         * @description Keys of the browser call for the attempt: the assistant of its scenario is stored in
+         *     Vapi and the caller answers in the trainee's browser. 409 when the lesson is not in the
+         *     cloud mode or the calls go through telephony; 503 when the cloud is unreachable (the
+         *     panel then continues with the microphone and the stand-by provider).
+         */
+        post: operations["start_web_call_api_attempts__attempt_id__cloud_call_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/cloud-call/failed": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Web Call Failed
+         * @description The SDK could not start or lost the call: noted in the session log; the panel
+         *     continues with the microphone. The caller greets from our own side now � in a working
+         *     cloud call the greeting is spoken by Vapi and we store none (��������� 22.09.2026), so
+         *     the answer carries the opening the panel has to play.
+         */
+        post: operations["web_call_failed_api_attempts__attempt_id__cloud_call_failed_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/attempts/{attempt_id}/draft": {
         parameters: {
             query?: never;
@@ -2157,7 +2264,7 @@ export interface components {
         };
         /** AnswerResponse */
         AnswerResponse: {
-            opening: components["schemas"]["DialogTurnOut"];
+            opening: components["schemas"]["DialogTurnOut"] | null;
             dialog: components["schemas"]["DialogOut"];
         };
         /** ApproveIn */
@@ -2279,6 +2386,11 @@ export interface components {
              * @default []
              */
             service_calls_required: string[];
+            /**
+             * Reports Expected
+             * @default false
+             */
+            reports_expected: boolean;
             /** Transitions */
             transitions: components["schemas"]["TransitionOut"][];
             /** Reject Reasons */
@@ -2554,6 +2666,8 @@ export interface components {
             flags?: {
                 [key: string]: boolean;
             };
+            /** Injured Count */
+            injured_count?: number | null;
             /** Services */
             services?: string[];
             address?: components["schemas"]["AddressIn"];
@@ -2588,6 +2702,8 @@ export interface components {
             };
             /** Injured */
             injured: boolean;
+            /** Injured Count */
+            injured_count?: number | null;
             /** Ambulance Refused */
             ambulance_refused: boolean;
             /** Blocked */
@@ -2641,6 +2757,8 @@ export interface components {
              * @default []
              */
             flags: string[];
+            /** Phrases */
+            phrases?: string | null;
             /**
              * Children
              * @default []
@@ -2755,6 +2873,17 @@ export interface components {
              * @default false
              */
             heard: boolean;
+            /** Latency Ms */
+            latency_ms?: number | null;
+        };
+        /** DocHitOut */
+        DocHitOut: {
+            /** Name */
+            name: string;
+            /** Title */
+            title: string;
+            /** Text */
+            text: string;
         };
         /** DraftRequest */
         DraftRequest: {
@@ -3216,6 +3345,39 @@ export interface components {
             /** Password */
             password: string;
         };
+        /** MaterialOut */
+        MaterialOut: {
+            /** Name */
+            name: string;
+            /** Title */
+            title: string;
+            /** Builtin */
+            builtin: boolean;
+            /** Paragraphs */
+            paragraphs: number;
+            /** Size */
+            size: number;
+            /** Updated At */
+            updated_at: string | null;
+        };
+        /** MaterialParagraphOut */
+        MaterialParagraphOut: {
+            /** Page */
+            page: number | null;
+            /** Text */
+            text: string;
+        };
+        /** MaterialTextOut */
+        MaterialTextOut: {
+            /** Name */
+            name: string;
+            /** Title */
+            title: string;
+            /** Builtin */
+            builtin: boolean;
+            /** Paragraphs */
+            paragraphs: components["schemas"]["MaterialParagraphOut"][];
+        };
         /** MemoHitOut */
         MemoHitOut: {
             /** Page */
@@ -3241,6 +3403,11 @@ export interface components {
             stt: boolean;
             /** Tts */
             tts: boolean;
+            /**
+             * Cloud
+             * @default false
+             */
+            cloud: boolean;
         };
         /** MonitorCard */
         MonitorCard: {
@@ -3685,6 +3852,11 @@ export interface components {
             memo: components["schemas"]["MemoHitOut"][];
             /** Types */
             types: components["schemas"]["TypeHitOut"][];
+            /**
+             * Docs
+             * @default []
+             */
+            docs: components["schemas"]["DocHitOut"][];
         };
         /** RejectReasonOut */
         RejectReasonOut: {
@@ -3739,6 +3911,29 @@ export interface components {
              * @enum {string}
              */
             voicing: "none" | "queued" | "done" | "failed";
+        };
+        /**
+         * ReportAction
+         * @description One step of the trainee on the card or in the call, for the �actions� column of the
+         *     lesson report (��: ����� �� ����������� � ����������).
+         */
+        ReportAction: {
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Seconds */
+            seconds: number;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "status" | "flag" | "call" | "question" | "card";
+            /** Title */
+            title: string;
+            /** Detail */
+            detail?: string | null;
         };
         /** ReportAttempt */
         ReportAttempt: {
@@ -3803,6 +3998,11 @@ export interface components {
              * @default []
              */
             comments: string[];
+            /**
+             * Actions
+             * @default []
+             */
+            actions: components["schemas"]["ReportAction"][];
         };
         /** ReportErrorCount */
         ReportErrorCount: {
@@ -3992,7 +4192,7 @@ export interface components {
              * Status
              * @enum {string}
              */
-            status: "draft" | "review" | "approved";
+            status: "draft" | "review" | "approved" | "archived";
             /** Source */
             source: string;
             /** Current Version */
@@ -4083,7 +4283,7 @@ export interface components {
              * Status
              * @enum {string}
              */
-            status: "draft" | "review" | "approved";
+            status: "draft" | "review" | "approved" | "archived";
             /** Source */
             source: string;
             /** Current Version */
@@ -4116,6 +4316,14 @@ export interface components {
                 [key: string]: unknown;
             } | null;
         };
+        /** ScenarioRemoveOut */
+        ScenarioRemoveOut: {
+            /**
+             * Result
+             * @enum {string}
+             */
+            result: "deleted" | "archived";
+        };
         /** ScenarioUpdateIn */
         ScenarioUpdateIn: {
             /** Body */
@@ -4125,7 +4333,8 @@ export interface components {
         };
         /**
          * ServiceCallOut
-         * @description A call of the dispatcher to a service officer (issue #36).
+         * @description A call on the card: the dispatcher's call to a service officer (issue #36, ``outgoing``)
+         *     or the squad leader's report to the dispatcher (``report``, customer 21.09.2026).
          */
         ServiceCallOut: {
             /** Id */
@@ -4134,6 +4343,16 @@ export interface components {
             service: string;
             /** Service Title */
             service_title: string;
+            /**
+             * Kind
+             * @default outgoing
+             * @enum {string}
+             */
+            kind: "outgoing" | "report";
+            /** Report Status */
+            report_status?: string | null;
+            /** Report Status Title */
+            report_status_title?: string | null;
             /**
              * Started At
              * Format: date-time
@@ -4270,6 +4489,11 @@ export interface components {
             at: string | null;
             /** Is Own */
             is_own: boolean;
+            /**
+             * Is Main
+             * @default false
+             */
+            is_main: boolean;
         };
         /** ServiceTile */
         ServiceTile: {
@@ -4890,6 +5114,28 @@ export interface components {
             attempts: number;
             /** Sessions */
             sessions: number;
+        };
+        /** WebCallFailedIn */
+        WebCallFailedIn: {
+            /**
+             * Reason
+             * @default
+             */
+            reason: string;
+        };
+        /**
+         * WebCallOut
+         * @description What the browser starts the call with (Vapi Web SDK).
+         */
+        WebCallOut: {
+            /** Public Key */
+            public_key: string;
+            /** Api Url */
+            api_url: string;
+            /** Assistant Id */
+            assistant_id: string;
+            /** Token */
+            token: string;
         };
         /** WeekPointOut */
         WeekPointOut: {
@@ -5563,6 +5809,57 @@ export interface operations {
             };
         };
     };
+    list_materials_api_reference_materials_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaterialOut"][];
+                };
+            };
+        };
+    };
+    read_material_api_reference_materials__name__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MaterialTextOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     grammar_check_api_grammar_check_post: {
         parameters: {
             query?: never;
@@ -6216,6 +6513,68 @@ export interface operations {
                 "application/json": components["schemas"]["ScenarioUpdateIn"];
             };
         };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_scenario_api_scenarios__scenario_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScenarioRemoveOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    restore_scenario_api_scenarios__scenario_id__restore_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                scenario_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {
@@ -7559,6 +7918,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CallResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_web_call_api_attempts__attempt_id__cloud_call_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebCallOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    web_call_failed_api_attempts__attempt_id__cloud_call_failed_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WebCallFailedIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DialogTurnOut"] | null;
                 };
             };
             /** @description Validation Error */

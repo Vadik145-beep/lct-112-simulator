@@ -33,6 +33,8 @@ MODE_CALL_INTAKE = "call_intake"
 SCENARIO_DRAFT = "draft"
 SCENARIO_REVIEW = "review"
 SCENARIO_APPROVED = "approved"
+# «Удалён» для сценария, который уже выдавался обучающимся: история попыток ссылается на него.
+SCENARIO_ARCHIVED = "archived"
 
 # Session lifecycle.
 SESSION_DRAFT = "draft"
@@ -58,6 +60,7 @@ CALL_ENDED = "ended"  # see call_end_reason
 # call_end_reason values.
 CALL_END_HANGUP = "hangup"  # the operator hung up
 CALL_END_CALLER_HANGUP = "caller_hangup"  # the caller dropped the call (scenario)
+CALL_END_SILENCE = "silence"  # the cloud call died of silence, nobody hung up
 CALL_END_NO_ANSWER = "no_answer"  # the softphone did not answer in time
 CALL_END_NO_CONTACT = "no_contact"  # «нет контакта» pressed
 CALL_END_CALL_DROPPED = "call_dropped"  # «срыв звонка» pressed
@@ -104,6 +107,8 @@ class Scenario(Base):
     service_code: Mapped[str | None] = mapped_column(String(32))
     difficulty: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     status: Mapped[str] = mapped_column(String(16), nullable=False, default=SCENARIO_DRAFT)
+    # Status before archiving, so «восстановить» brings the scenario back as it was.
+    archived_from: Mapped[str | None] = mapped_column(String(16))
     source: Mapped[str] = mapped_column(String(16), nullable=False, default="manual")
     current_version: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     author_id: Mapped[uuid.UUID | None] = mapped_column(

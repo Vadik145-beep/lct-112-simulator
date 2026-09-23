@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -19,6 +20,8 @@ class ModelsOut(BaseModel):
     generation: bool
     stt: bool
     tts: bool
+    # The cloud voice (plan/track-c-vapi.md) may be chosen as the dialog mode of a lesson.
+    cloud: bool = False
 
 
 class StudentOut(BaseModel):
@@ -230,6 +233,17 @@ class ReportErrorCount(BaseModel):
     count: int
 
 
+class ReportAction(BaseModel):
+    """One step of the trainee on the card or in the call, for the «actions» column of the
+    lesson report (ТЗ: отчёт «с информацией о действиях»)."""
+
+    at: datetime
+    seconds: float  # from the moment the card was issued / the call started ringing
+    kind: Literal["status", "flag", "call", "question", "card"]
+    title: str
+    detail: str | None = None
+
+
 class ReportAttempt(BaseModel):
     id: uuid.UUID
     card_number: str
@@ -257,6 +271,8 @@ class ReportAttempt(BaseModel):
     overridden: bool = False
     override_reason: str | None = None
     comments: list[str] = []
+    # What the trainee did, in order, with the time from the start of the attempt.
+    actions: list[ReportAction] = []
 
 
 class ReportStudent(BaseModel):

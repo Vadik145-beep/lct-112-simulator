@@ -19,7 +19,7 @@ from app.domain.analytics.records import AttemptRecord
 
 MODE_CARD = "card_response"
 MODE_CALL = "call_intake"
-NORM_SECONDS = {MODE_CARD: 30, MODE_CALL: 90}
+NORM_SECONDS = {MODE_CARD: 30, MODE_CALL: 60}
 # Incident groups the seed scenarios cover: fire, road accident, gas, disturbance, crime, medical.
 GROUPS: tuple[str, ...] = ("1", "2", "13", "15", "17", "22")
 ERROR_CODES = {

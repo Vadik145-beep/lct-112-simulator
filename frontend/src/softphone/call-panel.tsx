@@ -1,4 +1,12 @@
-import { Mic, Phone, PhoneIncoming, PhoneOff, Send } from "lucide-react";
+import {
+  Cloud,
+  Mic,
+  MicOff,
+  Phone,
+  PhoneIncoming,
+  PhoneOff,
+  Send,
+} from "lucide-react";
 import { useState } from "react";
 
 import { Badge, type BadgeTone } from "@/components/ui/badge";
@@ -78,7 +86,6 @@ export function CallPanel({
   compact?: boolean;
 }) {
   const phone = useSoftphone();
-  const [text, setText] = useState("");
   if (!phone) return null;
   // A call to a service officer lives in the card (issue #36), not in this panel.
   if (phone.serviceCallId) return null;
@@ -197,7 +204,62 @@ export function CallPanel({
         )}
       </div>
 
-      {talking && phone.mode === "browser" && (
+      <CallControls />
+    </section>
+  );
+}
+
+/**
+ * The controls of a call in progress: the cloud state, push-to-talk / text to the caller,
+ * the microphone. Part of the floating panel; the operator card shows them in the trainer
+ * panel next to the transcript, keeping the header row of the card as flat as the live one.
+ */
+export function CallControls({ className }: { className?: string }) {
+  const phone = useSoftphone();
+  const [text, setText] = useState("");
+  if (!phone || phone.serviceCallId) return null;
+  if (phone.status === "disconnected" || phone.status === "ready") return null;
+  const talking = phone.status === "talking";
+  return (
+    <div className={className} data-testid="call-controls">
+      {talking && phone.mode === "browser" && phone.cloud === "connecting" && (
+        <div
+          className="mt-3 flex items-center gap-2 text-sm text-muted-foreground"
+          role="status"
+          data-testid="cloud-connecting"
+        >
+          <Cloud className="size-4 animate-pulse" aria-hidden /> Соединяем с
+          облачным заявителем…
+        </div>
+      )}
+      {talking && phone.mode === "browser" && phone.cloud === "live" && (
+        <div className="mt-3 space-y-2" data-testid="cloud-live">
+          <div
+            className="flex items-center gap-2 text-sm"
+            role="status"
+            aria-live="polite"
+          >
+            <Cloud className="size-4 text-primary" aria-hidden />
+            {phone.callerSpeaking
+              ? "Заявитель говорит…"
+              : "Заявитель слушает: говорите свободно, можно перебивать."}
+          </div>
+          <Button
+            size="sm"
+            variant={phone.muted ? "destructive" : "secondary"}
+            className="w-full"
+            onClick={() => phone.setMuted(!phone.muted)}
+            aria-pressed={phone.muted}
+            data-testid="cloud-mute"
+          >
+            {phone.muted ? <MicOff /> : <Mic />}{" "}
+            {phone.muted ? "Микрофон выключен" : "Микрофон включён"}
+          </Button>
+        </div>
+      )}
+      {talking &&
+        phone.mode === "browser" &&
+        (phone.cloud === "off" || phone.cloud === "failed") && (
         <div className="mt-3 space-y-2">
           {phone.sttAvailable ? (
             <Button
@@ -281,6 +343,6 @@ export function CallPanel({
           </span>
         )}
       </footer>
-    </section>
+    </div>
   );
 }

@@ -11,6 +11,7 @@ export type DialogTurnOut = components["schemas"]["DialogTurnOut"];
 export type TurnResponse = components["schemas"]["TurnResponse"];
 export type AnswerResponse = components["schemas"]["AnswerResponse"];
 export type CallResponse = components["schemas"]["CallResponse"];
+export type WebCallOut = components["schemas"]["WebCallOut"];
 
 /** Credentials of the softphone (PRD 9.5); `enabled: false` = no Asterisk on this stand. */
 export function useSipAccount(enabled: boolean) {
@@ -50,6 +51,16 @@ export const telephonyApi = {
       api.POST("/api/attempts/{attempt_id}/say", {
         ...path(attemptId),
         body: { text, action_id: actionId },
+      }),
+    ),
+  /** Keys of a browser call to the cloud caller (plan/track-c-vapi.md, no telephony). */
+  cloudCall: (attemptId: string) =>
+    unwrap(api.POST("/api/attempts/{attempt_id}/cloud-call", path(attemptId))),
+  cloudCallFailed: (attemptId: string, reason: string) =>
+    unwrap(
+      api.POST("/api/attempts/{attempt_id}/cloud-call/failed", {
+        ...path(attemptId),
+        body: { reason },
       }),
     ),
   /** A recorded phrase (WebM/Opus from MediaRecorder) → speech recognition → the caller's reply. */

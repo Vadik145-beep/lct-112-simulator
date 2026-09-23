@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { ClassifierGroupOut } from "@/api/intake";
-import { groupOf, levelsOf, typeOf } from "@/intake/classifier";
+import { flattenTypes, groupOf, levelsOf, searchTypes, typeOf } from "@/intake/classifier";
 import { addressLine, EMPTY_ADDRESS, initialDraft } from "@/intake/draft";
 
 const GROUPS: ClassifierGroupOut[] = [
@@ -38,7 +38,17 @@ const GROUPS: ClassifierGroupOut[] = [
         type_code: "2.1.0.0",
         final_title: "ДТП без пострадавших",
         flags: [],
-        children: [{ title: "Транспорт легковой", type_code: "2.1.1.0", final_title: "ДТП легковой", flags: [], children: [] }],
+        children: [
+          { title: "Транспорт легковой", type_code: "2.1.1.0", final_title: "ДТП легковой", flags: [], children: [] },
+          {
+            title: "Падение в воду",
+            type_code: "2.2.14.0",
+            final_title: "Падение автомобиля в воду",
+            flags: [],
+            phrases: "машина упала в воду автомобиль съехал в реку утонула машина",
+            children: [],
+          },
+        ],
       },
     ],
   },
@@ -88,5 +98,29 @@ describe("черновик карточки", () => {
     expect(newer.card.address).toEqual(EMPTY_ADDRESS);
     localStorage.clear();
     expect(initialDraft("a1", null).card.description).toBe("");
+  });
+});
+
+describe("searchTypes", () => {
+  const all = flattenTypes(GROUPS);
+  it("finds by a part of a word in any order, ё-insensitive", () => {
+    expect(searchTypes(all, "кварт пожар").map((h) => h.node.type_code)).toEqual(["1.5.1.1"]);
+    expect(searchTypes(all, "ДЫМ").map((h) => h.node.type_code)).toEqual(["1.5.1.2"]);
+  });
+  it("returns the path of signs to apply to the survey card", () => {
+    expect(searchTypes(all, "дым")[0]?.path).toEqual(["жилой дом", "квартира", "дым"]);
+  });
+  it("ignores queries shorter than two letters", () => {
+    expect(searchTypes(all, "д")).toEqual([]);
+  });
+  it("finds a type by the words a caller uses, not only by the classifier's own", () => {
+    expect(searchTypes(all, "машина упала в воду").map((h) => h.node.type_code)).toEqual([
+      "2.2.14.0",
+    ]);
+  });
+  it("falls back to the closest types instead of «ничего не найдено»", () => {
+    // «в квартире дым коромыслом» matches no type fully; the smoke one is still the answer.
+    const hits = searchTypes(all, "в квартире дым коромыслом");
+    expect(hits[0]?.node.type_code).toBe("1.5.1.2");
   });
 });

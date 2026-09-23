@@ -1,9 +1,10 @@
-import { BookOpen, Search } from "lucide-react";
+import { BookOpen, FileText, Search } from "lucide-react";
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 
-import { useReferenceSearch } from "@/api/training";
-import { ErrorState } from "@/components/states";
+import { useMaterial, useMaterials, useReferenceSearch } from "@/api/training";
+import { ErrorState, LoadingState } from "@/components/states";
+import { formatDateTime } from "@/emulator/time";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -14,6 +15,7 @@ export function StudentReferencePage() {
   const [params] = useSearchParams();
   const [text, setText] = useState(() => params.get("q") ?? "");
   const query = useReferenceSearch(text);
+  const materials = useMaterials();
   const active = text.trim().length >= 2;
 
   return (
@@ -21,9 +23,34 @@ export function StudentReferencePage() {
       <div>
         <h1 className="text-2xl font-semibold">Справочник</h1>
         <p className="text-sm text-muted-foreground">
-          Памятка «Работа на АРМ-112» и классификатор происшествий. Поиск по словам, регистр не важен.
+          Памятка «Работа на АРМ-112», методические материалы преподавателя и классификатор происшествий.
+          Поиск по словам, регистр не важен.
         </p>
       </div>
+
+      {materials.data && materials.data.length > 0 && (
+        <section className="space-y-2" aria-label="Методические материалы">
+          <h2 className="text-lg font-medium">Материалы</h2>
+          <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {materials.data.map((m) => (
+              <li key={m.name}>
+                <Link
+                  to={`/student/reference/materials/${encodeURIComponent(m.name)}`}
+                  className="flex h-full items-start gap-3 rounded-lg border bg-card p-3 text-sm hover:bg-accent"
+                >
+                  {m.builtin ? <BookOpen className="mt-0.5 size-4 shrink-0" aria-hidden /> : <FileText className="mt-0.5 size-4 shrink-0" aria-hidden />}
+                  <span>
+                    <span className="font-medium">{m.title}</span>
+                    <span className="block text-xs text-muted-foreground">
+                      {m.builtin ? "памятка организаторов" : `загружено преподавателем${m.updated_at ? ` ${formatDateTime(m.updated_at)}` : ""}`}
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <div className="space-y-2">
         <Label htmlFor="reference-search">Что ищем</Label>
@@ -77,6 +104,27 @@ export function StudentReferencePage() {
               </ul>
             )}
           </section>
+          {query.data.docs.length > 0 && (
+            <section className="space-y-2">
+              <h2 className="flex items-center gap-2 text-lg font-medium">
+                <FileText className="size-4" aria-hidden /> Материалы преподавателя
+                <span className="text-sm font-normal text-muted-foreground">({query.data.docs.length})</span>
+              </h2>
+              <ul className="space-y-2">
+                {query.data.docs.map((hit, i) => (
+                  <li key={i} className="rounded-lg border bg-card p-3 text-sm">
+                    <Link
+                      to={`/student/reference/materials/${encodeURIComponent(hit.name)}`}
+                      className="mb-1 block text-xs text-primary underline-offset-2 hover:underline"
+                    >
+                      {hit.title}
+                    </Link>
+                    <Highlight text={hit.text} query={text} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
           <section className="space-y-2">
             <h2 className="text-lg font-medium">
               Классификатор{" "}
@@ -103,6 +151,50 @@ export function StudentReferencePage() {
           </section>
         </div>
       )}
+    </div>
+  );
+}
+
+/** A material read in full: the memo page by page, an uploaded document paragraph by paragraph. */
+export function StudentMaterialPage() {
+  const { name } = useParams<{ name: string }>();
+  if (!name) return <Navigate to="/student/reference" replace />;
+  return <MaterialReader name={name} />;
+}
+
+function MaterialReader({ name }: { name: string }) {
+  const query = useMaterial(name);
+  if (query.isPending) return <LoadingState text="Открываем материал…" />;
+  if (query.isError || !query.data) {
+    return <ErrorState message={query.error?.message ?? "Материал не найден."} onRetry={() => void query.refetch()} />;
+  }
+  const doc = query.data;
+  let lastPage: number | null = null;
+  return (
+    <div className="space-y-4">
+      <Link to="/student/reference" className="text-sm text-muted-foreground hover:underline">
+        ← Справочник
+      </Link>
+      <div>
+        <h1 className="text-2xl font-semibold">{doc.title}</h1>
+        <p className="text-sm text-muted-foreground">
+          {doc.builtin ? "Памятка организаторов" : "Материал, загруженный преподавателем"} · {doc.paragraphs.length} абзацев
+        </p>
+      </div>
+      <article className="max-w-3xl space-y-3 text-sm leading-relaxed" aria-label="Текст материала">
+        {doc.paragraphs.map((p, i) => {
+          const pageBreak = p.page !== null && p.page !== lastPage;
+          lastPage = p.page;
+          return (
+            <div key={i}>
+              {pageBreak && (
+                <div className="mt-6 mb-2 border-b text-xs font-medium text-muted-foreground">Страница {p.page}</div>
+              )}
+              <p>{p.text}</p>
+            </div>
+          );
+        })}
+      </article>
     </div>
   );
 }

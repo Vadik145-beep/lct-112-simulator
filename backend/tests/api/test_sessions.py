@@ -171,6 +171,28 @@ async def test_create_validates_settings(client: AsyncClient) -> None:
         assert r.json()["error"]["message"]
 
 
+async def test_cloud_dialog_mode_needs_the_cloud_voice(client: AsyncClient, monkeypatch) -> None:
+    from app.config import get_settings
+
+    teacher = await login(client, "teacher1")
+    body = {
+        "title": "Облако",
+        "group_id": await group_id(),
+        "mode": "call_intake",
+        "dialog_mode": "cloud",
+    }
+    monkeypatch.setattr(get_settings(), "cloud_voice_enabled", False)
+    r = await client.post("/api/sessions", headers=bearer(teacher), json=body)
+    assert r.status_code == 422 and r.json()["error"]["code"] == "cloud_voice_disabled"
+    models = await client.get("/api/models", headers=bearer(teacher))
+    assert models.json()["cloud"] is False
+    monkeypatch.setattr(get_settings(), "cloud_voice_enabled", True)
+    r = await client.post("/api/sessions", headers=bearer(teacher), json=body)
+    assert r.status_code == 201, r.text
+    assert r.json()["dialog_mode"] == "cloud"
+    assert (await client.get("/api/models", headers=bearer(teacher))).json()["cloud"] is True
+
+
 async def test_create_shows_queue_preview_and_own_sessions(client: AsyncClient) -> None:
     teacher = await login(client, "teacher1")
     created = await create_session(client, teacher)
@@ -348,6 +370,12 @@ async def test_monitor_progress_and_finish_with_report(client: AsyncClient) -> N
     assert row["wrong_decisions"] == 1
     wrong = next(a for a in row["attempts"] if a["decision_correct"] is False)
     assert wrong["decision_expected"] == "reject" and wrong["decision_actual"] == "accept"
+    # The report lists the trainee's own steps with the time from issue; system statuses
+    # («Добавлена», «Получена службой») are not the trainee's actions.
+    actions = wrong["actions"]
+    assert [a["kind"] for a in actions] == ["status"] * len(actions) and actions
+    assert actions[0]["title"] == "Принята" and actions[0]["seconds"] >= 0
+    assert all(a["title"] not in ("Добавлена", "Получена службой") for a in actions)
     assert wrong["total"] is not None and wrong["seconds"] is not None
     assert isinstance(wrong["errors"], list)
     listed = (await client.get("/api/sessions", headers=bearer(teacher))).json()

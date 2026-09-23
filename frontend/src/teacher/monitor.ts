@@ -25,6 +25,7 @@ export const STAGE_TITLES: Record<string, string> = {
   filling_card: "заполняет карточку 112",
   ringing: "входящий вызов",
   call_ended: "звонок завершён, заполняет карточку",
+  talking_local: "говорит с заявителем (облако недоступно, локальная модель)",
 };
 
 export function initialState(snapshot: MonitorOut): MonitorState {
@@ -191,7 +192,11 @@ export function applyEvent(
         stages: {
           ...state.stages,
           [event.student_id]: {
-            stage: "talking",
+            // A call that fell back to the local model stays marked so.
+            stage:
+              state.stages[event.student_id]?.stage === "talking_local"
+                ? "talking_local"
+                : "talking",
             at: event.at,
             attempt_id: attemptId,
           },
@@ -223,6 +228,21 @@ export function applyEvent(
           ...state.stages,
           [event.student_id]: {
             stage: "viewing",
+            at: event.at,
+            attempt_id: attemptId,
+          },
+        },
+      };
+    }
+    case "call.cloud_fallback": {
+      // The cloud caller (plan/track-c-vapi.md) failed and the local stand-by took over.
+      if (!event.student_id) return state;
+      return {
+        ...state,
+        stages: {
+          ...state.stages,
+          [event.student_id]: {
+            stage: "talking_local",
             at: event.at,
             attempt_id: attemptId,
           },

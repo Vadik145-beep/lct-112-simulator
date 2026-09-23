@@ -45,13 +45,9 @@ RESPONSE_STATUSES: list[dict] = [
         "is_final": False,
         "requires_comment": False,
         "requires_order_number": False,
-        "allowed_next": [
-            "response_started",
-            "arrived",
-            "works_started",
-            "works_done",
-            "works_refused",
-        ],
+        # The memo (p. 25) lists all five follow-up statuses after «Принята»; the live АРМ-112
+        # (screenshots of 17.09.2026) offers them one step at a time. We follow the live system.
+        "allowed_next": ["response_started", "works_done", "works_refused"],
         "description": "Диспетчер подтверждает факт приёма информации. Реагирование будет "
         "осуществляться. Проставляется в течение 30 секунд после направления карточки в службу.",
         "memo_page": 21,
@@ -79,7 +75,7 @@ RESPONSE_STATUSES: list[dict] = [
         "is_final": False,
         "requires_comment": False,
         "requires_order_number": True,
-        "allowed_next": ["arrived", "works_started", "works_done", "works_refused"],
+        "allowed_next": ["arrived", "works_done", "works_refused"],
         "description": "Выезд сил и средств реагирования на место происшествия. Указывается номер "
         "наряда.",
         "memo_page": 22,
@@ -324,6 +320,30 @@ TYPICAL_ERRORS: list[dict] = [
         "тепловых сетей никто не позвонил — бригада не выехала.",
     },
     {
+        "code": "status_before_report",
+        "title": "Статус хода работ проставлен до доклада бригады",
+        "description": "«Начало реагирования», «Прибытие», «Проведение работ» или «Работы "
+        "завершены» проставлены раньше, чем старший наряда доложил об этом по телефону: "
+        "статус не отражает фактическое реагирование.",
+        "mode": "card_response",
+        "penalty": 2,
+        "memo_ref": "стр. 22, 26 (по факту получения информации); ответ заказчика 21.09.2026",
+        "example": "Карточка принята и сразу проставлены «Прибытие» и «Работы завершены», "
+        "хотя бригада ещё не выехала.",
+    },
+    {
+        "code": "report_not_reflected",
+        "title": "Доклад бригады не отражён статусом",
+        "description": "Старший наряда доложил о выезде, прибытии, работах или их завершении, "
+        "а соответствующий статус в карточке так и не проставлен (или проставлен позже "
+        "норматива на отражение доклада).",
+        "mode": "card_response",
+        "penalty": 2,
+        "memo_ref": "стр. 22, 31 (пример 6); ответ заказчика 21.09.2026",
+        "example": "Бригада доложила «на месте», диспетчер продолжил работу без «Прибытия» — "
+        "другие службы и заявитель не видят, что реагирование идёт.",
+    },
+    {
         "code": "address_not_asked",
         "title": "Адрес не уточнён до отбоя",
         "description": "Разговор завершён, а точный адрес происшествия не выяснен.",
@@ -340,6 +360,28 @@ TYPICAL_ERRORS: list[dict] = [
         "penalty": 2,
         "memo_ref": "билеты, ситуация 2-2",
         "example": "Поругался с продавцом «Мегафон», бросил трубку.",
+    },
+    {
+        "code": "questions_not_asked",
+        "title": "Обязательные вопросы не заданы",
+        "description": "Обучающийся сам задал меньше половины обязательных вопросов заявителю "
+        "(порог задаётся в сценарии). Критическая ошибка: незачёт при любом балле.",
+        "mode": "call_intake",
+        "penalty": 3,
+        "memo_ref": "стр. 18-19",
+        "example": "Оператор сказал «алло, ждите» и оформил карточку по тому, что заявитель "
+        "рассказал сам.",
+    },
+    {
+        "code": "card_empty",
+        "title": "Карточка не заполнена",
+        "description": "Ни тип происшествия, ни адрес, ни описание не внесены. Критическая "
+        "ошибка: незачёт при любом балле; описание, грамотность, признаки и службы, время "
+        "оцениваются в 0.",
+        "mode": "call_intake",
+        "penalty": 5,
+        "memo_ref": "стр. 18-19",
+        "example": "Разговор проведён, а карточка сохранена с одним словом «пропуск».",
     },
     {
         "code": "region_not_clarified",
@@ -427,12 +469,35 @@ SERVICE_CALL_FACTS: list[dict] = [
     },
 ]
 
+# The dispatcher asks the officer how the response goes («где бригада?», «выехали?»); the
+# officer answers from the squad's current state (app.domain.scenarios.officers).
+OFFICER_PROGRESS_KEYWORDS: list[str] = [
+    "как дела",
+    "как обстановка",
+    "где бригада",
+    "где наряд",
+    "выехал",
+    "выезжа",
+    "прибыл",
+    "на месте",
+    "доехал",
+    "закончил",
+    "ход работ",
+    "как работы",
+    "что там",
+    "долго ещё",
+    "долго еще",
+    "когда будете",
+]
+
 OFFICER_TOPICS: list[dict] = [
     {"code": "greeting", "title": "Приветствие", "order": 0},
     *[{"code": f["code"], "title": f["title"], "order": f["order"]} for f in SERVICE_CALL_FACTS],
-    {"code": "confirm", "title": "Подтверждение приёма", "order": 6},
-    {"code": "repeat", "title": "Просьба повторить", "order": 7},
-    {"code": "unknown", "title": "Вне темы", "order": 8},
+    {"code": "progress", "title": "Ход работ", "order": 6},
+    {"code": "report", "title": "Доклад бригады", "order": 7},
+    {"code": "confirm", "title": "Подтверждение приёма", "order": 8},
+    {"code": "repeat", "title": "Просьба повторить", "order": 9},
+    {"code": "unknown", "title": "Вне темы", "order": 10},
 ]
 
 # Topics a dispatcher must clarify with the caller; keywords help the dialog engine to map a
@@ -447,9 +512,10 @@ CALLER_TOPICS: list[dict] = [
     {
         "code": "address",
         "title": "Адрес происшествия",
+        # Без голого «где»: оно есть почти в любой фразе («где депо», «где-то там») и
+        # закрывало тему адреса словами заявителя (замечание пользователя 22.09.2026).
         "keywords": [
             "адрес",
-            "где",
             "улица",
             # Whole-word forms of «дом»: the bare stem would also match «домофон».
             "дом ",
@@ -457,7 +523,14 @@ CALLER_TOPICS: list[dict] = [
             "дому",
             "доме",
             "какой район",
-            "где находитесь",
+            "где вы",
+            "где это",
+            "где находит",
+            "где произош",
+            "где случил",
+            "где горит",
+            "куда ехать",
+            "куда направ",
             "ориентир",
         ],
         "order": 2,

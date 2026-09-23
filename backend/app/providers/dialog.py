@@ -13,6 +13,8 @@ One implementation per ``DIALOG_MODE``:
                  the approved reply of that topic is played. Every other mode degrades to this
                  one when the model server is unreachable.
 * ``live``     — GPU node conveyor, track G; not implemented here, falls back to ``select``.
+* ``cloud``    — the caller is played by Vapi (plan/track-c-vapi.md) outside this module;
+                 this provider is the stand-by when the cloud is unreachable: ``select``.
 
 Leaving the role is impossible by construction in ``select`` and ``buttons`` (only approved texts
 are voiced). In ``generate`` and ``hybrid`` three layers hold the role: a guard that answers
@@ -33,7 +35,7 @@ from typing import Any, Protocol
 
 from app.domain.evaluation.schemas import CallIntakeScenario, DialogTurn, Reply
 from app.domain.evaluation.text import detect_service_facts, detect_topics, normalize_text
-from app.domain.reference_data import CALLER_TOPICS, OFFICER_TOPICS
+from app.domain.reference_data import CALLER_TOPICS, OFFICER_PROGRESS_KEYWORDS, OFFICER_TOPICS
 from app.logging import get_logger
 from app.providers.llm import ChatModel, Message, ModelOutputError, ModelUnavailableError
 
@@ -61,10 +63,17 @@ class Vocabulary:
     detect: Callable[[str], list[str]]
 
 
+TOPIC_PROGRESS = "progress"
+
+
 def detect_officer_topics(text: str) -> list[str]:
-    """Facts the dispatcher's phrase carries, plus «repeat» when they ask to repeat."""
+    """Facts the dispatcher's phrase carries, «progress» when they ask how the response
+    goes, plus «repeat» when they ask to repeat. A question about the progress that names
+    no fact is only «progress»: «выехали?» is not the squad number."""
     found = detect_service_facts(text)
     lowered = text.lower()
+    if any(w in lowered for w in OFFICER_PROGRESS_KEYWORDS):
+        found.append(TOPIC_PROGRESS)
     if any(w in lowered for w in _REPEAT_KEYWORDS):
         found.append(TOPIC_REPEAT)
     return found
@@ -709,6 +718,9 @@ def build_dialog_provider(
     """The provider for ``DIALOG_MODE``; without a dialog model everything is ``buttons``."""
     if mode == "live":
         log.warning("живой режим (live) реализуется на GPU-узле, трек G; используется select")
+        mode = "select"
+    if mode == "cloud":
+        # The cloud caller lives in app.telephony.cloud; here is only its fallback.
         mode = "select"
     if mode == "buttons" or dialog_model is None:
         if mode != "buttons":

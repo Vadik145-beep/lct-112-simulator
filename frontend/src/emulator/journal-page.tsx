@@ -1,16 +1,19 @@
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Bell,
+  BellOff,
   Bookmark,
-  Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
+  CircleHelp,
   Clipboard,
-  Headphones,
   Link2,
+  LogOut,
+  Monitor,
   Search,
+  Settings,
   Zap,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
@@ -19,15 +22,13 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { journalKey, useJournal, type JournalItem } from "@/api/training";
 import { ErrorState, LoadingState } from "@/components/states";
 import { clockParts, formatDate, formatLongDate, formatTime, useNow } from "@/emulator/time";
-import { ArmButton, TimerBadge, Toggle, TrainerPanel } from "@/emulator/widgets";
+import { ArmButton, TimerBadge, TrainerPanel } from "@/emulator/widgets";
 import { useSessionEvents } from "@/emulator/ws";
 import { cn } from "@/lib/utils";
 
 const PAGE_SIZES = [10, 20, 50] as const;
 const ACTIVE_STATES = new Set(["issued", "received", "in_progress"]);
-
-// Tabs of the real workstation header (screenshot page 12); only «журнал» works here.
-const HEADER_TABS = ["журнал", "экран", "статистика", "УЕР", "БДПН", "вики", "заявители", "техника", "аудит", "отчеты", "контроль", "смена", "регионы"];
+const COLUMNS = 17;
 
 export function JournalPage() {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -41,16 +42,14 @@ function Journal({ sessionId }: { sessionId: string }) {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState<(typeof PAGE_SIZES)[number]>(10);
   const [search, setSearch] = useState("");
-  const [autoRefresh, setAutoRefresh] = useState(true);
-  const [pendingUpdates, setPendingUpdates] = useState(0);
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
   const now = useNow();
   const query = useJournal(sessionId, page, perPage);
 
+  // The live workstation refreshes the list by itself; «уведомления» only re-reads it on demand.
   const onEvent = useCallback(() => {
-    if (autoRefresh) void client.invalidateQueries({ queryKey: journalKey(sessionId) });
-    else setPendingUpdates((n) => n + 1);
-  }, [autoRefresh, client, sessionId]);
+    void client.invalidateQueries({ queryKey: journalKey(sessionId) });
+  }, [client, sessionId]);
   const connection = useSessionEvents(sessionId, query.data?.last_seq, onEvent);
 
   const items = useMemo(() => {
@@ -75,7 +74,6 @@ function Journal({ sessionId }: { sessionId: string }) {
   }
 
   function refreshNow() {
-    setPendingUpdates(0);
     void client.invalidateQueries({ queryKey: journalKey(sessionId) });
   }
 
@@ -123,41 +121,24 @@ function Journal({ sessionId }: { sessionId: string }) {
               </ArmButton>
             </div>
           </div>
-          <div className="flex w-[520px] flex-col bg-[var(--arm-dark)] text-[var(--arm-on-dark)]">
-            <div className="flex items-start justify-between px-3 pt-2">
-              <div>
-                <div className="text-sm font-medium">{formatLongDate(now)}</div>
-                <div className="text-xs text-[var(--arm-on-dark-muted)]">
-                  оп. {data.arm.operator_no}, {data.arm.dispatcher} · АРМ {data.arm.arm_no}
-                </div>
-                <div className="mt-1 flex items-center gap-1 text-[10px] text-[var(--arm-on-dark-muted)]">
-                  <Headphones className="size-3" aria-hidden /> Подключение: {data.session.service?.short_title ?? "ДДС"}
-                </div>
-              </div>
-              <div className="flex items-start font-mono leading-none" aria-label="Текущее время">
-                <span className="text-5xl font-medium tabular-nums">{clock.hm}</span>
-                <span className="mt-1 text-lg tabular-nums text-[var(--arm-on-dark-muted)]">:{clock.s}</span>
+          <div className="flex w-[420px] items-start justify-between bg-[var(--arm-dark)] px-3 py-2 text-[var(--arm-on-dark)]">
+            <div>
+              <div className="text-sm font-medium">{formatLongDate(now)}</div>
+              <div className="mt-1 flex items-center gap-2 text-xs text-[var(--arm-on-dark-muted)]">
+                <span className="max-w-56 truncate">, {data.arm.dispatcher}</span>
+                <span className="inline-flex items-center gap-1.5" title={`оп. ${data.arm.operator_no}, АРМ ${data.arm.arm_no}`}>
+                  <Monitor className="size-3" aria-hidden />
+                  <Settings className="size-3" aria-hidden />
+                  <CircleHelp className="size-3" aria-hidden />
+                  <LogOut className="size-3" aria-hidden />
+                </span>
               </div>
             </div>
-            <nav className="mt-auto flex gap-px bg-[var(--arm-dark-2)] px-1 pt-1 text-[9px] uppercase text-[var(--arm-on-dark-muted)]" aria-label="Разделы АРМ">
-              {HEADER_TABS.map((tab) => (
-                <span
-                  key={tab}
-                  className={cn("flex-1 rounded-t-sm px-1 py-1 text-center", tab === "журнал" && "bg-[var(--arm-blue)] text-white")}
-                >
-                  {tab}
-                </span>
-              ))}
-            </nav>
+            <div className="flex items-start font-mono leading-none" aria-label="Текущее время">
+              <span className="text-5xl font-medium tabular-nums">{clock.hm}</span>
+              <span className="mt-1 text-lg tabular-nums text-[var(--arm-on-dark-muted)]">:{clock.s}</span>
+            </div>
           </div>
-          <ArmButton
-            variant="orange"
-            className="h-auto w-32 flex-col items-start whitespace-normal px-3 py-2 text-left text-sm leading-tight normal-case"
-            disabled
-            title="В режиме ДДС карточки создаёт оператор 112"
-          >
-            создать новую карточку
-          </ArmButton>
         </header>
 
         {/* Incident list. */}
@@ -174,25 +155,20 @@ function Journal({ sessionId }: { sessionId: string }) {
                 title="Обновить список"
               >
                 <Bell className="size-3.5" aria-hidden /> уведомления
-                {pendingUpdates > 0 && (
-                  <span className="rounded-full bg-[var(--arm-orange)] px-1.5 text-[10px] text-white">{pendingUpdates}</span>
-                )}
               </button>
-              <Toggle checked={autoRefresh} onChange={(v) => { setAutoRefresh(v); if (v) refreshNow(); }} label="автообновление" />
-              <Toggle checked={false} onChange={() => undefined} label="обращения в очереди" disabled />
               <span className="rounded-sm bg-[var(--arm-dark-2)] px-2 py-1 text-[var(--arm-on-dark-muted)]">выберите что показать ▾</span>
             </div>
           </div>
 
-          <table className="w-full border-separate border-spacing-y-1 px-2 text-xs">
+          <table className="w-full table-fixed border-separate border-spacing-y-1 px-2 text-xs">
             <thead className="text-[10px] text-[var(--arm-on-dark-muted)]">
               <tr>
                 <th className="w-6" aria-label="Раскрыть" />
-                <th className="w-6 font-normal">Связи</th>
-                <th className="w-6 font-normal">ЧС</th>
+                <th className="w-9 font-normal">Связи</th>
+                <th className="w-7 font-normal">ЧС</th>
                 <th className="w-5" aria-label="Закрепить" />
                 <th className="w-5" aria-label="Важное" />
-                <th className="w-16 font-normal">Таймер</th>
+                <th className="w-16" aria-label="Таймер" />
                 <th className="w-9 font-normal">Опер.</th>
                 <th className="w-9 font-normal">АРМ</th>
                 <th className="w-[4.5rem] font-normal">Номер</th>
@@ -200,16 +176,16 @@ function Journal({ sessionId }: { sessionId: string }) {
                 <th className="w-[4.5rem] font-normal">Время</th>
                 <th className="w-44 text-left font-normal">Тип происшествия</th>
                 <th className="w-10 font-normal">Постр.</th>
-                <th className="w-24 text-left font-normal">Статус</th>
                 <th className="text-left font-normal">Адрес</th>
-                <th className="w-7 font-normal">Контр.</th>
-                <th className="w-7 font-normal">Пров.</th>
+                <th className="w-6" aria-label="Оповещение" />
+                <th className="w-32 text-left font-normal">Статус службы</th>
+                <th className="w-7" aria-label="Карточка" />
               </tr>
             </thead>
             <tbody>
               {items.length === 0 && (
                 <tr>
-                  <td colSpan={17} className="bg-[var(--arm-row)] px-4 py-6 text-center text-sm text-[var(--arm-on-dark-muted)]">
+                  <td colSpan={COLUMNS} className="bg-[var(--arm-row)] px-4 py-6 text-center text-sm text-[var(--arm-on-dark-muted)]">
                     {search
                       ? "По запросу ничего не найдено. Измените условия поиска или нажмите «сбросить»."
                       : data.session.status === "running"
@@ -233,8 +209,7 @@ function Journal({ sessionId }: { sessionId: string }) {
             </tbody>
           </table>
 
-          <div className="mt-auto flex items-center justify-between px-4 py-2 text-xs text-[var(--arm-on-dark-muted)]">
-            <span className="rounded-sm bg-[var(--arm-dark-2)] px-2 py-1">выберите группу ▾</span>
+          <div className="mt-auto flex items-center justify-end px-4 py-2 text-xs text-[var(--arm-on-dark-muted)]">
             <div className="flex items-center gap-3">
               <span>
                 Страница:{" "}
@@ -328,6 +303,10 @@ function JournalRow({
 }) {
   const active = ACTIVE_STATES.has(item.state);
   const cell = "bg-[var(--arm-row)] px-1 py-1.5 align-middle";
+  const own = item.services.find((s) => s.is_own);
+  // The dispatcher's own reaction status, as on the live АРМ-112. A card the controller
+  // sees in red («Не оповещено», «Отказ», «Не завершено») shows that word instead.
+  const serviceStatus = item.card_status_alert ? item.card_status_title : (own?.status_title ?? "Добавлена");
   return (
     <>
       <tr
@@ -363,7 +342,7 @@ function JournalRow({
         <td className={cn(cell, "text-center")}>
           <TimerBadge issuedAt={item.issued_at} primaryStatusAt={item.primary_status_at} normSeconds={item.norm_seconds} now={now} active={active} />
         </td>
-        <td className={cn(cell, "text-center text-[var(--arm-on-dark-muted)]")}>{item.operator_no}</td>
+        <td className={cn(cell, "bg-[var(--arm-maroon)] text-center font-medium text-white")}>{item.operator_no}</td>
         <td className={cn(cell, "text-center text-[var(--arm-on-dark-muted)]")}>{item.arm_no}</td>
         <td className={cn(cell, "text-center font-mono")}>{item.card_number}</td>
         <td className={cn(cell, "text-center text-[var(--arm-on-dark-muted)]")}>{formatDate(item.issued_at)}</td>
@@ -371,22 +350,31 @@ function JournalRow({
           {formatTime(item.issued_at, false)}
           <sup className="text-[10px] font-normal">{formatTime(item.issued_at).slice(-2)}</sup>
         </td>
-        <td className={cn(cell, "text-[13px] leading-tight font-semibold")}>{item.incident_title || "—"}</td>
+        <td className={cn(cell, "truncate text-[13px] font-semibold")} title={item.incident_title}>{item.incident_title || "—"}</td>
         <td className={cn(cell, "text-center")}>{item.injured ? "Да" : "Нет"}</td>
-        <td className={cn(cell, item.card_status_alert ? "font-semibold text-[var(--arm-red)]" : "text-[var(--arm-on-dark-muted)]")}>
-          {item.card_status_title}
+        <td className={cn(cell, "truncate text-[13px] font-semibold")} title={item.address}>{item.address}</td>
+        <td className={cn(cell, "text-center")}><BellOff className="mx-auto size-3.5 text-[var(--arm-red)]" aria-hidden /></td>
+        <td
+          className={cn(cell, "truncate text-[11px]", item.card_status_alert ? "bg-[var(--arm-red)] font-semibold text-white" : "text-[var(--arm-on-dark-muted)]")}
+          title={`Статус карточки: ${item.card_status_title}`}
+        >
+          {serviceStatus}
         </td>
-        <td className={cn(cell, "text-[11px] leading-tight text-[var(--arm-on-dark)]")}>{item.address}</td>
         <td className={cn(cell, "text-center")}><Clipboard className="mx-auto size-3.5 text-[var(--arm-on-dark-muted)]" aria-hidden /></td>
-        <td className={cn(cell, "text-center")}>
-          <span className={cn("mx-auto flex size-4 items-center justify-center rounded-full", item.state === "finished" ? "bg-[var(--arm-green)]" : "bg-[#5b6168]")}>
-            <Check className="size-3 text-white" aria-hidden />
+      </tr>
+      {/* The description line is always visible under the row, as on the live workstation. */}
+      <tr>
+        <td colSpan={COLUMNS} className="bg-[var(--arm-dark-2)] px-4 py-1 text-xs text-[var(--arm-on-dark)]">
+          <span className="text-[var(--arm-on-dark-muted)]">Описание:</span>
+          <span className="ml-6 text-[var(--arm-on-dark-muted)]">
+            {formatDate(item.issued_at, true)} {formatTime(item.issued_at)} оп. {item.operator_no} —{" "}
           </span>
+          <span className="font-semibold">{item.description || "—"}</span>
         </td>
       </tr>
       {expanded && (
         <tr>
-          <td colSpan={17} className="bg-[var(--arm-dark-2)] px-4 py-2 text-xs text-[var(--arm-on-dark)]">
+          <td colSpan={COLUMNS} className="bg-[var(--arm-dark-2)] px-4 py-2 text-xs text-[var(--arm-on-dark)]">
             <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
               <span className="text-[var(--arm-on-dark-muted)]">Службы:</span>
               <span className="flex flex-wrap gap-x-4">
@@ -405,11 +393,8 @@ function JournalRow({
               </span>
               <span className="text-[var(--arm-on-dark-muted)]">Информация:</span>
               <span>{[item.incident_group, ...item.signs].filter(Boolean).join(" · ") || "—"}</span>
-              <span className="text-[var(--arm-on-dark-muted)]">Описание:</span>
-              <span>
-                {formatDate(item.issued_at)} {formatTime(item.issued_at)} Опер. {item.operator_no} —{" "}
-                <span className="font-semibold">{item.description}</span>
-              </span>
+              <span className="text-[var(--arm-on-dark-muted)]">Статус карточки:</span>
+              <span className={cn(item.card_status_alert && "font-semibold text-[var(--arm-red)]")}>{item.card_status_title}</span>
             </div>
           </td>
         </tr>

@@ -15,7 +15,7 @@ import { NotFoundPage } from "@/pages/not-found";
 import { AttemptReviewPage } from "@/pages/attempt-review";
 import { StudentAssignmentsPage } from "@/pages/student-assignments";
 import { StudentProgressPage } from "@/pages/student-progress";
-import { StudentReferencePage } from "@/pages/student-reference";
+import { StudentMaterialPage, StudentReferencePage } from "@/pages/student-reference";
 import { TeacherAnalyticsPage } from "@/pages/teacher/analytics";
 import { TeacherGroupsPage } from "@/pages/teacher/groups";
 import { ReadinessModelPage } from "@/pages/teacher/readiness-model";
@@ -48,6 +48,7 @@ export const router = createBrowserRouter([
               { index: true, element: <StudentAssignmentsPage /> },
               { path: "progress", element: <StudentProgressPage /> },
               { path: "reference", element: <StudentReferencePage /> },
+              { path: "reference/materials/:name", element: <StudentMaterialPage /> },
               { path: "attempts/:attemptId/review", element: <AttemptReviewPage /> },
             ],
           },

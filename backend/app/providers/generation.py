@@ -32,7 +32,7 @@ from app.domain.scenarios.generated import (
     call_intake_schema,
     card_response_schema,
 )
-from app.domain.scenarios.personas import NOISES, PERSONAS, persona
+from app.domain.scenarios.personas import NOISES, PERSONAS, persona, voice_for
 from app.domain.services import resolve_services
 from app.logging import get_logger
 from app.providers.llm import (
@@ -306,6 +306,37 @@ def _address(generated: BaseModel) -> dict:
     return generated.model_dump(exclude_none=True)
 
 
+def _card_address(generated: BaseModel, request: GenerationRequest) -> dict:
+    """The address of the reference card comes from the ticket, not from the model. The card's
+    hint list holds real Moscow streets and the trainee is graded against this card, so an
+    address the model invented would make the task unfillable. The model's landmark description
+    is kept when the ticket has none."""
+    written = _address(generated)
+    if request.facts is None:
+        return written
+    parsed = request.facts.address.model_dump(exclude_none=True)
+    if not parsed:
+        return written
+    descriptive = parsed.get("descriptive") or written.get("descriptive")
+    if descriptive:
+        parsed["descriptive"] = descriptive
+    return parsed
+
+
+def _card_caller(generated: BaseModel, request: GenerationRequest) -> dict:
+    """Name, role and phone of the caller — also from the ticket when there is one."""
+    if request.facts is None:
+        return _address(generated)
+    caller = request.facts.caller
+    if not (caller.name or caller.phone):
+        return _address(generated)
+    return {
+        "name": caller.name,
+        "role": caller.relation or caller.role,
+        "phone": caller.phone,
+    }
+
+
 def call_intake_body(gen: GeneratedCallIntake, row: Mapping, request: GenerationRequest) -> dict:
     flags = dict(gen.flags)
     flags.setdefault("injured", False)
@@ -320,7 +351,10 @@ def call_intake_body(gen: GeneratedCallIntake, row: Mapping, request: Generation
         else template.DEFAULT_CALL_NORM_SECONDS,
         "caller": {
             "persona": request.persona or gen.persona,
-            "voice": persona(request.persona or gen.persona).voice,
+            "voice": voice_for(
+                request.persona or gen.persona,
+                request.facts.caller.gender if request.facts else None,
+            ),
             "noise": request.noise or gen.noise,
             "opening": gen.opening,
             "facts": gen.facts,
@@ -337,8 +371,8 @@ def call_intake_body(gen: GeneratedCallIntake, row: Mapping, request: Generation
             "signs_path": [row[k] for k in ("sign1", "sign2", "sign3") if row.get(k)],
             "incident_type": row["code"],
             "flags": flags,
-            "address": _address(gen.address),
-            "caller": _address(gen.caller),
+            "address": _card_address(gen.address, request),
+            "caller": _card_caller(gen.caller, request),
             "description_keywords": gen.description_keywords,
             "description": gen.description,
             "expected_services": resolve_services(row.get("service_rules") or [], chosen),
@@ -392,8 +426,8 @@ def card_response_body(
             "incident_type": row["code"],
             "signs": [row[k] for k in ("sign1", "sign2", "sign3") if row.get(k)],
             "flags": flags,
-            "address": _address(gen.address),
-            "caller": _address(gen.caller),
+            "address": _card_address(gen.address, request),
+            "caller": _card_caller(gen.caller, request),
             "description": gen.description,
             "notified": notified,
         },

@@ -35,7 +35,10 @@ while IFS=$'\t' read -r repo remote local size sha; do
   total=$((total + 1))
   target="$DEST/$local"
   mkdir -p "$(dirname "$target")"
-  url="$HF_BASE/$repo/resolve/main/$remote"
+  case "$repo" in
+    http://*|https://*) url="$repo/$remote" ;;  # Silero lives on models.silero.ai, not on HF
+    *) url="$HF_BASE/$repo/resolve/main/$remote" ;;
+  esac
 
   if [ -f "$target" ] && [ "$(stat -c %s "$target")" = "$size" ]; then
     skipped=$((skipped + 1))

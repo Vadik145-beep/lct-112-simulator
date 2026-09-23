@@ -26,6 +26,7 @@ import {
   type Softphone,
   type SoftphoneState,
 } from "@/softphone/context";
+import { CloudCall } from "@/softphone/cloud-call";
 import {
   SipPhone,
   storeMicDevice,
@@ -59,6 +60,9 @@ const initialState: SoftphoneState = {
   busy: false,
   error: null,
   recording: false,
+  cloud: "off",
+  muted: false,
+  callerSpeaking: false,
 };
 
 function callerLineFromDialog(dialog: DialogOut) {
@@ -77,7 +81,8 @@ function callerLineFromDialog(dialog: DialogOut) {
 /**
  * Keeps the trainee's softphone alive across pages (registration at sign-in, plan wave 6).
  * In SIP mode the call comes from Asterisk; in browser mode the panel polls the current
- * call-intake attempt and talks through the microphone and /utterance.
+ * call-intake attempt and talks through the microphone and /utterance — or, in a lesson
+ * with the cloud caller (plan/track-c-vapi.md), through a live WebRTC call to Vapi.
  */
 export function SoftphoneProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
@@ -86,6 +91,7 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
   const sipMode = Boolean(account.data?.enabled);
   const [state, setState] = useState<SoftphoneState>(initialState);
   const phone = useRef<SipPhone | null>(null);
+  const cloud = useRef<CloudCall | null>(null);
   const recorder = useRef<MediaRecorder | null>(null);
   const localStream = useRef<MediaStream | null>(null);
   const stopLevel = useRef<(() => void) | null>(null);
@@ -130,6 +136,103 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
       })
       .catch(() => {});
   }, []);
+
+  // ---------- The cloud caller in the browser (plan/track-c-vapi.md).
+  const stopCloud = useCallback(async () => {
+    const call = cloud.current;
+    cloud.current = null;
+    if (!call) return;
+    await call.stop();
+    setState((s) => ({
+      ...s,
+      cloud: s.cloud === "failed" ? "failed" : "off",
+      muted: false,
+      callerSpeaking: false,
+      micLevel: 0,
+    }));
+  }, []);
+
+  const failCloud = useCallback(
+    (attemptId: string, reason: string) => {
+      cloud.current = null;
+      setState((s) => ({
+        ...s,
+        cloud: "failed",
+        muted: false,
+        callerSpeaking: false,
+        micLevel: 0,
+        error: `Облачный заявитель недоступен (${reason}): отвечайте через микрофон, заявитель ответит из утверждённых реплик.`,
+      }));
+      // Приветствие бэкенд пишет только сейчас (в облаке его говорит Vapi): играем его.
+      void telephonyApi
+        .cloudCallFailed(attemptId, reason)
+        .then((opening) => {
+          if (!opening) return;
+          setState((s) => ({
+            ...s,
+            lastCaller: {
+              text: opening.text,
+              audioUrl: opening.audio_url ?? null,
+              heardText: null,
+            },
+          }));
+          playReply(opening.audio_url ?? null);
+        })
+        .catch(() => null);
+    },
+    [playReply],
+  );
+
+  const startCloud = useCallback(
+    async (attemptId: string) => {
+      if (cloud.current) return;
+      patch({ cloud: "connecting", error: null });
+      let keys;
+      try {
+        keys = await telephonyApi.cloudCall(attemptId);
+      } catch (err) {
+        // 503: the backend noted the fallback already; the panel goes on locally.
+        setState((s) => ({
+          ...s,
+          cloud: "failed",
+          error: errorMessage(
+            err,
+            err instanceof Error ? err.message : undefined,
+          ),
+        }));
+        return;
+      }
+      const call = new CloudCall();
+      cloud.current = call;
+      call
+        .on("started", () => patch({ cloud: "live", error: null }))
+        .on("speaking", (callerSpeaking) => patch({ callerSpeaking }))
+        .on("level", (micLevel) => patch({ micLevel }))
+        .on("failed", (reason) => {
+          if (cloud.current !== call) return;
+          void call.stop();
+          failCloud(attemptId, reason);
+        })
+        .on("ended", () => {
+          if (cloud.current !== call) return;
+          cloud.current = null;
+          patch({
+            cloud: "off",
+            muted: false,
+            callerSpeaking: false,
+            micLevel: 0,
+          });
+          // The caller hung up or the call dropped: the poll picks the server's verdict.
+          void client.invalidateQueries({ queryKey: ["dialog", attemptId] });
+        });
+      try {
+        await call.start(keys);
+      } catch {
+        /* reported through "failed" */
+      }
+    },
+    [patch, failCloud, client],
+  );
 
   // ---------- SIP mode: register once the credentials are known.
   useEffect(() => {
@@ -274,7 +377,10 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
               }
             : {}),
         }));
-        if (dialog.call.state === "ended") phone.current?.hangup();
+        if (dialog.call.state === "ended") {
+          phone.current?.hangup();
+          void stopCloud();
+        }
       } catch {
         /* next tick */
       }
@@ -285,7 +391,7 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
       stopped = true;
       clearInterval(timer);
     };
-  }, [state.status, state.attemptId, state.serviceCallId]);
+  }, [state.status, state.attemptId, state.serviceCallId, stopCloud]);
 
   useEffect(() => {
     void refreshDevices();
@@ -361,23 +467,34 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
         }
         const attemptId = attemptOrThrow();
         const result = await telephonyApi.answer(attemptId);
+        const cloudLesson = result.dialog.mode === "cloud";
         setState((s) => ({
           ...s,
           status: "talking",
           sessionId:
             result.dialog.seq !== undefined ? s.sessionId : s.sessionId,
-          lastCaller: {
-            text: result.opening.text,
-            audioUrl: result.opening.audio_url ?? null,
-            heardText: null,
-          },
+          // В облачном занятии своей реплики приветствия нет: его говорит Vapi.
+          lastCaller: result.opening
+            ? {
+                text: result.opening.text,
+                audioUrl: result.opening.audio_url ?? null,
+                heardText: null,
+              }
+            : null,
           sttAvailable: result.dialog.stt_available,
+          cloud: cloudLesson ? "connecting" : "off",
         }));
-        playReply(result.opening.audio_url ?? null);
         void client.invalidateQueries({ queryKey: ["dialog", attemptId] });
+        if (cloudLesson) {
+          // Приветствие говорит сам облачный заявитель; запасной путь получает свою
+          // реплику от бэкенда (POST …/cloud-call/failed) и играет её оттуда.
+          await startCloud(attemptId);
+        } else {
+          playReply(result.opening?.audio_url ?? null);
+        }
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [withBusy, state.mode, state.attemptId, playReply, client],
+    [withBusy, state.mode, state.attemptId, playReply, client, startCloud],
   );
 
   const finish = useCallback(
@@ -388,6 +505,7 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
       withBusy(async () => {
         phone.current?.hangup();
         stopLocalStream();
+        await stopCloud();
         const attemptId = state.attemptId;
         if (attemptId) {
           try {
@@ -411,7 +529,7 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
         }
         void client.invalidateQueries({ queryKey: ["me", "call"] });
       }),
-    [withBusy, state.attemptId, patch, stopLocalStream, client],
+    [withBusy, state.attemptId, patch, stopLocalStream, stopCloud, client],
   );
 
   const hangup = useCallback(
@@ -437,6 +555,7 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
   );
 
   const dismiss = useCallback(() => {
+    void stopCloud();
     setState((s) => ({
       ...s,
       status: s.registration === "ready" ? "ready" : "disconnected",
@@ -445,14 +564,27 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
       endReason: null,
       stats: null,
       error: null,
+      cloud: "off",
+      muted: false,
+      callerSpeaking: false,
     }));
     void client.invalidateQueries({ queryKey: ["me", "call"] });
-  }, [client]);
+  }, [client, stopCloud]);
+
+  const setMuted = useCallback(
+    (muted: boolean) => {
+      cloud.current?.setMuted(muted);
+      patch({ muted });
+    },
+    [patch],
+  );
 
   const startRecording = useCallback(async () => {
     if (
       state.mode !== "browser" ||
       state.status !== "talking" ||
+      state.cloud === "live" ||
+      state.cloud === "connecting" ||
       recorder.current
     )
       return;
@@ -502,6 +634,7 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
   }, [
     state.mode,
     state.status,
+    state.cloud,
     state.micDeviceId,
     state.attemptId,
     patch,
@@ -541,6 +674,7 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
             startRecording,
             stopRecording,
             sayText,
+            setMuted,
           }
         : null,
     [
@@ -556,6 +690,7 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
       startRecording,
       stopRecording,
       sayText,
+      setMuted,
     ],
   );
 

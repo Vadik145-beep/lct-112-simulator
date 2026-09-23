@@ -13,6 +13,7 @@ import { formatSeconds, formatTime } from "@/emulator/time";
 import { EMPTY_ADDRESS } from "@/intake/draft";
 import { cn } from "@/lib/utils";
 import { ScoreBox } from "@/review/teacher-panel";
+import { END_REASON_LABELS } from "@/softphone/context";
 
 // Shapes of `attempt.evaluation` (EvaluationResult.to_dict()) and `attempt.reference`
 // (the scenario's reference_card) for a call-intake attempt (PRD 9.3).
@@ -119,7 +120,7 @@ export function CallReview({ attempt, evaluation, teacher }: { attempt: AttemptO
             </p>
           )}
         </div>
-        <ScoreBox total={evaluation.total} passed={evaluation.passed} override={attempt.override} />
+        <ScoreBox total={evaluation.total} passed={evaluation.passed} override={attempt.override} reasons={evaluation.errors.filter((e) => e.critical).map((e) => e.explanation)} />
       </div>
 
       <section className="space-y-3">
@@ -304,7 +305,7 @@ export function CallReview({ attempt, evaluation, teacher }: { attempt: AttemptO
           ) : (
             <p className="text-muted-foreground">Разговора не было: карточка сохранена без ответа на вызов.</p>
           )}
-          {call.end_reason && <p className="text-xs text-muted-foreground">Завершение звонка: {call.end_reason}.</p>}
+          {call.end_reason && <p className="text-xs text-muted-foreground">Завершение звонка: {END_REASON_LABELS[call.end_reason] ?? call.end_reason}.</p>}
         </CardContent>
       </Card>
 

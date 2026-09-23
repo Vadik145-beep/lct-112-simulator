@@ -36,6 +36,16 @@ export interface SoftphoneState {
   error: string | null;
   /** Browser mode: the phrase is being recorded. */
   recording: boolean;
+  /**
+   * Browser mode of a lesson with the cloud caller (plan/track-c-vapi.md): the call to Vapi
+   * is being set up, is live (the microphone is open, the caller answers by itself), or
+   * failed (the panel fell back to the microphone button and the local stand-by).
+   */
+  cloud: "off" | "connecting" | "live" | "failed";
+  /** Cloud call: the microphone is muted. */
+  muted: boolean;
+  /** Cloud call: the caller is speaking right now. */
+  callerSpeaking: boolean;
 }
 
 export interface SoftphoneActions {
@@ -50,6 +60,8 @@ export interface SoftphoneActions {
   startRecording: () => Promise<void>;
   stopRecording: () => Promise<void>;
   sayText: (text: string) => Promise<void>;
+  /** Cloud call: mute or unmute the microphone. */
+  setMuted: (muted: boolean) => void;
 }
 
 export type Softphone = SoftphoneState & SoftphoneActions;
@@ -71,6 +83,7 @@ export const STATUS_LABELS: Record<CallStatus, string> = {
 export const END_REASON_LABELS: Record<string, string> = {
   hangup: "вы завершили вызов",
   caller_hangup: "заявитель положил трубку",
+  silence: "связь прервана: долгая тишина",
   no_answer: "не ответили вовремя",
   no_contact: "отмечено «нет контакта»",
   call_dropped: "отмечено «срыв звонка»",

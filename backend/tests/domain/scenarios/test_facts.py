@@ -92,6 +92,47 @@ def test_direction_word_is_not_a_region() -> None:
     assert address.city == "Королёв"
 
 
+def test_route_description_does_not_become_a_street() -> None:
+    """The card's street list holds nominative names of Moscow streets. A ticket that points at
+    a route («дорога от…», МКАД, «стоят на Ленинградском ш.») has no street to pick: such an
+    address belongs in the description, otherwise the trainee cannot fill the card at all."""
+    for text in (
+        "Дорога от Киевского ш. (М3) в сторону Минского ш. (М1) через Крекшино",
+        "Москва, МКАД, напротив рынка Мельница, если ехать от Рублевского шоссе",
+        "Стоят на Ленинградском ш. около памятника Ленина, напротив вокзала станции Ржев-1",
+        "Москва, парк Лосиный остров, вход от улицы Красной сосны, далее по дорожке",
+    ):
+        assert parse_address(text).street is None, text
+
+
+def test_street_behind_a_preposition_is_still_a_street() -> None:
+    address = parse_address(
+        "Москва, ул. Фабрициуса, остановка 62 автобуса «ул. Штурвальная» "
+        "(на стороне ул. Фабрициуса, дом 18)"
+    )
+    assert address.street == "ул. Фабрициуса"
+    assert address.house == "18"
+    # An intersection names the street and describes the place.
+    crossing = parse_address("Москва, ул. Тюменская на пересечении с Тюменский проездом")
+    assert crossing.street == "ул. Тюменская"
+    assert crossing.descriptive and "пересечении" in crossing.descriptive
+
+
+def test_caller_gender_from_patronymic_and_relative() -> None:
+    """The voice of the scenario follows it: a ticket's «Ивлев Артем Олегович» must not answer
+    in a woman's voice."""
+    male = parse_ticket("Задымление в торговом центре, Ивлев Артем Олегович, 916-123-98-78", "")
+    assert male.caller.gender == "male"
+    female = parse_ticket("Горит крыша, Иванова Инна Степановна, 916-126-34-71", "")
+    assert female.caller.gender == "female"
+    mother = parse_ticket("Ребенок упал с велосипеда. Вызывает мама, 9163201283", "")
+    assert mother.caller.gender == "female"
+    husband = parse_ticket("Отошли воды, вызывает супруг Минин Сергей Антонович, 916 897 5623", "")
+    assert husband.caller.gender == "male"
+    unknown = parse_ticket("Дерутся 3 человека, без пострадавших", "")
+    assert unknown.caller.gender is None
+
+
 def test_injured_summary() -> None:
     assert injured_summary("Дерутся 10-15 человек, 5 пострадавших с травмами") == "есть, 5"
     assert injured_summary("ДТП, Б/П, Б/Р, пежо + фольксваген") == "нет"

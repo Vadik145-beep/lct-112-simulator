@@ -162,6 +162,30 @@
       "title": "Address",
       "type": "object"
     },
+    "BrigadeReport": {
+      "description": "A report of the squad leader to the dispatcher by phone (customer, 21.09.2026: «старший\nгруппы звонит в ДДС, докладывает об обстановке и ходе работ»). The trainee is expected to\nreflect it with ``status`` after the call. ``after_seconds`` counts from the previous\nmilestone: «Принята» for the first report, the end of the previous report call for the\nrest.",
+      "properties": {
+        "status": {
+          "title": "Status",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "after_seconds": {
+          "default": 45,
+          "title": "After Seconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "status",
+        "text"
+      ],
+      "title": "BrigadeReport",
+      "type": "object"
+    },
     "Caller": {
       "properties": {
         "name": {
@@ -303,6 +327,13 @@
             "$ref": "#/$defs/ServiceCallRef"
           },
           "title": "Service Calls",
+          "type": "array"
+        },
+        "reports": {
+          "items": {
+            "$ref": "#/$defs/BrigadeReport"
+          },
+          "title": "Reports",
           "type": "array"
         }
       },

@@ -42,9 +42,9 @@ async function setStatus(page: Page, status: string, opts: { orderNumber?: strin
   await page.getByRole("button", { name: "Проставить статус" }).click();
   const form = page.getByRole("form", { name: "Проставление статуса" });
   await form.getByLabel("Статус", { exact: true }).selectOption({ label: status });
-  if (opts.reason) await form.getByLabel("Причина отказа").selectOption({ label: opts.reason });
   if (opts.orderNumber) await form.getByLabel("Номер наряда").fill(opts.orderNumber);
-  if (opts.comment) await form.getByLabel("Комментарий", { exact: true }).fill(opts.comment);
+  const comment = [opts.reason, opts.comment].filter(Boolean).join(": ");
+  if (comment) await form.getByLabel("Комментарий", { exact: true }).fill(comment);
   await form.getByRole("button", { name: "Сохранить статус" }).click();
   // A final status waits for the evaluation (LanguageTool may take a few seconds when cold).
   await expect(form).toBeHidden({ timeout: 15_000 });
@@ -174,6 +174,13 @@ test.describe("Волна 4: занятие целиком", () => {
     await expect(attempts.getByRole("row")).toHaveCount(3); // header + 2 attempts
     await expect(attempts).toContainText("38260311");
     await expect(attempts).toContainText("38261102");
+    // The actions column unfolds the trainee's steps with the time from issue (ТЗ: «информация о действиях»).
+    const first = attempts.locator("tr", { hasText: "38260311" });
+    await first.getByText(/действи/).click();
+    const steps = first.getByRole("list", { name: "Действия обучающегося" });
+    await expect(steps).toContainText("Принята");
+    await expect(steps).toContainText("Начало реагирования — наряд 14-217; Направлен дежурный слесарь");
+    await expect(steps).toContainText("Работы завершены");
     await teacher.screenshot({ path: `${SHOTS}/08-report.png`, fullPage: true });
     await attempts.getByRole("link", { name: "Разбор" }).first().click();
     await expect(teacher.getByTestId("review-verdict")).toBeVisible();

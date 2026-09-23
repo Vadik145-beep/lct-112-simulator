@@ -1,4 +1,4 @@
-# repo	remote path	local path (under models/)	size	sha256 (LFS) or -
+# repo (HF repo id, or a base URL for a non-HF host)	remote path	local path (under models/)	size	sha256 (LFS) or -
 Qwen/Qwen2.5-1.5B-Instruct-GGUF	qwen2.5-1.5b-instruct-q4_k_m.gguf	llm/qwen2.5-1.5b-instruct-q4_k_m.gguf	1117320736	6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e
 Qwen/Qwen2.5-3B-Instruct-GGUF	qwen2.5-3b-instruct-q4_k_m.gguf	llm/qwen2.5-3b-instruct-q4_k_m.gguf	2104932768	626b4a6678b86442240e33df819e00132d3ba7dddfe1cdc4fbb18e0a9615c62d
 Qwen/Qwen2.5-7B-Instruct-GGUF	qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf	llm/qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf	3993201344	dfce12e3862a5283ccfb88221b48480e58745165de856439950d0f22590580db
@@ -26,4 +26,5 @@ rhasspy/piper-voices	ru/ru_RU/dmitri/medium/MODEL_CARD	tts/ru_RU-dmitri-medium.M
 rhasspy/piper-voices	ru/ru_RU/irina/medium/ru_RU-irina-medium.onnx	tts/ru_RU-irina-medium.onnx	63201294	8ff38212d23da300bbe3705c645e6e5b9475f0bfde01558eb17813e22acaaaaa
 rhasspy/piper-voices	ru/ru_RU/irina/medium/ru_RU-irina-medium.onnx.json	tts/ru_RU-irina-medium.onnx.json	4765	-
 rhasspy/piper-voices	ru/ru_RU/irina/medium/MODEL_CARD	tts/ru_RU-irina-medium.MODEL_CARD.md	271	-
+https://models.silero.ai/models/tts/ru	v4_ru.pt	tts/silero_v4_ru.pt	40107184	896ab96347d5bd781ab97959d4fd6885620e5aab52405d3445626eb7c1414b00
 onnx-community/silero-vad	onnx/model.onnx	vad/silero_vad.onnx	2243022	a4a068cd6cf1ea8355b84327595838ca748ec29a25bc91fc82e6c299ccdc5808

@@ -9,6 +9,7 @@ from pypdf import PdfReader
 
 from app.reports import export
 from app.training.teacher_schemas import (
+    ReportAction,
     ReportAttempt,
     ReportErrorCount,
     ReportOut,
@@ -42,6 +43,18 @@ def _attempt(total: float | None, **kw) -> ReportAttempt:
         errors=["Нет номера наряда"] if total is not None else [],
         grammar_percent=87.5 if total is not None else None,
         remarks=["Нет номера наряда: наряд не указан при начале реагирования"] if total else [],
+        actions=[
+            ReportAction(at=NOW, seconds=41.5, kind="status", title="Принята", detail=None),
+            ReportAction(
+                at=NOW,
+                seconds=95.0,
+                kind="status",
+                title="Начало реагирования",
+                detail="наряд 14-217; Направлен слесарь",
+            ),
+        ]
+        if total is not None
+        else [],
     )
     base.update(kw)
     return ReportAttempt(**base)
@@ -113,6 +126,8 @@ def test_pdf_has_cyrillic_text_and_remarks() -> None:
     assert "Кузнецова Анна Сергеевна" in text
     assert "Комментарий к работам не по существу" in text
     assert "* оценка изменена преподавателем" in text
+    assert "Действия:" in text
+    assert "1:35 Начало реагирования — наряд 14-217; Направлен слесарь" in text
 
 
 def test_xlsx_sheets_and_rows() -> None:
@@ -121,7 +136,10 @@ def test_xlsx_sheets_and_rows() -> None:
     rows = list(book["Попытки"].iter_rows(values_only=True))
     assert rows[0][:3] == ("Обучающийся", "Логин", "Карточка")
     assert rows[1][6] == "64" and rows[1][16] == "да"
-    assert rows[2][6] == "выдана"
+    assert rows[0][18] == "Действия"
+    steps = "0:41 Принята | 1:35 Начало реагирования — наряд 14-217; Направлен слесарь"
+    assert rows[1][18] == steps
+    assert rows[2][6] == "выдана" and not rows[2][18]
     students = list(book["Обучающиеся"].iter_rows(values_only=True))
     assert students[1][0] == "Кузнецова Анна Сергеевна"
     assert students[1][10] == "Нет номера наряда ×1"

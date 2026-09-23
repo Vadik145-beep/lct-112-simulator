@@ -42,6 +42,7 @@ from app.scenarios.schemas import (
     ScenarioListOut,
     ScenarioOptionsOut,
     ScenarioOut,
+    ScenarioRemoveOut,
     ScenarioUpdateIn,
     VersionOut,
 )
@@ -85,7 +86,7 @@ async def list_scenarios(
     kind: Annotated[str | None, Query(pattern="^(call_intake|card_response)$")] = None,
     group: Annotated[str | None, Query(max_length=8)] = None,
     source: Annotated[str | None, Query(max_length=16)] = None,
-    status: Annotated[str | None, Query(pattern="^(draft|review|approved)$")] = None,
+    status: Annotated[str | None, Query(pattern="^(draft|review|approved|archived)$")] = None,
     ticket: Annotated[str | None, Query(max_length=16)] = None,
     q: Annotated[str | None, Query(max_length=100)] = None,
 ) -> ScenarioListOut:
@@ -133,6 +134,28 @@ async def update_scenario(
     loaded = await scenarios.update_body(session, loaded, body.body, refs, user)
     await session.commit()
     return await scenarios.present(session, loaded, refs)
+
+
+@router.delete("/scenarios/{scenario_id}", response_model=ScenarioRemoveOut)
+async def remove_scenario(
+    scenario_id: uuid.UUID, user: Teacher, session: DbSession
+) -> ScenarioRemoveOut:
+    """Deletes a scenario, or archives it when past attempts refer to it (ТЗ: «удалять
+    неактуальные сценарии» without losing the history of lessons)."""
+    loaded = await scenarios.load(session, scenario_id, for_write=True, allow_archived=True)
+    result = await scenarios.remove(session, loaded, user)
+    await session.commit()
+    return ScenarioRemoveOut(result=result)
+
+
+@router.post("/scenarios/{scenario_id}/restore", response_model=ScenarioOut)
+async def restore_scenario(
+    scenario_id: uuid.UUID, user: Teacher, session: DbSession
+) -> ScenarioOut:
+    loaded = await scenarios.load(session, scenario_id, for_write=True, allow_archived=True)
+    await scenarios.restore(session, loaded, user)
+    await session.commit()
+    return await scenarios.present(session, loaded, await scenarios.load_refs(session))
 
 
 @router.get("/scenarios/{scenario_id}/versions", response_model=list[VersionOut])

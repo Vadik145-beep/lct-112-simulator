@@ -3,7 +3,7 @@
   "title": "Наезд на пешехода, мужчина без сознания",
   "ticket_ref": "30-2",
   "difficulty": 2,
-  "norm_seconds": 90,
+  "norm_seconds": 60,
   "caller": {
     "persona": "witness_shaken",
     "voice": "ru_female_2",

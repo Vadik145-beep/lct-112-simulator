@@ -52,6 +52,8 @@ class CardIn(BaseModel):
     signs_path: list[str] = Field(default_factory=list, max_length=6)
     incident_type: str | None = Field(default=None, max_length=24)
     flags: dict[str, bool] = Field(default_factory=dict)
+    # Asked in a small window when «Пострадавшие» is pressed, as on the live АРМ-112 (§5.2).
+    injured_count: int | None = Field(default=None, ge=0, le=9999)
     services: list[str] = Field(default_factory=list, max_length=40)
     address: AddressIn = Field(default_factory=AddressIn)
     caller: CallerIn = Field(default_factory=CallerIn)

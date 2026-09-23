@@ -38,7 +38,8 @@ class CurrentCallOut(BaseModel):
 
 
 class AnswerResponse(BaseModel):
-    opening: DialogTurnOut
+    # Пусто в облачном занятии: приветствие произносит Vapi, своей реплики у нас нет.
+    opening: DialogTurnOut | None
     dialog: DialogOut
 
 
