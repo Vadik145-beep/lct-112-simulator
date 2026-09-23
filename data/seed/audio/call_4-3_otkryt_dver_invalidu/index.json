@@ -1,0 +1,155 @@
+{
+  "opening": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. У нас сосед третий день дверь не открывает. Пожилой, инвалид, живёт один. Мы беспокоимся.",
+    "bytes": 86561,
+    "sha256": "0a78c610034139810ea1a004edbe74b0c6226e86f8adc80b3f1225bc2b874602"
+  },
+  "r1": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Сосед дверь не открывает третий день. Звоним, стучим — тишина.",
+    "bytes": 59812,
+    "sha256": "d47c51e1d9f38d3709bc1bdc8ddff43ed855fb51c7a1130cf978c55dfc423683"
+  },
+  "r2": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Он пожилой, инвалид, живёт один. Обычно каждый день выходит за хлебом, а тут нет.",
+    "bytes": 69425,
+    "sha256": "189a7f7e82874bb40279bd5103dbd2d759c3c39dc1ad6eacd8b2480d7b7ad4d1"
+  },
+  "r3": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Зеленоград, девятый микрорайон, корпус девятьсот два. Квартира сорок пять.",
+    "bytes": 71515,
+    "sha256": "a065a408fb63486d9f65d73d5648d7fd3d00aca696b72d607af47a193a1119eb"
+  },
+  "r4": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Первый подъезд, третий этаж. Код домофона сорок пять вэ.",
+    "bytes": 57722,
+    "sha256": "497334ad99c6f5737ba5370299dd48f3ff49a4f5bbf7e33443299a8eef7566f0"
+  },
+  "r5": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Москва это, Зеленоградский округ.",
+    "bytes": 30973,
+    "sha256": "d3224534169835c031c23a38c96d27bf730d5387caf9a01cf3b891fd9e3e9a38"
+  },
+  "r6": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаем, что с ним. Дверь закрыта, внутрь не попасть.",
+    "bytes": 51035,
+    "sha256": "3e38bd65052aa9872b7af4ef8a1a8f1faf4cafd1504bc37dd075c72ce0b3ad70"
+  },
+  "r7": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Ему за восемьдесят, ходит с палочкой. Сердце больное.",
+    "bytes": 47691,
+    "sha256": "b51fdc12b3035b8e92dc1b64e4c7497c7012f6be700b9e610d307120231cd10f"
+  },
+  "r8": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Запаха из квартиры нет, я нюхала у двери. Свет в окне не горит.",
+    "bytes": 54378,
+    "sha256": "06fa2be3a4216909e79518c044ad64a9f8cb07d46786447ddf6d682b2c7534c7"
+  },
+  "r9": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Родственников у него нет, ключи ни у кого не оставлял.",
+    "bytes": 47273,
+    "sha256": "7389def99a9c246ab9ec8f2e9aa09e439d527b0fc4c9c246e2130ad301498f7f"
+  },
+  "r10": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Он в квартире один живёт. Нас двое соседей у двери.",
+    "bytes": 51035,
+    "sha256": "44940d911157899b4731dd893bd278ed78fcb95d87ddf486749114a23432d2f6"
+  },
+  "r11": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Третий день не видим. В последний раз в понедельник утром выходил.",
+    "bytes": 54378,
+    "sha256": "438437bc3fd23d2dc3426844dbffad7c2a2bc936ac3b62b8559bf89dd0735840"
+  },
+  "r12": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 25539,
+    "sha256": "063e67f9826a70ef1b61b58753994a3e0231abc5a1bf1691ff61efc1a1bf079d"
+  },
+  "r13": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 72351,
+    "sha256": "761e150b73c92faeeec11b50fddf55a547125d4f31fbb39843f78b1b2bb9decc"
+  },
+  "r14": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Соседка я, с той же площадки. Не родственница.",
+    "bytes": 39750,
+    "sha256": "97d8840d1ce0115b20b07372f6b8b9cf18c4e3cb992bab32dd7a9b9345ec70b1"
+  },
+  "r15": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, я не расслышала.",
+    "bytes": 34316,
+    "sha256": "87c8ba5256c8ea9989bb74d845c904e384e2e90f06a2eb552c5079be63f09845"
+  },
+  "r16": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю я. Может, в собесе его данные есть, он на учёте стоял.",
+    "bytes": 56050,
+    "sha256": "ddf1f304644a83df0208d52e25c440f938e3940f2cb4729598a8080cd270215d"
+  }
+}

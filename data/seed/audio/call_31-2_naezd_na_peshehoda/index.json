@@ -1,0 +1,155 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Здравствуйте! Тут человека сбили и уехали! Мужчина лежит, голова в крови, но он в сознании. Машина ушла в область!",
+    "bytes": 106623,
+    "sha256": "3b8998a6846063bc67cd5d074de9d1fa493b7c2e4d0385e46e827bbdee8645d6"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мужчину сбили. Он на переходе был, машина даже не тормозила.",
+    "bytes": 53960,
+    "sha256": "4d44e619c7e352624b8cac7a20eb5e1ac5d9609b733e0ca789e054cad106d075"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Она с места скрылась, ушла в сторону области. Не остановилась вообще.",
+    "bytes": 60648,
+    "sha256": "996b23ac22df0c11ad02244831f760b979e350ab7e2a24b918c92b4f8da54d74"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Рублёвское шоссе, напротив торгового центра Европарк.",
+    "bytes": 47691,
+    "sha256": "08ef2782d396745f837ef8ccb91df65cddb5a293d63b01fcdc39b0b235b1f6e1"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, район Кунцево.",
+    "bytes": 20942,
+    "sha256": "6297a3f90ab1b0b67a81e6bfd80b27622ed14273102940d1d19a8ca641691b77"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Пострадавший один, мужчина. Травма головы, кровь на виске.",
+    "bytes": 56886,
+    "sha256": "0dea051feabedd8c5b45b401d4a89f195b6671cd2cd710d60da81e5509be7ef7"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "В сознании, отвечает мне. Пытается встать, я не даю.",
+    "bytes": 48527,
+    "sha256": "bae1a45b25d7aeba4b5f716c949d23f81f6d48014eb217ae188c9f289443c077"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Он на проезжей части лежит. Машины объезжают вплотную.",
+    "bytes": 47273,
+    "sha256": "4b11978bff859c799a9ae2af6c552c16a79f29ce6fcfab8dbe47d84ff9ce2e2c"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Красная ВАЗ, десятая модель. Номер помню только цифры, сто двадцать восемь, регион сто семьдесят семь.",
+    "bytes": 98264,
+    "sha256": "06a0180c7095f021f2e89c6af5a13fc876f8487339b8fbcc07aef200a6d3614d"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Пострадавший один. Со мной ещё двое остановились.",
+    "bytes": 44765,
+    "sha256": "c724eb23b0520b6079d015b41c421ae29730564ae848e4d5004c613e48f1eb96"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Только что, минуту назад. Я сразу набрала.",
+    "bytes": 35152,
+    "sha256": "358c0b245eebd73a730e2d55e3e33f8a11735245e49a99f54778c1887f25d9d1"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 22613,
+    "sha256": "890d949c1e1e3681434e958c7e31f01f2fc317c589d62fe3c219678c6624e9fe"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 70261,
+    "sha256": "4fd15df0cae284949453ab7c14d5428af5e37929828063553645bd188796fb4a"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я очевидец. Не родственница, рядом оказалась.",
+    "bytes": 35152,
+    "sha256": "b26a7c07bb6f9c4b58c3aaf8c1c84d65d35c9e62c69f07da6e54ace824fdee49"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Это шоссе, подъездов нет.",
+    "bytes": 22613,
+    "sha256": "4c4fe458168a9222590008e520a4e47d19580e3bab2f57bcb4870e2f70087b65"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Что? Повторите, я его придерживаю!",
+    "bytes": 30973,
+    "sha256": "6ebcf9fef740cf1545a857d3b897b921df269834c93adac077ce6002bfcaffb4"
+  },
+  "r16": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю. Мы аварийки включили, чтобы нас объезжали.",
+    "bytes": 47273,
+    "sha256": "26cc1509a3807ed1d44f95a6235246b3dd138bf5584c937af4c029d34bca8d4b"
+  }
+}

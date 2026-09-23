@@ -1,0 +1,155 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. На МКАД горит машина, фольксваген красный. Пламя из-под капота, водитель вышел, целый.",
+    "bytes": 82799,
+    "sha256": "98c49bac9ad1ad2d7838564ec2140ea0989c702f4a80f7a55199e8f583860e8e"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Машина горит. Фольксваген красный, пламя из-под капота идёт.",
+    "bytes": 50199,
+    "sha256": "59aeaeedc9e05a48f7683ff2e8d48bccf9f870235fcc030163474212c1c944dd"
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Дым чёрный, уже салон занимается. Водитель отошёл на обочину.",
+    "bytes": 54378,
+    "sha256": "a58443b536813c11b6e4b359bac9de58915324ff034e255a6f5fb67207fd3308"
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "МКАД, сорок девятый километр, внутренняя сторона.",
+    "bytes": 44765,
+    "sha256": "1525d67d492e34b6765c0103d907bc3f63cbb9667445b588a2810832c0b38178"
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Километр не доезжая до съезда на улицу Генерала Дорохова.",
+    "bytes": 49363,
+    "sha256": "51e7d96f8e3b166d5cdad046bc9c7807e39df42c8f3c9bcf97cc891b38682e7c"
+  },
+  "r5": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Москва, Очаково-Матвеевское.",
+    "bytes": 25539,
+    "sha256": "c8329b625ab0631f53c516845adc4470a7f780fd1bba10e8ab2c5511ca9c8cd4"
+  },
+  "r6": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пострадавших нет. Водитель сам вышел, стоит за отбойником.",
+    "bytes": 49363,
+    "sha256": "a74d554211fcac34e69132ef27707b687b667f3e8f3014963840d89464097db6"
+  },
+  "r7": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Бак он говорит полный. Рядом машины идут потоком, никто не тормозит.",
+    "bytes": 57722,
+    "sha256": "aa00f5effd03dce6e951408c8486aae4e0f02f566adf09f4c21409da83ff2ef7"
+  },
+  "r8": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Фольксваген красный. Номер х восемьсот шестьдесят три эм эн, регион сто девяносто девять.",
+    "bytes": 80710,
+    "sha256": "c524e627a2e62c834d4f57bb83b7dde9d9d57b1ff8d038c1fc778be51d78f22d"
+  },
+  "r9": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "В машине он один был. Пассажиров нет.",
+    "bytes": 32226,
+    "sha256": "1e7b28d7e511850a79b0fcaff758b98c9e2776f4386db5414ac93b04431564fc"
+  },
+  "r10": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Загорелась минуты две назад. Я встал за ней и звоню.",
+    "bytes": 42675,
+    "sha256": "7294531555e7a967f91d9ed733d083c33b54fc8c152807a871e0a79bb1c8b23f"
+  },
+  "r11": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Попов Виктор Дмитриевич.",
+    "bytes": 22613,
+    "sha256": "7dfbb079c3427644d733892d1adcf0d4432eaf96c6485904b906c7e60044c925"
+  },
+  "r12": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+    "bytes": 73186,
+    "sha256": "96b48a5528eec2dd7ad11f9db41dda04d4a75c1f2117bdcd24d030194745a9b2"
+  },
+  "r13": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я очевидец, ехал следом. Машина не моя.",
+    "bytes": 35152,
+    "sha256": "0022fb94b2f2f8c337c60ec94a7121d83280fc06b4f43fd88c578f8a1622b41a"
+  },
+  "r14": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Это трасса, подъездов нет.",
+    "bytes": 26375,
+    "sha256": "4fb8213b250084c929ef62f0dfbe230b2f5f585620a7d5a9c71973eeeb08e136"
+  },
+  "r15": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, тут шумно от потока.",
+    "bytes": 35988,
+    "sha256": "672f957ca04168ba86498e1b8fc9a1b0cd1388357954bb04a8803bcbb6fff2ba"
+  },
+  "r16": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. У меня огнетушитель маленький, толку не будет.",
+    "bytes": 47273,
+    "sha256": "23f987edd3c55c0264c41ab41d562a335b18974629e545ddf3e5546807f8913f"
+  }
+}

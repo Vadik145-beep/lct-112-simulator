@@ -1,0 +1,154 @@
+{
+  "kind": "call_intake",
+  "title": "Ссора во дворе из-за парковки",
+  "ticket_ref": "24-1",
+  "difficulty": 1,
+  "norm_seconds": 60,
+  "caller": {
+    "persona": "calm",
+    "voice": "ru_male_1",
+    "noise": "street",
+    "opening": "Здравствуйте. У нас во дворе двое ругаются из-за парковки. До драки пока не дошло, но орут громко.",
+    "facts": {
+      "what_happened": "двое жильцов ссорятся во дворе из-за парковочного места, драки нет",
+      "address": "Вешняковская улица, дом 37, двор у пятого подъезда",
+      "injured": "пострадавших нет",
+      "danger": "драки нет, только ругань, но один толкнул другого в плечо",
+      "caller_name": "Соколов Иван Петрович",
+      "callback_phone": "916-896-32-54"
+    },
+    "behaviour": "спокоен, говорит без спешки; сам сообщает, что драки нет; про толчок в плечо скажет, если спросить, доходило ли до рук",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Двое ругаются из-за парковки. Один второму машину перегородил.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "what_happened",
+      "text": "Орут на весь двор минут десять. Люди в окна смотрят.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "address",
+      "text": "Вешняковская улица, дом тридцать семь. Двор у пятого подъезда.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "region",
+      "text": "Москва, Вешняки.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "injured",
+      "text": "Пострадавших нет. Оба на ногах, целые.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "danger",
+      "text": "До драки не дошло. Хотя один другого в плечо толкнул уже.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "count_people",
+      "text": "Двое ругаются. Ещё трое рядом стоят, наблюдают.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "vehicle",
+      "text": "Машины две, обе легковые. Одна проезд перекрыла.",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "time",
+      "text": "Минут десять уже. Началось, когда один приехал.",
+      "approved": true
+    },
+    {
+      "id": 10,
+      "topic": "caller_name",
+      "text": "Соколов Иван Петрович.",
+      "approved": true
+    },
+    {
+      "id": 11,
+      "topic": "callback_phone",
+      "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+      "approved": true
+    },
+    {
+      "id": 12,
+      "topic": "caller_role",
+      "text": "Я очевидец, живу в этом доме. К ним отношения не имею.",
+      "approved": true
+    },
+    {
+      "id": 13,
+      "topic": "entrance_floor_code",
+      "text": "Они во дворе стоят, не в подъезде.",
+      "approved": true
+    },
+    {
+      "id": 14,
+      "topic": "repeat",
+      "text": "Повторите, пожалуйста, они громко ругаются.",
+      "approved": true
+    },
+    {
+      "id": 15,
+      "topic": "unknown",
+      "text": "Не знаю. Могу подождать наряд у подъезда.",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "injured",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "Скандал"
+    ],
+    "incident_type": "15.19.0.0",
+    "flags": {
+      "injured": false
+    },
+    "address": {
+      "street": "Вешняковская улица",
+      "house": "37",
+      "okrug": "ВАО",
+      "district": "район Вешняки",
+      "descriptive": "двор у пятого подъезда"
+    },
+    "caller": {
+      "name": "Соколов Иван Петрович",
+      "role": "очевидец",
+      "phone": "916-896-32-54"
+    },
+    "description_keywords": [
+      "ссора во дворе",
+      "из-за парковки",
+      "пострадавших нет",
+      "драки нет"
+    ],
+    "description": "Ссора во дворе из-за парковки, пострадавших нет, драки нет.",
+    "expected_services": [
+      "102",
+      "ntu"
+    ]
+  }
+}

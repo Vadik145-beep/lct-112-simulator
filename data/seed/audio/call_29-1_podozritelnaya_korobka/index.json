@@ -1,0 +1,146 @@
+{
+  "opening": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Здравствуйте. В парке на дорожке лежит большая коробка, замотана скотчем. Внутри что-то тикает. Я отошёл подальше.",
+    "bytes": 113311,
+    "sha256": "a463079552faa6aed30345caeebc5b6e1e0e3c6cff0ea84419b693e67013bcd0"
+  },
+  "r1": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "На дорожке коробка лежит. Большая, вся скотчем замотана.",
+    "bytes": 53124,
+    "sha256": "209e0980f686e3239048517b2cb1011ca92bfcaed9a166321610fd0194219007"
+  },
+  "r2": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Внутри тикает. Я нагнулся послушать и сразу отошёл.",
+    "bytes": 51453,
+    "sha256": "a99396751d8ae02b281c69bbe8e772796130d402ae5c20e69e8d7a822254cb73"
+  },
+  "r3": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Парк Лосиный остров. Вход от улицы Красной Сосны.",
+    "bytes": 58140,
+    "sha256": "f2405aecb9415bc13017608d41da187f43320c83c962352b2613ca5b0600c65f"
+  },
+  "r4": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Дальше по дорожке прямо, до скамеек. Коробка у второй скамейки.",
+    "bytes": 62737,
+    "sha256": "55b95abbbd4a18d8283246fce5b9db23ac7eae3a0d5caaf9d3357711d751b475"
+  },
+  "r5": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Москва, Ярославский район.",
+    "bytes": 37660,
+    "sha256": "f4bed8b10964e7ce1221f3c149aca76ecb384bd5609ca88f979223dd1dbd341f"
+  },
+  "r6": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Пострадавших нет. Никто её не трогал.",
+    "bytes": 38078,
+    "sha256": "fd80a02315517863482710ed73480d96b45e3e5fe6b67ec93817dd3ebc2fd554"
+  },
+  "r7": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Что внутри, непонятно. Тут люди с детьми ходят, дорожка проходная.",
+    "bytes": 68589,
+    "sha256": "222b292e0d4e668b9bc1645320f0a63bc11cea0c26002bd563a421050ce5bd89"
+  },
+  "r8": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Рядом человек пять гуляющих. Я их отвёл подальше.",
+    "bytes": 51035,
+    "sha256": "aa42e632736ea1ff6a46a5531ff2268429f6113d05f8cf6dc0ece7da91f45582"
+  },
+  "r9": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Минут пять назад увидел. Сколько она там лежит, не знаю.",
+    "bytes": 51453,
+    "sha256": "6bfa411979b6217af1511bf6ada98d848bcc56c6edca2f07979fee6d68237bca"
+  },
+  "r10": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Соколов Иван Петрович. Я прохожий.",
+    "bytes": 41004,
+    "sha256": "d62fc110c2fdd764d072462dfdf3a3531e9dcf1a598852d1800cff10e269e179"
+  },
+  "r11": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 81964,
+    "sha256": "1f6e0f4ba3f346e0bbfb973a93e2091ac6c1390c26c84424be2e61a2d8011563"
+  },
+  "r12": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Я очевидец, просто гулял. Коробка не моя.",
+    "bytes": 46437,
+    "sha256": "2c174723b2a9acc40c04c2159695a82847ff500c77b341bbce9777d9c59d638f"
+  },
+  "r13": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Это парк, подъездов нет. Заход от улицы Красной Сосны.",
+    "bytes": 59812,
+    "sha256": "e72c2a5a093eeea8137b9ce8365b0630584ba85dbb0f5c63a8035ba209d9dba9"
+  },
+  "r14": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Повторите, пожалуйста, я отхожу и плохо слышу.",
+    "bytes": 41004,
+    "sha256": "2d526bcbb32bc8d01aef05db2777905a1c7b1049e27b5b02093afd0c9b5b93b9"
+  },
+  "r15": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Не знаю. Коробка размером с телевизор, картонная. Я к ней не подхожу.",
+    "bytes": 74022,
+    "sha256": "f18f77a4f72b106e27b9d9ecc91a389bc33a631cf2186f6e2e48578b5c139a58"
+  }
+}

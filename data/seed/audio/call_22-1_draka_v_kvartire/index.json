@@ -1,0 +1,137 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. У соседей драка в квартире, двое мужчин. Грохот такой, что стены трясутся.",
+    "bytes": 74022,
+    "sha256": "76a1d9a5b422c97dfe74c67c6241a72de8864b89dccc01f4fc719233ceaede46"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Соседи дерутся. Двое мужчин, слышу через стену.",
+    "bytes": 41839,
+    "sha256": "09b771205132960df91b58ba49b8815da5e551236cb910caaab541175ed44d3a"
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Грохот, мебель падает, мат стоит. Женских голосов нет.",
+    "bytes": 44765,
+    "sha256": "1b20bb3b230df5c2ac2af64603c527074afeafa025563a3a439521b49f856ebd"
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Улица Маршала Василевского, дом тринадцать, корпус три. Квартира два.",
+    "bytes": 63573,
+    "sha256": "9f80b57a5878b17d9b2cd567f326d474fbf954d1aaba210ca5f22c497225f41f"
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Первый подъезд, первый этаж. Код домофона два.",
+    "bytes": 41839,
+    "sha256": "21d250f0b3c7a653c1f8085a93324b168b6f60127e1ffce992f5840e83086201"
+  },
+  "r5": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Москва, Щукино.",
+    "bytes": 18852,
+    "sha256": "b6d235caca93a2e0b5f5f99c3a4ec689eff39e68966118b74005f73c8c23ebb2"
+  },
+  "r6": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пострадавших вроде нет. Криков о помощи не слышал, только ругань.",
+    "bytes": 60648,
+    "sha256": "ba708a6aa20d5dc4087345221825af977e208187ae40ff6d333222b1f3c637de"
+  },
+  "r7": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Оружия не слышно, дерутся руками. Стёкла целы.",
+    "bytes": 41004,
+    "sha256": "7ab0ea90f124b141dd76eb9e9bbebe4aeecec2d80e15d8821340c1f3b6de5c4e"
+  },
+  "r8": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Двое их. Там братья живут, больше никого не слышно.",
+    "bytes": 45601,
+    "sha256": "a950f51fdfe08888fddbe7350db3b61f070368caf9eaefdcda2fb4c0fecb304f"
+  },
+  "r9": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Минут десять шумят. У них такое уже было в прошлом месяце.",
+    "bytes": 48527,
+    "sha256": "e5994d179b9a6d861a97248c42fa2fe3169e3ce6bb0deae7f5b1ca6890a3ce8c"
+  },
+  "r10": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Соколов Иван Петрович.",
+    "bytes": 20942,
+    "sha256": "586fa4ae4ae818bda3d8c445a7aafa7efcecce5b39c1c6a9eb0fa922152bea5b"
+  },
+  "r11": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 66499,
+    "sha256": "159f44bf00eb3c11d1b4a8f1018a820448b49aa2680e37a5a28285f5664638f8"
+  },
+  "r12": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Сосед я, из квартиры напротив.",
+    "bytes": 27211,
+    "sha256": "767c7a9bb1220b0be6e3e34e61ffdc431c33406f3e7702dd1c214e5ab6fc327b"
+  },
+  "r13": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, за стеной шумят.",
+    "bytes": 33062,
+    "sha256": "3272b9ed77173ac800774db4a923a740ea3a003b6b12e4ec68ac0e0075117b9f"
+  },
+  "r14": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Стучать к ним я не пойду, ещё мне достанется.",
+    "bytes": 48527,
+    "sha256": "35eb30def6b31b6eb470ba37e8e24862d09ca1fb663022c51b6a7dac2b7109a9"
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Помогите! Касса горит на станции! Кассир обожглась, лицо и руки!",
+    "bytes": 65663,
+    "sha256": "dfabeb1dcd7e1de8a5cb70f0a7fb2a64bdfc04f39194d3823224b66a6dcb717e"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Касса горит! Прямо внутри огонь, стекло уже лопнуло.",
+    "bytes": 47691,
+    "sha256": "3108e8796da4f9851b6ab6d974f26a0d2d857bde6118b40a7d8cf59f80ab5aed"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Кассир выскочила, у неё лицо и руки обожжены. Огонь не тухнет.",
+    "bytes": 52288,
+    "sha256": "900eb36d198bf51efbb28fc238aca661cb0c9f31fe5e0ab117d85c48d77268bb"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Станция Текстильщики, железнодорожная. Платформа в сторону области.",
+    "bytes": 67753,
+    "sha256": "0fb0b811a2cba8bb3884bd214f2393dcb7e434f8d66315883523a981d5d4cd09"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Подъезжать со стороны Люблинской улицы, там для служб проезд есть.",
+    "bytes": 56050,
+    "sha256": "a7c9348a4b355f208f70a5333555e061158e34e6318ff9042adbb2c13edb38e3"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, Текстильщики.",
+    "bytes": 20524,
+    "sha256": "59a113c217395067a87eae86083e787580a6ffa4f43d8120ec218e243de6179b"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Одна пострадавшая, кассир. Ожог лица и рук, но в сознании.",
+    "bytes": 48527,
+    "sha256": "1e4cd79ffeb406b02cccbaa458405c3a3056f395a128df1e65091eb7d7a54fed"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Назвалась Гвоздикова Анна Павловна, сорок пять лет.",
+    "bytes": 44765,
+    "sha256": "16406a15f8a690505bab1afeb5c666fab72356dd35e8b7b70b63faad219cdd9f"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Дым на платформу тянет, а тут людей полно, электричку ждут.",
+    "bytes": 51453,
+    "sha256": "a4face1401be301e5599c2b9131d17b5f7a66bb334c7d2f41629411f99a1ab4c"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "В кассе была она одна. На платформе человек тридцать.",
+    "bytes": 44347,
+    "sha256": "7be56a42e5c56490589cb6f22a80b12d649d9ce0c39d84261afe9077b41632e1"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Минуты три назад вспыхнуло. Сначала дым пошёл, потом пламя.",
+    "bytes": 50199,
+    "sha256": "0ef956d3d9a8a3022df05dff16594e0feb23050847e3d3571a73d3cb7cb267c8"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Беликова Юлия Викторовна. Я очевидец.",
+    "bytes": 31391,
+    "sha256": "12fc04603d7021c086016f6a876f5a14d4f2e54305d08ffe01df51bdad1db3ec"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+    "bytes": 58976,
+    "sha256": "5320fbcfbfd8b4198a0dc3f7224cc87c91005d42033d5a2add1c6d8972c75e85"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я пассажирка, электричку ждала. С кассиром не знакома.",
+    "bytes": 44765,
+    "sha256": "339358ba0b14818c833ca813b294cc92884fad63e7140072884122d0e025adc5"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Это станция, платформа. Подъездов нет.",
+    "bytes": 32226,
+    "sha256": "5b17808cf44a8ee1b1fd35f7982a81fbcf46b070413b48b8cdd9739e5a5f234d"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Что? Тут объявления по громкой, повторите!",
+    "bytes": 38078,
+    "sha256": "2dc20cbd538e8eb3f4ad69db003dd74c2d15d62fe26b215ed52583d643a10b06"
+  },
+  "r16": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю я! Людей с платформы уводить?",
+    "bytes": 35988,
+    "sha256": "3ddd13b0bd754f3d5cbf33c3ff71d7d2140f26e84472a61be65ae268cd750bdf"
+  }
+}

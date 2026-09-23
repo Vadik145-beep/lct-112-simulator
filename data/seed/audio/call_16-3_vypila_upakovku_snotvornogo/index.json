@@ -1,0 +1,146 @@
+{
+  "opening": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Здравствуйте, жена выпила целую упаковку снотворного. Сонная, еле говорит. Я упаковку нашёл пустую.",
+    "bytes": 104533,
+    "sha256": "06202fa0b538d2bf6e27696acc866ae1ebc002bed2c047a448f360b21632395e"
+  },
+  "r1": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Жена выпила упаковку снотворного. Всю, целиком.",
+    "bytes": 56886,
+    "sha256": "e3d8f667174cb03091bba2b5e5709d33a50447ee7f8b63ebda82fb6e6c4c72ff"
+  },
+  "r2": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Лежит, глаза закрывает, говорит невнятно. Я её тормошу, отвечает с трудом.",
+    "bytes": 82799,
+    "sha256": "ac10dae36cf047768980821ee08dbc26efa22f0922d4af1e7275f70698ea5dce"
+  },
+  "r3": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Улица Знаменские Садки, дом семь, корпус два. Квартира двести шестнадцать.",
+    "bytes": 81128,
+    "sha256": "e526ad958bd8202cb9f9fa9519af92e5dc31bdbe2cf0e6429fdfd4ea4309365f"
+  },
+  "r4": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Четвёртый подъезд, девятый этаж. Код домофона двести шестнадцать.",
+    "bytes": 68589,
+    "sha256": "61aecd440d105f632c46a590f1210b2a3653bf841b1d099343a431a4dbb44abf"
+  },
+  "r5": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Москва, Северное Бутово.",
+    "bytes": 31391,
+    "sha256": "091a9db8cd3d05773f67c259274cb9c264584fb8293328771f8951a30d2f7fde"
+  },
+  "r6": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Жена, Петрова Светлана Павловна. Тридцать пять лет.",
+    "bytes": 59812,
+    "sha256": "7e4d786acec74b90604ae7eef6f6ed96bb0893b8251b693a83bca64dc2305ec8"
+  },
+  "r7": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "В сознании пока, но засыпает. Дышит ровно.",
+    "bytes": 57722,
+    "sha256": "87d7081dfba55db0df01c619d7951f760364a40c597b96925ce43377b5b1cb97"
+  },
+  "r8": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "На упаковке написано Донормил. Пустая совсем, я её на кухне нашёл.",
+    "bytes": 67753,
+    "sha256": "48036cc60967fb85f5ddae048bf1069a8cf95d027ecfa622d7141a57009828c6"
+  },
+  "r9": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Мы вдвоём дома. Дочь в школе.",
+    "bytes": 34316,
+    "sha256": "b59df98604dd184c61bfcb3a1859dccd15abb27c6d416234448fe5b9287a0587"
+  },
+  "r10": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Нашёл её минут десять назад. Когда выпила, не знаю, может, полчаса прошло.",
+    "bytes": 88651,
+    "sha256": "239241c50c5c0c1198930eabab472d01f6fefb380ea0a75223f183a3163064c2"
+  },
+  "r11": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Я муж, Петров Олег. Жена — Петрова Светлана Павловна.",
+    "bytes": 60648,
+    "sha256": "ff0496213179fd12f3affaff8383f4d1cb7eb2d929f5168662f6acfe61565ac7"
+  },
+  "r12": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 83635,
+    "sha256": "5f1a18a2fe1f83c23addfbbb9f53e366a36cfb44b5b33f4caac8ce2355d4d91a"
+  },
+  "r13": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Муж я. Рядом с ней сижу.",
+    "bytes": 32226,
+    "sha256": "b8c5da5bd828fda81a569af900e34b2c1fc6a05e1cab3ba01d9cc8b95ac75e9e"
+  },
+  "r14": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Повторите, пожалуйста, я не расслышал.",
+    "bytes": 33062,
+    "sha256": "96c545e9798bdc7baa3cecd1417db2c8d48bc542d04fe969a33c61aa3ca37dd6"
+  },
+  "r15": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Не знаю. Её рвать заставить или не трогать?",
+    "bytes": 44765,
+    "sha256": "0e4923875c1280a5b61c03cf87c3d075d0b5df00ca62c872772d0b28e9010d50"
+  }
+}

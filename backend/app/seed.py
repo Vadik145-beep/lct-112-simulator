@@ -63,6 +63,9 @@ AUDIO_STORAGE = "tts/seed"
 # Recordings of the officers' built-in bank: one folder per service, not per scenario
 # (app.dialog.officer.studio_audio, issue #59).
 OFFICERS_AUDIO_KEY = "_officers"
+# The caller's universal replies (data/seed/fallback_phrases.json): one folder per voice, used
+# when the scenario has no reply of the topic left (app.domain.scenarios.fallback).
+FALLBACK_AUDIO_KEY = "_fallback"
 DEMO_SESSION_KEY = "demo-card-response-1"
 DEMO_CALL_SESSION_KEY = "demo-call-intake-1"
 # student1 works as a district administration dispatcher (see _STUDENT_SERVICES).
@@ -219,22 +222,27 @@ def _attach_report_audio(body: dict, link: Callable[[str], str | None]) -> int:
     return linked
 
 
-def copy_officer_audio(data_dir: Path, storage_dir: Path) -> int:
-    """Copies the officers' studio bank into storage as it is; the dialog looks the files up
-    by service and phrase (issue #59). Returns how many files are in place."""
-    source = data_dir / AUDIO_DIR / OFFICERS_AUDIO_KEY
+def copy_bank_audio(data_dir: Path, storage_dir: Path, key: str) -> int:
+    """Copies a bank of recordings that belongs to no single scenario into storage as it is:
+    the officers' phrases per service (issue #59) and the caller's universal replies per voice.
+    The dialog looks them up by path. Returns how many files are in place."""
+    source = data_dir / AUDIO_DIR / key
     if not source.is_dir():
         return 0
     copied = 0
     for file in sorted(source.rglob("*")):
         if not file.is_file() or file.suffix not in (".mp3", ".wav"):
             continue
-        target = storage_dir / AUDIO_STORAGE / OFFICERS_AUDIO_KEY / file.relative_to(source)
+        target = storage_dir / AUDIO_STORAGE / key / file.relative_to(source)
         if not target.exists() or target.stat().st_size != file.stat().st_size:
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(file, target)
         copied += 1
     return copied
+
+
+def copy_officer_audio(data_dir: Path, storage_dir: Path) -> int:
+    return copy_bank_audio(data_dir, storage_dir, OFFICERS_AUDIO_KEY)
 
 
 async def _ticket_id(session: AsyncSession, ticket_ref: str | None) -> uuid.UUID | None:
@@ -255,6 +263,7 @@ async def seed_scenarios(session: AsyncSession, data_dir: Path) -> tuple[int, in
     keys: list[str] = []
     storage_dir = Path(get_settings().storage_dir)
     copy_officer_audio(data_dir, storage_dir)
+    copy_bank_audio(data_dir, storage_dir, FALLBACK_AUDIO_KEY)
     for path in _scenario_files(data_dir):
         body = json.loads(path.read_text(encoding="utf-8"))
         key = path.stem

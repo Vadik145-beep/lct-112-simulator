@@ -1,0 +1,155 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Машина в воду упала! Прямо с набережной, в Яузу! Я всё видела, она под воду ушла!",
+    "bytes": 75276,
+    "sha256": "ff3154b8ebe39336a2bb7257e4f91f7063131d0312198ef66fb4f7d29792a1ed"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Машина в воду упала. Съехала с набережной и сразу под воду.",
+    "bytes": 51453,
+    "sha256": "4cb562b2961e97a49a87a9cbd4a9485c61da13988458ee5cc442597c702f6396"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Крышу ещё видно. Она вот прямо на моих глазах ушла, я даже крикнуть не успела.",
+    "bytes": 72351,
+    "sha256": "68120139c5959f42451ea274f3bdb853921762d476cd82aff3e08cf3271b7e1e"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Набережная Яузы. Погодите, тут табличка... Лефортовская набережная.",
+    "bytes": 62737,
+    "sha256": "73d2d2a0975bec2818c363579c62b750134251f567249f5955852764f0f6c2d5"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Напротив Большого Нижнего пруда, сторона в область.",
+    "bytes": 44347,
+    "sha256": "d9d11a207d6b13d9b72ccc29288fcfbd3839793cec2448819fb135c2a5da4bce"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, Басманный.",
+    "bytes": 18016,
+    "sha256": "a765ab9ae18175668280c302d1e6600b8a07c94990f88ffd84444362714a445c"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Водитель внутри остался. Никто не вылез, я бы увидела.",
+    "bytes": 48527,
+    "sha256": "af98625ed87150aeb98447d4a4ad7177afd89e08437392b27f6d946d6a3dd81d"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Машина под водой, течение сильное. С берега её не достать.",
+    "bytes": 48527,
+    "sha256": "5102c1a72f06d316a2268fe943a062183fad6e160f3bf5d0d6afcc0d0b5e1a92"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Рено, серая. Номер я не разглядела, всё быстро было.",
+    "bytes": 42675,
+    "sha256": "d0e4a3bda9204b00b26e2b164e4562446e2ddbd2c09c88e94667fafb3e742169"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Сколько их там было, не знаю. Водителя точно видела.",
+    "bytes": 41839,
+    "sha256": "18b49f92f7b8e883766d5eb7067a628ec9d73a1d650f4a15314f74ba13fd702b"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Только что. Минуты не прошло, я сразу набрала.",
+    "bytes": 35988,
+    "sha256": "c650daaf19b4b6d37cca6ca889e94aaa19002dc5d99986780d97c8bd0e0da002"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 26375,
+    "sha256": "e9e763b17e14967129173c329d1107060a1bce1c2d5cfa79a4a818fb9141beba"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 67753,
+    "sha256": "ad8becf2238210842517b6c9001a72df6133338f4f80acbf9e7a0fa6f5e9d996"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я очевидец. Мимо шла, к воде близко не подхожу.",
+    "bytes": 41004,
+    "sha256": "98930c403a817cfab9a83112fb54e3d1416a81abfedd26bf782c31b5e5a5caf9"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Это набережная, тут нет подъездов.",
+    "bytes": 30973,
+    "sha256": "e79bce47196eeb7f7857f86744606be323570bb1779f6a115719167079c9e176"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Что? Повторите, у меня руки трясутся.",
+    "bytes": 31391,
+    "sha256": "b8042c37a185d67e79a80307f46cf2fa49444696960f44a6fad4ae161e2aa63a"
+  },
+  "r16": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю. Я буду тут стоять, покажу место.",
+    "bytes": 33898,
+    "sha256": "fecf252fe01501e03eb7eb95237a18d3570ddd13f838b8772a3dfd7dfe7d80b5"
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "opening": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. У нас ДТП на МКАД. Две машины, пежо и фольксваген. Пострадавших нет, все целы.",
+    "bytes": 91159,
+    "sha256": "c4c023ef08971652f86a702ceb2e93a7c4e2bc24ea029b30492dcfa9cc5f51f0"
+  },
+  "r1": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "ДТП, две машины. Пежо и фольксваген, притёрлись на перестроении.",
+    "bytes": 74022,
+    "sha256": "a6a72399e3fa35b8b8f4eed5087553812bb0d2c725cc79e233c6bc92a0f3f0e8"
+  },
+  "r2": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пострадавших нет, ранений нет. Обе машины на ходу.",
+    "bytes": 52288,
+    "sha256": "8abaa010da543273c44f91cdb67928460690c8201658b07cc48f9cfcaf278d8e"
+  },
+  "r3": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "МКАД, двадцать четвёртый километр. От Варшавского шоссе в сторону Каширского.",
+    "bytes": 72351,
+    "sha256": "37a8195710ff27d11012a222a8352a91c85f70915fd8378e1956c5f656736722"
+  },
+  "r4": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Напротив торгового центра Вегас, стоим в левом ряду.",
+    "bytes": 51035,
+    "sha256": "916a75993a10df08cef5a95ca8f402771f5b5a733cb1568055ae185bc9abc276"
+  },
+  "r5": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Москва, Орехово-Борисово Южное.",
+    "bytes": 31391,
+    "sha256": "3818f4d7ed4fbc045bc6858c643148b9a6c0c2097d84be65b17047c157fa9146"
+  },
+  "r6": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пострадавших нет. Оба водителя вышли, разговаривают.",
+    "bytes": 47691,
+    "sha256": "cce1c9cdcf25b840d376572a975c0daf9a32cf0b3872a39a9dbc3f27d1085fbe"
+  },
+  "r7": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Топливо не течёт, дыма нет. Мешаем только, левый ряд занят.",
+    "bytes": 50199,
+    "sha256": "29a54684b48624fe593d1e31eb4dcc1006316c8aefcaf50fb5295dda14eb0e3e"
+  },
+  "r8": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пежо серый и фольксваген синий. У одного бампер, у второго крыло.",
+    "bytes": 58140,
+    "sha256": "ff2bfd706422c540f6a3d3eefa282bab1916ffb8192780bb878e03fc8ce4afec"
+  },
+  "r9": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "В каждой машине по одному. Всего двое.",
+    "bytes": 35152,
+    "sha256": "6059052e0548ebf1c97dcd51ba92765e935cea4dcfe3e5de9df385ebf4a002ff"
+  },
+  "r10": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Минут пять назад стукнулись. Мы сразу знаки выставили.",
+    "bytes": 53124,
+    "sha256": "e4f2b5f6a2cca63c68b05f4521b9f823ce9ba67d4c09f458fedc86ea0f9f0883"
+  },
+  "r11": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 24703,
+    "sha256": "de5d674779bb41db8688e7deed2cd314f1146bb66999a27fbbf558718e9c10e2"
+  },
+  "r12": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 82799,
+    "sha256": "d1d7ab8644afabafad1adf3ed7002bc582323f87cefd2c1d204a197a7778aa86"
+  },
+  "r13": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я за рулём пежо была. Участник, не очевидец.",
+    "bytes": 38078,
+    "sha256": "7586ef59779303dc95491d24dcd62eb5988ec1c492df99f340008674c97d515f"
+  },
+  "r14": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Это МКАД, никаких подъездов.",
+    "bytes": 26375,
+    "sha256": "70364b23c06672c797cb4cf6b1d96bc36b6019a679d7ea9fdbc71f528415363c"
+  },
+  "r15": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, поток шумит.",
+    "bytes": 30973,
+    "sha256": "418505e4a007b13ba7a3938a294739746c9c76d82af7ec0092b8ca8f2a27964f"
+  },
+  "r16": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Нам разъезжаться или стоять до приезда?",
+    "bytes": 38914,
+    "sha256": "59caa066a8ccb220796063427bcb5d6bdbef953df462b77df8a194392bd40541"
+  }
+}

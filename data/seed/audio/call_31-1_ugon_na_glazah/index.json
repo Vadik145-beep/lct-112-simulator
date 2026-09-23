@@ -1,0 +1,146 @@
+{
+  "opening": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "У меня машину только что угнали! На моих глазах! Уехали в сторону Садового!",
+    "bytes": 77784,
+    "sha256": "48650aaaff559f607cdcb11314a02946800fd0b5968ea796e11975551ee79051"
+  },
+  "r1": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Машину угнали! Я в магазин зашёл на минуту, выхожу — она отъезжает!",
+    "bytes": 86561,
+    "sha256": "484bd53fdcde23720462a9ea8b90d6417ac553569116d1a09a799ea662c0f5fe"
+  },
+  "r2": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Я бежал за ней, кричал. Они газу дали и ушли.",
+    "bytes": 55214,
+    "sha256": "7049e40d492b89d3db047287d6e6611068fe13d3bde17fb8e58f0ab46b216f3d"
+  },
+  "r3": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Большая Ордынка, на пересечении с Пыжёвским переулком.",
+    "bytes": 64827,
+    "sha256": "a2c575eeee2d5ef34e09edbd80d7d52782d4aea23b0a817473775fab646ba2a8"
+  },
+  "r4": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Москва, Замоскворечье!",
+    "bytes": 31391,
+    "sha256": "5796da78728dabeac13d0bf32cf8d3e12b8bf95ad397300097151f3d40149e04"
+  },
+  "r5": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Пострадавших нет. Меня не трогали, я издалека был.",
+    "bytes": 53124,
+    "sha256": "48eea48db41be01cfb8a1b488642f58742b1296217aab04edcc9df6e767bb495"
+  },
+  "r6": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Мерседес чёрный. Номер а сто двадцать восемь а а, регион сто семьдесят семь.",
+    "bytes": 100772,
+    "sha256": "1c6fdb8bb11d74cbffa794eac42b0fce8fd0c04770cf7b554140fe31760f5a26"
+  },
+  "r7": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Уехали в сторону Садового кольца. В машине документы, техпаспорт в бардачке.",
+    "bytes": 84471,
+    "sha256": "becc339a011b4a9994d9b3bdd0a684d622fb5886b5b2a6cbbc434b0099b45f3c"
+  },
+  "r8": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "В машине двое сидели, кажется. Лиц я не разглядел.",
+    "bytes": 57722,
+    "sha256": "d03a1ea804047f69475efcfd392dc209cbe4fe7331b6195b75e216fda74756a8"
+  },
+  "r9": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Только что! Минуту назад, я прямо за ними смотрел.",
+    "bytes": 49363,
+    "sha256": "472c1ad3713bec21a61afbbbce0a01b3526f15dcc7d84c659d8bea8daacd56bb"
+  },
+  "r10": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Соколов Иван.",
+    "bytes": 23449,
+    "sha256": "fcb0da57adf5b42d25122964aae558bc0d553f01d6e67bc6222402eadaf6c660"
+  },
+  "r11": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 82799,
+    "sha256": "41d42970c1230e438419245d95d081556fde27bbb64fc039f061fc99e20fecea"
+  },
+  "r12": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Владелец я! Моя машина, я её только что купил.",
+    "bytes": 53124,
+    "sha256": "1c5db181132d542343f3e8745ad1294909519d9cb6e0bd6d07f351afbc92b209"
+  },
+  "r13": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Это улица, какие подъезды.",
+    "bytes": 29301,
+    "sha256": "ae24c05f01614638b5e44aae5c146da8f6464a0fbb0aa7c5b3e3266003568731"
+  },
+  "r14": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Что? Быстрее давайте, они уезжают!",
+    "bytes": 38914,
+    "sha256": "1d631262dbbbf684ffcb3cb3564a1b32c090a372924c50c158ef4c91978ab596"
+  },
+  "r15": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Откуда я знаю! Вы перехватывайте, они минуту назад ушли!",
+    "bytes": 56886,
+    "sha256": "5f476a7860fb442b077468adb3aee7dcb49ecdcd52e7b625175a9f0f28bb6bab"
+  }
+}

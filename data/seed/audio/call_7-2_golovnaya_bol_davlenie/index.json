@@ -1,0 +1,146 @@
+{
+  "opening": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Здравствуйте, мне плохо. Голова раскалывается, давление померил — сто пятьдесят на восемьдесят.",
+    "bytes": 92413,
+    "sha256": "d7174d29fb4c04939fa278bb46cbf4348d2536295858b41845619f93a08845c6"
+  },
+  "r1": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Голова сильно болит, вторые сутки. Сегодня совсем невмоготу.",
+    "bytes": 62737,
+    "sha256": "f9448383d5affd0bfe1e46067379ae0923482fa0db41321b239fe42de4769c91"
+  },
+  "r2": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Давление померил, сто пятьдесят на восемьдесят. Раньше такого не было.",
+    "bytes": 63573,
+    "sha256": "67e0ef752632612ed232a4c7b752ce2648f653bfacd5c225cd5a3cf46eb8def5"
+  },
+  "r3": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Улица Вишнёвая, дом пятнадцать. Дом частный.",
+    "bytes": 41839,
+    "sha256": "9c144341bea85e1b9026822559223a37dedadeab68733869a62f087e22439d90"
+  },
+  "r4": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Так Рязань это. Рязанская область.",
+    "bytes": 39750,
+    "sha256": "d872412e97ed1c5175ef0677f15282e21792d2305afe241b4ee54b637cddebe1"
+  },
+  "r5": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Я сам. Двадцать четыре года, Крючков Станислав Дмитриевич.",
+    "bytes": 66499,
+    "sha256": "9771052deb877129e50724fb033622a3d2c16977c35da9bd6b674d621a1fd11e"
+  },
+  "r6": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "В сознании, разговариваю. Но встаю — качает.",
+    "bytes": 50199,
+    "sha256": "1a5d5171468f7464a1256fa491d46ef834e3e78489b9cde99b1f25d43c2eaa0a"
+  },
+  "r7": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Дома один. Сам за руль не сяду, боюсь.",
+    "bytes": 44347,
+    "sha256": "958e749def8503c491964b1d7bb86471922c09f43e3741129f472e7de5f5039e"
+  },
+  "r8": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Один я в доме. Родители на работе.",
+    "bytes": 35152,
+    "sha256": "e7259c3efc53c5d7d6717147d005ae20dc61f52ab060b415dc2f291d18e0056a"
+  },
+  "r9": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Болит со вчерашнего вечера. Давление померил только что.",
+    "bytes": 55214,
+    "sha256": "3bfca89d9e453bfc72a1abebcd1c6ebd545ebedd4e87b93be138d3b3f3edadf0"
+  },
+  "r10": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Крючков Станислав Дмитриевич.",
+    "bytes": 31391,
+    "sha256": "da9ad8c97f057d2f47c6dba4602183d5d8f59a842cddbde09eda388c65ef19d9"
+  },
+  "r11": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Девять один шесть, восемьсот девяносто семь, пятьдесят шесть, двадцать три.",
+    "bytes": 78202,
+    "sha256": "c7131e681ca88947d6d9d6abccf4a94cd1592f80b7f4df34694e0e6746cec3e0"
+  },
+  "r12": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Себе вызываю, я и есть больной.",
+    "bytes": 37660,
+    "sha256": "c9c1ae1ebe5429c597c9c36d8fda9e7f064119167469e9698ba8addee23ae424"
+  },
+  "r13": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Дом частный, подъездов нет. Калитку я открою, она не заперта.",
+    "bytes": 60648,
+    "sha256": "7a2f85acac565c5727febbe9e09c6ef13650a0f84013d65960f9f076bc8a9093"
+  },
+  "r14": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Повторите, пожалуйста, мне тяжело соображать.",
+    "bytes": 38078,
+    "sha256": "ab01648aa098ca565b9981685b74a5071f236e54cb80fcd551b69844d8f01afc"
+  },
+  "r15": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Не знаю. Таблетки от головы пил, не помогло.",
+    "bytes": 42675,
+    "sha256": "3c8458533b00f8c7cc5db05c3e8f16112a0f67207869f831c6723d641419150e"
+  }
+}

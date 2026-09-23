@@ -1,0 +1,164 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Здравствуйте, тут машина горит! Прямо на дороге, водитель руки обжёг!",
+    "bytes": 59812,
+    "sha256": "97e2bdbdfa21f6d9d94fc564b53415ee9c258450e12c3f35032da398f17211aa"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Машина горит! Легковая, бежевая, пламя из-под капота прямо валит.",
+    "bytes": 58976,
+    "sha256": "5a555997944f78664dacd4410ca4727275615b79acd65416483186180445062e"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Уже вся передняя часть занялась, дым чёрный. Водитель выскочил.",
+    "bytes": 53124,
+    "sha256": "ccb05a898e06cf553b8035e12560983b7a91672c7f71cf9e698beecedb7f8e69"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Это у метро Отрадное, около торгового центра Золотой Вавилон.",
+    "bytes": 51035,
+    "sha256": "2b566ae040fa1213daf2200dbe6de166c076c11a777aaeedb036a11f3969277c"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Улица... Декабристов, да. Машина на проезжей части стоит, торговый центр справа.",
+    "bytes": 70261,
+    "sha256": "30932da9ecf68030a9d830cd803b22b75bb964a938a68e16b497c4d40d1105c1"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Какой подъезд, это же на дороге, на улице всё.",
+    "bytes": 37660,
+    "sha256": "ff783a20428f550204e7e8e260218e61c37a3280a133ec63da0180321e561948"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, Москва, Северо-Восток, Отрадное.",
+    "bytes": 35152,
+    "sha256": "714e4f25cfd15631a014758fbd47d9a2ff590e00ec4e1071c0531700b8775c12"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Есть, водитель. Руки обжёг, держит перед собой, больно ему очень.",
+    "bytes": 57722,
+    "sha256": "8ab78990c024724ea6c009a60a200e50770baa9b791fa2f8f5e7e9cb09d22272"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мужчина, лет пятьдесят с небольшим. Говорит, Дюжев Юрий Петрович. В сознании, на ногах стоит.",
+    "bytes": 73186,
+    "sha256": "42ed7b8a1beea138479cc59a802f5e24cc9b02388319e96550d53afbe34b51f7"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Страшно, что рванёт. Рядом машины стоят, люди подходят близко.",
+    "bytes": 56050,
+    "sha256": "3a826910b9395ef0324f0a20e6a92873e1eab1160c22e106537470c7855dc38d"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Тойота, бежевая. Номер эр двести пятьдесят четыре тэ эс, регион девяносто девять.",
+    "bytes": 75276,
+    "sha256": "059b66a4468d0fdd5378d9a88fd1b5f7f5d900ae218f0f56e51fddb33f6d25bc"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Водитель один был, больше никого в машине.",
+    "bytes": 33898,
+    "sha256": "89bc989852e94eb06c6c8a0a8f18090a589a2474f69342a0d02a648761cc053e"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Только что загорелась, минуты три назад, я сразу вам звоню.",
+    "bytes": 51035,
+    "sha256": "6f492374ddfd453da3ce0b5c19fb42366fff044c20b2e502b23964eaf0e286dd"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Фролова Яна Игоревна. Я мимо шла, всё видела.",
+    "bytes": 41839,
+    "sha256": "b84bba63dbc11442373eee8de76f2bf7d7399bbae76828e65861ca66131fb66c"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+    "bytes": 74022,
+    "sha256": "09d363a8cb711bfec0e1ed812249a0f527ed450006c3e4baf7523e466aa026b7"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Нет, я не с ним. Просто рядом оказалась.",
+    "bytes": 30137,
+    "sha256": "976d346c0ee1a245c5b0be2df5c1e7424cb98abb1cda02be8825da22e7277767"
+  },
+  "r16": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Что? Тут шумно, повторите, пожалуйста.",
+    "bytes": 31391,
+    "sha256": "ed556b73b155dc3dd9a793c3393143edc45094ecd1427b2556a145ae20406ddf"
+  },
+  "r17": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю я, приезжайте скорее, оно разгорается!",
+    "bytes": 36824,
+    "sha256": "25a3287d2992d8af0ac7e5b5f047f124287556a6a393b9106c7d9d615f564d2b"
+  }
+}

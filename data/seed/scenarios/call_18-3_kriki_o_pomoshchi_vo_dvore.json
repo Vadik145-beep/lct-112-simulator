@@ -1,0 +1,161 @@
+{
+  "kind": "call_intake",
+  "title": "С улицы слышны крики о помощи, кричит мужчина",
+  "ticket_ref": "18-3",
+  "difficulty": 3,
+  "norm_seconds": 60,
+  "caller": {
+    "persona": "worried_resident",
+    "voice": "ru_female_1",
+    "noise": "indoor",
+    "opening": "Здравствуйте, у нас во дворе кто-то кричит. Мужской голос, зовёт на помощь. Я из окна слышу.",
+    "facts": {
+      "what_happened": "с улицы слышны крики о помощи, кричит мужчина, кого именно и что случилось, не видно",
+      "address": "Огородный проезд, дом 12, во дворе",
+      "injured": "неизвестно, самого человека не видно",
+      "danger": "кричит уже несколько минут, во дворе темно",
+      "caller_name": "Иванова Елена Сергеевна",
+      "callback_phone": "916-896-32-54"
+    },
+    "behaviour": "волнуется, прислушивается; сама предупреждает, что человека не видит; на вопрос, откуда кричат, говорит, что со стороны гаражей; выйти во двор боится",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Кто-то кричит во дворе. Мужчина, зовёт на помощь.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "what_happened",
+      "text": "Я его не вижу, только слышу. Кричит громко, потом замолкает и опять.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "address",
+      "text": "Огородный проезд, дом двенадцать. Кричат со двора.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "address",
+      "text": "Похоже, со стороны гаражей, там фонарь не горит. Мне из окна не разглядеть.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "region",
+      "text": "Москва, Марфино.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "injured",
+      "text": "Не знаю. Может, ему плохо, может, избили. Не видно совсем.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "danger",
+      "text": "Минут пять уже кричит. Во дворе темно, выходить я боюсь.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "count_people",
+      "text": "Голос один, мужской. Больше никого не слышу.",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "time",
+      "text": "Минут пять назад началось. Соседи тоже в окна выглядывают.",
+      "approved": true
+    },
+    {
+      "id": 10,
+      "topic": "caller_name",
+      "text": "Иванова Елена Сергеевна.",
+      "approved": true
+    },
+    {
+      "id": 11,
+      "topic": "callback_phone",
+      "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+      "approved": true
+    },
+    {
+      "id": 12,
+      "topic": "caller_role",
+      "text": "Я жилец, из окна слышу. К нему отношения не имею.",
+      "approved": true
+    },
+    {
+      "id": 13,
+      "topic": "entrance_floor_code",
+      "text": "Я в третьем подъезде живу, на четвёртом этаже. А кричат во дворе.",
+      "approved": true
+    },
+    {
+      "id": 14,
+      "topic": "repeat",
+      "text": "Повторите, пожалуйста, я к окну отходила.",
+      "approved": true
+    },
+    {
+      "id": 15,
+      "topic": "unknown",
+      "text": "Не знаю я. Могу ещё послушать и сказать, откуда кричат.",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "injured",
+    "danger",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "Человек в опасности",
+      "Человек кричит о помощи"
+    ],
+    "incident_type": "17.1.8.0",
+    "flags": {
+      "injured": false
+    },
+    "address": {
+      "street": "Огородный проезд",
+      "house": "12",
+      "okrug": "СВАО",
+      "district": "Бутырский район",
+      "descriptive": "во дворе, со стороны гаражей"
+    },
+    "caller": {
+      "name": "Иванова Елена Сергеевна",
+      "role": "жилец",
+      "phone": "916-896-32-54"
+    },
+    "description_keywords": [
+      "крики о помощи",
+      "кричит мужчина",
+      "с улицы",
+      "человека не видно"
+    ],
+    "description": "С улицы слышны крики о помощи, кричит мужчина, самого человека не видно.",
+    "expected_services": [
+      "102",
+      "mkp_analytics",
+      "mayor_office",
+      "rosgvardia",
+      "ntu",
+      "fso",
+      "cukb_mo"
+    ]
+  }
+}

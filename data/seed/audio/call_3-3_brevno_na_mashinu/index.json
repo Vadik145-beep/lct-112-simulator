@@ -1,0 +1,155 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Здравствуйте! С грузовика бревно слетело и упало на машину. Там водитель, он зажат, сам не выйдет!",
+    "bytes": 87397,
+    "sha256": "242a2f597d4ee63a55fa89a8b1a7cb7719ede5753d79f12ba711f15b52d49dd1"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "С лесовоза бревно слетело. Упало прямо на легковую, сверху на крышу.",
+    "bytes": 64409,
+    "sha256": "a3c92ce62402eb0110b0b6f87c9906b148ee323c5f0860439e66d883682f994d"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Водитель внутри. Мы дверь дёргали, она не идёт, крышу вдавило.",
+    "bytes": 55214,
+    "sha256": "2ec0e11164bc0aecac38c80614b34a6741e889f2f6f96a5114645182074e4af9"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "МКАД, тридцать третий километр. Съезд на Симферопольское шоссе, в область.",
+    "bytes": 61066,
+    "sha256": "ce8b0525f7ae8724d2b5ea14ce2557625951a2e1c000a8656ac3f5c52d129351"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Стоим на обочине, метров сто не доезжая до съезда.",
+    "bytes": 44347,
+    "sha256": "9b74768b4670e5d55205536583399bddf9d87ae801d70ace6c8b379db345b810"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, Чертаново Южное.",
+    "bytes": 24285,
+    "sha256": "a0b09da35c38c67ccbf60e1f8ee5be2e84c7f36d287bc578db8eb6eff69b6be2"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Пострадавший один, водитель. В сознании, отвечает нам.",
+    "bytes": 47691,
+    "sha256": "8141367a7a132e02252d7212cd6ab3e73212e27b1ee1b3330ed99eeab1b09ba4"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Говорит, ноги придавило. Крови на лице нет, но он зажат.",
+    "bytes": 47273,
+    "sha256": "027cbac4e347e27e4eb70fec5efdf064b4f453677aed10aa613ddb38c1c12a50"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Бревно на крыше лежит. Бензином не пахнет, дыма нет.",
+    "bytes": 47273,
+    "sha256": "1e08a5a24e9ffb67ddb46031625d6d480695cc653ce97fce9b96943debec183f"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "ВАЗ красный. Грузовик впереди встал, водитель к нам подошёл.",
+    "bytes": 47691,
+    "sha256": "4182b1e51aeb6da9ced7058401f6ca7b6128bb24543bdff137c385ddb9341fb6"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "В машине он один. Рядом нас трое остановилось.",
+    "bytes": 40586,
+    "sha256": "132f191d56cd111e6de5e715f0b2ddc8eb1900ab9987ec95aac8fc9be5d25914"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Минуты три назад. Я сразу остановилась и звоню.",
+    "bytes": 39750,
+    "sha256": "35835a8ed29e778214d050cc961ea682ab0429901959f6df3b8d3417450bf631"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 25539,
+    "sha256": "8cd62477eaf03fdea8e463aa3d2e9a8aec94f6d2214a611b49ce8b00256a4003"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 75276,
+    "sha256": "d1e9f1047ee13d9dfc693897672c0ad374a38e862c1f2d3ae54828fdb389ec2c"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я мимо ехала. Не родственница, просто остановилась.",
+    "bytes": 44347,
+    "sha256": "701e16b84a7d798a861ac3a54c56304c9061c7aa2660cbbbabb7ac2670e0a7c3"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Повторите, пожалуйста, тут машины гудят.",
+    "bytes": 33898,
+    "sha256": "80609b711902c9a2e9300adf8eeecc91c73fb7df6e1fa78b841ed053d07d93fc"
+  },
+  "r16": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю. Мы аварийку включили, стоим рядом.",
+    "bytes": 38078,
+    "sha256": "422685e1a950fdb9a58c0bf415376157e01beb52206ec13063babb231cce9289"
+  }
+}

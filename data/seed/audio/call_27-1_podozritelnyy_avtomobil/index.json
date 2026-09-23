@@ -1,0 +1,155 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. У нас во дворе машина странная стоит, а под ней коробка какая-то с проводами.",
+    "bytes": 76948,
+    "sha256": "fe3247b7b7786d247bf57bb24373a259149e667a857193872b5a9b9ffc1817cd"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Машина во дворе подозрительная. Ночью приехала, грязная вся, стоит у магазина.",
+    "bytes": 66499,
+    "sha256": "b5f347f054a1517965aeec4ab29e90f25f88c52646a913636d33ed15c06696eb"
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Задние колёса просели, будто гружёная сильно. А под днищем коробка с проводами лежит.",
+    "bytes": 74022,
+    "sha256": "68afde5e85a3a0bd6524f955c5133953060fb2450bf5935faee48e3861cba186"
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Тихорецкий бульвар, дом двенадцать, корпус один. Во дворе, у входа в Биллу.",
+    "bytes": 69425,
+    "sha256": "bb15593802d1ae7fb699050925cf7ca0cc398570456f361b685f9ebd07e26b1f"
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Москва, Люблино.",
+    "bytes": 19688,
+    "sha256": "aeca971174d40d0a694da898ec5330edc646a7de79ce8c92ea7c372d2550a7be"
+  },
+  "r5": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Нет, никто не пострадал. Просто стоит она, никого рядом.",
+    "bytes": 46437,
+    "sha256": "a756628658d1d303854904e5071097438e0c9226def2f1f5094a0fdcea5d6068"
+  },
+  "r6": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Коробка эта под машиной, из неё провода торчат. Я близко не подходил.",
+    "bytes": 59812,
+    "sha256": "f687b744e4bf423fefcf9ef952383bf3b3f7a9e3644d999b93af3f4a53cd60f2"
+  },
+  "r7": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Тут магазин рядом и детская площадка. Люди мимо ходят постоянно.",
+    "bytes": 58976,
+    "sha256": "6488f1fb9310b2185908868c49f8969b4d5c6ea34ee9c7bd062060b2cff01c23"
+  },
+  "r8": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "ВАЗ двадцать один десять, чёрная. Номер а сто пятьдесят пять ат, регион тридцать три.",
+    "bytes": 75276,
+    "sha256": "352d90001bdf05e13ce6a2a06372422fcf6696f55d99bc5fa116e2bd92975b7e"
+  },
+  "r9": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "В машине никого. Водителя я не видел, она с ночи так и стоит.",
+    "bytes": 51453,
+    "sha256": "60ef2d62302b6ea672eeee811ae3e626457f9001e8e28b860ac5ba70d4334eb5"
+  },
+  "r10": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Приехала ночью, часа в три. Коробку я утром заметил, когда с собакой вышел.",
+    "bytes": 67753,
+    "sha256": "45e2f2c1e8402c69ad4dc21e9cac86afd73cf1554ff2cc06af8bf7fcde895259"
+  },
+  "r11": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Соколов Иван Петрович.",
+    "bytes": 20942,
+    "sha256": "5cea61cdc55ac20ddc9d8a918045562dc9fca6e637386e14937e1f515708fea7"
+  },
+  "r12": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 73186,
+    "sha256": "af2618fb05e59e74d400653ac04909b7d7b079ffc9c5225b6d14d8a7bd802b9d"
+  },
+  "r13": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Жилец я, из этого дома. Прохожу мимо каждый день.",
+    "bytes": 43511,
+    "sha256": "6b9f6c78910e2d3dac0a2065996bb6c402ebebbd60984cac45b09a254cd66e26"
+  },
+  "r14": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Машина во дворе стоит, не в подъезде. Подъезд тут ни при чём.",
+    "bytes": 47691,
+    "sha256": "8554ce7a89d3f0b071772554a2fdaffa73b075cfd9a2cb3c2630d4cec67562ae"
+  },
+  "r15": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, я отошёл подальше, плохо слышно.",
+    "bytes": 51035,
+    "sha256": "3baa277cccbeef2d9fbd535d05d14defa0a9c656d6a548313adebb9e29fb6cd2"
+  },
+  "r16": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Скажите, что делать, людей отгонять?",
+    "bytes": 33898,
+    "sha256": "eb3ceb9f936a088c8ab6ae86a413a4d711f74b2382010301eb2a37d33cf35394"
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Алло! На обочине мужчина лежит, весь в крови! Мы на кольцевой, я остановилась!",
+    "bytes": 64827,
+    "sha256": "928a28341516fed235b2c55f31773ec3856c9b7e4f55294860c65d159f392add"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мужчина на обочине лежит, в крови весь. Я мимо ехала и увидела.",
+    "bytes": 61066,
+    "sha256": "fb1ad4d8b105bea7b98205cf474960166818010f64d51ffab8e5ea263fa79eb9"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не шевелится. Я кричала из окна, он не отвечает.",
+    "bytes": 39750,
+    "sha256": "5a3457b16c56a9963859ea15d2b72cefa0dd6a3b82a179bd8a373ffe168a6f8d"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мы на кольцевой, у поворота на Гольяново.",
+    "bytes": 34316,
+    "sha256": "cd85259ec5811066477afd427e31556eefcfa370d8202bd2aa4a5c5d6da7be73"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Внутренняя сторона, сто третий километр. Указатель отсюда видно.",
+    "bytes": 52288,
+    "sha256": "9f18eae8972906cdb165f9523e586562f309b719b71e407a47509ea0341f4298"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, кольцевая. Тут граница рядом, но столб московский.",
+    "bytes": 51453,
+    "sha256": "6d8017bed9ae17152d312f3304d338c40e150d583e1ab8b1d7cf853c47203316"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Один мужчина. На вид лет сорок, одет в тёмное.",
+    "bytes": 40586,
+    "sha256": "08733ad776adf20f00989c7a50d43335c3b092b7f3f40562f8e89b0d502082a1"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Кровь на голове и на асфальте. Дышит или нет, отсюда не вижу.",
+    "bytes": 48527,
+    "sha256": "b1c12f563cda332620597af510a146c544c76071f8af1f4daae4d20eec7c22d1"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Он у самого отбойника. Машины идут потоком, никто не тормозит.",
+    "bytes": 55214,
+    "sha256": "e5bc9fefc110dbc995031b1aab29a89058a1c532cea66d16f486dd39b3e91306"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Он один. Я тоже одна, из машины не выхожу, страшно.",
+    "bytes": 42675,
+    "sha256": "99ec04900211b646432dcedaf562b0353062a2fe51c79760ebe659d5c20a32fb"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Только что увидела, с минуту назад. Сразу вам звоню.",
+    "bytes": 44765,
+    "sha256": "6ef8fe03e1ba2d514ff0a844d8f81f39143454fed7f84d910a59d41f4a528fd3"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 23449,
+    "sha256": "e1007db76d227b904aac580b95c10f1d5e8ee424ebf41bbc2cd7eb07a46ab30e"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 69425,
+    "sha256": "dd933fca7ba47cc51753c4991f76c895350c698bb35f47d4be2d08267b8f5abf"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я мимо проезжала. Не знаю его совсем.",
+    "bytes": 34316,
+    "sha256": "ca6fb8c44f22d202193826d5ff9866af0aee564132ea54b8f937e67fba964527"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Рядом машин разбитых нет. Только он лежит, и всё.",
+    "bytes": 43511,
+    "sha256": "605383e0d1d7db6aa9f8632e421f01cdb8afc80cfd1bbc8f0d106a594037d43b"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Что? Повторите, тут машины гудят!",
+    "bytes": 29301,
+    "sha256": "80fe3d74fada17d497258109461147900e078dbeb29d2457faf69156ac4ab3cf"
+  },
+  "r16": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю я! Мне подойти к нему или в машине ждать?",
+    "bytes": 41839,
+    "sha256": "c3b3cbe43d73ee810c5cfac9f114d90ab791eeaf4cd3fae4069b5fd3ac8f3f05"
+  }
+}

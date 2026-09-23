@@ -1,0 +1,155 @@
+{
+  "opening": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Здравствуйте, тут автобус горит! Кабина водителя занялась, дым валит, пассажиры вышли!",
+    "bytes": 87397,
+    "sha256": "9986571ac7fbbd2d7acd6a19f6767faeb18beb55303ef7464b923862dbb0bae2"
+  },
+  "r1": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Автобус горит! Кабина водителя занялась, из-под панели дым валит.",
+    "bytes": 67753,
+    "sha256": "99f18a3fe0e28fc6902f396d13e844ec765f72d3e31e8a83b851ae50fd87105a"
+  },
+  "r2": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Уже пламя видно через лобовое. Водитель огнетушителем пробовал, не помогает.",
+    "bytes": 81964,
+    "sha256": "227132f6f902ebb97b3eb22a86fb1a3d1e901553fa5ac434ae1f6d0e42c44c9b"
+  },
+  "r3": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Дмитровское шоссе, в сторону области. У автобусной остановки.",
+    "bytes": 76112,
+    "sha256": "3a65560979f79d076b0b4e8e2eceadf52b1cee778ce908c19935a54380fb68f5"
+  },
+  "r4": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Остановка называется Лианозовский электромеханический завод. Номера дома тут нет.",
+    "bytes": 82799,
+    "sha256": "96b341b5fb04d9cfc41eab847bb08f4240608fb4fd48a670da4de5ea33bff11f"
+  },
+  "r5": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Москва пока, но до области рядом.",
+    "bytes": 37660,
+    "sha256": "7d6862199334415e94342b1a3042d85b2d5361304a8a8db8d3c925577a00d7a4"
+  },
+  "r6": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Пострадавших нет. Все вышли, и водитель тоже.",
+    "bytes": 51035,
+    "sha256": "46c85865810f8fc5c91b6f3dccfa4740a30a39ef70f450284259dccb3e771d2c"
+  },
+  "r7": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Бак сзади, а горит спереди. Люди близко стоят, я их отгоняю.",
+    "bytes": 70261,
+    "sha256": "a34a4dc33f05c9e05c03c7bccad96ad2743307374224fcb777afc3487a7abd0c"
+  },
+  "r8": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Автобус, маршрут шестьдесят три. Бортовой номер пятнадцать тысяч четыреста семьдесят семь.",
+    "bytes": 99936,
+    "sha256": "10377fc6d0d81467542c2b2e7f2e3a57e6ffa8f122dc17f834aa9e917960e3c8"
+  },
+  "r9": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Государственный знак не скажу, он спереди, а там всё в дыму.",
+    "bytes": 59812,
+    "sha256": "444e228d180ed5dab94d6d6fbf2fcaad9a89662ff35bf9d3875cd43582869ed1"
+  },
+  "r10": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Пассажиров было человек двадцать, все на остановке стоят.",
+    "bytes": 59812,
+    "sha256": "592646e50168642b666e1c0e59bca4ba5df5c758d78fb6056938baca0499d6fa"
+  },
+  "r11": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Минуты две назад задымило, сейчас уже горит.",
+    "bytes": 53124,
+    "sha256": "0362bb541f96d9b8da09c8099ac04ca849a3fd543e949c7032c1af195a8ab722"
+  },
+  "r12": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Титов Павел Петрович.",
+    "bytes": 27629,
+    "sha256": "921f16ce579f1e8bdfcb39d78c14331be0d9cd97470a8f2e0fbe90b3313d7bae"
+  },
+  "r13": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+    "bytes": 77784,
+    "sha256": "ceff8c548e621c8286293be86650dec239bc79c8ebcec6430d0e6a090b8fceea"
+  },
+  "r14": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Я пассажиром ехал, вышел вместе со всеми.",
+    "bytes": 49363,
+    "sha256": "80385bd672c295cad98cab434a19811f29280ac6250b6dc9cb0feb2e6dc584c6"
+  },
+  "r15": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Что? Повторите, тут шумно, дорога рядом!",
+    "bytes": 41839,
+    "sha256": "918de7dd9221292670838662706b212c316f157315410635fbc960477796f440"
+  },
+  "r16": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Не знаю я. Людей подальше отвести?",
+    "bytes": 44347,
+    "sha256": "15c583ef1343e78b4310de5672d893379c3fd642c229eced3ae73179a8334304"
+  }
+}

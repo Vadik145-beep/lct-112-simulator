@@ -1,0 +1,160 @@
+{
+  "kind": "call_intake",
+  "title": "Столб чёрного дыма над посёлком",
+  "ticket_ref": "16-1",
+  "difficulty": 3,
+  "norm_seconds": 60,
+  "caller": {
+    "persona": "calm",
+    "voice": "ru_male_1",
+    "noise": "street",
+    "opening": "Здравствуйте. Вижу столб чёрного дыма со стороны жилых домов посёлка. Что именно горит, отсюда не понять.",
+    "facts": {
+      "what_happened": "виден столб чёрного дыма со стороны жилых домов посёлка, что горит, заявитель не знает",
+      "address": "Московская область, железнодорожная станция Вялки, смотрит в сторону посёлка Быково",
+      "injured": "информации о пострадавших нет",
+      "danger": "дым чёрный, густой, идёт со стороны жилых домов",
+      "caller_name": "Левин Борис Степанович",
+      "callback_phone": "916-123-98-78"
+    },
+    "behaviour": "спокоен, честно говорит, что не знает, что горит; своё место называет сразу, направление — по вопросу; расстояние прикидывает примерно",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Вижу столб чёрного дыма. Что горит, не скажу, отсюда не видно.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "what_happened",
+      "text": "Дым густой, чёрный, поднимается высоко. Огня я не вижу.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "region",
+      "text": "Московская область. Я на станции Вялки стою.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "address",
+      "text": "Дым со стороны посёлка Быково, там жилые дома. Мне отсюда километра два.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "injured",
+      "text": "Про пострадавших ничего не знаю. Я далеко стою.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "danger",
+      "text": "Дым чёрный, значит, не трава. Похоже, что-то серьёзное горит.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "count_people",
+      "text": "Рядом со мной на платформе человек пять. Все смотрят туда же.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "time",
+      "text": "Минут пять как заметил. Дым сначала был тоньше.",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "caller_name",
+      "text": "Левин Борис Степанович.",
+      "approved": true
+    },
+    {
+      "id": 10,
+      "topic": "callback_phone",
+      "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+      "approved": true
+    },
+    {
+      "id": 11,
+      "topic": "caller_role",
+      "text": "Я очевидец. На станции электричку жду.",
+      "approved": true
+    },
+    {
+      "id": 12,
+      "topic": "entrance_floor_code",
+      "text": "Я на платформе, это не дом. Подъездов нет.",
+      "approved": true
+    },
+    {
+      "id": 13,
+      "topic": "repeat",
+      "text": "Повторите, пожалуйста, объявление говорит.",
+      "approved": true
+    },
+    {
+      "id": 14,
+      "topic": "unknown",
+      "text": "Не знаю. Могу подождать, если надо уточнить.",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "region",
+    "address",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "объект",
+      "прочие объекты",
+      "дым"
+    ],
+    "incident_type": "1.6.16.2",
+    "flags": {
+      "injured": false
+    },
+    "address": {
+      "region": "Московская область",
+      "descriptive": "железнодорожная станция Вялки, дым со стороны посёлка Быково"
+    },
+    "caller": {
+      "name": "Левин Борис Степанович",
+      "role": "очевидец",
+      "phone": "916-123-98-78"
+    },
+    "description_keywords": [
+      "столб чёрного дыма",
+      "со стороны жилых домов",
+      "о пострадавших информации нет"
+    ],
+    "description": "Виден столб чёрного дыма со стороны жилых домов посёлка, о пострадавших информации нет.",
+    "expected_services": [
+      "101",
+      "102",
+      "fsb",
+      "gkh",
+      "codd",
+      "duty_arm112",
+      "mkp_analytics",
+      "mayor_office",
+      "territorial_oiv",
+      "territorial_oiv_tinao",
+      "ntu",
+      "msr_fires",
+      "dgp_integration",
+      "dgp_arm112",
+      "cukb_mo",
+      "cityenergo"
+    ]
+  }
+}

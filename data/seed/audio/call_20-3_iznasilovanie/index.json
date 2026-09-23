@@ -1,0 +1,155 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Здравствуйте... тут женщину изнасиловали. Она просит полицию вызвать, у неё травмы. Я с ней рядом.",
+    "bytes": 80710,
+    "sha256": "d56830f51ead298b821d45fc79c2af33eefdc18deb08ecf03ab18dce39aa5be0"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Женщину изнасиловали. Она сама ко мне подошла, в слезах.",
+    "bytes": 46437,
+    "sha256": "fd9c6a131184ce64e56ab6d64b6cd65c3512c22eead9df779f1de2183cb0cfe7"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Просит полицию. Говорит, это случилось только что, тут же, во дворе.",
+    "bytes": 57722,
+    "sha256": "c404617586b6c6b37266a8eea0d709ba97c05df8b1250937f339da1c56b02c01"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Кастанаевская улица, дом сорок два, корпус два. Мы во дворе.",
+    "bytes": 50199,
+    "sha256": "538741d2adff20cdf094d68ec34c301a099e7782750ce1f5617cbf0733e25d4c"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, Фили-Давыдково.",
+    "bytes": 22613,
+    "sha256": "c60f866e0792f256d26e9bb645aa20c2c856e32ae698da710a115eee7a878105"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Она одна пострадала. Около тридцати лет, в сознании.",
+    "bytes": 47273,
+    "sha256": "ec6daa8772b79ee452ad7f53091a4f64dd6ccac84a059d1f9b31d1598786f0d6"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Есть травмы, губа разбита и руки в ссадинах. Скорая нужна.",
+    "bytes": 53124,
+    "sha256": "00bfa80edcc607ebb5b2ccb8a641f4ae3de0176503c46f9420a4d88bd4c6f197"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Имя своё она называть не хочет. Говорит, скажет только полиции.",
+    "bytes": 52288,
+    "sha256": "7d7db69aef1b82101cbeb7b1ef51f45bb842d3030ff764a376c3675045e0d115"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Нападавший ушёл. Куда — она не видела, ей плохо было.",
+    "bytes": 46437,
+    "sha256": "3e7a2350b8f1d607d00725a98c776dfde4b81ea1621f714d59f10d955a829bf1"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Она одна. Я рядом, больше никого во дворе нет.",
+    "bytes": 38078,
+    "sha256": "635224b71e7864d2a56e6c393fd32ddc2ede7237c5ded84e5f9380ea1ce09870"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Минут десять назад, она говорит. Ко мне подошла только что.",
+    "bytes": 47691,
+    "sha256": "07753ee21b53334fc3add09d545f9be1f63db6f714c83aaa5caed7417c112978"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Иванова Елена Сергеевна. Я тут живу.",
+    "bytes": 33062,
+    "sha256": "9b96a503abe9ca50314b3f914312a3fe2c785b70ac35e391926aef038480fe73"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 76948,
+    "sha256": "2920cd3c80d646c85f088a612a7c0931ac90bd27ee6cba32d3bd641b36fd1ae6"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я не пострадавшая. Просто рядом оказалась, она ко мне обратилась.",
+    "bytes": 56050,
+    "sha256": "5488ebfb77008ce28113527e4376ca69178d995a1a8db6526e66702674ecfb50"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мы во дворе, у скамейки. В подъезд не заходили.",
+    "bytes": 43511,
+    "sha256": "a741f79a90102427e4e62ca59777867978fab2dc769f4dbeeb649f5ac43708f0"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Повторите, пожалуйста, я говорю тихо, чтобы её не тревожить.",
+    "bytes": 47691,
+    "sha256": "da37ec45adebafd46447dd0995d365050f2008b44bb985412dcec9635f68b494"
+  },
+  "r16": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю. Мы с ней подождём, никуда не уйдём.",
+    "bytes": 37660,
+    "sha256": "4bf5b40a62ff7ab375015c20025765a59411d0e8e45d02b00ecbe0d619c44bee"
+  }
+}

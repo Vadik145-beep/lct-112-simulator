@@ -153,6 +153,34 @@ def test_officer_bank_is_copied_and_found_by_the_dialog(
     assert officer.studio_audio("moek", greeting) is None  # запись своя у каждой службы
 
 
+def test_fallback_bank_is_copied_per_voice_and_played_by_the_dialog(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The caller's universal replies: one folder per voice in storage, and the dialog answers
+    an off-topic question with a recording instead of a line synthesized on the spot."""
+    from app.domain.scenarios import fallback
+    from app.providers.dialog import DialogContext, canned_reply
+
+    data_dir = tmp_path / "data"
+    folder = data_dir / seed_module.AUDIO_DIR / seed_module.FALLBACK_AUDIO_KEY / "ru_male_1"
+    folder.mkdir(parents=True)
+    (folder / "dont_know.mp3").write_bytes(b"idk")
+    storage = tmp_path / "storage"
+
+    assert seed_module.copy_bank_audio(data_dir, storage, seed_module.FALLBACK_AUDIO_KEY) == 1
+    copied = storage / seed_module.AUDIO_STORAGE / "_fallback" / "ru_male_1" / "dont_know.mp3"
+    assert copied.read_bytes() == b"idk"
+
+    body = {**BODY, "replies": [r for r in BODY["replies"] if r["topic"] != "unknown"]}
+    scenario = CallIntakeScenario.model_validate(body)
+    reply = canned_reply(DialogContext(scenario=scenario), "unknown", [], "buttons")
+    phrase = fallback.pick("unknown", "ru_male_1", set())
+    assert reply.text == phrase.text("ru_male_1")
+    assert reply.audio == "tts/seed/_fallback/ru_male_1/dont_know.mp3"
+    monkeypatch.setattr(dialog, "storage_root", lambda: storage)
+    assert (dialog.storage_root() / reply.audio).is_file()
+
+
 def test_officer_names_his_service_the_way_people_say_it() -> None:
     """The reference titles carry brackets and paperwork; the officer says a spoken name."""
     from app.domain.scenarios import officers
@@ -179,18 +207,40 @@ def test_attach_audio_skips_other_kinds_and_missing_folders(tmp_path: Path) -> N
 
 
 async def test_opening_audio_plays_the_recording_without_tts(
-    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     body = json.loads(json.dumps(BODY))
     body["caller"]["opening_audio"] = "tts/seed/call_test/opening.mp3"
     scenario = CallIntakeScenario.model_validate(body)
     version = ScenarioVersion(version=1, body=body)
+    recording = tmp_path / "tts" / "seed" / "call_test" / "opening.mp3"
+    recording.parent.mkdir(parents=True)
+    recording.write_bytes(b"opening")
 
     def no_provider():
         raise AssertionError("the recording must be used, not synthesized")
 
+    monkeypatch.setattr(dialog, "storage_root", lambda: tmp_path)
     monkeypatch.setattr(dialog, "get_tts_provider", no_provider)
     assert await dialog.opening_audio(version, scenario) == "tts/seed/call_test/opening.mp3"
+
+
+async def test_a_recording_missing_on_this_stand_is_synthesized_instead(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A body may name a recording the storage of this stand does not have (a seed bank that
+    was not copied). Better to voice the line than to hand the browser a broken link."""
+    body = json.loads(json.dumps(BODY))
+    body["caller"]["opening_audio"] = "tts/seed/call_test/opening.mp3"
+    scenario = CallIntakeScenario.model_validate(body)
+    version = ScenarioVersion(version=1, body=body)
+    monkeypatch.setattr(dialog, "storage_root", lambda: tmp_path)
+
+    class Silent:
+        method = "text"
+
+    monkeypatch.setattr(dialog, "get_tts_provider", lambda: Silent())
+    assert await dialog.opening_audio(version, scenario) is None
 
 
 def _reply(reply_id: int) -> CallerReply:

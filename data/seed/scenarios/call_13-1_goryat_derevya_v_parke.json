@@ -1,0 +1,165 @@
+{
+  "kind": "call_intake",
+  "title": "Горят деревья в лесопарке",
+  "ticket_ref": "13-1",
+  "difficulty": 2,
+  "norm_seconds": 60,
+  "caller": {
+    "persona": "calm",
+    "voice": "ru_female_1",
+    "noise": "street",
+    "opening": "Здравствуйте. В лесопарке горят деревья. Площадь примерно десять на десять метров, людей рядом нет.",
+    "facts": {
+      "what_happened": "в лесопарке горят деревья, площадь возгорания около десяти на десять метров",
+      "address": "Кусковский лесопарк, вход со стороны аллеи Первой Маёвки, рядом со стадионом Фрезер",
+      "injured": "пострадавших нет",
+      "danger": "огонь идёт низом, ветер в сторону стадиона, сухая трава кругом",
+      "caller_name": "Сидорова Ольга Викторовна",
+      "callback_phone": "916-123-98-78"
+    },
+    "behaviour": "спокойна, оценивает площадь на глаз; сама называет лесопарк, привязку к стадиону и входу даёт по вопросу",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Горят деревья в лесопарке. Открытый огонь, не просто дым.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "what_happened",
+      "text": "Площадь на глаз десять на десять метров. Горит низом и по стволам идёт.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "address",
+      "text": "Кусковский лесопарк. Вход со стороны аллеи Первой Маёвки.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "address",
+      "text": "Это рядом со стадионом Фрезер, метрах в трёхстах от входа.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "region",
+      "text": "Москва, Вешняки.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "injured",
+      "text": "Пострадавших нет. Людей рядом я не вижу.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "danger",
+      "text": "Трава кругом сухая. Ветер тянет в сторону стадиона.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "count_people",
+      "text": "Я тут одна с собакой. Гуляющих не встретила.",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "time",
+      "text": "Увидела минут пять назад. Пока шла ближе, стало сильнее.",
+      "approved": true
+    },
+    {
+      "id": 10,
+      "topic": "caller_name",
+      "text": "Сидорова Ольга Викторовна.",
+      "approved": true
+    },
+    {
+      "id": 11,
+      "topic": "callback_phone",
+      "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+      "approved": true
+    },
+    {
+      "id": 12,
+      "topic": "caller_role",
+      "text": "Я очевидец, тут гуляю. К пожару отношения не имею.",
+      "approved": true
+    },
+    {
+      "id": 13,
+      "topic": "entrance_floor_code",
+      "text": "Это парк, подъездов нет. Машина проедет от аллеи Первой Маёвки.",
+      "approved": true
+    },
+    {
+      "id": 14,
+      "topic": "repeat",
+      "text": "Повторите, пожалуйста, ветер в трубку дует.",
+      "approved": true
+    },
+    {
+      "id": 15,
+      "topic": "unknown",
+      "text": "Не знаю. Я отойду к входу и встречу машину.",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "injured",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "на улице",
+      "Парк",
+      "открытое пламя"
+    ],
+    "incident_type": "1.1.4.1",
+    "flags": {
+      "injured": false
+    },
+    "address": {
+      "street": "аллея Первой Маёвки",
+      "okrug": "ВАО",
+      "district": "район Вешняки",
+      "descriptive": "Кусковский лесопарк, вход со стороны аллеи, рядом со стадионом Фрезер"
+    },
+    "caller": {
+      "name": "Сидорова Ольга Викторовна",
+      "role": "очевидец",
+      "phone": "916-123-98-78"
+    },
+    "description_keywords": [
+      "горят деревья в парке",
+      "десять на десять метров",
+      "пострадавших нет"
+    ],
+    "description": "Горят деревья в парке, площадь возгорания десять на десять метров, пострадавших нет.",
+    "expected_services": [
+      "101",
+      "102",
+      "gkh",
+      "codd",
+      "mayor_office",
+      "oati",
+      "territorial_oiv",
+      "territorial_oiv_tinao",
+      "ntu",
+      "fso",
+      "msr_fires",
+      "cukb_mo",
+      "mosecomonitoring"
+    ]
+  }
+}

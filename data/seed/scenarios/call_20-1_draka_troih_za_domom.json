@@ -1,0 +1,164 @@
+{
+  "kind": "call_intake",
+  "title": "Дерутся трое за домом, пострадавших нет",
+  "ticket_ref": "20-1",
+  "difficulty": 1,
+  "norm_seconds": 60,
+  "caller": {
+    "persona": "calm",
+    "voice": "ru_male_1",
+    "noise": "street",
+    "opening": "Здравствуйте. За домом трое дерутся. Оружия не вижу, но машут крепко.",
+    "facts": {
+      "what_happened": "трое мужчин дерутся за домом на дорожке в сторону кладбища, оружия нет",
+      "address": "Олонецкий проезд, дом 4, за домом, дорожка в сторону кладбища",
+      "injured": "пострадавших нет, все на ногах",
+      "danger": "оружия не видно, дерутся руками",
+      "caller_name": "Иванов Сергей Петрович",
+      "callback_phone": "916-123-98-78"
+    },
+    "behaviour": "спокоен, отвечает коротко и по делу; про то, что все трое на ногах и крови нет, говорит сам; куда ведёт дорожка, уточняет по вопросу",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Трое мужчин дерутся. Толкаются, кулаками машут.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "what_happened",
+      "text": "Началось с крика, потом сцепились. Никто не разнимает.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "address",
+      "text": "Олонецкий проезд, дом четыре. Это за домом, на дорожке.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "address",
+      "text": "Дорожка в сторону кладбища идёт. От подъездов метров пятьдесят.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "region",
+      "text": "Москва, Бабушкинский район.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "injured",
+      "text": "Пострадавших нет. Все трое на ногах, крови не вижу.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "danger",
+      "text": "Оружия нет. Ни палок, ни ножей, руками дерутся.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "count_people",
+      "text": "Трое. Ещё двое стоят в стороне, смотрят.",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "time",
+      "text": "Минуты две назад началось. Я сразу позвонил.",
+      "approved": true
+    },
+    {
+      "id": 10,
+      "topic": "caller_name",
+      "text": "Иванов Сергей Петрович.",
+      "approved": true
+    },
+    {
+      "id": 11,
+      "topic": "callback_phone",
+      "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+      "approved": true
+    },
+    {
+      "id": 12,
+      "topic": "caller_role",
+      "text": "Очевидец я. Мимо шёл, увидел.",
+      "approved": true
+    },
+    {
+      "id": 13,
+      "topic": "entrance_floor_code",
+      "text": "Это на улице, за домом. Подъезда нет.",
+      "approved": true
+    },
+    {
+      "id": 14,
+      "topic": "repeat",
+      "text": "Повторите, пожалуйста, не расслышал.",
+      "approved": true
+    },
+    {
+      "id": 15,
+      "topic": "unknown",
+      "text": "Не знаю. Могу подождать наряд, я недалеко стою.",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "injured",
+    "danger",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "Драка",
+      "Улица общественное место",
+      "До 10 человек"
+    ],
+    "incident_type": "15.6.2.1",
+    "flags": {
+      "injured": false
+    },
+    "address": {
+      "street": "Олонецкий проезд",
+      "house": "4",
+      "okrug": "СВАО",
+      "district": "Бабушкинский район",
+      "descriptive": "за домом, дорожка в сторону кладбища"
+    },
+    "caller": {
+      "name": "Иванов Сергей Петрович",
+      "role": "очевидец",
+      "phone": "916-123-98-78"
+    },
+    "description_keywords": [
+      "дерутся",
+      "трое",
+      "без оружия",
+      "пострадавших нет"
+    ],
+    "description": "Дерутся трое мужчин за домом, без оружия, пострадавших нет.",
+    "expected_services": [
+      "102",
+      "codd",
+      "duty_arm112",
+      "mkp_analytics",
+      "mayor_office",
+      "rosgvardia",
+      "ntu",
+      "fso",
+      "cukb_mo"
+    ]
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. У соседей скандал, муж пьяный. Жену он ударил, у неё голова разбита, кровь идёт. Нужна скорая и полиция.",
+    "bytes": 113311,
+    "sha256": "eacf40158752a197aa9f39ebb0f57ae2aea816ae1d8e5176b3428817a706b592"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "У соседей скандал. Муж пьяный, жену ударил. У неё кровь на голове.",
+    "bytes": 53960,
+    "sha256": "ac5be809b220c842ee4d3932341ef2e9582b18486ba3207fe12fa7ebd737977b"
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Она к нам на площадку выбежала. Дверь у них открыта, он там кричит.",
+    "bytes": 53960,
+    "sha256": "2ee6407fba9a47e14a0aefdbf565d192af4674116fd104f6ee1a650d83b2f244"
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Улица Тихомирова, дом пятнадцать, корпус один. Квартира семьдесят девять.",
+    "bytes": 66499,
+    "sha256": "e970df04c8c2f509d5dbc5d1b421e6c51fc06d407c120e35e83d51ee0a95dcb8"
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Второй подъезд, четвёртый этаж. Код домофона семьдесят девять.",
+    "bytes": 53124,
+    "sha256": "11fd11c4d318e3a89fd2ec2a1aa5f0fe5c83e2e21e3bb1a4f1aef27835165652"
+  },
+  "r5": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Москва, Северное Медведково.",
+    "bytes": 24703,
+    "sha256": "86c3abf7c334d338130a15d798dc5b51e2b3c57bfc6a2cf54afd7f67fa15b04f"
+  },
+  "r6": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Женщина одна пострадала. Петрова Елена Михайловна, двадцать восемь лет.",
+    "bytes": 56050,
+    "sha256": "b9b34455b20da73a1baf1bb28090842dfe884e2dc0239e96c68c688af93c4248"
+  },
+  "r7": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "В сознании, стоит. Голова разбита над бровью, кровь вытирает.",
+    "bytes": 49363,
+    "sha256": "74ad77e2c0c04a8ade7b0669e809b22a9f52894f7908d73c595217b5cfbe6763"
+  },
+  "r8": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Муж в квартире, пьяный, орёт. Может выйти в любой момент.",
+    "bytes": 45601,
+    "sha256": "d4884bc1578e06e730c2fd9ffedc7a5476b0d129cffde38a859de80ed366db4d"
+  },
+  "r9": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Она и муж. Дети, кажется, у бабушки, детских голосов нет.",
+    "bytes": 51035,
+    "sha256": "af7e2a8cae5b8f03f8de7d660936f507adb111a5b453d71de697fce98c14fe7a"
+  },
+  "r10": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Минут пять назад началось. Ударил только что.",
+    "bytes": 41004,
+    "sha256": "9b9810e07345e29ea7f3d0d819eb4ca90a20b2e4015c74a5333210696557e087"
+  },
+  "r11": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Соколов Иван Петрович, сосед.",
+    "bytes": 27629,
+    "sha256": "4b0e9aa56496f1f7727d3720b1ee2ea88ccba3e0e089f4ae56d0df39aabb3454"
+  },
+  "r12": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 76948,
+    "sha256": "350c50f8959f170b234434e086d0c0f4db5d6109bb2990d4239e802cc3d84e76"
+  },
+  "r13": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Сосед я, живу на этой же площадке. Не родственник.",
+    "bytes": 40586,
+    "sha256": "2868956e8a87a8e3fb1f8d00cf1c90f6404c6ec4af3fd02c1aca2346830b7707"
+  },
+  "r14": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, тут крики.",
+    "bytes": 27629,
+    "sha256": "fe15f66a5c7ee8d4c795a8f53201baaf9de019a9539036a3bca5b9a8b003d729"
+  },
+  "r15": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Мы её к себе заведём, пока наряд не приедет.",
+    "bytes": 44347,
+    "sha256": "e1722cb102885f399fc45610e6820094015418b278f16d96671f0829534b8178"
+  }
+}

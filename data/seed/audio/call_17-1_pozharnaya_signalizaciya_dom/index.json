@@ -1,0 +1,146 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. У нас в доме сработала пожарная сигнализация. Дыма и огня не видно, но воет уже минут десять.",
+    "bytes": 107877,
+    "sha256": "d629a7a2197d0e89f306cfdbdc65a07a7dbff2f04732083ef38d40e6a71c5cdb"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Сработала пожарная сигнализация. Сирена по всему подъезду.",
+    "bytes": 50199,
+    "sha256": "6b79c3ca99ac9d6298db2d2e170c86dca8878d1bf50d0720e54889be3a783a1b"
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Дыма нет, огня нет. Я прошёл по этажам — ничем не пахнет.",
+    "bytes": 47691,
+    "sha256": "8214bddd560b1c8c1a763defbacb9bf7053b2ee8a90234510cf76450155c8dbd"
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Большой Сухаревский переулок, дом девятнадцать.",
+    "bytes": 35988,
+    "sha256": "02038fa6bff4e5ebadd13ef4e68f0c31f57a64a4376069a033eaa8851f57cdac"
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Строение два. Это во дворе, вход со двора.",
+    "bytes": 35152,
+    "sha256": "5a358e9ebe7ea548b63525f230f5a221ab862be1d1cfc6c7020c3c3c8481d697"
+  },
+  "r5": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Подъезд первый, код домофона две тысячи двести пятнадцать.",
+    "bytes": 49363,
+    "sha256": "529ddf3f4ef7846f30c63243a441fd688eeade481912378021ff4068ea389205"
+  },
+  "r6": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Москва, центр, Мещанский район.",
+    "bytes": 29301,
+    "sha256": "c875254c578748ec68dfcf2cc0155fe614b3b7cabb31c35139e3c468350d3803"
+  },
+  "r7": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Нет, никто не пострадал. Люди просто вышли на улицу.",
+    "bytes": 47273,
+    "sha256": "8cbb7ea9544a5441b59ef92a98695774b040cdc04c949f22917910cf288f32f9"
+  },
+  "r8": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Гарью не пахнет. Соседи говорят, такое уже было на прошлой неделе.",
+    "bytes": 54378,
+    "sha256": "6ffd1d086268652823a1afe85aeddd41c6ebd948c5f53b7f81ce12be0676d29d"
+  },
+  "r9": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "В подъезде человек десять вышло. Остальные по квартирам сидят.",
+    "bytes": 49363,
+    "sha256": "b38cef22083bfa03a71ae9bf7f0a31b037db579224cb4bf62fb56fb82d73c75a"
+  },
+  "r10": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Минут десять уже воет. Сначала думали, отключится сама.",
+    "bytes": 51453,
+    "sha256": "a83a6ce4b2a9fb3dd49d809f09a9e3e0626962d93c2b7eba1ce249559a0e21fd"
+  },
+  "r11": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Сухов Леонид Сергеевич.",
+    "bytes": 21777,
+    "sha256": "074eb396354c3195ea905888edd5d73565b275416f538c9c2e1291f05e88696f"
+  },
+  "r12": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+    "bytes": 68589,
+    "sha256": "69511237607acdd242834889489e16f0923f163fe5c628dd86a5dde69c7d0f01"
+  },
+  "r13": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Жилец я, в этом подъезде живу.",
+    "bytes": 27211,
+    "sha256": "2b4f2861b1448ea8f326ae6fe8279fc84b3371f1d8229db30238af87291e60d8"
+  },
+  "r14": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, сирена заглушает.",
+    "bytes": 33898,
+    "sha256": "1637724fc7663b84ca0d8095c81f01cd8585c7896093af6a1628ae69dc8e86fd"
+  },
+  "r15": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Этого не знаю. Могу у консьержа спросить.",
+    "bytes": 33062,
+    "sha256": "e354f78cab74bb859e972de91a412765a3b00e2fe3bfeacd0aebecfc16d12822"
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. Вижу столб чёрного дыма со стороны жилых домов посёлка. Что именно горит, отсюда не понять.",
+    "bytes": 100772,
+    "sha256": "fbc6a806402f25bf2c01d2817f9a6c5521c18ba96ea15729bae903963971437d"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Вижу столб чёрного дыма. Что горит, не скажу, отсюда не видно.",
+    "bytes": 51035,
+    "sha256": "316170e07d7bcc0578a360a78ced68d2d9d625b76b7a156dac154bcb827cb14e"
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Дым густой, чёрный, поднимается высоко. Огня я не вижу.",
+    "bytes": 48527,
+    "sha256": "3f36cc6cf1a75046a67b54cc80b3d2977fbf7f88d7f475f43aa916afeb71dc7d"
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Московская область. Я на станции Вялки стою.",
+    "bytes": 39750,
+    "sha256": "6f2ef74458cd892d676d691eeb552774699cc7dafa5dcafedb6d673d4c77777a"
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Дым со стороны посёлка Быково, там жилые дома. Мне отсюда километра два.",
+    "bytes": 65663,
+    "sha256": "501cbc45d22e70b89a01f9dbba665ab26f7820434638a968016f8833ae4d1171"
+  },
+  "r5": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Про пострадавших ничего не знаю. Я далеко стою.",
+    "bytes": 39750,
+    "sha256": "39d68bb027bc9889068c563263d19106a551ac24ca47cabb0bb6aa764fc9aeb5"
+  },
+  "r6": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Дым чёрный, значит, не трава. Похоже, что-то серьёзное горит.",
+    "bytes": 48527,
+    "sha256": "57ef8c1cb599784905d4ee4f8f804fb2d39f31735368fcb7d7386c7780a6de2f"
+  },
+  "r7": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Рядом со мной на платформе человек пять. Все смотрят туда же.",
+    "bytes": 51035,
+    "sha256": "a5ff781cc3d425c7bb597017730ef22a80d688285d2c141dd79c6d049e491858"
+  },
+  "r8": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Минут пять как заметил. Дым сначала был тоньше.",
+    "bytes": 40586,
+    "sha256": "b9d9e39c649e60f9153df074de5aa909b101364b37f596be8fc6b141a27c857a"
+  },
+  "r9": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Левин Борис Степанович.",
+    "bytes": 20942,
+    "sha256": "1bb72fc19ffc99e85585bde9fc365c53ed6ea10adb887a88e40c7e57d6a5c256"
+  },
+  "r10": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+    "bytes": 69425,
+    "sha256": "9414afbb3fe5b0b82407dd41b4146074c29db91be7a92c78d9c1c69fd6466e6e"
+  },
+  "r11": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я очевидец. На станции электричку жду.",
+    "bytes": 34316,
+    "sha256": "e4107d9fd657d5626f97def1781b461e43496329fbe7bf6eb491e916bbaa1314"
+  },
+  "r12": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я на платформе, это не дом. Подъездов нет.",
+    "bytes": 35152,
+    "sha256": "c4d9b122574c583d326f79c116adbbb01a93746fc465622866f5db8c7f2a3f86"
+  },
+  "r13": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, объявление говорит.",
+    "bytes": 33062,
+    "sha256": "824b2d333756fd3bf75499684c74641c48da97717baa35a4f10c11597a0d904b"
+  },
+  "r14": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Могу подождать, если надо уточнить.",
+    "bytes": 38914,
+    "sha256": "4fd49ba73e6b3cd66f7a170e7068486dc0a93b1c449e1d79aa084b027f8ce8cc"
+  }
+}

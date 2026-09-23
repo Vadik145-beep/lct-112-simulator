@@ -1,0 +1,158 @@
+{
+  "kind": "call_intake",
+  "title": "Горит лес за деревней Варварино",
+  "ticket_ref": "15-1",
+  "difficulty": 2,
+  "norm_seconds": 60,
+  "caller": {
+    "persona": "calm",
+    "voice": "ru_female_1",
+    "noise": "street",
+    "opening": "Здравствуйте. За деревней Варварино горит лес. Я мимо проезжала, дым столбом и огонь видно с дороги.",
+    "facts": {
+      "what_happened": "горит лес за деревней, открытый огонь виден с дороги",
+      "address": "Московская область, Дмитровский городской округ, за деревней Варварино",
+      "injured": "пострадавших нет",
+      "danger": "огонь идёт по опушке в сторону деревни, ветер в ту же сторону",
+      "caller_name": "Антонова Мария Петровна",
+      "callback_phone": "916-123-98-78"
+    },
+    "behaviour": "спокойна, отвечает по делу; сразу говорит, что это область; на вопрос, далеко ли от домов, прикидывает — метров триста",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Горит лес. Огонь открытый, по верхам местами идёт.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "what_happened",
+      "text": "Дым столбом, видно издалека. Я прямо с дороги смотрю.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "region",
+      "text": "Это Московская область. Дмитровский городской округ.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "address",
+      "text": "За деревней Варварино, сразу за крайними домами.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "injured",
+      "text": "Пострадавших нет. Людей в лесу я не вижу.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "danger",
+      "text": "От домов метров триста. Ветер как раз на деревню тянет.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "count_people",
+      "text": "Я тут одна на дороге. Машины мимо идут, не останавливаются.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "time",
+      "text": "Минут десять назад увидела. Пока ехала, стало сильнее.",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "caller_name",
+      "text": "Антонова Мария Петровна.",
+      "approved": true
+    },
+    {
+      "id": 10,
+      "topic": "callback_phone",
+      "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+      "approved": true
+    },
+    {
+      "id": 11,
+      "topic": "caller_role",
+      "text": "Я очевидец, проезжала мимо. В деревне не живу.",
+      "approved": true
+    },
+    {
+      "id": 12,
+      "topic": "entrance_floor_code",
+      "text": "Это лес, никаких подъездов. Заезд по грунтовке от деревни.",
+      "approved": true
+    },
+    {
+      "id": 13,
+      "topic": "repeat",
+      "text": "Повторите, пожалуйста, связь тут слабая.",
+      "approved": true
+    },
+    {
+      "id": 14,
+      "topic": "unknown",
+      "text": "Не знаю. Мне подождать вас у поворота?",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "region",
+    "address",
+    "injured",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "на улице",
+      "Лес",
+      "открытое пламя"
+    ],
+    "incident_type": "1.1.5.1",
+    "flags": {
+      "injured": false
+    },
+    "address": {
+      "region": "Московская область",
+      "descriptive": "Дмитровский городской округ, за деревней Варварино"
+    },
+    "caller": {
+      "name": "Антонова Мария Петровна",
+      "role": "очевидец",
+      "phone": "916-123-98-78"
+    },
+    "description_keywords": [
+      "горит лес",
+      "за деревней варварино",
+      "пострадавших нет"
+    ],
+    "description": "Горит лес за деревней Варварино, пострадавших нет.",
+    "expected_services": [
+      "101",
+      "102",
+      "gkh",
+      "codd",
+      "mayor_office",
+      "oati",
+      "territorial_oiv",
+      "territorial_oiv_tinao",
+      "ntu",
+      "fso",
+      "msr_fires",
+      "cukb_mo",
+      "mosecomonitoring"
+    ]
+  }
+}

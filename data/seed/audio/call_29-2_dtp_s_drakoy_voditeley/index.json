@@ -1,0 +1,155 @@
+{
+  "opening": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. Тут ДТП, а водители сцепились. Дерутся прямо на дороге. Пострадавших нет, оружия нет, но разнимать некому.",
+    "bytes": 114146,
+    "sha256": "59c984fdbcc2cd5fd85f68ed51ef4b57b41df09058ab774b81654aec019964d4"
+  },
+  "r1": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Машины столкнулись, а водители теперь дерутся. Прямо посреди дороги.",
+    "bytes": 61902,
+    "sha256": "cd9f3f528b1c0640af503913ffc8db3fe62af1aae9d483695a64351a03e87f0b"
+  },
+  "r2": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пострадавших от аварии нет. Оба вышли и сразу за грудки.",
+    "bytes": 51453,
+    "sha256": "4ec5278a6bff9f811a318720245c67013c33d78a5f0ae748df3d2962d6cca074"
+  },
+  "r3": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Это Тульская область. Рядом город Киреевск.",
+    "bytes": 39750,
+    "sha256": "f6a7796c03b7223ceb8e7f12e098e5c2049f344bfcdcbfe83b3f0eeaa24d53cd"
+  },
+  "r4": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Дорога от Киреевска в сторону посёлка Октябрьский. Между заводом ограждающих конструкций и путями.",
+    "bytes": 102862,
+    "sha256": "d87b3b9bf4913a3c95e4c5d03187062009a1bddcbe101f6e985f877d77d9d0e1"
+  },
+  "r5": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "От автобусной остановки метров пятьсот.",
+    "bytes": 36824,
+    "sha256": "5581ac7d0379557684bf0f11cba676bc9faacc7f6887b758a221196bf08b0fcb"
+  },
+  "r6": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пострадавших нет. В драке пока никого не разбили.",
+    "bytes": 47691,
+    "sha256": "eb20dc073fcee4d1cc8c0bcf4780a57b536c9fbb55d35d4ca7395512766879a6"
+  },
+  "r7": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Оружия нет, кулаками машут. Но не расходятся, уже минут пять.",
+    "bytes": 53124,
+    "sha256": "f74a278c82507f5df5eb0e9e478b8aa0909e14934b159a45776ea4bb4cb12cb6"
+  },
+  "r8": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Две легковые. Стоят поперёк, проезд перекрыт.",
+    "bytes": 39750,
+    "sha256": "74507311acde55a8d38bcbb55f3e493d2ac0a50fbbf917728216ee6fee723781"
+  },
+  "r9": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Дерутся двое. Рядом ещё пара машин встала, смотрят.",
+    "bytes": 47273,
+    "sha256": "97082dda3c9efc4a473e42013561efe0ecf0a5340c3b3440f82eb34f9855640e"
+  },
+  "r10": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Авария минут семь назад. Драка почти сразу началась.",
+    "bytes": 49363,
+    "sha256": "c5b86ee87c60d969c50b0c1f47d19ad8d6ae7f9735e7ac7a71e9de2ab48d3751"
+  },
+  "r11": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 26375,
+    "sha256": "bebe5a3590b6fee0526408bfced737345336e91aab26a89ddae127513db2c50b"
+  },
+  "r12": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 74022,
+    "sha256": "322106bf67f22ef5df633849eee51c4f268e07ca955618c7442df856131b3850"
+  },
+  "r13": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я очевидец. Ехала следом, встала за ними.",
+    "bytes": 39750,
+    "sha256": "0fa168a1fffe636a4581def535bc5a23b314ddaafd75023307a5cf5c6e3c5753"
+  },
+  "r14": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Это дорога, подъездов нет.",
+    "bytes": 24703,
+    "sha256": "0024f02b97d3adc6d7c3d708b3dd731d3d0c2caf4e8811384d6124be02218b47"
+  },
+  "r15": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, они орут громко.",
+    "bytes": 33898,
+    "sha256": "79f548424744785abdce5fa269ee9064eb973d1dfcb392c0b31177c1d25e97e2"
+  },
+  "r16": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Я из машины не выхожу, от греха подальше.",
+    "bytes": 43511,
+    "sha256": "4ca6e21949e0d41872ec9fbc428c9161391076a3a018b46ea6c4b88e054cf49b"
+  }
+}

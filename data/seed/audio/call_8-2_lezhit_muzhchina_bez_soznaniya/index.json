@@ -1,0 +1,155 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. Тут мужчина лежит у дороги, без сознания. Дышит, но не отзывается.",
+    "bytes": 71097,
+    "sha256": "6b9841805d4e2361a1d8e4e4cc59a60e02ff902674a11ada3756acb202ef67e5"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Мужчина лежит у дороги. Без сознания, на оклик не реагирует.",
+    "bytes": 51035,
+    "sha256": "53ea138c0762ad9d35905c68edf42019ac6a7aeed6b35460c15108c30f78ae46"
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Дышит, я проверил. Крови нет, травм на вид тоже.",
+    "bytes": 40586,
+    "sha256": "e97af20fd30d7330604289018b28e47239cb3b1476c14b9bd0379b8f7147e6ae"
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Это дорога от Киевского шоссе в сторону Минского, через Крекшино.",
+    "bytes": 54378,
+    "sha256": "dbd7ddc9583474774565f31da6fd8f8d2f44e1d09a7860da1cb6c78822ac4fd7"
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "От железнодорожного переезда примерно полтора километра. Номера дома тут нет, поле кругом.",
+    "bytes": 71515,
+    "sha256": "daf556591e5ee97bad45dd92f69d96b1faf6c9227328cee22a5bcdc1b90149ea"
+  },
+  "r5": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я машину поставлю с аварийкой, чтобы видно было. Так найдёте.",
+    "bytes": 51453,
+    "sha256": "1043e45e6f4f92ed489e21ff0825d1d40fbf8850010c99a6be5423fc3f9ff368"
+  },
+  "r6": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Это уже область, Новая Москва рядом. Точнее не скажу.",
+    "bytes": 45601,
+    "sha256": "d1105d0155c53cee81a963e7b7efc06e7d19080b6d2dbbc82c2b7445a3c48059"
+  },
+  "r7": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Один мужчина, лет пятьдесят на вид. Документов при нём не искал.",
+    "bytes": 46437,
+    "sha256": "01dcaaa4ae80cbb95f0f0a126741016ee2152c960dfdada925f19ce7758479d5"
+  },
+  "r8": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Без сознания. Дышит ровно, пульс есть, я щупал на шее.",
+    "bytes": 51035,
+    "sha256": "62e38244e3c87e80ac49f11a9f764ed08bf76fb71f5c4f8346747be76807a447"
+  },
+  "r9": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Лежит у самой обочины. Машины идут, фонарей тут нет.",
+    "bytes": 47273,
+    "sha256": "51823c529451b40095946f79faa9c0d5450f5f40e59d372cd8423c576f126c96"
+  },
+  "r10": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Он один. Я остановился, больше никого нет.",
+    "bytes": 31391,
+    "sha256": "5d5bcb1fb696437caa96a486d263c8a28b0a3c22133a406533641ce094fb79a3"
+  },
+  "r11": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пару минут назад увидел. Сколько он так лежит, не знаю.",
+    "bytes": 45601,
+    "sha256": "4289b23900ea05a7cb871daa103616d337be1aca995dd2f9faf258e5fa364a4d"
+  },
+  "r12": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Соколов Иван Петрович.",
+    "bytes": 20942,
+    "sha256": "31c7c851b7c4dd4723590c83bac796b6e6248b160f2602e31c48cb99029cdad4"
+  },
+  "r13": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 67335,
+    "sha256": "a683337cb38fd058a24769e89d19d9fe83b1205654961b8e4e3859111fd4d0d3"
+  },
+  "r14": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Прохожий я, точнее проезжал мимо. К нему отношения не имею.",
+    "bytes": 48527,
+    "sha256": "4f94b33e98016251e37e68d4d6de7bab50d77a4c51cd4b3a18eea87c1f8c4c46"
+  },
+  "r15": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, машины шумят.",
+    "bytes": 32226,
+    "sha256": "f17d9de7410c45c6f9d902e5d9fd0f728ce2eb26477766fdc5890b08c637ef03"
+  },
+  "r16": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Могу подождать, пока приедете, я не тороплюсь.",
+    "bytes": 47691,
+    "sha256": "1d22e86852ba6495ad2bb770992fbe76432896f4435a682579c72e42bf8ad66a"
+  }
+}

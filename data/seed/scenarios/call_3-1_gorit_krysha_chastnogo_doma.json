@@ -1,0 +1,170 @@
+{
+  "kind": "call_intake",
+  "title": "Горит крыша частного дома в Королёве",
+  "ticket_ref": "3-1",
+  "difficulty": 3,
+  "norm_seconds": 60,
+  "caller": {
+    "persona": "worried_resident",
+    "voice": "ru_female_1",
+    "noise": "street",
+    "opening": "Здравствуйте! У соседей крыша горит! Пламя из-под конька идёт, дым чёрный!",
+    "facts": {
+      "what_happened": "горит крыша частного дома, открытое пламя, дом не газифицирован",
+      "address": "улица Станционная, дом 28",
+      "region": "Московская область, город Королёв",
+      "injured": "пострадавших нет, из дома все вышли",
+      "danger": "дом не газифицирован, рядом соседние участки и деревянный сарай",
+      "caller_name": "Иванова Инна Степановна",
+      "callback_phone": "916-126-34-71"
+    },
+    "behaviour": "волнуется, но отвечает по порядку; сама не говорит, что это не Москва, регион называет только по вопросу; про газ отвечает, что дом не газифицирован, печное отопление",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Крыша горит у дома! Пламя открытое, из-под конька выбивается.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "what_happened",
+      "text": "Дым чёрный валит, уже пол крыши занялось. Само не потухнет.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "address",
+      "text": "Улица Станционная, дом двадцать восемь. Частный дом, одноэтажный.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "region",
+      "text": "Королёв это, Московская область. Не Москва, нет.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "injured",
+      "text": "Пострадавших нет. Хозяева на улице стоят, все вышли.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "danger",
+      "text": "Газа в доме нет, не газифицирован. Печка у них.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "danger",
+      "text": "Рядом сарай деревянный и соседский участок вплотную. Как бы не перекинулось.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "count_people",
+      "text": "В доме жили трое. Все на улице, я их вижу.",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "time",
+      "text": "Минут пять назад загорелось. Сначала дым был, теперь пламя.",
+      "approved": true
+    },
+    {
+      "id": 10,
+      "topic": "caller_name",
+      "text": "Иванова Инна Степановна.",
+      "approved": true
+    },
+    {
+      "id": 11,
+      "topic": "callback_phone",
+      "text": "Девять один шесть, сто двадцать шесть, тридцать четыре, семьдесят один.",
+      "approved": true
+    },
+    {
+      "id": 12,
+      "topic": "caller_role",
+      "text": "Соседка я, через дорогу живу. Увидела и звоню.",
+      "approved": true
+    },
+    {
+      "id": 13,
+      "topic": "entrance_floor_code",
+      "text": "Частный дом, какой подъезд. Калитка со стороны улицы.",
+      "approved": true
+    },
+    {
+      "id": 14,
+      "topic": "repeat",
+      "text": "Повторите, пожалуйста, тут гудит всё.",
+      "approved": true
+    },
+    {
+      "id": 15,
+      "topic": "unknown",
+      "text": "Не знаю я. Приезжайте скорее, пока на нас не пошло.",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "region",
+    "injured",
+    "danger",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "жилой дом",
+      "частный дом",
+      "открытое пламя"
+    ],
+    "incident_type": "1.5.9.1",
+    "flags": {
+      "injured": false
+    },
+    "address": {
+      "region": "Московская область",
+      "city": "Королёв",
+      "street": "улица Станционная",
+      "house": "28"
+    },
+    "caller": {
+      "name": "Иванова Инна Степановна",
+      "role": "очевидец",
+      "phone": "916-126-34-71"
+    },
+    "description_keywords": [
+      "горит крыша",
+      "частного дома",
+      "пострадавших нет",
+      "не газифицирован"
+    ],
+    "description": "Горит крыша частного дома, пострадавших нет, дом не газифицирован.",
+    "expected_services": [
+      "101",
+      "102",
+      "mosoblgaz",
+      "gkh",
+      "codd",
+      "duty_arm112",
+      "mkp_analytics",
+      "mayor_office",
+      "oati",
+      "territorial_oiv",
+      "territorial_oiv_tinao",
+      "ntu",
+      "fso",
+      "msr_fires"
+    ]
+  }
+}

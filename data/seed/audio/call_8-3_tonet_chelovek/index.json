@@ -1,0 +1,137 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Человек тонет! Прямо сейчас, на озере! Мужчина, он кричит, помогите, скорее!",
+    "bytes": 65663,
+    "sha256": "e0bce9aefcd3d379d1f9be0dafeadb527e6281b03f5f619e58423215ae52d80b"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мужчина тонет! Он в воде, то уйдёт, то вынырнет.",
+    "bytes": 42675,
+    "sha256": "191d73add223227ddec878aeba086440f25f04f140526947e84578f9510f39c8"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Кричит о помощи. Люди на берегу стоят, никто не лезет.",
+    "bytes": 46437,
+    "sha256": "f36c6f4ae296579eb77c2571804a4d875a8583b148b7b9fb34ec2fd74f4c6dca"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Озеро Круглое, пляж. Рядом дом — Таманская улица, дом семьдесят пять, корпус два.",
+    "bytes": 78202,
+    "sha256": "677f7899723c433468ee61d605723632369bea56f4b62c3735e4be15dda5015f"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, Хорошёво-Мнёвники.",
+    "bytes": 26375,
+    "sha256": "c08d462040f3a07b50db7fa56edadd1535fdf9d0993f788179da1cafb7b00834"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "В воде он один. Пока держится, голову видно.",
+    "bytes": 39750,
+    "sha256": "e3757eecae55eb6d1cc9c5abc644c414530aab6bf1fed1508b280a3ce81900f1"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "От берега метров двадцать. Спасателей тут нет, будки закрыты.",
+    "bytes": 52288,
+    "sha256": "21bbfea21f2ad6c5e01bcdc5e6cd8a1827d5629537c63c9f60b3d0a6f46cbafe"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "На берегу человек десять. В воду никто не идёт.",
+    "bytes": 41839,
+    "sha256": "97ed68990ab0bea49552a3b0ba1e37bc9d192d083383181d8242b713219af22e"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Минуту назад начал тонуть. Сразу звоню.",
+    "bytes": 34316,
+    "sha256": "741006a3e52e03aaa9e9c3fef3249ccf6ac0e48f10d228a4c662787418c0e77d"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 23449,
+    "sha256": "d137056e121792f3ae28127fd2ce1444e8974958cb295785689cb3f73061cc9d"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 69425,
+    "sha256": "b503157a1d851d671cb6d8bc7974ebbd785db2f3ab450db97e5e2cc80b5d16f4"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я очевидец. На пляже была, не родственница ему.",
+    "bytes": 36824,
+    "sha256": "e32d48e9abfc4c160b623d2601885bc95bc63ee64c55cbf971697354ce324428"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Это пляж, подъездов нет. Заход со стороны Таманской.",
+    "bytes": 47273,
+    "sha256": "7cf3a06a6726f9cf07db13fa9a17dc01def6e4a70828bcb4b47cbed089bfd43c"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Что? Повторите, я на воду смотрю!",
+    "bytes": 28465,
+    "sha256": "3cd0391c56eae0e592580e2f9fe6ecb5435baf1b52173017505c71290bd7ef4b"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю! Мужчины тут круг ищут, найти не могут!",
+    "bytes": 42675,
+    "sha256": "0b84d4522fc0c8805e7b153040a3356cf24d6216b2cb021bdfa910afb9934c6a"
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "opening": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. Горит поле, сухая трава. Пострадавших нет, людей в поле не видно. Огонь широкой полосой идёт.",
+    "bytes": 102026,
+    "sha256": "a2a8eac57a3de0113eeac05fc82a7aa1abe24b95fc243ae78bf29d0ce5a9b777"
+  },
+  "r1": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Горит поле. Сухая трава, полоса метров на двести.",
+    "bytes": 44765,
+    "sha256": "69efa7308810647ed51e333d588f795c22b5bb5812a15c5c5ba46a5317a6f6fb"
+  },
+  "r2": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Огонь низовой, но быстрый. Дым стелется по земле.",
+    "bytes": 45601,
+    "sha256": "298a0e86abde8ea046171df005787a3748a3d4c6bfc09bf7221e6038a80e88d8"
+  },
+  "r3": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Это Тульская область, не Москва. Рядом город Киреевск.",
+    "bytes": 49363,
+    "sha256": "8770c2a6a5fb747e6b3526d19ebe9c313767c6ab8ecdd4c99902b0cf1e83af40"
+  },
+  "r4": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Дорога от Киреевска в сторону посёлка Октябрьский. Между заводом ограждающих конструкций и железнодорожными путями.",
+    "bytes": 114146,
+    "sha256": "556c285b63cccd4e5c99f295c887a97bb81a5151cd15cc4ee90cab0157875a59"
+  },
+  "r5": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "От автобусной остановки метров пятьсот.",
+    "bytes": 33898,
+    "sha256": "e2c6315d6ddd2abc9b625e04767046c14684ebfcca86057444c19cdad1d7a62f"
+  },
+  "r6": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пострадавших нет. В поле никого не видно.",
+    "bytes": 38078,
+    "sha256": "eeb4f240b9afcd4a7277539cf04d728f0f7e64281210eef8929e3d14c205989a"
+  },
+  "r7": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Тянет в сторону путей. Завод рядом, метрах в трёхстах.",
+    "bytes": 46437,
+    "sha256": "ce7b681209b71d4dbc9eb14c638d06534e4c4f2e1801812c86a47ddf5aadca65"
+  },
+  "r8": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я тут одна на дороге стою. Машин почти нет.",
+    "bytes": 35988,
+    "sha256": "87f5fa91baea2c8e4e35dde6f5020a794bc51879cc877938aec689197336c2e8"
+  },
+  "r9": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Минут семь назад увидела. Огонь расходится вширь.",
+    "bytes": 44765,
+    "sha256": "386bf1e15e1a4afcfb40ea5a1d0caba8d177aa44da4a94bfb33f01064490dd52"
+  },
+  "r10": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Орлова Вера Ивановна.",
+    "bytes": 22613,
+    "sha256": "cf7760abc8f993606ad8c9959efaf91fc6acfe3b9066c8d581572d5e9902fdab"
+  },
+  "r11": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+    "bytes": 63573,
+    "sha256": "0fb4baaf10cc9d3a2d50042c10b6fdb959146e45364bbd3fcd02c0134370a5ec"
+  },
+  "r12": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я очевидец. Просто мимо шла по дороге.",
+    "bytes": 34316,
+    "sha256": "050f91dbfac9c201d68ebeecb69d9ebe4e6c241a1e68e532d62c039b8a28fcf3"
+  },
+  "r13": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Тут поле, никаких подъездов.",
+    "bytes": 26375,
+    "sha256": "37a8bf1510a56cd7a776b2492bdf337dc77daa787e05e9983b51b1130f33904d"
+  },
+  "r14": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, ветер шумит.",
+    "bytes": 30137,
+    "sha256": "5e50d04d321194f1f0cb4a40ee130a83eaef8b3b04d40175d9375616cef3799c"
+  },
+  "r15": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_flash_v2_5",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Я на остановке подожду, если надо встретить.",
+    "bytes": 52288,
+    "sha256": "556a25573d4aacf78e74f1ad4aea225c6a75112cbca7eb9bef548fe3327de9a3"
+  }
+}
