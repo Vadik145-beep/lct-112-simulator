@@ -1,0 +1,34 @@
+{
+  "report-arrived": {
+    "sha256": "2831ac50e2a5c472211f6d6573dbf35630d060b3",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Алло, это снова старший группы. Прибыли по адресу: улица Молостовых, дом 10, корпус 1, приступаем.",
+    "bytes": 113728
+  },
+  "report-response_started": {
+    "sha256": "2260e11cf0326d9e94b7449aebf790c05ab5a5f0",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Алло, диспетчер? Это старший группы реагирования. Выехали по адресу: улица Молостовых, дом 10, корпус 1.",
+    "bytes": 114982
+  },
+  "report-works_done": {
+    "sha256": "68147b4f01dc494cf15d0910e6c797da67c25d06",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[tired] [exhales]",
+    "text": "Алло, диспетчер? Старший группы. Работы завершены: насос запущен, циркуляция восстановлена, температура в норме.",
+    "bytes": 142986
+  },
+  "report-works_started": {
+    "sha256": "e6e1e4a4832480ef0cc0e3ca42046cdf8e4aa282",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Алло, диспетчер, старший группы. Докладываю: осмотр ЦТП, обнаружена остановка сетевого насоса.",
+    "bytes": 104951
+  }
+}

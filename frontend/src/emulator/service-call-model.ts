@@ -27,9 +27,9 @@ export function isReport(call: ServiceCallOut): boolean {
   return call.kind === "report";
 }
 
-/** «Старший наряда» for a report, «дежурный» for the officer of a service. */
+/** «Старший группы» for a report, «дежурный» for the officer of a service. */
 export function otherSide(call: ServiceCallOut): string {
-  return isReport(call) ? "старший наряда" : "дежурный";
+  return isReport(call) ? "старший группы" : "дежурный";
 }
 
 /** «Доклад бригады: ОДС ЖКХ» / «Звонок в службу: ОДС ЖКХ». */

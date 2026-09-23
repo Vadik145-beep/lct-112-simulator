@@ -46,7 +46,9 @@ def test_default_reports_follow_the_reference_chain() -> None:
     ]
     assert all(r["after_seconds"] > 0 for r in reports)
     assert "улица Свободы, дом 42, корпус 2" in reports[0]["text"]
-    assert reports[3]["text"].startswith("Старший наряда. Работы завершены: заменён")
+    assert reports[3]["text"].startswith(
+        "Алло, диспетчер? Старший группы. Работы завершены: заменён"
+    )
 
 
 def test_rejected_card_has_no_reports() -> None:
