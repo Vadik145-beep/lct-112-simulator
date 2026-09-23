@@ -278,7 +278,7 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
     expect(body.error.message).toContain("Принята");
   });
 
-  test("карточка без действий через 30 с: «Не оповещено» красным и late_primary в разборе", async ({
+  test("карточка без действий через 30 с: «Не оповещено» в раскрытой строке и late_primary в разборе", async ({
     page,
     request,
   }) => {
@@ -294,11 +294,15 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
     await expect(row).toHaveAttribute("data-card-status", "not_notified", {
       timeout: (NORM_SECONDS + 10) * 1000,
     });
-    await expect(row.getByText("Не оповещено")).toBeVisible();
+    // «Статус службы» держит статус реагирования своей службы; «Не оповещено» — статус
+    // карточки, он в подсказке и в раскрытой строке (памятка, стр. 21-22 против 27).
+    await expect(row).toContainText("Добавлена");
     await expect(row.locator("[data-phase]")).toHaveAttribute(
       "data-phase",
       "overdue",
     );
+    await row.getByRole("button", { name: "Раскрыть" }).click();
+    await expect(page.getByTestId("card-status")).toHaveText("Не оповещено");
     await page.screenshot({
       path: `${SHOTS}/08-not-notified.png`,
       fullPage: true,
