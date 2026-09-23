@@ -54,6 +54,7 @@ export function ServiceCallPanel({
   onSay,
   onSpeak,
   onAnswer,
+  cloud,
   onEnd,
 }: {
   call: ServiceCallOut;
@@ -73,6 +74,11 @@ export function ServiceCallPanel({
   onSpeak: (blob: Blob, actionId: string) => void;
   /** «Ответить» on an incoming report of the squad (issue #103). */
   onAnswer: () => void;
+  /**
+   * Облачный разговор (issue #59): «connecting» — соединяемся с Vapi, «live» — говорим
+   * голосом, «failed» — облако не поднялось и разговор идёт текстом и микрофоном.
+   */
+  cloud: "off" | "connecting" | "live" | "failed";
   onEnd: () => void;
 }) {
   const [text, setText] = useState("");
@@ -295,7 +301,15 @@ export function ServiceCallPanel({
           )}
         </div>
       )}
-      {open && call.answered && (
+      {open && cloud !== "off" && (
+        <div className="text-[10px] text-[var(--arm-text-muted)]" data-testid="service-cloud">
+          {cloud === "connecting" && "Соединяем с облачным голосом…"}
+          {cloud === "live" && "Разговор голосом через облако: говорите в гарнитуру."}
+          {cloud === "failed" &&
+            "Облако недоступно: отвечает локальная модель, пишите или говорите в микрофон."}
+        </div>
+      )}
+      {open && call.answered && cloud !== "live" && (
         <form
           className="flex gap-1"
           onSubmit={(e) => {
@@ -364,7 +378,7 @@ export function ServiceCallPanel({
           )}
         </form>
       )}
-      {open && call.answered && canSpeak && devices.length > 0 && (
+      {open && call.answered && cloud !== "live" && canSpeak && devices.length > 0 && (
         <label className="flex items-center gap-1 text-[10px] text-[var(--arm-text-muted)]">
           <Mic className="size-3" aria-hidden />
           <select

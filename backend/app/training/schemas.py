@@ -24,6 +24,8 @@ class SessionInfo(BaseModel):
     difficulty: int
     norm_seconds: int
     hints_enabled: bool
+    # Режим диалога занятия: карточке он нужен, чтобы вести служебный звонок через облако.
+    dialog_mode: str
     started_at: datetime | None
     finished_at: datetime | None
     service: ServiceInfo | None

@@ -80,6 +80,7 @@ const CLOUD_MODE: (typeof DIALOG_MODES)[number] = {
   code: "cloud",
   title: "Облачный голос",
   hint: "заявителя играет облачная модель с живым голосом; демо вне закрытого контура",
+  dds: "дежурного и бригаду играет облачная модель с живым голосом; демо вне закрытого контура",
 };
 const NORM_DEFAULT = { card_response: 30, call_intake: 60 } as const;
 
@@ -225,7 +226,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                     ...DIALOG_MODES,
                     // Облачный голос играет только заявителя: служебные звонки ДДС идут
                     // через локальный конвейер (plan/track-c-vapi.md).
-                    ...(isCall && (models.data?.cloud || form.dialog_mode === "cloud")
+                    ...(models.data?.cloud || form.dialog_mode === "cloud"
                       ? [CLOUD_MODE]
                       : []),
                   ].map((m) => (
@@ -237,13 +238,14 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                 {!isCall && (
                   <p className="text-xs text-muted-foreground" data-testid="dds-mode-note">
                     Режим общий для звонка диспетчера дежурному службы и для докладов старшего
-                    группы. Облачный голос сюда пока не заведён: служебные звонки всегда идут
-                    через локальную модель.
+                    группы.
                   </p>
                 )}
-                {isCall && form.dialog_mode === "cloud" && (
+                {form.dialog_mode === "cloud" && (
                   <p className="text-xs text-muted-foreground" data-testid="cloud-mode-note">
-                    Голос оператора и выдуманные данные билета уходят во внешний облачный сервис. Без телефонии разговор идёт прямо из браузера; если облако недоступно, заявитель отвечает локальной моделью.
+                    {isCall
+                      ? "Голос оператора и выдуманные данные билета уходят во внешний облачный сервис. Без телефонии разговор идёт прямо из браузера; если облако недоступно, заявитель отвечает локальной моделью."
+                      : "Голос диспетчера и данные карточки уходят во внешний облачный сервис. Без телефонии разговор идёт прямо из браузера; если облако недоступно, дежурный и бригада отвечают локальной моделью."}
                   </p>
                 )}
                 {models.data && !models.data.dialog && form.dialog_mode !== "buttons" && form.dialog_mode !== "cloud" && (

@@ -12,7 +12,13 @@ from httpx import AsyncClient
 
 from app.config import get_settings
 from app.dialog import service as dialog
-from app.models import CALL_ANSWERED, CALL_END_CALLER_HANGUP, CALL_END_HANGUP, CALL_ENDED
+from app.models import (
+    CALL_ANSWERED,
+    CALL_END_CALLER_HANGUP,
+    CALL_END_HANGUP,
+    CALL_ENDED,
+    MODE_CARD_RESPONSE,
+)
 from app.telephony import cloud_web
 from app.telephony import service as telephony
 from app.telephony.cloud import EVENT_CLOUD_FALLBACK
@@ -23,6 +29,7 @@ from tests.api.test_dialog import GAS_PIPE, make_attempt
 from tests.conftest import bearer, login
 from tests.telephony.test_calls import events_of, load
 from tests.telephony.test_cloud import PUBLIC_URL, FakeVapiApi, scenario_opening
+from tests.telephony.test_service_calls import start_call as start_service_call
 
 pytestmark = pytest.mark.skipif(
     not (DATA_DIR / "seed" / "classifier.json").exists(),
@@ -87,6 +94,66 @@ async def test_start_stores_the_assistant_and_answers_the_call(
     d = await client.get(f"/api/attempts/{attempt_id}/dialog", headers=bearer(student))
     assert d.json()["mode"] == "cloud" and d.json()["requested_mode"] == "cloud"
     assert d.json()["fallback_replies"] == 0
+
+
+async def test_service_call_is_played_by_the_cloud(
+    client: AsyncClient, web: CloudWebCalls, api: FakeVapiApi
+):
+    """Звонок диспетчера дежурному в облачном занятии ведёт Vapi: ассистент собирается из
+    реплик службы, реплики ложатся в стенограмму этого звонка, а не карточки (issue #59)."""
+    attempt_id = await make_attempt(
+        "card_moek_1_net_otopleniya", mode=MODE_CARD_RESPONSE, dialog_mode="cloud"
+    )
+    student = await login(client, "student1")
+    call_id = await start_service_call(attempt_id)
+
+    keys = await client.post(
+        f"/api/attempts/{attempt_id}/service-call/{call_id}/cloud-call", headers=bearer(student)
+    )
+    assert keys.status_code == 200, keys.text
+    assistant = api.assistants[keys.json()["assistant_id"]]
+    prompt = assistant["model"]["messages"][0]["content"]
+    assert "дежурный" in prompt.lower()
+    # Первую фразу говорит облако: своей реплики в записи звонка нет.
+    attempt = await load(attempt_id)
+    record = next(c for c in attempt.service_calls if c["id"] == call_id)
+    assert record["answered"] is True and record["dialog"] == []
+
+    # Реплики из облака попадают в стенограмму звонка, а не в диалог карточки.
+    for role, text in (
+        ("user", "Улица Молостовых, дом 10, нет отопления, наряд 4127"),
+        ("assistant", "Принял, бригада тепловых сетей выезжает."),
+    ):
+        r = await hook(
+            client,
+            {
+                "type": "transcript",
+                "transcriptType": "final",
+                "role": role,
+                "transcript": text,
+                "assistant": {"id": keys.json()["assistant_id"]},
+            },
+        )
+        assert r.status_code == 200, r.text
+    attempt = await load(attempt_id)
+    record = next(c for c in attempt.service_calls if c["id"] == call_id)
+    assert [t["role"] for t in record["dialog"]] == ["operator", "caller"]
+    assert "Молостовых" in record["dialog"][0]["text"]
+    assert record["dialog"][0]["method"] == "cloud" and record["dialog"][0]["heard"] is True
+    assert attempt.dialog == []  # карточка ДДС своего диалога не ведёт
+    assert record["facts_passed"], "переданные факты считаются и в облачном звонке"
+
+
+async def test_service_cloud_call_refuses_a_local_lesson(client: AsyncClient, web: CloudWebCalls):
+    attempt_id = await make_attempt(
+        "card_moek_1_net_otopleniya", mode=MODE_CARD_RESPONSE, dialog_mode="select"
+    )
+    student = await login(client, "student1")
+    call_id = await start_service_call(attempt_id)
+    r = await client.post(
+        f"/api/attempts/{attempt_id}/service-call/{call_id}/cloud-call", headers=bearer(student)
+    )
+    assert r.status_code == 409 and r.json()["error"]["code"] == "not_cloud_lesson"
 
 
 async def test_start_refuses_other_lessons_and_telephony(

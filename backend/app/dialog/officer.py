@@ -56,7 +56,12 @@ from app.models import (
     SessionEvent,
     TrainingSession,
 )
-from app.providers.dialog import ROLE_OFFICER, CallerReply, DialogContext
+from app.providers.dialog import (
+    ROLE_OFFICER,
+    CallerReply,
+    DialogContext,
+    detect_officer_topics,
+)
 from app.training import service as training
 
 EVENT_STARTED = "service_call.started"
@@ -327,9 +332,11 @@ async def answer(
     call_id: str,
     *,
     now: datetime | None = None,
+    with_opening: bool = True,
 ) -> tuple[dict, list[SessionEvent]]:
     """The officer picked up: the greeting becomes turn 0 (voiced whenever a voice is
-    available). Idempotent."""
+    available). In a cloud call the first phrase is said by the cloud itself, so
+    ``with_opening=False`` leaves the transcript to the provider. Idempotent."""
     call = find_call(attempt, call_id)
     if call.get("ended_at"):
         raise ApiError(409, "call_ended", "Звонок уже завершён.")
@@ -337,17 +344,17 @@ async def answer(
         return call, []
     now = now or training.utcnow()
     officer = call_scenario(scenario, call, attempt)
-    if is_report(call):
+    # В облачном звонке первую фразу говорит сам провайдер: своей реплики не пишем и не озвучиваем.
+    if not with_opening:
+        audio, topics = None, []
+    elif is_report(call):
         audio = await _report_audio(version, officer, _report_of(scenario, call))
         topics = ["report", call.get("report_status") or ""]
     else:
         audio = await _greeting_audio(version, officer, call["service"])
         topics = ["greeting"]
-    call = {
-        **call,
-        "answered": True,
-        "answered_at": _iso(now),
-        "dialog": [
+    opening = (
+        [
             _turn(
                 "caller",
                 officer.caller.opening,
@@ -356,8 +363,11 @@ async def answer(
                 method="opening",
                 audio=audio,
             )
-        ],
-    }
+        ]
+        if with_opening
+        else []
+    )
+    call = {**call, "answered": True, "answered_at": _iso(now), "dialog": opening}
     _store(attempt, call)
     if attempt.state in (ATTEMPT_ISSUED, ATTEMPT_RECEIVED):
         attempt.state = ATTEMPT_IN_PROGRESS
@@ -413,6 +423,70 @@ def _find_retry(call: dict, action_id: str | None) -> OfficerTurn | None:
                 facts_passed=list(call.get("facts_passed") or []),
             )
     return None
+
+
+async def external_turn(
+    session: AsyncSession,
+    attempt: Attempt,
+    call_id: str,
+    scenario: CardResponseScenario,
+    role: str,
+    text: str,
+    *,
+    now: datetime | None = None,
+    latency_ms: int | None = None,
+) -> tuple[dict | None, list[SessionEvent]]:
+    """One phrase of a service call heard from the cloud voice (issue #59, browser calls):
+    the dispatcher's own words as the provider transcribed them, or the reply of the officer
+    (the squad leader on a report). Topics come from keywords, so the evaluation reads the
+    turn like any other. ``role`` is «operator» (the trainee) or «caller» (the other side)."""
+    if role not in ("operator", "caller"):
+        raise ValueError(f"unknown dialog role: {role!r}")
+    text = text.strip()
+    if not text:
+        return None, []
+    call = find_call(attempt, call_id)
+    if call.get("ended_at"):
+        return None, []
+    now = now or training.utcnow()
+    topics = detect_officer_topics(text) if role == "operator" else []
+    turn = _turn(
+        role,
+        text,
+        topics,
+        now,
+        method=dialog.EXTERNAL_METHOD,
+        heard=role == "operator",
+        latency_ms=latency_ms if role == "caller" else None,
+    )
+    turns = [*(call.get("dialog") or []), turn]
+    facts = list(call.get("facts_passed") or [])
+    if not is_report(call):
+        facts = engine.facts_from_dialog(
+            scenario.card,
+            [
+                DialogTurn(role=t["role"], text=t["text"], topics=list(t.get("topics") or []))
+                for t in turns
+            ],
+        )
+    call = {**call, "dialog": turns, "facts_passed": facts, "answered": True}
+    if not call.get("answered_at"):
+        call["answered_at"] = _iso(now)
+    _store(attempt, call)
+    if attempt.state in (ATTEMPT_ISSUED, ATTEMPT_RECEIVED):
+        attempt.state = ATTEMPT_IN_PROGRESS
+    await session.flush()
+    event = await _event(
+        session,
+        attempt,
+        EVENT_TURN,
+        call,
+        turns=len(turns),
+        operator=turn if role == "operator" else None,
+        officer=turn if role == "caller" else None,
+        pending_reply=False,
+    )
+    return turn, [event]
 
 
 async def say(

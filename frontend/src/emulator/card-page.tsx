@@ -22,6 +22,7 @@ import {
   useAttempt,
   useAnswerServiceCall,
   useEndServiceCall,
+  useServiceCloudCall,
   useFinishAttempt,
   useFlagField,
   useOpenAttempt,
@@ -43,6 +44,7 @@ import {
   type FlagRequest,
 } from "@/emulator/flag-field-model";
 import { ServiceCallPanel } from "@/emulator/service-call";
+import { CloudCall } from "@/softphone/cloud-call";
 import { describeCall } from "@/emulator/service-call-model";
 import {
   acceptanceTimer,
@@ -191,6 +193,53 @@ function CardView({
   const speakToOfficer = useSpeakToOfficer(attempt.id);
   const endCall = useEndServiceCall(attempt.id);
   const answerCall = useAnswerServiceCall(attempt.id);
+  const cloudKeys = useServiceCloudCall(attempt.id);
+  // Занятие с облачным голосом: дежурного службы и старшего группы играет Vapi прямо из
+  // браузера, как заявителя в приёме вызова (plan/track-c-vapi.md).
+  const cloudLesson = attempt.session.dialog_mode === "cloud";
+  const cloudCall = useRef<CloudCall | null>(null);
+  const [cloudState, setCloudState] = useState<"off" | "connecting" | "live" | "failed">("off");
+  const stopCloudCall = useCallback(async () => {
+    const call = cloudCall.current;
+    cloudCall.current = null;
+    setCloudState("off");
+    if (call) await call.stop();
+  }, []);
+  const startCloudCall = useCallback(
+    async (callId: string) => {
+      if (cloudCall.current) return;
+      setCloudState("connecting");
+      let keys;
+      try {
+        keys = await cloudKeys.mutateAsync(callId);
+      } catch {
+        // 503 или 409: бэкенд записал отказ, разговор продолжается текстом и микрофоном.
+        setCloudState("failed");
+        return;
+      }
+      const call = new CloudCall();
+      cloudCall.current = call;
+      call
+        .on("started", () => setCloudState("live"))
+        .on("failed", () => {
+          if (cloudCall.current !== call) return;
+          void call.stop();
+          cloudCall.current = null;
+          setCloudState("failed");
+        })
+        .on("ended", () => {
+          if (cloudCall.current !== call) return;
+          cloudCall.current = null;
+          setCloudState("off");
+        });
+      try {
+        await call.start(keys);
+      } catch {
+        /* о причине сообщит событие failed */
+      }
+    },
+    [cloudKeys],
+  );
   // Whether the stt service answers comes with every service-call response.
   const [sttAvailable, setSttAvailable] = useState(false);
   const openCall =
@@ -222,6 +271,7 @@ function CardView({
       onSuccess: (data) => {
         setShownCallId(data.call.id);
         setSttAvailable(data.stt_available);
+        if (cloudLesson && !data.call.telephony) void startCloudCall(data.call.id);
       },
     });
   };
@@ -233,12 +283,17 @@ function CardView({
       void softphone.answer();
       return;
     }
+    if (cloudLesson && !openCall.telephony) {
+      void startCloudCall(openCall.id);
+      return;
+    }
     answerCall.mutate(openCall.id, {
       onSuccess: (data) => setSttAvailable(data.stt_available),
     });
   };
   const hangUpService = () => {
     if (!openCall) return;
+    void stopCloudCall();
     endCall.mutate(openCall.id, {
       onSuccess: () => {
         // The SIP leg of the officer's call goes down with the record.
@@ -1097,6 +1152,7 @@ function CardView({
               speakToOfficer.mutate({ callId: shownCall.id, blob, actionId })
             }
             onAnswer={answerReport}
+            cloud={cloudLesson ? cloudState : "off"}
             onEnd={hangUpService}
           />
         )}

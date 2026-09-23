@@ -10,6 +10,7 @@ from typing import ClassVar
 import pytest
 from httpx import AsyncClient
 
+from app.config import get_settings
 from app.db import SessionLocal
 from app.models import MODE_CARD_RESPONSE, Attempt
 from app.providers.stt import Transcript
@@ -57,11 +58,11 @@ async def status(client: AsyncClient, token: dict, attempt_id: uuid.UUID, **body
     return await client.post(f"/api/attempts/{attempt_id}/status", headers=bearer(token), json=body)
 
 
-async def test_dds_lesson_carries_its_dialog_mode_and_refuses_the_cloud(
-    client: AsyncClient,
+async def test_dds_lesson_carries_its_dialog_mode(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """Режим диалога — настройка занятия ДДС: им отвечают дежурный службы и старший группы.
-    Облачный голос играет только заявителя, поэтому в реагировании его не предлагают."""
+    Облачный голос доступен и здесь, но только там, где установка его включила."""
     token = await login(client, "teacher1")
     groups = await client.get("/api/groups", headers=bearer(token))
     assert groups.status_code == 200, groups.text
@@ -82,11 +83,24 @@ async def test_dds_lesson_carries_its_dialog_mode_and_refuses_the_cloud(
     assert created.json()["dialog_mode"] == "buttons"
     assert created.json()["voice_enabled"] is False
 
+    settings = get_settings()
+    monkeypatch.setattr(settings, "cloud_voice_enabled", True)
+    cloud = await client.post(
+        "/api/sessions",
+        headers=bearer(token),
+        json={**body, "title": "Облачный ДДС", "dialog_mode": "cloud"},
+    )
+    assert cloud.status_code == 201, cloud.text
+    assert cloud.json()["dialog_mode"] == "cloud"
+
+    monkeypatch.setattr(settings, "cloud_voice_enabled", False)
     refused = await client.post(
-        "/api/sessions", headers=bearer(token), json={**body, "dialog_mode": "cloud"}
+        "/api/sessions",
+        headers=bearer(token),
+        json={**body, "title": "Облако выключено", "dialog_mode": "cloud"},
     )
     assert refused.status_code == 422, refused.text
-    assert refused.json()["error"]["code"] == "cloud_voice_not_for_cards"
+    assert refused.json()["error"]["code"] == "cloud_voice_disabled"
 
 
 async def test_call_is_voiced_even_when_the_old_flag_is_off(client: AsyncClient) -> None:
