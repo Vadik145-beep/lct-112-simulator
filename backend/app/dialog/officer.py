@@ -243,9 +243,12 @@ async def start(
     service_title: str,
     *,
     telephony: bool,
+    answer_now: bool = True,
 ) -> tuple[dict, list[SessionEvent]]:
     """«Позвонить»: a new call record. Without telephony the officer answers at once and the
-    greeting is turn 0; with telephony the record waits for the SIP leg (``answer``)."""
+    greeting is turn 0; with telephony the record waits for the SIP leg (``answer``). In a
+    cloud lesson the browser call answers it instead (``answer_now=False``): the first phrase
+    is said by the cloud, and writing our own greeting would double it."""
     if attempt.state in training.CLOSED_STATES:
         raise ApiError(409, "card_closed", "Работа с карточкой завершена: звонить уже нельзя.")
     current = open_call(attempt)
@@ -264,7 +267,7 @@ async def start(
     attempt.service_calls = [*calls_of(attempt), call]
     flag_modified(attempt, "service_calls")
     events.append(await _event(session, attempt, EVENT_STARTED, call))
-    if not telephony:
+    if not telephony and answer_now:
         answered = await answer(session, attempt, ts, version, scenario, call["id"], now=now)
         events.extend(answered[1])
         call = answered[0]
