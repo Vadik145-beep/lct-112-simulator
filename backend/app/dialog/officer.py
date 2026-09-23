@@ -344,8 +344,10 @@ async def answer(
         return call, []
     now = now or training.utcnow()
     officer = call_scenario(scenario, call, attempt)
-    voiced = with_opening
-    if is_report(call):
+    # В облачном звонке первую фразу говорит сам провайдер: своей реплики не пишем и не озвучиваем.
+    if not with_opening:
+        audio, topics = None, []
+    elif is_report(call):
         audio = await _report_audio(version, officer, _report_of(scenario, call))
         topics = ["report", call.get("report_status") or ""]
     else:
