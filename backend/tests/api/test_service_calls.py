@@ -103,6 +103,20 @@ async def test_dds_lesson_carries_its_dialog_mode(
     assert refused.json()["error"]["code"] == "cloud_voice_disabled"
 
 
+async def test_cloud_lesson_does_not_greet_twice(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """В облачном занятии «Позвонить» не пишет своё приветствие: первую фразу говорит
+    облако (иначе в стенограмме два приветствия, как было у заявителя до #104)."""
+    monkeypatch.setattr(get_settings(), "cloud_voice_enabled", True)
+    attempt_id = await make_attempt(CARD, mode=MODE_CARD_RESPONSE, dialog_mode="cloud")
+    token = await login(client, "student1")
+    r = await start(client, token, attempt_id)
+    assert r.status_code == 200, r.text
+    assert r.json()["call"]["turns"] == []
+    assert r.json()["call"]["answered"] is False
+
+
 async def test_call_is_voiced_even_when_the_old_flag_is_off(client: AsyncClient) -> None:
     """Звонок звучит всегда, когда есть чем озвучить: поле voice_enabled осталось от убранной
     галочки и ни на что не влияет (docs/DECISIONS.md, 23.09.2026)."""
