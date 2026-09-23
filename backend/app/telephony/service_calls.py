@@ -58,7 +58,7 @@ def nothing_recognized_message(transcript: Transcript) -> str:
     )
 
 
-async def _card_attempt(
+async def card_attempt(
     session: DbSession, attempt_id: uuid.UUID, user: User
 ) -> tuple[Attempt, TrainingSession, training.ScenarioCard, CardResponseScenario]:
     attempt = await training.get_attempt_for(session, attempt_id, user)
@@ -113,7 +113,7 @@ async def start_service_call(
     request: Request,
 ) -> ServiceCallResponse:
     """«Позвонить» a service from the card: one call at a time, only while the card is open."""
-    attempt, ts, card, scenario = await _card_attempt(session, attempt_id, user)
+    attempt, ts, card, scenario = await card_attempt(session, attempt_id, user)
     services = await training.load_services(session)
     service = services.get(body.service)
     if service is None:
@@ -163,7 +163,7 @@ async def say_to_officer(
     session: DbSession,
 ) -> ServiceCallResponse:
     """A phrase of the dispatcher typed in the panel (the fallback of the voice path)."""
-    attempt, ts, card, scenario = await _card_attempt(session, attempt_id, user)
+    attempt, ts, card, scenario = await card_attempt(session, attempt_id, user)
     result = await officer.say(
         session, attempt, ts, card.version, scenario, call_id, body.text, action_id=body.action_id
     )
@@ -196,7 +196,7 @@ async def speak_to_officer(
     """A spoken phrase from the browser microphone (no telephony): recognised by the ``stt``
     service with the card's street as a hint, then handled like ``say``. Without the service
     the answer is 503 and the dispatcher types instead — as in the 112 operator's card."""
-    attempt, ts, card, scenario = await _card_attempt(session, attempt_id, user)
+    attempt, ts, card, scenario = await card_attempt(session, attempt_id, user)
     record = officer.find_call(attempt, call_id)
     if record.get("ended_at"):
         raise ApiError(409, "call_ended", "Звонок завершён: дежурному больше не сказать.")
@@ -252,7 +252,7 @@ async def answer_service_call(
     """«Ответить» on the squad's incoming report (issue #103). With telephony the trainee
     answers the phone and Asterisk reports it; this is the path of the card without
     telephony. Answering twice changes nothing."""
-    attempt, ts, card, scenario = await _card_attempt(session, attempt_id, user)
+    attempt, ts, card, scenario = await card_attempt(session, attempt_id, user)
     call, events = await officer.answer(session, attempt, ts, card.version, scenario, call_id)
     if events:
         await write_audit(
@@ -277,7 +277,7 @@ async def end_service_call(
     attempt_id: uuid.UUID, call_id: str, user: ActiveUser, session: DbSession, request: Request
 ) -> ServiceCallResponse:
     """«Завершить»: the dispatcher hangs up; the transcript and the facts stay on the card."""
-    attempt, ts, card, _ = await _card_attempt(session, attempt_id, user)
+    attempt, ts, card, _ = await card_attempt(session, attempt_id, user)
     call, events = await officer.end(session, attempt, call_id, officer.END_HANGUP)
     if events:
         await write_audit(

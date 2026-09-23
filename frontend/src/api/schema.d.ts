@@ -1674,6 +1674,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/attempts/{attempt_id}/service-call/{call_id}/cloud-call": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Service Web Call
+         * @description Keys of the browser call for a call on the card (issue #59): the cloud plays the duty
+         *     officer or the squad leader. 409 when the lesson is not in the cloud mode or the calls
+         *     go through telephony; 503 when the cloud is unreachable (the panel then keeps the text
+         *     and microphone path).
+         */
+        post: operations["start_service_web_call_api_attempts__attempt_id__service_call__call_id__cloud_call_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/attempts/{attempt_id}/cloud-call/failed": {
         parameters: {
             query?: never;
@@ -2345,6 +2368,8 @@ export interface components {
             norm_seconds: number;
             /** Hints Enabled */
             hints_enabled: boolean;
+            /** Dialog Mode */
+            dialog_mode: string;
             /** Started At */
             started_at: string | null;
             /** Finished At */
@@ -4643,6 +4668,8 @@ export interface components {
             norm_seconds: number;
             /** Hints Enabled */
             hints_enabled: boolean;
+            /** Dialog Mode */
+            dialog_mode: string;
             /** Started At */
             started_at: string | null;
             /** Finished At */
@@ -7991,6 +8018,38 @@ export interface operations {
             header?: never;
             path: {
                 attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebCallOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_service_web_call_api_attempts__attempt_id__service_call__call_id__cloud_call_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+                call_id: string;
             };
             cookie?: never;
         };
