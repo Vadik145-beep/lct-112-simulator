@@ -174,6 +174,7 @@ class TrainingSession(Base):
     unfinished_seconds: Mapped[int] = mapped_column(
         Integer, nullable=False, default=UNFINISHED_SECONDS_DEFAULT
     )
+    # Legacy: the voice no longer depends on the lesson (docs/DECISIONS.md, 23.09.2026).
     voice_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     dialog_mode: Mapped[str] = mapped_column(String(16), nullable=False, default="select")
     # Adaptive selection by skill ratings (PRD 9.7, app.domain.analytics.adaptive).

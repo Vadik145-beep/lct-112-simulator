@@ -253,19 +253,18 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                   </p>
                 )}
               </div>
-              <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={form.voice_enabled} onChange={(e) => patch({ voice_enabled: e.target.checked })} />
-                {isCall
-                  ? "Голос: заявитель звучит, обучающийся говорит в гарнитуру"
-                  : "Голос: служба и бригада звучат, обучающийся говорит в гарнитуру"}
-              </label>
+              {/* Голос не переключают: занятие всегда идёт голосом, когда озвучка и
+                  распознавание подняты, и само переходит в текст, когда их нет. */}
               <p className="text-xs text-muted-foreground">
-                Без голоса разговор идёт текстом в панели тренажёра. Реплики эталонных сценариев звучат записанным
-                голосом с эмоцией, остальные — синтезом.
+                {isCall
+                  ? "Заявитель звучит, обучающийся говорит в гарнитуру."
+                  : "Служба и бригада звучат, обучающийся говорит в гарнитуру."}{" "}
+                Реплики эталонных сценариев звучат записанным голосом с эмоцией, остальные — синтезом.
+                Без озвучки или распознавания разговор идёт текстом в панели тренажёра.
               </p>
-              {models.data && form.voice_enabled && (!models.data.tts || !models.data.stt) && (
+              {models.data && (!models.data.tts || !models.data.stt) && (
                 <p className="text-xs text-destructive" role="alert" data-testid="voice-warning">
-                  {!models.data.tts && "Озвучка недоступна: заявитель ответит текстом. "}
+                  {!models.data.tts && `Озвучка недоступна: ${isCall ? "заявитель ответит" : "служба и бригада ответят"} текстом. `}
                   {!models.data.stt && "Распознавание речи недоступно: обучающийся сможет только писать."}
                 </p>
               )}
