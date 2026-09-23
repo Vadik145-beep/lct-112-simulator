@@ -119,6 +119,17 @@ async def test_service_call_is_played_by_the_cloud(
     assert "ЗАЯВИТЕЛЯ" not in prompt
     assert "номер наряда: наряд твой" in prompt
     assert "где он находится" in prompt
+    # Трубку кладёт диспетчер: дежурному функция завершения звонка не даётся.
+    assert assistant["endCallFunctionEnabled"] is False
+    assert "на другой язык" in prompt and "Не кладёшь трубку" in prompt
+    # Замечания с живого прогона 23.09.2026: адрес проговаривается один раз, прощания нет,
+    # на «хорошо» дежурный молчит.
+    assert "Второй раз адрес не проговариваешь НИКОГДА" in prompt
+    assert "goodbye" in prompt.lower()
+    assert "НЕ отвечаешь ничего" in prompt
+    assert "как губка" in prompt
+    # Не отвечает на каждую паузу диспетчера: выдержка перед репликой.
+    assert assistant["startSpeakingPlan"] == {"waitSeconds": 1.5}
     # Первую фразу говорит облако: своей реплики в записи звонка нет.
     attempt = await load(attempt_id)
     record = next(c for c in attempt.service_calls if c["id"] == call_id)
