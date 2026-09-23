@@ -142,7 +142,8 @@ async def test_text_call_passes_facts_and_lands_in_the_evaluation(client: AsyncC
     assert call["service"] == "moek" and call["service_title"]
     assert call["answered"] is True and call["telephony"] is False
     assert call["turns"][0]["role"] == "caller" and "слушаю" in call["turns"][0]["text"]
-    assert call["facts_required"] == ["address", "incident_type", "injured", "order_number"]
+    # Наряд диспетчер не передаёт: его называет дежурный (решение 23.09.2026).
+    assert call["facts_required"] == ["address", "incident_type", "injured"]
     assert data["attempt"]["received_at"] is not None  # the call opened the card
     assert data["attempt"]["service_calls_required"] == ["moek"]
     call_id = call["id"]
@@ -235,7 +236,6 @@ async def test_closing_the_card_ends_an_open_call_and_no_call_is_penalised(
         "address",
         "incident_type",
         "injured",
-        "order_number",
     ]
 
     # A card accepted without any call: zero and the detector.

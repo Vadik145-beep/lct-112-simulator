@@ -78,9 +78,9 @@
         "required_facts": [
           "address",
           "incident_type",
-          "injured",
-          "order_number"
-        ]
+          "injured"
+        ],
+        "order_number": "8730"
       }
     ],
     "reports": [
