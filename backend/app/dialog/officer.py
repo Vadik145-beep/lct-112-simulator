@@ -334,8 +334,8 @@ async def answer(
     now: datetime | None = None,
     with_opening: bool = True,
 ) -> tuple[dict, list[SessionEvent]]:
-    """The officer picked up: the greeting becomes turn 0 (voiced when the lesson has a voice
-    and one is available). In a cloud call the first phrase is said by the cloud itself, so
+    """The officer picked up: the greeting becomes turn 0 (voiced whenever a voice is
+    available). In a cloud call the first phrase is said by the cloud itself, so
     ``with_opening=False`` leaves the transcript to the provider. Idempotent."""
     call = find_call(attempt, call_id)
     if call.get("ended_at"):
@@ -344,14 +344,12 @@ async def answer(
         return call, []
     now = now or training.utcnow()
     officer = call_scenario(scenario, call, attempt)
-    voiced = ts.voice_enabled and with_opening
+    voiced = with_opening
     if is_report(call):
-        audio = (
-            await _report_audio(version, officer, _report_of(scenario, call)) if voiced else None
-        )
+        audio = await _report_audio(version, officer, _report_of(scenario, call))
         topics = ["report", call.get("report_status") or ""]
     else:
-        audio = await _greeting_audio(version, officer, call["service"]) if voiced else None
+        audio = await _greeting_audio(version, officer, call["service"])
         topics = ["greeting"]
     opening = (
         [
@@ -520,11 +518,7 @@ async def say(
     officer = call_scenario(scenario, call, attempt)
     reply = await dialog.provider_for(ts).reply(_context(attempt, call, officer), text)
     operator = _turn("operator", text, reply.operator_topics, now, action_id=action_id, heard=heard)
-    audio = (
-        await dialog.reply_audio(None, version, officer, reply, stem=_reply_stem(call, reply))
-        if ts.voice_enabled
-        else None
-    )
+    audio = await dialog.reply_audio(None, version, officer, reply, stem=_reply_stem(call, reply))
     officer_turn = _turn(
         "caller",
         reply.text,
