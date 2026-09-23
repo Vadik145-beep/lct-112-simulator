@@ -70,6 +70,11 @@ END_CARD_CLOSED = "card_closed"  # the card was closed with the call still open
 END_NOT_TAKEN = "not_taken"  # a report the dispatcher never picked up / answered in time
 KIND_OUTGOING = "outgoing"
 KIND_REPORT = "report"
+# Studio recordings of the built-in banks in STORAGE_DIR (app.seed, issue #59): one folder
+# per service for the duty officers, one shared for the squad leader — his answers are the
+# same whatever the service.
+STUDIO_OFFICERS_DIR = "tts/seed/_officers"
+STUDIO_SQUAD_KEY = "_squad"
 _RETRY_WINDOW = 5
 
 
@@ -156,10 +161,12 @@ def reference_for(scenario: CardResponseScenario, service: str) -> ServiceCallRe
 def officer_scenario(
     scenario: CardResponseScenario, service: str, service_title: str, attempt: Attempt
 ) -> CallIntakeScenario:
-    """The officer of ``service`` as he is now: the progress answer follows the squad."""
-    return officers.officer_scenario(
+    """The officer of ``service`` as he is now: the progress answer follows the squad, the
+    built-in replies carry their studio recordings when the installation has them."""
+    built = officers.officer_scenario(
         scenario, reference_for(scenario, service), service_title, squad_state(attempt)
     )
+    return with_studio_audio(built, service)
 
 
 def call_scenario(
@@ -169,7 +176,8 @@ def call_scenario(
     title = call.get("service_title") or ""
     if is_report(call):
         report = _report_of(scenario, call)
-        return officers.report_scenario(scenario, report, title)
+        leader = officers.report_scenario(scenario, report, title)
+        return with_studio_audio(leader, STUDIO_SQUAD_KEY)
     return officer_scenario(scenario, call["service"], title, attempt)
 
 
@@ -491,6 +499,24 @@ def _text_key(text: str) -> str:
     return hashlib.sha1(text.encode()).hexdigest()[:8]  # noqa: S324 - a cache key, not security
 
 
+def studio_audio(service: str, text: str) -> str | None:
+    """Studio recording of a built-in phrase of a service's officer (issue #59), when the
+    installation carries one (``scripts/voice_replies.py`` → ``app.seed``). Without it the
+    stand synthesizes the phrase as before."""
+    relative = f"{STUDIO_OFFICERS_DIR}/{service}/{_text_key(text)}.mp3"
+    return relative if (dialog.storage_root() / relative).is_file() else None
+
+
+def with_studio_audio(scenario: CallIntakeScenario, service: str) -> CallIntakeScenario:
+    """The officer's replies with their recordings: a reply that has none keeps ``audio``
+    empty and is voiced by the stand."""
+    replies = [
+        r if r.audio else r.model_copy(update={"audio": studio_audio(service, r.text)})
+        for r in scenario.replies
+    ]
+    return scenario.model_copy(update={"replies": replies})
+
+
 def _reply_stem(call: dict, reply: CallerReply) -> str:
     if is_report(call):
         # Report replies quote the report itself: cache per phrase, so every trainee who
@@ -516,7 +542,13 @@ async def _report_audio(
 async def _greeting_audio(
     version: ScenarioVersion, officer: CallIntakeScenario, service: str
 ) -> str | None:
-    reply = CallerReply(text=officer.caller.opening, topics=["greeting"], operator_topics=[])
+    opening = officer.caller.opening
+    reply = CallerReply(
+        text=opening,
+        topics=["greeting"],
+        operator_topics=[],
+        audio=studio_audio(service, opening),
+    )
     return await dialog.reply_audio(
         None, version, officer, reply, stem=f"officer-{service}-greeting"
     )

@@ -1,0 +1,186 @@
+{
+  "0a2198fd": {
+    "sha256": "6ff412f62dd635c378ac9194e41b79b8631f7bcd",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд записал.",
+    "bytes": 24285
+  },
+  "0f11c82d": {
+    "sha256": "8ddda7744c7dc16239a88e205a4ea1c545b3d212",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Понял, происшествие принял.",
+    "bytes": 26793
+  },
+  "14f3c6c9": {
+    "sha256": "cdd54b065011696048e111d6cdb84ef3f31fd46e",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Бригада в пути, едем на адрес. По прибытии доложим.",
+    "bytes": 52288
+  },
+  "1d27906e": {
+    "sha256": "e7ef87e90b6fd91c3db980ad51fa6e93cccc8f8a",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Информацию принял, бригаду направляю.",
+    "bytes": 38078
+  },
+  "27d49938": {
+    "sha256": "2d770cf8b158eca8d11abe317fc4899170a813a3",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принял, аварийная бригада Мосгаза выезжает, до прибытия не включать свет.",
+    "bytes": 65245
+  },
+  "2d44c18b": {
+    "sha256": "93b8d41eac39603375765617469b35690016f298",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Бригаду собираем, выезжаем. Как выедем — доложу.",
+    "bytes": 48527
+  },
+  "2e30ed8e": {
+    "sha256": "150d657bc7e4e301c76c5ba99676cd8e8ee1e5fd",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Бригада на месте, осматриваемся. Как начнём работы — доложу.",
+    "bytes": 70261
+  },
+  "2f51cba1": {
+    "sha256": "b524a235ac6a938876a12f1876f33b55342ee7c8",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принято. Как будем на месте, доложу.",
+    "bytes": 49781
+  },
+  "34ca5ac3": {
+    "sha256": "ab59eaa27a774a09b3e4379a9fa27b66fc8a7f07",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Что именно произошло? Какой тип происшествия по карточке?",
+    "bytes": 67753
+  },
+  "4ec882ea": {
+    "sha256": "52345eb1e447c5b5e7a9f2fbb616d2828f618d0d",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Запах газа где: в квартире, в подъезде, на улице?",
+    "bytes": 65245
+  },
+  "575f5e40": {
+    "sha256": "d2f1769f9c5f7db47c5394804b72dc87b2404f3b",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Это не ко мне, давайте по происшествию.",
+    "bytes": 38078
+  },
+  "5a8ac4a0": {
+    "sha256": "5b61f272dc68079191cd94a78748b498db9f8263",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принято, по пострадавшим понял.",
+    "bytes": 38078
+  },
+  "6dc5ac0d": {
+    "sha256": "f652eccbade7a76408cb4f353019523a7db4c044",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Повторите, пожалуйста, плохо слышно.",
+    "bytes": 30555
+  },
+  "7480c6b2": {
+    "sha256": "8a13a32c146f512503e86fb49cdeb375cd682492",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Адрес принял. Подъезд, этаж известны?",
+    "bytes": 38078
+  },
+  "95edcb1a": {
+    "sha256": "1d6deaddc220376608e7ca290120d6df43f1bf76",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Понял, доступ есть.",
+    "bytes": 44765
+  },
+  "9bd07d82": {
+    "sha256": "03c5ea598f03c0bf2276352f1d113fa169b73962",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Номер наряда назовите.",
+    "bytes": 24285
+  },
+  "9d0fd099": {
+    "sha256": "94af9bb914e9423ba6ce11d6a7d24a220ec86fc6",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Пострадавшие есть?",
+    "bytes": 41839
+  },
+  "ac1951ae": {
+    "sha256": "a0e10bcba2b9f1c64c9c46c4c3e36464688297c5",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Назовите адрес: улица, дом, корпус.",
+    "bytes": 53542
+  },
+  "b35d1419": {
+    "sha256": "7bec7c3c96acc5e450f7f6b34bbe8bf55ca4f047",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Доступ на объект есть? Кто встретит бригаду?",
+    "bytes": 49781
+  },
+  "c418bb25": {
+    "sha256": "7b8bf217c26a7371ba69eca812c6bae4926bd230",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Работы ведутся, пока без замечаний. По окончании доложу.",
+    "bytes": 61066
+  },
+  "c8e9c84a": {
+    "sha256": "eabd39708d33b81b53329803f52267a2a4ebfd2b",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Дежурный Мосгаза, слушаю.",
+    "bytes": 24285
+  },
+  "c9cf9ec1": {
+    "sha256": "bfdcf077482a17ffb580c6db3347d7fa972e3bef",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Люди из помещения выведены? Плохо кому-нибудь?",
+    "bytes": 57304
+  },
+  "d8e0fc66": {
+    "sha256": "d23c2aa6562384bac51efd1b67baa9c0f6e55825",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Работы завершены, докладывал. Всё по карточке отражено.",
+    "bytes": 62319
+  }
+}

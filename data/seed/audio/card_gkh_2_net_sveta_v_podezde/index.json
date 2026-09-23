@@ -1,0 +1,34 @@
+{
+  "report-arrived": {
+    "sha256": "b9090c3fa2c432ac1733a3065d626030d240addc",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Алло, это снова старший группы. Прибыли по адресу: Волгоградский проспект, дом 113, корпус 3, приступаем.",
+    "bytes": 118744
+  },
+  "report-response_started": {
+    "sha256": "3b6a4e8178ccb62f989cf08db117efc2a1f29082",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Алло, диспетчер? Это старший группы реагирования. Выехали по адресу: Волгоградский проспект, дом 113, корпус 3.",
+    "bytes": 113728
+  },
+  "report-works_done": {
+    "sha256": "38384e7d79d16daf3beb17fda3249665be7f259f",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[tired] [exhales]",
+    "text": "Алло, диспетчер? Старший группы. Работы завершены: заменён автомат группы освещения, свет в подъезде восстановлен.",
+    "bytes": 119998
+  },
+  "report-works_started": {
+    "sha256": "3de88a39e531eb37322fcc552ee2d82e099d6724",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Алло, диспетчер, старший группы. Докладываю: осмотр электрощитовой подъезда.",
+    "bytes": 86979
+  }
+}

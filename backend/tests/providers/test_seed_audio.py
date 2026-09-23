@@ -1,5 +1,6 @@
 """Studio recordings of the seed scenarios: ``data/seed/audio/<key>/`` is copied into storage
-and linked from the body, the opening plays the recording without any voice provider."""
+and linked from the body, the opening plays the recording without any voice provider, and the
+squad's reports play theirs (issue #67)."""
 
 import json
 from pathlib import Path
@@ -8,7 +9,7 @@ import pytest
 
 from app import seed as seed_module
 from app.dialog import service as dialog
-from app.domain.evaluation.schemas import CallIntakeScenario
+from app.domain.evaluation.schemas import CallIntakeScenario, CardResponseScenario
 from app.models import Attempt, ScenarioVersion
 from app.providers.dialog import CallerReply
 
@@ -86,6 +87,83 @@ def test_attach_audio_is_deterministic_and_refreshes_changed_files(tmp_path: Pat
     seed_module._attach_audio(json.loads(json.dumps(BODY)), "call_test", data_dir, storage)
     assert (storage / seed_module.AUDIO_STORAGE / "call_test" / "r1.mp3").read_bytes() == (
         b"second take"
+    )
+
+
+CARD_BODY = {
+    "kind": "card_response",
+    "title": "Нет отопления",
+    "service": "moek",
+    "card": {"incident_type": "1.1", "signs": [], "flags": {}, "description": "Нет тепла."},
+    "reference": {
+        "decision": "accept",
+        "status_chain": [{"status": "accepted"}, {"status": "arrived"}],
+        "reports": [
+            {"status": "response_started", "text": "Выехали.", "after_seconds": 30},
+            {"status": "arrived", "text": "Прибыли на адрес.", "after_seconds": 45},
+        ],
+    },
+}
+
+
+def test_attach_audio_links_the_squad_reports(tmp_path: Path) -> None:
+    data_dir, storage = _layout(tmp_path, {"report-arrived.mp3": b"arrived"})
+    body = json.loads(json.dumps(CARD_BODY))
+    linked = seed_module._attach_audio(body, "call_test", data_dir, storage)
+    assert linked == 1
+    reports = body["reference"]["reports"]
+    assert reports[1]["audio"] == "tts/seed/call_test/report-arrived.mp3"
+    assert "audio" not in reports[0]  # no recording yet: the stand voices it itself
+    copied = storage / seed_module.AUDIO_STORAGE / "call_test" / "report-arrived.mp3"
+    assert copied.read_bytes() == b"arrived"
+    scenario = CardResponseScenario.model_validate(body)
+    assert scenario.reference.reports[1].audio.endswith("report-arrived.mp3")
+    assert scenario.reference.reports[0].audio is None
+
+
+def test_officer_bank_is_copied_and_found_by_the_dialog(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Issue #59: the officers' studio bank lives per service, the dialog finds a phrase by
+    its text, and a phrase without a recording is left to the stand."""
+    from app.dialog import officer
+
+    data_dir = tmp_path / "data"
+    folder = data_dir / seed_module.AUDIO_DIR / seed_module.OFFICERS_AUDIO_KEY / "gkh"
+    folder.mkdir(parents=True)
+    greeting = "Дежурный ЕДЦ ЖКХ, слушаю."
+    (folder / f"{officer._text_key(greeting)}.mp3").write_bytes(b"hello")
+    storage = tmp_path / "storage"
+
+    assert seed_module.copy_officer_audio(data_dir, storage) == 1
+    copied = (
+        storage
+        / seed_module.AUDIO_STORAGE
+        / seed_module.OFFICERS_AUDIO_KEY
+        / "gkh"
+        / f"{officer._text_key(greeting)}.mp3"
+    )
+    assert copied.read_bytes() == b"hello"
+
+    monkeypatch.setattr(dialog, "storage_root", lambda: storage)
+    assert officer.studio_audio("gkh", greeting) == (
+        f"tts/seed/_officers/gkh/{officer._text_key(greeting)}.mp3"
+    )
+    assert officer.studio_audio("gkh", "Этой фразы никто не записывал.") is None
+    assert officer.studio_audio("moek", greeting) is None  # запись своя у каждой службы
+
+
+def test_officer_names_his_service_the_way_people_say_it() -> None:
+    """The reference titles carry brackets and paperwork; the officer says a spoken name."""
+    from app.domain.scenarios import officers
+
+    assert officers.greeting("gkh", "Городское хозяйство (ЕДЦ ЖКХ)") == "Дежурный ЕДЦ ЖКХ, слушаю."
+    assert officers.greeting("103", "Служба 103 (скорая помощь)") == (
+        "Дежурный скорой помощи, слушаю."
+    )
+    # A service with no spoken name of its own keeps its title without the brackets.
+    assert officers.spoken_service("unknown_service", "Какая-то служба (с уточнением)") == (
+        "Какая-то служба"
     )
 
 

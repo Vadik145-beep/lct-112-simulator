@@ -1,11 +1,12 @@
-"""Studio voicing of the reference call-intake scenarios through ElevenLabs (eleven_v3).
+"""Studio voicing of the reference scenarios through ElevenLabs (eleven_v3).
 
 The ``select`` dialog mode plays approved replies verbatim, so their voice can be rendered
-once, ahead of time, with emotion tags the on-stand Piper cannot do. The result is data: one
-MP3 per opening, per approved reply and per its other wording (``variants``) under
-``data/seed/audio/<seed key>/``, which
-``app.seed`` copies into ``storage/tts/seed/`` and links from the scenario body. Scenarios
-made later on the stand (generated or edited) keep the Piper path.
+once, ahead of time, with emotion tags the on-stand synthesizer cannot do. The result is
+data: one MP3 per opening, per approved reply and per its other wording (``variants``) of a
+call-intake scenario, and one per report of the squad (``reference.reports``) of a
+card-response one, under ``data/seed/audio/<seed key>/``, which ``app.seed`` copies into
+``storage/tts/seed/`` and links from the scenario body. Scenarios made later on the stand
+(generated or edited) keep the local synthesizer.
 
 Runs on a machine with internet, never on the stand. ``index.json`` in every folder holds a
 hash of (voice, model, tag, text) per file, so a rerun voices only what changed.
@@ -69,6 +70,21 @@ PERSONA_TAGS: dict[str, str] = {
 DEFAULT_TAG = "[nervous]"
 # Service replies («repeat again», «I don't know») sound the same whatever the persona.
 TOPIC_TAGS: dict[str, str] = {"repeat": "[shouting]"}
+# The squad leader reporting from the scene (app.domain.scenarios.officers): one voice for
+# every service, businesslike, a working background rather than panic. On the last report the
+# work is done and he is tired — the only place the sigh belongs (user, 23.09.2026).
+SQUAD_VOICE = "ru_male_2"
+SQUAD_TAG = "[calm]"
+REPORT_TAGS: dict[str, str] = {"works_done": "[tired] [exhales]"}
+# Tags that need a looser voice to be heard at all; the rest keep the steady default.
+LOOSE_TAGS = ("[tired]", "[exhausted]", "[sighs]", "[exhales]", "[panicked]")
+STABILITY_STEADY = 0.5
+STABILITY_LOOSE = 0.35
+# The duty officer of a service answers the dispatcher's call (issue #59): his bank is built
+# in code, the same for every scenario, so it is voiced once per service.
+OFFICERS_KEY = "_officers"
+# The squad leader's answers during a report call: the same for every service, so one folder.
+SQUAD_KEY = "_squad"
 
 
 def load_env(path: Path) -> dict[str, str]:
@@ -87,12 +103,17 @@ def digest(voice_id: str, tag: str, text: str) -> str:
     return hashlib.sha256(f"{voice_id}|{MODEL_ID}|{tag}|{text}".encode()).hexdigest()[:40]
 
 
-def synthesize(client: httpx.Client, voice_id: str, text: str) -> bytes:
+def stability_of(tag: str) -> float:
+    """A phrase with a breath or a sigh needs a looser voice, else the tag is not heard."""
+    return STABILITY_LOOSE if any(t in tag for t in LOOSE_TAGS) else STABILITY_STEADY
+
+
+def synthesize(client: httpx.Client, voice_id: str, text: str, stability: float) -> bytes:
     body = {
         "text": text,
         "model_id": MODEL_ID,
         "language_code": "ru",
-        "voice_settings": {"stability": 0.5, "similarity_boost": 0.8},
+        "voice_settings": {"stability": stability, "similarity_boost": 0.8},
     }
     for attempt in range(3):
         response = client.post(
@@ -113,6 +134,71 @@ def remaining_characters(client: httpx.Client) -> tuple[int, int] | None:
     except (httpx.HTTPError, ValueError):
         return None
     return int(data.get("character_count", 0)), int(data.get("character_limit", 0))
+
+
+def report_phrases(body: dict) -> list[tuple[str, str, str]]:
+    """(file stem, tag, text) for every report of the squad on a card-response scenario."""
+    reference = body.get("reference") or {}
+    items: list[tuple[str, str, str]] = []
+    for report in reference.get("reports") or []:
+        text = (report.get("text") or "").strip()
+        status = report.get("status")
+        if text and status:
+            items.append((f"report-{status}", REPORT_TAGS.get(status, SQUAD_TAG), text))
+    return items
+
+
+def officer_phrases(env: dict[str, str]) -> list[tuple[str, str, str, str]]:
+    """(service, file stem, tag, text) of the duty officers' built-in bank. The bank lives in
+    the backend, so this needs its virtual environment:
+
+        cd backend && uv run python ../scripts/voice_replies.py
+
+    The file name is a digest of the text: an edited phrase becomes another file, and two
+    services that say the same thing each keep their own recording."""
+    sys.path.insert(0, str(ROOT / "backend"))
+    try:
+        from app.domain.scenarios import officers
+    except ImportError as exc:
+        raise SystemExit(
+            f"Банк дежурного берётся из бэкенда ({exc}). Запустите из backend: "
+            "cd backend && uv run python ../scripts/voice_replies.py"
+        ) from exc
+
+    classifier = json.loads((ROOT / "data/seed/classifier.json").read_text(encoding="utf-8"))
+    titles = {
+        row["code"]: row.get("title") or row["code"] for row in classifier.get("services", [])
+    }
+    services = sorted(
+        {
+            body.get("service")
+            for path in SCENARIOS_DIR.glob("card_*.json")
+            if (body := json.loads(path.read_text(encoding="utf-8"))).get("service")
+        }
+    )
+    items: list[tuple[str, str, str, str]] = []
+    for service in services:
+        title = titles.get(service, service)
+        seen: set[str] = set()
+        for state in officers.PROGRESS_REPLIES:
+            for reply in officers.builtin_replies(service, title, state):
+                text = reply.text.strip()
+                if text and text not in seen:
+                    seen.add(text)
+                    items.append((service, digest_stem(text), SQUAD_TAG, text))
+    # The squad leader answers the dispatcher after his report: «сколько ещё», «кто на
+    # месте», «нужна ли помощь». Phrases that quote the report itself ({report}) belong to a
+    # scenario, not to the bank, and are voiced with it.
+    for topic, text in officers.REPORT_REPLIES:
+        del topic
+        if "{report}" in text:
+            continue
+        items.append((SQUAD_KEY, digest_stem(text), SQUAD_TAG, text.strip()))
+    return items
+
+
+def digest_stem(text: str) -> str:
+    return hashlib.sha1(text.encode()).hexdigest()[:8]  # noqa: S324 - a file name, not security
 
 
 def phrases(body: dict) -> list[tuple[str, str, str]]:
@@ -159,16 +245,24 @@ def main() -> None:
     skipped = 0
     for path in files:
         body = json.loads(path.read_text(encoding="utf-8"))
-        if body.get("kind") != "call_intake":
+        kind = body.get("kind")
+        if kind == "call_intake":
+            voice = (body.get("caller") or {}).get("voice") or "ru_male_1"
+            items = phrases(body)
+        elif kind == "card_response":
+            voice = SQUAD_VOICE
+            items = report_phrases(body)
+        else:
             continue
-        voice = (body.get("caller") or {}).get("voice") or "ru_male_1"
+        if not items:
+            continue
         voice_id = env.get(VOICE_ENV.get(voice, "ELEVENLABS_VOICE_MALE"), "")
         if not voice_id:
             raise SystemExit(f"{path.stem}: нет ElevenLabs-голоса для {voice} в {ENV_FILE}")
         folder = AUDIO_DIR / path.stem
         index_path = folder / "index.json"
         index = json.loads(index_path.read_text(encoding="utf-8")) if index_path.exists() else {}
-        for stem, tag, text in phrases(body):
+        for stem, tag, text in items:
             current = index.get(stem, {})
             if (
                 not args.force
@@ -178,6 +272,24 @@ def main() -> None:
                 skipped += 1
                 continue
             todo.append((path.stem, stem, voice_id, tag, text))
+
+    if not args.only:
+        folder = AUDIO_DIR / OFFICERS_KEY
+        for service, stem, tag, text in officer_phrases(env):
+            voice_id = env.get(VOICE_ENV.get(SQUAD_VOICE, "ELEVENLABS_VOICE_MALE"), "")
+            index_path = folder / service / "index.json"
+            index = (
+                json.loads(index_path.read_text(encoding="utf-8")) if index_path.exists() else {}
+            )
+            current = index.get(stem, {})
+            if (
+                not args.force
+                and current.get("sha256") == digest(voice_id, tag, text)
+                and (folder / service / f"{stem}.mp3").exists()
+            ):
+                skipped += 1
+                continue
+            todo.append((f"{OFFICERS_KEY}/{service}", stem, voice_id, tag, text))
 
     chars = sum(len(f"{tag} {text}") for _, _, _, tag, text in todo)
     print(f"озвучить: {len(todo)} фраз, {chars} символов; без изменений: {skipped}")
@@ -195,7 +307,7 @@ def main() -> None:
         folder.mkdir(parents=True, exist_ok=True)
         index_path = folder / "index.json"
         index = json.loads(index_path.read_text(encoding="utf-8")) if index_path.exists() else {}
-        audio = synthesize(client, voice_id, f"{tag} {text}")
+        audio = synthesize(client, voice_id, f"{tag} {text}", stability_of(tag))
         (folder / f"{stem}.mp3").write_bytes(audio)
         index[stem] = {
             "sha256": digest(voice_id, tag, text),
