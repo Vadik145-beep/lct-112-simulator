@@ -652,14 +652,14 @@ test.describe("Задача #36: звонок диспетчера в служб
     await expect(
       panel.getByRole("button", { name: "Удерживайте и говорите" }),
     ).toBeEnabled();
-    const input = panel.getByLabel("Сказать дежурному");
+    const input = panel.getByLabel("Сказать: дежурный");
     for (const phrase of [
       "Передаю карточку: улица Молостовых, дом 10, корпус 1",
       "Нет отопления в трёх домах, горячая вода есть, пострадавших нет",
       "Наряд МОЭК-4127, выезжайте",
     ]) {
       await input.fill(phrase);
-      await panel.getByRole("button", { name: "Отправить дежурному" }).click();
+      await panel.getByRole("button", { name: "Отправить: дежурный" }).click();
       await expect(
         panel.locator("li[data-role=dispatcher]").last(),
       ).toContainText(phrase.slice(0, 20));
@@ -706,8 +706,9 @@ test.describe("Задача #36: звонок диспетчера в служб
       "data-called",
       "true",
     );
+    // The review lists only the facts the scenario requires (#127): the order number is extra.
     await expect(calls).toContainText(
-      "Передано: адрес, тип происшествия, пострадавшие, номер наряда",
+      "Передано: адрес, тип происшествия, пострадавшие",
     );
     await expect(
       page.getByText("Звонки в службы", { exact: true }).first(),
