@@ -9,7 +9,9 @@ come to the same webhook as for the SIP calls and are handled by ``app.telephony
 shared part; Vapi records the call and the end-of-call report brings the file.
 
 The call ends when the trainee hangs up in the panel (``/attempts/{id}/hangup`` and the SDK
-stops the call), or when Vapi ends it (``status-update``). Either way the assistant is deleted.
+stops the call), or when Vapi ends it (``status-update``). Vapi sends the end-of-call report
+with the recording a few seconds after the end, so an ended call stays findable until that
+report (or ``REPORT_WAIT_SECONDS``); then the assistant is deleted.
 """
 
 from __future__ import annotations
@@ -49,9 +51,13 @@ from app.telephony.vapi import VapiClient, VapiError, build_assistant
 log = get_logger(__name__)
 
 RECORDING_PREFIX = "web-"
+# How long an ended call waits for Vapi's end-of-call report, which brings the recording. The
+# report usually comes seconds after «status-update: ended» or the trainee's hang-up.
+REPORT_WAIT_SECONDS = 120.0
 
 
-@dataclass
+# Identity equality: a call is kept in a set of calls awaiting their report.
+@dataclass(eq=False)
 class WebCall:
     attempt_id: uuid.UUID
     session_id: uuid.UUID
@@ -68,6 +74,10 @@ class WebCall:
     pending_latency_ms: int | None = None
     latencies_ms: list[int] = field(default_factory=list)
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
+    # The end-of-call report was handled: nothing more is expected from Vapi.
+    reported: bool = False
+    forget_task: asyncio.Task | None = None
+    forgotten: bool = False
 
 
 @dataclass
@@ -87,6 +97,8 @@ class CloudWebCalls:
         self._by_token: dict[str, WebCall] = {}
         self._by_assistant: dict[str, WebCall] = {}
         self._by_vapi_call: dict[str, WebCall] = {}
+        # Ended calls still waiting for the end-of-call report (their recording).
+        self._awaiting: set[WebCall] = set()
 
     # ------------------------------------------------------------ starting
 
@@ -216,6 +228,14 @@ class CloudWebCalls:
     async def webhook(self, message: dict) -> dict[str, Any]:
         kind = message.get("type")
         call = self.call_for_message(message)
+        if call is not None and call.ended and kind == "end-of-call-report" and not call.reported:
+            # The usual order: «status-update: ended» (or the trainee's hang-up) first, the
+            # report with the recording a few seconds later. The call is over; only the file
+            # is still to be kept.
+            call.reported = True
+            await self._save_recording(call, report_recording_url(message))
+            await self._forget(call)
+            return {}
         if call is None or call.ended:
             log.info("vapi web message for an unknown call", type=kind)
             return {}
@@ -229,6 +249,7 @@ class CloudWebCalls:
                 await self._end(call, end_reason(str(message.get("endedReason") or "")))
         elif kind == "end-of-call-report":
             call.vapi_ended = True
+            call.reported = True
             await apply_report(call, message)
             await self._save_recording(call, report_recording_url(message))
             await self._end(call, end_reason(str(message.get("endedReason") or "")))
@@ -276,7 +297,8 @@ class CloudWebCalls:
         call = self.calls.get(service_call_id or attempt_id.hex)
         if call is None:
             return False
-        await self._forget(call)
+        call.ended = True
+        self._await_report(call)
         return True
 
     async def _end(self, call: WebCall, reason: str) -> None:
@@ -311,11 +333,39 @@ class CloudWebCalls:
                 max_ms=ordered[-1],
             )
         log.info("web call ended", attempt=str(call.attempt_id), reason=reason)
+        if call.reported:
+            await self._forget(call)
+        else:
+            self._await_report(call)
+
+    def _await_report(self, call: WebCall) -> None:
+        """The call is over, its report with the recording is still on the way: the call leaves
+        the list of calls in progress (a new call of the attempt may start) but stays findable
+        by its ids until the report or ``REPORT_WAIT_SECONDS``."""
+        self.calls.pop(self.key_of(call), None)
+        if call in self._awaiting:
+            return
+        self._awaiting.add(call)
+        call.forget_task = asyncio.create_task(self._forget_later(call))
+
+    async def _forget_later(self, call: WebCall) -> None:
+        await asyncio.sleep(REPORT_WAIT_SECONDS)
+        if not call.reported:
+            log.warning("web call report never came", attempt=str(call.attempt_id))
+        call.forget_task = None
         await self._forget(call)
 
     async def _forget(self, call: WebCall) -> None:
         call.ended = True
-        self.calls.pop(self.key_of(call), None)
+        if call.forgotten:
+            return
+        call.forgotten = True
+        self._awaiting.discard(call)
+        if call.forget_task is not None and call.forget_task is not asyncio.current_task():
+            call.forget_task.cancel()
+        call.forget_task = None
+        if self.calls.get(self.key_of(call)) is call:
+            self.calls.pop(self.key_of(call), None)
         self._by_token.pop(call.token, None)
         self._by_assistant.pop(call.assistant_id, None)
         if call.vapi_call_id:
@@ -331,6 +381,8 @@ class CloudWebCalls:
     async def shutdown(self) -> None:
         for call in list(self.calls.values()):
             await self._end(call, CALL_END_FAILED)
+        for call in list(self._awaiting):
+            await self._forget(call)
         if self.vapi is not None:
             await self.vapi.aclose()
 
