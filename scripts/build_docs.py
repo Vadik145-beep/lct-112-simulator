@@ -15,6 +15,7 @@ ROOT = Path(sys.argv[1])
 OUT = Path(sys.argv[2])
 
 FILES = [
+    ("Пояснительная записка", "docs/EXPLANATORY_NOTE.md"),
     ("Маршрут проверки решения", "docs/EXPERT_GUIDE.md"),
     ("Архитектура решения", "docs/ARCHITECTURE.md"),
     ("Методы обработки данных", "docs/METHODS.md"),

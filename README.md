@@ -112,6 +112,8 @@ cd ../frontend && npm ci && npm run dev  # интерфейс на http://localh
 
 ## Документация
 
+- [docs/EXPLANATORY_NOTE.md](docs/EXPLANATORY_NOTE.md) — пояснительная записка: назначение,
+  состав решения, ход занятия, проверенные результаты, границы.
 - [docs/EXPERT_GUIDE.md](docs/EXPERT_GUIDE.md) — проверка решения за 10 минут: маршрут и где
   ответ по каждому критерию оценки.
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — функциональная и компонентная архитектура.
