@@ -14,6 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.analytics import service as analytics
 from app.analytics.schemas import RatingOut, WeekPointOut
+from app.domain.analytics.records import MAX_TIME_RATIO
 from app.models import (
     MODE_CALL_INTAKE,
     SESSION_DRAFT,
@@ -114,8 +115,13 @@ async def build_progress(session: AsyncSession, student: User) -> ProgressOut:
             continue
         totals = [float(a.result["total"]) for a in rows_of if a.result]
         seconds = [s for s in (training.attempt_seconds(a) for a in rows_of) if s is not None]
+        # An attempt left open for hours must not drag the average: above MAX_TIME_RATIO norms
+        # the time is equally bad anyway, so it counts as that much (analytics.records).
+        limit = MAX_TIME_RATIO * ts.norm_seconds if ts.norm_seconds > 0 else None
+        counted = seconds if limit is None else [min(s, limit) for s in seconds]
         passed = sum(1 for a in rows_of if a.result and a.result.get("passed"))
-        mean_seconds = _mean(seconds)
+        mean_seconds = _mean(counted)
+        # «Late» is counted on the real time: the cap changes how much, not whether.
         late[ts.mode] += sum(1 for s in seconds if s > ts.norm_seconds)
         timed[ts.mode] += len(seconds)
         for a in rows_of:
@@ -147,7 +153,7 @@ async def build_progress(session: AsyncSession, student: User) -> ProgressOut:
             )
         )
         all_totals += totals
-        all_seconds += seconds
+        all_seconds += counted
         all_passed += passed
     rows.sort(key=lambda r: r.started_at.timestamp() if r.started_at else 0, reverse=True)
 
