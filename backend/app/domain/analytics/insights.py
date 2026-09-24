@@ -99,30 +99,51 @@ def dynamics(records: Sequence[AttemptRecord], *, since: datetime) -> list[WeekP
     ]
 
 
+MODE_TITLES = {"call_intake": "приёме вызова", "card_response": "реагировании на карточку"}
+
+
+def plural(n: int, one: str, few: str, many: str) -> str:
+    """Russian declension after a number: 1 попытка, 2 попытки, 5 попыток."""
+    tens, unit = n % 100, n % 10
+    if 11 <= tens <= 14:
+        return many
+    if unit == 1:
+        return one
+    if 2 <= unit <= 4:
+        return few
+    return many
+
+
 def group_summary(
     *,
     students: int,
     attempts: int,
     mean_score: float | None,
-    weakest_group: tuple[str, float] | None,
+    weakest_group: tuple[str, str, float] | None,
     errors: Sequence[ErrorCount],
     at_risk: int,
 ) -> str:
-    """The template summary (the model-written one is optional, PRD 9.7)."""
+    """The template summary (the model-written one is optional, PRD 9.7). ``students`` counts
+    the trainees with attempts in the period, ``weakest_group`` is the incident group and the
+    mode of the weakest cell of the heat map, so the two never disagree."""
     if not attempts:
         return "Оценённых попыток за период нет: аналитика появится после первого занятия."
-    parts = [f"За период {attempts} оценённых попыток у {students} обучающихся"]
+    who = plural(students, "обучающегося", "обучающихся", "обучающихся")
+    tries = plural(attempts, "оценённая попытка", "оценённые попытки", "оценённых попыток")
+    parts = [f"За период {attempts} {tries} у {students} {who}"]
     if mean_score is not None:
         parts[0] += f", средний балл {mean_score:.0f}"
     parts[0] += "."
     if weakest_group:
-        title, mean = weakest_group
-        parts.append(f"Слабее всего группа «{title}»: средний балл {mean:.0f}.")
+        title, mode, mean = weakest_group
+        where = MODE_TITLES.get(mode, mode)
+        parts.append(f"Слабее всего «{title}» в {where}: средний балл {mean:.0f}.")
     if errors:
         top = errors[0]
         parts.append(
-            f"Самая частая ошибка — «{top.title}»: {top.count} раз "
-            f"у {top.students} из {students} обучающихся."
+            f"Самая частая ошибка — «{top.title}»: {top.count} "
+            f"{plural(top.count, 'раз', 'раза', 'раз')} "
+            f"у {top.students} из {students} {who}."
         )
     if at_risk:
         parts.append(

@@ -178,18 +178,20 @@ async def group_analytics(
             )
         )
 
-    weakest: tuple[str, float] | None = None
-    by_group: dict[str, list[float]] = defaultdict(list)
+    # The weakest cell of the heat map, group and mode together: a group averaged over both
+    # modes would name a number the teacher cannot find anywhere on the page.
+    weakest: tuple[str, str, float] | None = None
+    by_group: dict[tuple[str, str], list[float]] = defaultdict(list)
     for r in all_records:
-        by_group[r.incident_group].append(r.total)
+        by_group[(r.incident_group, r.mode)].append(r.total)
     if by_group:
-        code, totals = min(by_group.items(), key=lambda kv: sum(kv[1]) / len(kv[1]))
-        weakest = (group_titles.get(code, f"группа {code}"), sum(totals) / len(totals))
+        (code, mode), totals = min(by_group.items(), key=lambda kv: sum(kv[1]) / len(kv[1]))
+        weakest = (group_titles.get(code, f"группа {code}"), mode, sum(totals) / len(totals))
     mean_score = (
         round(sum(r.total for r in all_records) / len(all_records), 1) if all_records else None
     )
     summary = insights.group_summary(
-        students=len(members),
+        students=sum(1 for m in members if by_login[str(m.id)]),
         attempts=len(all_records),
         mean_score=mean_score,
         weakest_group=weakest,
