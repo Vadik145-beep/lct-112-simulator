@@ -5,6 +5,7 @@ Vapi's REST API is a stand-in transport of httpx."""
 
 from __future__ import annotations
 
+import asyncio
 from collections.abc import AsyncIterator
 
 import pytest
@@ -290,7 +291,6 @@ async def test_hangup_in_the_panel_deletes_the_assistant(
     assert r.status_code == 200
     attempt = await load(attempt_id)
     assert attempt.call_state == CALL_ENDED and attempt.call_end_reason == CALL_END_HANGUP
-    assert keys["assistant_id"] not in api.assistants
     # A late message of that call is ignored.
     late = {
         "type": "transcript",
@@ -300,6 +300,68 @@ async def test_hangup_in_the_panel_deletes_the_assistant(
     }
     assert (await hook(client, late)).json() == {}
     assert (await load(attempt_id)).dialog == []
+    # The assistant lives until the report with the recording (see below) or the timeout.
+    await web.shutdown()
+    assert keys["assistant_id"] not in api.assistants
+
+
+def report_of(call: dict) -> dict:
+    return {
+        "type": "end-of-call-report",
+        "endedReason": "customer-ended-call",
+        "call": call,
+        "artifact": {"recordingUrl": FakeVapiApi.RECORDING_URL, "messages": []},
+    }
+
+
+async def test_recording_comes_after_the_end_of_the_call(
+    client: AsyncClient, web: CloudWebCalls, api: FakeVapiApi, tmp_path, monkeypatch
+):
+    """Vapi says «ended» first and sends the report with the recording seconds later: the
+    recording must still reach the review (it was lost on the stand, 24.09.2026)."""
+    monkeypatch.setattr(get_settings(), "storage_dir", str(tmp_path))
+    attempt_id = await make_attempt(GAS_PIPE, dialog_mode="cloud")
+    keys, student = await start_call(client, attempt_id)
+    call = {"id": "web-call-7", "assistantId": keys["assistant_id"], "type": "webCall"}
+    ended = {"type": "status-update", "status": "ended", "endedReason": "customer-ended-call"}
+    assert (await hook(client, {**ended, "call": call})).status_code == 200
+    assert (await load(attempt_id)).call_state == CALL_ENDED
+    assert keys["assistant_id"] in api.assistants  # still waiting for the report
+
+    assert (await hook(client, report_of(call))).status_code == 200
+    attempt = await load(attempt_id)
+    assert attempt.recording_path == f"recordings/web-{attempt_id.hex}.wav"
+    assert keys["assistant_id"] not in api.assistants
+    rec = await client.get(f"/api/attempts/{attempt_id}/recording", headers=bearer(student))
+    assert rec.status_code == 200 and rec.content == FakeVapiApi.RECORDING
+
+
+async def test_recording_comes_after_the_hang_up_in_the_panel(
+    client: AsyncClient, web: CloudWebCalls, api: FakeVapiApi, tmp_path, monkeypatch
+):
+    monkeypatch.setattr(get_settings(), "storage_dir", str(tmp_path))
+    attempt_id = await make_attempt(GAS_PIPE, dialog_mode="cloud")
+    keys, student = await start_call(client, attempt_id)
+    r = await client.post(f"/api/attempts/{attempt_id}/hangup", headers=bearer(student))
+    assert r.status_code == 200
+    call = {"id": "web-call-8", "assistantId": keys["assistant_id"], "type": "webCall"}
+    assert (await hook(client, report_of(call))).status_code == 200
+    assert (await load(attempt_id)).recording_path == f"recordings/web-{attempt_id.hex}.wav"
+    assert keys["assistant_id"] not in api.assistants
+
+
+async def test_an_ended_call_without_a_report_is_forgotten(
+    client: AsyncClient, web: CloudWebCalls, api: FakeVapiApi, monkeypatch
+):
+    monkeypatch.setattr(cloud_web, "REPORT_WAIT_SECONDS", 0.01)
+    attempt_id = await make_attempt(GAS_PIPE, dialog_mode="cloud")
+    keys, student = await start_call(client, attempt_id)
+    r = await client.post(f"/api/attempts/{attempt_id}/hangup", headers=bearer(student))
+    assert r.status_code == 200
+    await asyncio.sleep(0.2)
+    assert keys["assistant_id"] not in api.assistants
+    assert web.call_for_message({"call": {"assistantId": keys["assistant_id"]}}) is None
+    assert (await load(attempt_id)).recording_path is None
 
 
 async def test_status_ended_by_the_trainee_side(client: AsyncClient, web: CloudWebCalls):
