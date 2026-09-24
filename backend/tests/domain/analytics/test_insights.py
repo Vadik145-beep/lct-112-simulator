@@ -3,8 +3,9 @@
 from datetime import UTC, datetime, timedelta
 
 from app.domain.analytics import insights
+from app.domain.analytics.features import compute_features
 from app.domain.analytics.rating import RatingState
-from app.domain.analytics.records import AttemptRecord
+from app.domain.analytics.records import MAX_TIME_RATIO, NO_TIME_RATIO, AttemptRecord
 
 SINCE = datetime(2026, 9, 1, tzinfo=UTC)
 
@@ -77,3 +78,28 @@ def test_summary_and_recommendations() -> None:
     assert len(advice) == 3
     assert "Утечка газа" in advice[0] and "норматива" in advice[1] and "«П»" in advice[2]
     assert insights.recommendations([], RatingState(), {}, {})[0].startswith("Пройдите")
+
+
+def test_abandoned_attempt_does_not_move_the_week() -> None:
+    """An attempt left open overnight counts as MAX_TIME_RATIO norms, not as 2500 of them:
+    otherwise one card drags the whole «Время, % от норматива» line of the group."""
+    normal = [record(0, 60, seconds=30.0), record(0, 60, seconds=45.0)]
+    abandoned = record(0, 21, seconds=75_547.0, norm_seconds=90)
+    assert abandoned.time_ratio == MAX_TIME_RATIO
+
+    week = insights.dynamics([*normal, abandoned], since=SINCE)[0]
+    assert week.count == 3
+    # (1.0 + 1.5 + 2.5) / 3 — readable, not 280.
+    assert week.mean_time_ratio == 1.67
+
+
+def test_missing_time_counts_as_twice_the_norm() -> None:
+    assert record(0, 40, seconds=None).time_ratio == NO_TIME_RATIO
+
+
+def test_forecast_features_survive_an_abandoned_attempt() -> None:
+    """The time feature of the forecast stays inside the range the model was trained on, so a
+    single abandoned attempt cannot pin a trainee at zero probability."""
+    records = [record(i, 60, seconds=30.0) for i in range(9)]
+    records.append(record(9, 21, seconds=75_547.0, norm_seconds=90))
+    assert compute_features(records).values["time_ratio"] <= MAX_TIME_RATIO
