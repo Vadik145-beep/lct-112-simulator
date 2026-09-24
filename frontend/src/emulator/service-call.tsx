@@ -342,47 +342,6 @@ export function ServiceCallPanel({
           >
             <Send className="size-3.5" aria-hidden />
           </button>
-          {canSpeak && (
-            <button
-              type="button"
-              aria-label={
-                recording
-                  ? "Говорите, отпустите, чтобы отправить"
-                  : "Удерживайте и говорите"
-              }
-              aria-pressed={recording}
-              title={
-                recording
-                  ? "Отпустите, чтобы отправить сказанное"
-                  : "Удерживайте кнопку и говорите дежурному"
-              }
-              disabled={pending}
-              onPointerDown={(e) => {
-                e.preventDefault();
-                void startRecording();
-              }}
-              onPointerUp={stopRecording}
-              onPointerLeave={stopRecording}
-              onPointerCancel={stopRecording}
-              onContextMenu={(e) => e.preventDefault()}
-              data-testid="service-call-talk"
-              className={cn(
-                "flex h-7 select-none items-center justify-center gap-1 rounded-sm border px-2 disabled:opacity-50",
-                recording
-                  ? "border-[var(--arm-orange)] bg-[var(--arm-orange)] text-white"
-                  : "border-[#a9adb2] bg-white text-[var(--arm-text)] hover:bg-[var(--arm-panel-2)]",
-              )}
-            >
-              {recording ? (
-                <Circle className="size-3.5 fill-current" aria-hidden />
-              ) : (
-                <Mic className="size-3.5" aria-hidden />
-              )}
-              <span className="text-[10px]">
-                {recording ? "говорите" : "удерживайте"}
-              </span>
-            </button>
-          )}
         </form>
       )}
       {open && call.answered && cloud !== "live" && canSpeak && devices.length > 0 && (
@@ -402,6 +361,45 @@ export function ServiceCallPanel({
             ))}
           </select>
         </label>
+      )}
+      {open && call.answered && cloud !== "live" && canSpeak && (
+        <button
+          type="button"
+          aria-label={
+            recording
+              ? "Говорите, отпустите, чтобы отправить"
+              : "Удерживайте и говорите"
+          }
+          aria-pressed={recording}
+          title={
+            recording
+              ? "Отпустите, чтобы отправить сказанное"
+              : "Удерживайте кнопку и говорите дежурному"
+          }
+          disabled={pending}
+          onPointerDown={(e) => {
+            e.preventDefault();
+            void startRecording();
+          }}
+          onPointerUp={stopRecording}
+          onPointerLeave={stopRecording}
+          onPointerCancel={stopRecording}
+          onContextMenu={(e) => e.preventDefault()}
+          data-testid="service-call-talk"
+          className={cn(
+            "inline-flex h-7 w-full select-none items-center justify-center gap-1 rounded-sm border px-2 disabled:opacity-50",
+            recording
+              ? "border-[var(--arm-orange)] bg-[var(--arm-orange)] text-white"
+              : "border-[#a9adb2] bg-white text-[var(--arm-text)] hover:bg-[var(--arm-panel-2)]",
+          )}
+        >
+          {recording ? (
+            <Circle className="size-3.5 fill-current" aria-hidden />
+          ) : (
+            <Mic className="size-3.5" aria-hidden />
+          )}
+          {recording ? "Говорите… отпустите, чтобы отправить" : "Удерживайте и говорите"}
+        </button>
       )}
       {recording && (
         <span
