@@ -1,6 +1,6 @@
 import type { MonitorOut, MonitorStudent } from "@/api/teacher";
 import type { SessionEvent } from "@/emulator/ws";
-import { applyEvent, initialState, summarize } from "@/teacher/monitor";
+import { applyEvent, initialState, summarize, withSnapshot } from "@/teacher/monitor";
 
 function student(i: number): MonitorStudent {
   return {
@@ -148,5 +148,43 @@ describe("summarize", () => {
     const working = summarize({ ...student(1), active: [card("a", T0, T0)] }, 30, 70, now, 3);
     expect(working.status).toBe("working");
     expect(working.overdue).toBe(false);
+  });
+});
+
+describe("snapshot refetch", () => {
+  const openCard = (id: string) => ({
+    attempt_id: id,
+    card_number: id,
+    incident_title: "Задымление",
+    state: "received",
+    response_status: "received",
+    response_status_title: "Получена службой",
+    card_status: "registered",
+    issued_at: T0,
+    received_at: T0,
+    primary_status_at: null,
+    submitted_at: null,
+    total: null,
+    passed: null,
+  });
+
+  it("keeps what the trainee is doing in a card that is still open", () => {
+    let state = initialState(snapshot(2));
+    state = applyEvent(state, event("attempt.progress", "s1", { attempt_id: "a1", stage: "service_call" }));
+    // The refetch brought the titles of the cards: s1 still works on a1.
+    const fresh = snapshot(2);
+    fresh.students[0] = { ...student(1), active: [openCard("a1")] };
+    const next = withSnapshot(state, fresh);
+    expect(next.stages.s1?.stage).toBe("service_call");
+    expect(first(next).active[0]?.incident_title).toBe("Задымление");
+  });
+
+  it("drops the stage of a card that is no longer in work", () => {
+    let state = initialState(snapshot(1));
+    state = applyEvent(state, event("attempt.progress", "s1", { attempt_id: "a1", stage: "viewing" }));
+    const fresh = snapshot(1);
+    fresh.students[0] = { ...student(1), active: [openCard("a2")] };
+    expect(withSnapshot(state, fresh).stages.s1).toBeUndefined();
+    expect(withSnapshot(state, snapshot(1)).stages.s1).toBeUndefined();
   });
 });

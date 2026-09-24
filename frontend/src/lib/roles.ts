@@ -12,6 +12,14 @@ export const ROLE_HOME: Record<Role, string> = {
   admin: "/admin",
 };
 
+/** The reference (memo, materials, classifier) of a role's cabinet; the review links to it
+ * from the typical errors, and a teacher has no access to the student's cabinet. */
+export const REFERENCE_PATH: Record<Role, string> = {
+  student: "/student/reference",
+  teacher: "/teacher/reference",
+  admin: "/student/reference",
+};
+
 export interface NavItem {
   to: string;
   label: string;

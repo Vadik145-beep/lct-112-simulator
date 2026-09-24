@@ -19,6 +19,11 @@ export function AdminAuditPage() {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [page, setPage] = useState(1);
+  // Another filter is another list: its page 5 may not exist, so every change starts at page 1.
+  const filter = (set: (value: string) => void) => (value: string) => {
+    set(value);
+    setPage(1);
+  };
   const query = useAudit({
     actor_login: login.trim(),
     action,
@@ -64,11 +69,11 @@ export function AdminAuditPage() {
       >
         <div className="space-y-1.5">
           <Label htmlFor="audit-login">Пользователь (логин)</Label>
-          <Input id="audit-login" value={login} onChange={(e) => setLogin(e.target.value)} placeholder="teacher1" />
+          <Input id="audit-login" value={login} onChange={(e) => filter(setLogin)(e.target.value)} placeholder="teacher1" />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="audit-action">Действие</Label>
-          <select id="audit-action" value={action} onChange={(e) => setAction(e.target.value)} className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm text-foreground">
+          <select id="audit-action" value={action} onChange={(e) => filter(setAction)(e.target.value)} className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm text-foreground">
             <option value="">Все</option>
             {(query.data?.actions ?? []).map((a) => (
               <option key={a} value={a}>
@@ -79,11 +84,11 @@ export function AdminAuditPage() {
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="audit-from">С даты</Label>
-          <Input id="audit-from" type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+          <Input id="audit-from" type="date" value={from} onChange={(e) => filter(setFrom)(e.target.value)} />
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="audit-to">По дату</Label>
-          <Input id="audit-to" type="date" value={to} onChange={(e) => setTo(e.target.value)} />
+          <Input id="audit-to" type="date" value={to} onChange={(e) => filter(setTo)(e.target.value)} />
         </div>
       </form>
 

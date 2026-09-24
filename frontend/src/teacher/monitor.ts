@@ -32,6 +32,24 @@ export function initialState(snapshot: MonitorOut): MonitorState {
   return { snapshot, stages: {}, untitled: [] };
 }
 
+/**
+ * A fresh snapshot from the server (it is refetched for the card titles after every
+ * `attempt.issued`). The snapshot knows the cards but not what the trainees are doing in them —
+ * that comes only from `attempt.progress` events — so the stages of the cards still open are
+ * kept; a stage of a card that is no longer in work goes away with it.
+ */
+export function withSnapshot(prev: MonitorState | null, snapshot: MonitorOut): MonitorState {
+  if (!prev) return initialState(snapshot);
+  const stages: Record<string, Stage> = {};
+  for (const student of snapshot.students) {
+    const stage = prev.stages[student.student_id];
+    if (!stage || student.active.length === 0) continue;
+    if (stage.attempt_id && !student.active.some((c) => c.attempt_id === stage.attempt_id)) continue;
+    stages[student.student_id] = stage;
+  }
+  return { snapshot, stages, untitled: [] };
+}
+
 type Payload = Record<string, unknown>;
 
 function str(value: unknown): string | null {
