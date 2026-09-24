@@ -1,15 +1,4 @@
-"""Сборка сопроводительной документации в один DOCX.
-
-Запуск из корня репозитория:
-
-    uv run --with python-docx python scripts/build_docs.py . docs/submission/Документация_Ультратех_задача9.docx
-
-Оглавление в DOCX это поле Word: оно заполняется при первом открытии документа
-(или командой «Обновить поле»). PDF получается из готового DOCX любым способом:
-«Сохранить как PDF» в Word или LibreOffice:
-
-    soffice --headless --convert-to pdf docs/submission/Документация_Ультратех_задача9.docx
-"""
+"""Сборка сопроводительной документации в один DOCX."""
 
 import re
 import sys
@@ -134,6 +123,20 @@ def render(doc, md):
         if table_buf:
             add_table(doc, table_buf)
             table_buf = []
+        img = re.match(r"^!\[([^\]]*)\]\(([^)]+)\)\s*$", line)
+        if img:
+            flush_paragraph(doc, buf)
+            path = (ROOT / "docs" / img.group(2)).resolve()
+            if path.exists():
+                doc.add_picture(str(path), width=Cm(16))
+                doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+                if img.group(1):
+                    cap = doc.add_paragraph()
+                    cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                    run = cap.add_run(img.group(1))
+                    run.italic = True
+                    run.font.size = Pt(10)
+            continue
         m = re.match(r"^(#{2,6})\s+(.*)$", line)
         if m:
             flush_paragraph(doc, buf)
