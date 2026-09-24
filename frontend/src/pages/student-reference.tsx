@@ -1,6 +1,6 @@
 import { BookOpen, FileText, Search } from "lucide-react";
 import { useState } from "react";
-import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useLocation, useParams, useSearchParams } from "react-router-dom";
 
 import { useMaterial, useMaterials, useReferenceSearch } from "@/api/training";
 import { ErrorState, LoadingState } from "@/components/states";
@@ -10,8 +10,15 @@ import { Label } from "@/components/ui/label";
 
 const EXAMPLES = ["не принята", "номер наряда", "мусоропровод", "дубль", "не оповещено"];
 
+/** The reference is shared by the student's and the teacher's cabinets: its own links stay
+ * in the cabinet the page was opened from. */
+function useReferenceBase(): string {
+  return useLocation().pathname.startsWith("/teacher/") ? "/teacher/reference" : "/student/reference";
+}
+
 /** «Справочник»: search in the memo «Работа на АРМ-112» and in the incident classifier. */
 export function StudentReferencePage() {
+  const base = useReferenceBase();
   const [params] = useSearchParams();
   const [text, setText] = useState(() => params.get("q") ?? "");
   const query = useReferenceSearch(text);
@@ -35,7 +42,7 @@ export function StudentReferencePage() {
             {materials.data.map((m) => (
               <li key={m.name}>
                 <Link
-                  to={`/student/reference/materials/${encodeURIComponent(m.name)}`}
+                  to={`${base}/materials/${encodeURIComponent(m.name)}`}
                   className="flex h-full items-start gap-3 rounded-lg border bg-card p-3 text-sm hover:bg-accent"
                 >
                   {m.builtin ? <BookOpen className="mt-0.5 size-4 shrink-0" aria-hidden /> : <FileText className="mt-0.5 size-4 shrink-0" aria-hidden />}
@@ -114,7 +121,7 @@ export function StudentReferencePage() {
                 {query.data.docs.map((hit, i) => (
                   <li key={i} className="rounded-lg border bg-card p-3 text-sm">
                     <Link
-                      to={`/student/reference/materials/${encodeURIComponent(hit.name)}`}
+                      to={`${base}/materials/${encodeURIComponent(hit.name)}`}
                       className="mb-1 block text-xs text-primary underline-offset-2 hover:underline"
                     >
                       {hit.title}
@@ -158,11 +165,12 @@ export function StudentReferencePage() {
 /** A material read in full: the memo page by page, an uploaded document paragraph by paragraph. */
 export function StudentMaterialPage() {
   const { name } = useParams<{ name: string }>();
-  if (!name) return <Navigate to="/student/reference" replace />;
-  return <MaterialReader name={name} />;
+  const base = useReferenceBase();
+  if (!name) return <Navigate to={base} replace />;
+  return <MaterialReader name={name} base={base} />;
 }
 
-function MaterialReader({ name }: { name: string }) {
+function MaterialReader({ name, base }: { name: string; base: string }) {
   const query = useMaterial(name);
   if (query.isPending) return <LoadingState text="Открываем материал…" />;
   if (query.isError || !query.data) {
@@ -172,7 +180,7 @@ function MaterialReader({ name }: { name: string }) {
   let lastPage: number | null = null;
   return (
     <div className="space-y-4">
-      <Link to="/student/reference" className="text-sm text-muted-foreground hover:underline">
+      <Link to={base} className="text-sm text-muted-foreground hover:underline">
         ← Справочник
       </Link>
       <div>

@@ -78,6 +78,8 @@ export const router = createBrowserRouter([
           { path: "analytics/readiness-model", element: <ReadinessModelPage /> },
           { path: "scenarios", element: <TeacherScenariosPage /> },
           { path: "scenarios/:scenarioId", element: <TeacherScenarioPage /> },
+          { path: "reference", element: <StudentReferencePage /> },
+          { path: "reference/materials/:name", element: <StudentMaterialPage /> },
         ],
       },
     ],
