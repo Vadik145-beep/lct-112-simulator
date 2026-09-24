@@ -4990,6 +4990,10 @@ export interface components {
             phone_codecs: string[];
             /** Sip Domain */
             sip_domain: string;
+            /** Trainee Phones */
+            trainee_phones?: {
+                [key: string]: string;
+            };
         };
         /** TelephonySettingsPatch */
         TelephonySettingsPatch: {
@@ -5003,6 +5007,10 @@ export interface components {
             phone_codecs?: string[] | null;
             /** Ari Url */
             ari_url?: string | null;
+            /** Trainee Phones */
+            trainee_phones?: {
+                [key: string]: string;
+            } | null;
         };
         /** TicketOut */
         TicketOut: {

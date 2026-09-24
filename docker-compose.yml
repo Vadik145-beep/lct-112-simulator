@@ -67,6 +67,8 @@ x-backend-env: &backend-env
   CLOUD_VOICE_TRANSCRIBER_MODEL: ${CLOUD_VOICE_TRANSCRIBER_MODEL:-stt-rt-v5}
   CLOUD_VOICE_LANGUAGE: ${CLOUD_VOICE_LANGUAGE:-ru}
   CLOUD_VOICE_ANSWER_SECONDS: ${CLOUD_VOICE_ANSWER_SECONDS:-15}
+  # Own phones of trainees rung through MultiFon (docs/MULTIFON.md): «login=phone,…».
+  TELEPHONY_TRAINEE_PHONES: ${TELEPHONY_TRAINEE_PHONES:-}
 
 services:
   nginx:
@@ -373,6 +375,10 @@ services:
       CLOUD_RTP_START: ${CLOUD_RTP_START:-10200}
       CLOUD_RTP_END: ${CLOUD_RTP_END:-10300}
       VAPI_SIP_HOST: ${VAPI_SIP_HOST:-sip.vapi.ai}
+      # МультиФон Бизнес (docs/MULTIFON.md): empty user = no trunk.
+      MULTIFON_USER: ${MULTIFON_USER:-}
+      MULTIFON_PASSWORD: ${MULTIFON_PASSWORD:-}
+      MULTIFON_PROXY: ${MULTIFON_PROXY:-sbc.megafon.ru}
       TZ: ${TZ:-Europe/Moscow}
     ports:
       - "${CLOUD_SIP_PORT:-5061}:${CLOUD_SIP_PORT:-5061}/udp"
