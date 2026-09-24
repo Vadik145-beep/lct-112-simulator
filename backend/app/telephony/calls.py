@@ -21,6 +21,11 @@ header ``X-Service-Call``), and after the answer the officer greets and the same
 ``attempts.service_calls``. The squad's reports (issue #103) ring the same way but are
 incoming: ``X-Service-Call-Kind`` tells the softphone to let the trainee answer instead of
 picking up by itself, and a report nobody answered ends as «не принят».
+
+MultiFon (``deploy/asterisk-cloud``, docs/MULTIFON.md): every call above also rings the
+trainee's own phone (``MOBILE``, from ``trainee_phones`` of the settings). The trainee can
+instead call the MultiFon number himself: the incoming channel (``inbound`` in Stasis) takes
+over the call ringing for him right now, whatever its kind, and the ringing legs are dropped.
 """
 
 from __future__ import annotations
@@ -78,6 +83,9 @@ VAR_SERVICE_CALL_KIND = "__SERVICE_CALL_KIND"
 VAR_RING_TIMEOUT = "__RING_TIMEOUT"
 VAR_CALLER_NAME = "__CALLER_NAME"
 VAR_CALLER_NUM = "__CALLER_NUM"
+VAR_MOBILE = "__MOBILE"
+# Stasis arguments of a call to the MultiFon number (deploy/asterisk-cloud/extensions.conf).
+INBOUND_ARG = "inbound"
 DEFAULT_CALLER_NUMBER = "112"
 CHANNEL_FORMAT = "slin16"
 RECORDINGS_SUBDIR = "recordings"
@@ -124,6 +132,8 @@ class Call:
     service_call_kind: str = officer.KIND_OUTGOING
     service: str | None = None
     service_title: str = ""
+    # The trainee's own phone rung through MultiFon; a call from it takes this call over.
+    phone: str = ""
 
     @property
     def key(self) -> str:
@@ -261,6 +271,7 @@ class CallManager:
             await session.commit()
             caller_name, caller_num = _caller_id(loaded.scenario)
             timeout = config.ring_timeout_seconds
+            phone = telephony_settings.trainee_phone(config, account.login)
         if created and self.sync_endpoints is not None:
             await self.sync_endpoints()
         call = self.call_class(
@@ -269,6 +280,7 @@ class CallManager:
             student_id=loaded.attempt.student_id,
             login=account.login,
             channel_id=f"att-{attempt_id.hex}",
+            phone=phone,
         )
         self.calls[call.key] = call
         self._by_channel[call.channel_id] = call
@@ -288,6 +300,7 @@ class CallManager:
                     # channel after creation would not reach the other half).
                     VAR_CALLER_NAME: caller_name,
                     VAR_CALLER_NUM: caller_num,
+                    VAR_MOBILE: phone,
                 },
             )
             await self.ari.dial(call.channel_id, ring_seconds=timeout)
@@ -338,9 +351,10 @@ class CallManager:
             config = await telephony_settings.load(session)
             await session.commit()
             timeout = config.ring_timeout_seconds
+            phone = telephony_settings.trainee_phone(config, account.login)
         if created and self.sync_endpoints is not None:
             await self.sync_endpoints()
-        call = Call(
+        call = self.call_class(
             attempt_id=attempt_id,
             session_id=loaded.attempt.session_id,
             student_id=loaded.attempt.student_id,
@@ -350,6 +364,7 @@ class CallManager:
             service_call_kind=kind,
             service=service,
             service_title=service_title,
+            phone=phone,
         )
         self.calls[call.key] = call
         self._by_channel[call.channel_id] = call
@@ -367,6 +382,7 @@ class CallManager:
                     VAR_RING_TIMEOUT: str(timeout),
                     VAR_CALLER_NAME: service_title or service,
                     VAR_CALLER_NUM: dialled_digits(number) or service_number(service),
+                    VAR_MOBILE: phone,
                 },
             )
             await self.ari.dial(call.channel_id, ring_seconds=timeout)
@@ -376,7 +392,11 @@ class CallManager:
             self._by_channel.pop(call.channel_id, None)
             return False
         log.info("dialling service", call=call_id, service=service, login=account.login)
+        self._dialled(call)
         return True
+
+    def _dialled(self, call: Call) -> None:
+        """Hook of the cloud manager: a call of the card is being rung."""
 
     async def hangup_service_call(self, call_id: str, reason: str = CALL_END_HANGUP) -> bool:
         call = self.call_for_service_call(call_id)
@@ -417,9 +437,15 @@ class CallManager:
 
     async def _on_stasis_start(self, event: dict) -> None:
         """Helper channels are recognised by their ids (``snoop-<key>``, ``media-<key>``):
-        ExternalMedia channels enter Stasis without application arguments."""
+        ExternalMedia channels enter Stasis without application arguments. A call to the
+        MultiFon number comes with the arguments ``inbound,<caller number>``."""
         channel = event.get("channel") or {}
         channel_id = channel.get("id") or ""
+        args = event.get("args") or []
+        if args and args[0] == INBOUND_ARG:
+            caller = args[1] if len(args) > 1 else (channel.get("caller") or {}).get("number")
+            await self._on_inbound(channel_id, str(caller or ""))
+            return
         role, _, key = channel_id.partition("-")
         if role not in ("snoop", "media"):
             return
@@ -432,6 +458,40 @@ class CallManager:
         if call.spy_bridge_id:
             with contextlib.suppress(AriError):
                 await self.ari.add_channel(call.spy_bridge_id, channel_id)
+
+    def call_ringing_for_phone(self, phone: str) -> Call | None:
+        """The call ringing right now for the trainee whose own phone is ``phone``."""
+        for call in self.calls.values():
+            if call.answered or call.ended or not call.phone:
+                continue
+            if telephony_settings.same_phone(call.phone, phone):
+                return call
+        return None
+
+    async def _on_inbound(self, channel_id: str, caller: str) -> None:
+        """The trainee called the MultiFon number from his own phone: this channel becomes the
+        trainee's side of the call ringing for him, the ringing legs are dropped. Nothing is
+        ringing (or the number is unknown) → the call is refused."""
+        call = self.call_ringing_for_phone(caller)
+        if call is None:
+            log.info("multifon call without a ringing call", caller=caller)
+            with contextlib.suppress(AriError):
+                await self.ari.hangup(channel_id, reason="busy")
+            return
+        ringing = call.channel_id
+        self._by_channel.pop(ringing, None)
+        call.channel_id = channel_id
+        self._by_channel[channel_id] = call
+        log.info("multifon call takes over", key=call.key, caller=caller)
+        try:
+            await self.ari.answer(channel_id)
+        except AriError as exc:
+            log.warning("multifon answer failed", key=call.key, error=str(exc))
+            await self._end(call, CALL_END_FAILED)
+            return
+        with contextlib.suppress(AriError):
+            await self.ari.hangup(ringing)
+        await self._on_answered(call)
 
     async def _on_dial(self, event: dict) -> None:
         peer = event.get("peer") or {}

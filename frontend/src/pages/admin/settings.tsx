@@ -8,6 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+import { phonesToText, textToPhones } from "./trainee-phones";
+
 const LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR"] as const;
 const CODECS = ["opus", "g722", "alaw", "ulaw", "slin16", "slin"];
 
@@ -28,6 +30,7 @@ function SettingsForm({ settings }: { settings: AdminSettingsOut }) {
   const [recording, setRecording] = useState(t.recording_enabled);
   const [webrtc, setWebrtc] = useState<Set<string>>(() => new Set(t.webrtc_codecs));
   const [phone, setPhone] = useState<Set<string>>(() => new Set(t.phone_codecs));
+  const [phones, setPhones] = useState(() => phonesToText(t.trainee_phones));
   const [level, setLevel] = useState(settings.logging.level);
   const [time, setTime] = useState(settings.backups.time);
   const [keep, setKeep] = useState(String(settings.backups.keep));
@@ -50,6 +53,7 @@ function SettingsForm({ settings }: { settings: AdminSettingsOut }) {
           recording_enabled: recording,
           webrtc_codecs: CODECS.filter((c) => webrtc.has(c)),
           phone_codecs: CODECS.filter((c) => phone.has(c)),
+          trainee_phones: textToPhones(phones),
         },
         logging: { level },
         backups: { time, keep: Number(keep) },
@@ -113,6 +117,21 @@ function SettingsForm({ settings }: { settings: AdminSettingsOut }) {
                 ))}
               </div>
             </fieldset>
+            <div className="space-y-1.5">
+              <Label htmlFor="trainee-phones">Телефоны стажёров (МультиФон)</Label>
+              <textarea
+                id="trainee-phones"
+                value={phones}
+                onChange={(e) => setPhones(e.target.value)}
+                rows={4}
+                placeholder="student1 = 8 922 000-00-01"
+                className="w-full rounded-md border border-input bg-background px-2 py-1.5 font-mono text-sm text-foreground"
+              />
+              <p className="text-xs text-muted-foreground">
+                По строке на стажёра: логин = телефон. Вызовы звонят и на этот телефон; со своего телефона стажёр может сам
+                позвонить на номер МультиФона и взять вызов, который ему звонит.
+              </p>
+            </div>
           </CardContent>
         </Card>
 
