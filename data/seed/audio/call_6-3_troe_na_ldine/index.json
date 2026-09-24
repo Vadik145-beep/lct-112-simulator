@@ -1,0 +1,162 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Господи, у нас трое мужчин на льдине по реке плывут! Их относит, сами не выберутся!",
+    "bytes": 91995,
+    "sha256": "bf09e3800a371e35ec39bbd3c8ced0075b0803374e3c58e40533f6f8508f68b2"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Трое мужчин на льдине! Она откололась и поплыла, а они на ней стоят.",
+    "bytes": 76530,
+    "sha256": "aa476867b4d07c9e39352ba70d945f693edc0c26584298d33a8fb35bd72388d3"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Рыбачили, видимо. Кричат нам, руками машут.",
+    "bytes": 53542,
+    "sha256": "6fa110374f643e2e283a8c388118fecbf73238f0897a5cfc4724bcc6102e0c8b"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Река Быковка, у садового товарищества Малаховский городок.",
+    "bytes": 65245,
+    "sha256": "c0ed41572fae07eafead466b40f29eadc27f9de7617b2483add7e45aa38c64a8"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Деревня Михнево рядом. К реке можно подъехать по грунтовке от крайних участков.",
+    "bytes": 80292,
+    "sha256": "0c8b5d4590156f218dac53f5b187e53f5c75b77a284350ed93943e659307d0d0"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Это Московская область, Раменский городской округ. Не Москва.",
+    "bytes": 76530,
+    "sha256": "72ba9b7c4fb5336f9b68545968673e79b09e4e56c271ca0cda28bfbeb3f8e35a"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Пока никто не пострадал. Все трое на ногах, в воду не падали.",
+    "bytes": 72768,
+    "sha256": "14dce0fd81706aee6a2f56ed9b5b25be51115513cc2a20ee00963ccd93e1dbe2"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "От берега метров пятьдесят уже, и всё дальше. Вода ледяная, жилетов у них нет.",
+    "bytes": 88233,
+    "sha256": "eb23d61fb160f5c71158e8213660786a3eddcec763c6c4dc4d7cd13935ad21e5"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Трое на льдине. Нас на берегу человек пять собралось.",
+    "bytes": 62319,
+    "sha256": "d0451608eb5e1850cb46a1762ab9760c6c65a8729bf7f188afde3a9c8d85cca2"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Минут семь назад оторвало. Сначала думали, сами подгребут.",
+    "bytes": 71515,
+    "sha256": "d1b76391ae31162e6aef8dd3d45ce8dfd0488f7054182b790245e28049986bd7"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 29301,
+    "sha256": "3a22409307a6470fd3417a771ffcb3f8b4a24d380f3c0ec4e8021fc636f268fb"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 88233,
+    "sha256": "1eebeb96e9f8420bde147eb4d87ed2ed406857abc134c28cadf26df6b40350f0"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я с берега смотрю, дачница. К ним отношения не имею.",
+    "bytes": 74022,
+    "sha256": "f031d797f7bfb1750f18b853e3560e2a8a6301864d227fe671f9e743c7d17217"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мы на берегу, какие подъезды.",
+    "bytes": 29301,
+    "sha256": "584d3c5c52c23429b161978c2328d09de8b875c03479f2bd35a624c887533106"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Повторите, пожалуйста, ветер сильный, плохо слышно.",
+    "bytes": 54796,
+    "sha256": "62d5f6fd887485646161d952e89fc0cf53ba79ae3fa5078f8393448425d2e9ec"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю. Может, лодку у кого попросить, пока вы едете?",
+    "bytes": 57304,
+    "sha256": "a65b4cd6685b87719609193b7451579a6c940ba66d8fa9574ab0bd6478fe9cba"
+  }
+}

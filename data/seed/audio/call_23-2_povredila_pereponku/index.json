@@ -1,0 +1,162 @@
+{
+  "opening": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. Я чистила ухо и повредила перепонку. Кровь из уха идёт, слышу этим ухом плохо. Вызываю себе.",
+    "bytes": 131701,
+    "sha256": "996cae57b54bc2cfa53c95f87e2f17b518a963090ebad004c5955398c6526cf2"
+  },
+  "r1": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Чистила ухо и повредила перепонку. Резкая боль была, потом кровь.",
+    "bytes": 76530,
+    "sha256": "fa5cd7dd9efce00a2380303edd710fa96a314cc8b730c2931d6feed01a8bb422"
+  },
+  "r2": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Кровь из уха идёт, ватку уже вторую меняю. Слышу этим ухом глухо.",
+    "bytes": 81546,
+    "sha256": "9947fb8eba4938486db4c4d768eb0695b0be48b7c75035ba34bc1e88f5335a28"
+  },
+  "r3": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Улица Лесная, дом пять. Только это не центр, это Зеленоград, посёлок Малино.",
+    "bytes": 117490,
+    "sha256": "de2d629a6077712050e9e7d1dc3af001d87a99e15d3c715d4014e2f1b538dda6"
+  },
+  "r4": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Москва, Зеленоград, район Крюково.",
+    "bytes": 43511,
+    "sha256": "cc2525e64355ba311f3502b1ebebba4c28c46cff145cf06fabfcbc30f4893fc2"
+  },
+  "r5": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пострадавшая я. Липатина Ольга Сергеевна, сорок девять лет.",
+    "bytes": 67753,
+    "sha256": "2cafbb2ca82bbfce84e83b8800d96316ff51072944d47b22f3c4a56509e8c6e3"
+  },
+  "r6": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "В сознании, сижу на кухне. Температуры нет.",
+    "bytes": 85725,
+    "sha256": "a12a4af98a5925dc272efb13a98e542b03efd8cd7d65c7e5f61d8c8a95c850bd"
+  },
+  "r7": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Кровь не останавливается. И голова немного кружится, когда встаю.",
+    "bytes": 69007,
+    "sha256": "eca76d7d7a0f5b33084a9805f0942b3136b470ad5c5bca6c5bf1b481efe0223e"
+  },
+  "r8": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я дома одна. Муж будет вечером.",
+    "bytes": 49781,
+    "sha256": "63826f585d783fb4778de4c9d3595f4427633f4e1c5fcca4c488eadd2c1478a2"
+  },
+  "r9": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Минут пятнадцать назад. Думала, пройдёт, а кровь идёт.",
+    "bytes": 74022,
+    "sha256": "8d5848a501b4617d2b3c7270044d0c8a7797cbe82be4df5a9dd116227e322e24"
+  },
+  "r10": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Липатина Ольга Сергеевна. Вызываю себе.",
+    "bytes": 44765,
+    "sha256": "9479d7d5e16605fe048f8cbe16e0ef1374f9bf68701b9c44fe9b8d6cf8b9fdc7"
+  },
+  "r11": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 75276,
+    "sha256": "67b11a56cdb3357a36f675de20b15690b399df3f5833fab022c96b59ebd99628"
+  },
+  "r12": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я сама пострадавшая. Никто больше не вызывает.",
+    "bytes": 57304,
+    "sha256": "d0139cef6bb30fd4974e999328489152e91f59683cf4a7f5885cacb5cdd9298f"
+  },
+  "r13": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Дом частный, один этаж. Калитку я открою.",
+    "bytes": 54796,
+    "sha256": "967c213b9c8b560a38dedec17b58d65e5693cfd0e8eb4dd7ae24bd544106d505"
+  },
+  "r14": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, я одним ухом плохо слышу.",
+    "bytes": 44765,
+    "sha256": "d92893a82b40fad9b2385e6f6559326d569c746b6f4c2e8f6c731e7083d010d0"
+  },
+  "r15": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Мне ухо чем-то закрывать или пусть так?",
+    "bytes": 49781,
+    "sha256": "2d598950efb486f15f6fb7d937ccbb3f8054b9ab53daf904b8ee9a7538775459"
+  }
+}

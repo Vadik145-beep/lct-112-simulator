@@ -43,7 +43,11 @@ GAS_PIPE = "call_31-3_svist_gazovoy_truby"
 
 
 async def make_attempt(
-    scenario_key: str = GAS_PIPE, *, mode: str = MODE_CALL_INTAKE, dialog_mode: str = "select"
+    scenario_key: str = GAS_PIPE,
+    *,
+    mode: str = MODE_CALL_INTAKE,
+    dialog_mode: str = "select",
+    voice_enabled: bool = True,
 ) -> uuid.UUID:
     """A running session of «Учебная-1» with one attempt for student1."""
     async with SessionLocal() as session:
@@ -60,6 +64,7 @@ async def make_attempt(
             scenario_ids=[scenario.id],
             norm_seconds=90,
             dialog_mode=dialog_mode,
+            voice_enabled=voice_enabled,
             status=SESSION_RUNNING,
             started_at=utcnow(),
         )
@@ -97,7 +102,8 @@ async def test_say_opens_the_call_and_answers(client: AsyncClient) -> None:
     assert "address" in body["operator"]["topics"]
     assert body["caller"]["topics"] == ["address"]
     assert body["caller"]["reply_id"] == 2
-    assert body["caller"]["text"].startswith("Вавилова")
+    # The reply has other wordings and one of them is played at random (pick_variant).
+    assert "Вавилова" in body["caller"]["text"]
     # Without a model server the session's «select» degrades to buttons.
     assert body["caller"]["method"] == "buttons"
     assert body["dialog"]["mode"] == "buttons"

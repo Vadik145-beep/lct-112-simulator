@@ -1,0 +1,162 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Ой, у нас во дворе кто-то кричит! Мужской голос, зовёт на помощь. Я из окна слышу.",
+    "bytes": 98264,
+    "sha256": "d14ba6000b7a21a25ec28d407bf88874dfd842d0b5c3d360239cc61941d2d90e"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Кто-то кричит во дворе. Мужчина, зовёт на помощь.",
+    "bytes": 59812,
+    "sha256": "f64414b61d18c67972026675c615b6d8e752eb36b1044eed9635ab5e8eb67d2d"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я его не вижу, только слышу. Кричит громко, потом замолкает и опять.",
+    "bytes": 90741,
+    "sha256": "985455d0415597eaed009328d63aa74afb5253fbb6be938119689a4c9a20f5b0"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Огородный проезд, дом двенадцать. Кричат со двора.",
+    "bytes": 59812,
+    "sha256": "9c26b9b8a78f7a84c1f47627c3aaceb87fd697e3629eff038731eeb4d683c4c4"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Похоже, со стороны гаражей, там фонарь не горит. Мне из окна не разглядеть.",
+    "bytes": 90741,
+    "sha256": "5ed0fb5b0ab5262cbdf9bf8195ba619f541209c6f053d3c1253d4dd55756d9f2"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, Марфино.",
+    "bytes": 31808,
+    "sha256": "10284bc4268e01b59b80ffc36d780a57335b53716180a2feb081ac498dc334c0"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю. Может, ему плохо, может, избили. Не видно совсем.",
+    "bytes": 75276,
+    "sha256": "7848b23d345c5afbe34f5222fe36366738ebb737bc937cf59503cceef935f31a"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Минут пять уже кричит. Во дворе темно, выходить я боюсь.",
+    "bytes": 67753,
+    "sha256": "6e8d82ec09e9660ad43a34c0caaf5a72ddb1f12434b17b9e71669ec1d3055aa3"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Голос один, мужской. Больше никого не слышу.",
+    "bytes": 63991,
+    "sha256": "564e031a7ba0d86f78b7995f1fc9c4916afe9aa417e0c69650b081e1ccf4687e"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Минут пять назад началось. Соседи тоже в окна выглядывают.",
+    "bytes": 62319,
+    "sha256": "25aa1b42627ce5ec30255519f5abd9221570b9ee1292e152acbfb48d5eefc9cf"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 40586,
+    "sha256": "580d52fc39e3144d21a7b76d1429a5b4a4dd5306474968ff2bafeb7861623c46"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 75276,
+    "sha256": "5bfa7ab86e9dae01f9e1d43da03516e7d1e6749d1924c19825a21d328937a8c5"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я жилец, из окна слышу. К нему отношения не имею.",
+    "bytes": 71515,
+    "sha256": "1b61b8a0baff949ecc71d0361b54a0c993494ee8cb4fc676514ace5c272ada8e"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я в третьем подъезде живу, на четвёртом этаже. А кричат во дворе.",
+    "bytes": 77784,
+    "sha256": "7f3ab466cca980c36f483ca0e3b6c7c6e678548aa5eb19e9025632984ff99059"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Повторите, пожалуйста, я к окну отходила.",
+    "bytes": 52288,
+    "sha256": "3d468186a09bcb10831175a494f9b8821e1ab954745ca2a7019c68c01a893244"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю я. Могу ещё послушать и сказать, откуда кричат.",
+    "bytes": 69007,
+    "sha256": "4fda72945965dcc5bf770ed56a23cc4b7db014d8adfa3d41bbbf902bed14818e"
+  }
+}

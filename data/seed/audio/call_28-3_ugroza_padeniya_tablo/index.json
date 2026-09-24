@@ -1,0 +1,162 @@
+{
+  "opening": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. На вокзале табло с расписанием висит криво, одного крепления нет. Под ним торговая палатка, может упасть.",
+    "bytes": 130447,
+    "sha256": "cb5a4c0612f50dbd60c644fb58cf3974269c8cc890b38a2c62b7930fd9c81bdf"
+  },
+  "r1": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Табло с расписанием держится на честном слове. Одного крепления нет совсем.",
+    "bytes": 81546,
+    "sha256": "6a9c8c09dc39d2255bfb7d93aa6c9ed8d5d503c7c4a407d0b415f748348252eb"
+  },
+  "r2": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Висит с перекосом. Под ним торговая палатка стоит, туда и упадёт.",
+    "bytes": 86979,
+    "sha256": "6a28d431e20d4d37888a4b635fe6e38a278257daaad490b42ac46adc96d0cb7c"
+  },
+  "r3": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Ярославский вокзал. Комсомольская площадь, дом пять.",
+    "bytes": 63991,
+    "sha256": "dffdd3f07e5a874b9b2a9d993f462c975fb858b5697757835917737d88b55e8e"
+  },
+  "r4": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Платформа пригородного направления номер три.",
+    "bytes": 46019,
+    "sha256": "9e5456c1445b53bc229f7bd90d1a29704dfce95d4ad133de8739ba0db409df8f"
+  },
+  "r5": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Москва, Красносельский район.",
+    "bytes": 36824,
+    "sha256": "72955881bc851910ba7ced5978371623cf0f6de9abd7469ea0119cf9157ffd75"
+  },
+  "r6": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пострадавших нет. Пока ничего не падало.",
+    "bytes": 52288,
+    "sha256": "2336dfd61ca152b02e91c9f7522309e6b96508cb5b3ac02d3865ea77c44b4e81"
+  },
+  "r7": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Под ним палатка и люди ходят постоянно. Если сорвётся, накроет.",
+    "bytes": 85725,
+    "sha256": "7725035562450db0f74b3b1b47f375e44e17da818d0f9fb82cdc8e8312aa8851"
+  },
+  "r8": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Народу тут много, платформа полная. Прямо под табло человек пять.",
+    "bytes": 93248,
+    "sha256": "3b6f1fdd9b9805067b99e89b9b8bfd103f646aaea8c65934304837366b9e59da"
+  },
+  "r9": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я заметила минут десять назад. Крепление, похоже, давно сорвано.",
+    "bytes": 81546,
+    "sha256": "78f89abe9b42e40e9f3e9f66f58484bb136ae43de472a637336bf36638cc2584"
+  },
+  "r10": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Орлова Инна Сергеевна.",
+    "bytes": 29301,
+    "sha256": "f2f18531cb035d0bfee69a1c1d29381d3bd1f9f0e341334cb68f6314dc8f3f47"
+  },
+  "r11": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять ноль три, двести двадцать шесть, тринадцать, восемьдесят три.",
+    "bytes": 69007,
+    "sha256": "811590e52ede5f2108afd195c2fa8e9dd5666a62541b112e3422748a00ccd0e3"
+  },
+  "r12": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я пассажир. К вокзалу отношения не имею.",
+    "bytes": 43511,
+    "sha256": "baa49551af0f772d2e3391f3444f3c65428186f1d8418ade2267fed5b0a15353"
+  },
+  "r13": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Это платформа, подъездов нет. Выход к третьему пути.",
+    "bytes": 61066,
+    "sha256": "740e21cf9649c53a353e40e4f015807d8696bd8f5178d2f0fa63796fdd038ba6"
+  },
+  "r14": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, объявления перебивают.",
+    "bytes": 40586,
+    "sha256": "b0446cac4960a58f45029abb775d6730cb25f8f17c8a2adac69bb378a1e10927"
+  },
+  "r15": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Может, палатку хотя бы отодвинуть?",
+    "bytes": 46019,
+    "sha256": "6dea2d2f52839cfaccad02a206ae98bc96358c77906e20e8c30eaa3808b1b0c7"
+  }
+}

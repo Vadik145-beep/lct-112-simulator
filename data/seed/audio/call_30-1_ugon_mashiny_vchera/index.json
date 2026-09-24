@@ -1,0 +1,162 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. У меня машину угнали. Вечером ставил во дворе, утром вышел — её нет.",
+    "bytes": 108713,
+    "sha256": "f365c360415629a2be5b31b1ef0565dc232ec787821ca0ee461927fcc6cbfccb"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Машину угнали. Вечером поставил во дворе, утром её нет.",
+    "bytes": 81546,
+    "sha256": "7d08783212a301cfb4683634617fd75abade565ba620bfc7ae38cebf4831f7a0"
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Осколков на асфальте нет, стекло не били. Сигнализацию я ночью не слышал.",
+    "bytes": 85725,
+    "sha256": "88c395c98d553847ccd2c676dd98271a59811a36220a2e362637a851da71d506"
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Ташкентская улица, дом двадцать пять, корпус один. Двор от седьмого подъезда.",
+    "bytes": 75276,
+    "sha256": "3b94a94eef7fe82072f39459c2e30401158287bc19b40b19da2fbe2fc6c7f9db"
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Москва, Выхино-Жулебино.",
+    "bytes": 46019,
+    "sha256": "ec4cc529bc613adbb9c72ae0c55423e25161c5e56de026b0fac869fe5e63bc31"
+  },
+  "r5": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пострадавших нет. Машина и машина.",
+    "bytes": 49781,
+    "sha256": "72a68ab279a1e2e6a32d8f4e86339172a06d21725c41fa921f523be79e9f0cc2"
+  },
+  "r6": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Тойота, синяя. Номер а сто двадцать восемь эн а, регион сто семьдесят семь.",
+    "bytes": 116236,
+    "sha256": "37e57be87e80123a9e56e1cb4c032497950d1db5b9ec66e0d37572b1ec38cb03"
+  },
+  "r7": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Никакой угрозы. Просто машины нет на месте.",
+    "bytes": 53542,
+    "sha256": "cbc0237bb9062eb72d659bf49361580c95d93a72bb3dce383ab6b27765fbb977"
+  },
+  "r8": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "В последний раз видел вчера вечером, часов в десять. Утром в семь вышел — пусто.",
+    "bytes": 98264,
+    "sha256": "d449175f2052eedc998845cf4a17990c6e2db8ea31083b2b881208f314fe42ae"
+  },
+  "r9": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я один. Никого рядом не было, когда обнаружил.",
+    "bytes": 51035,
+    "sha256": "4801ba1f23e5a8f3bc49768e568d69915b02912d1fd8ae9d3668d881799119f9"
+  },
+  "r10": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Соколов Иван Петрович.",
+    "bytes": 26793,
+    "sha256": "27a9d81325379738fc5849c33f206997c3d5964211addaef601690cfb40f3b91"
+  },
+  "r11": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 81546,
+    "sha256": "1bdea352d34838486fc17852dcee26c1408b59cd0f9649323e33d3af18a76ca6"
+  },
+  "r12": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я владелец. Машина на мне записана.",
+    "bytes": 40586,
+    "sha256": "f86f06a0e04b486f79becc42e23f4e9a1e66c1aa387b9d8f7104bd26a968cf3c"
+  },
+  "r13": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Машина во дворе стояла. Я живу в седьмом подъезде.",
+    "bytes": 52288,
+    "sha256": "89d127f735e77d70f6296a9bc4698e07e6c883c0076f26c0f969074f1949fb5f"
+  },
+  "r14": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, не расслышал.",
+    "bytes": 29301,
+    "sha256": "71f3d3efddf389f22b2eef6fcf9a2d75646dbf6242006a3c0d9f0495f87eede1"
+  },
+  "r15": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Камеры во дворе есть, у управляющей компании.",
+    "bytes": 58558,
+    "sha256": "ecf5f84c81a0dd7e3518ff8f7e1cfcddea4c1fd79ea8eab002545133744b920f"
+  }
+}

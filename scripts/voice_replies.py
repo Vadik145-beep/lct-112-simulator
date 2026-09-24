@@ -1,11 +1,12 @@
-"""Studio voicing of the reference call-intake scenarios through ElevenLabs (eleven_v3).
+"""Studio voicing of the reference scenarios through ElevenLabs (eleven_v3).
 
 The ``select`` dialog mode plays approved replies verbatim, so their voice can be rendered
-once, ahead of time, with emotion tags the on-stand Piper cannot do. The result is data: one
-MP3 per opening, per approved reply and per its other wording (``variants``) under
-``data/seed/audio/<seed key>/``, which
-``app.seed`` copies into ``storage/tts/seed/`` and links from the scenario body. Scenarios
-made later on the stand (generated or edited) keep the Piper path.
+once, ahead of time, with emotion tags the on-stand synthesizer cannot do. The result is
+data: one MP3 per opening, per approved reply and per its other wording (``variants``) of a
+call-intake scenario, and one per report of the squad (``reference.reports``) of a
+card-response one, under ``data/seed/audio/<seed key>/``, which ``app.seed`` copies into
+``storage/tts/seed/`` and links from the scenario body. Scenarios made later on the stand
+(generated or edited) keep the local synthesizer.
 
 Runs on a machine with internet, never on the stand. ``index.json`` in every folder holds a
 hash of (voice, model, tag, text) per file, so a rerun voices only what changed.
@@ -69,6 +70,32 @@ PERSONA_TAGS: dict[str, str] = {
 DEFAULT_TAG = "[nervous]"
 # Service replies («repeat again», «I don't know») sound the same whatever the persona.
 TOPIC_TAGS: dict[str, str] = {"repeat": "[shouting]"}
+# The squad leader reporting from the scene (app.domain.scenarios.officers): one voice for
+# every service, businesslike, a working background rather than panic. On the last report the
+# work is done and he is tired — the only place the sigh belongs (user, 23.09.2026).
+SQUAD_VOICE = "ru_male_2"
+SQUAD_TAG = "[calm]"
+REPORT_TAGS: dict[str, str] = {"works_done": "[tired] [exhales]"}
+# Tags that need a looser voice to be heard at all; the rest keep the steady default.
+LOOSE_TAGS = ("[tired]", "[exhausted]", "[sighs]", "[exhales]", "[panicked]")
+STABILITY_STEADY = 0.5
+STABILITY_LOOSE = 0.35
+# The duty officer of a service answers the dispatcher's call (issue #59): his bank is built
+# in code, the same for every scenario, so it is voiced once per service.
+OFFICERS_KEY = "_officers"
+# The squad leader's answers during a report call: the same for every service, so one folder.
+SQUAD_KEY = "_squad"
+# The caller of a card answering a call back from the dispatcher (ответ заказчика 23.09.2026).
+# His bank is built in code from the card, the same phrase may come up in several cards, and
+# the voice differs by gender — so the folder is split by voice and the file named by the text.
+CALLER_KEY = "_caller"
+# Взволнованные голоса, а не спокойные дикторские (решение пользователя 24.09.2026): Vladislav
+# и Lesia. Слоты те же, что и в приёме вызова, поэтому касты держим здесь, не трогая VOICE_ENV:
+# перепривязка слота перезаписала бы уже оплаченные записи сценариев приёма.
+CALLER_VOICE_ENV: dict[str, str] = {
+    "ru_male_4": "ELEVENLABS_VOICE_MALE_2",
+    "ru_female_3": "ELEVENLABS_VOICE_FEMALE_2",
+}
 
 
 def load_env(path: Path) -> dict[str, str]:
@@ -87,12 +114,17 @@ def digest(voice_id: str, tag: str, text: str) -> str:
     return hashlib.sha256(f"{voice_id}|{MODEL_ID}|{tag}|{text}".encode()).hexdigest()[:40]
 
 
-def synthesize(client: httpx.Client, voice_id: str, text: str) -> bytes:
+def stability_of(tag: str) -> float:
+    """A phrase with a breath or a sigh needs a looser voice, else the tag is not heard."""
+    return STABILITY_LOOSE if any(t in tag for t in LOOSE_TAGS) else STABILITY_STEADY
+
+
+def synthesize(client: httpx.Client, voice_id: str, text: str, stability: float) -> bytes:
     body = {
         "text": text,
         "model_id": MODEL_ID,
         "language_code": "ru",
-        "voice_settings": {"stability": 0.5, "similarity_boost": 0.8},
+        "voice_settings": {"stability": stability, "similarity_boost": 0.8},
     }
     for attempt in range(3):
         response = client.post(
@@ -113,6 +145,111 @@ def remaining_characters(client: httpx.Client) -> tuple[int, int] | None:
     except (httpx.HTTPError, ValueError):
         return None
     return int(data.get("character_count", 0)), int(data.get("character_limit", 0))
+
+
+def report_phrases(body: dict) -> list[tuple[str, str, str]]:
+    """(file stem, tag, text) for every report of the squad on a card-response scenario."""
+    reference = body.get("reference") or {}
+    items: list[tuple[str, str, str]] = []
+    for report in reference.get("reports") or []:
+        text = (report.get("text") or "").strip()
+        status = report.get("status")
+        if text and status:
+            items.append((f"report-{status}", REPORT_TAGS.get(status, SQUAD_TAG), text))
+    return items
+
+
+def officer_phrases(env: dict[str, str]) -> list[tuple[str, str, str, str]]:
+    """(service, file stem, tag, text) of the duty officers' built-in bank. The bank lives in
+    the backend, so this needs its virtual environment:
+
+        cd backend && uv run python ../scripts/voice_replies.py
+
+    The file name is a digest of the text: an edited phrase becomes another file, and two
+    services that say the same thing each keep their own recording."""
+    sys.path.insert(0, str(ROOT / "backend"))
+    try:
+        from app.domain.scenarios import officers
+    except ImportError as exc:
+        raise SystemExit(
+            f"Банк дежурного берётся из бэкенда ({exc}). Запустите из backend: "
+            "cd backend && uv run python ../scripts/voice_replies.py"
+        ) from exc
+
+    classifier = json.loads((ROOT / "data/seed/classifier.json").read_text(encoding="utf-8"))
+    titles = {
+        row["code"]: row.get("title") or row["code"] for row in classifier.get("services", [])
+    }
+    services = sorted(
+        {
+            body.get("service")
+            for path in SCENARIOS_DIR.glob("card_*.json")
+            if (body := json.loads(path.read_text(encoding="utf-8"))).get("service")
+        }
+    )
+    items: list[tuple[str, str, str, str]] = []
+    for service in services:
+        title = titles.get(service, service)
+        seen: set[str] = set()
+        for state in officers.PROGRESS_REPLIES:
+            for reply in officers.builtin_replies(service, title, state):
+                text = reply.text.strip()
+                if text and text not in seen:
+                    seen.add(text)
+                    items.append((service, digest_stem(text), SQUAD_TAG, text))
+    # The squad leader answers the dispatcher after his report: «сколько ещё», «кто на
+    # месте», «нужна ли помощь». Phrases that quote the report itself ({report}) belong to a
+    # scenario, not to the bank, and are voiced with it.
+    for topic, text in officers.REPORT_REPLIES:
+        del topic
+        if "{report}" in text:
+            continue
+        items.append((SQUAD_KEY, digest_stem(text), SQUAD_TAG, text.strip()))
+    return items
+
+
+def caller_phrases() -> list[tuple[str, str, str, str]]:
+    """(voice slot, file stem, tag, text) банка заявителя на обратном звонке. Банк собирается
+    из карточек в бэкенде, поэтому нужен его venv, как и банку дежурного. Одинаковые фразы
+    разных карточек пишутся один раз на голос: имя файла — дайджест текста, как в приёме."""
+    sys.path.insert(0, str(ROOT / "backend"))
+    try:
+        from app.domain.evaluation.schemas import CardResponseScenario
+        from app.domain.scenarios import caller_back
+    except ImportError as exc:
+        raise SystemExit(
+            f"Банк заявителя берётся из бэкенда ({exc}). Запустите из backend: "
+            "cd backend && uv run python ../scripts/voice_replies.py"
+        ) from exc
+
+    from app.providers.tts import spell_numbers
+
+    seen: set[tuple[str, str]] = set()
+    items: list[tuple[str, str, str, str]] = []
+    for path in sorted(SCENARIOS_DIR.glob("card_*.json")):
+        body = json.loads(path.read_text(encoding="utf-8"))
+        scenario = CardResponseScenario.model_validate(body)
+        voice = caller_back.voice_of(scenario)
+        rows = [(caller_back.DEFAULT_TAG, caller_back.OPENING)]
+        # Оба состояния бригады: «пока никого нет» и «уже работают» — фразы разные.
+        for arrived in (False, True):
+            rows += [
+                (tag, text)
+                for _topic, tag, text in caller_back.callback_rows(scenario, arrived=arrived)
+            ]
+        for tag, text in rows:
+            text = text.strip()
+            if not text or (voice, text) in seen:
+                continue
+            seen.add((voice, text))
+            # Имя файла — по тексту реплики, как его ищет бэкенд; вслух же числа идут словами,
+            # иначе адрес и телефон звучат как набор цифр (правило пользователя 24.09.2026).
+            items.append((voice, digest_stem(text), tag, spell_numbers(caller_back.spoken(text))))
+    return items
+
+
+def digest_stem(text: str) -> str:
+    return hashlib.sha1(text.encode()).hexdigest()[:8]  # noqa: S324 - a file name, not security
 
 
 def phrases(body: dict) -> list[tuple[str, str, str]]:
@@ -145,6 +282,11 @@ def main() -> None:
     )
     parser.add_argument("--force", action="store_true", help="re-render even if unchanged")
     parser.add_argument("--dry-run", action="store_true", help="count characters, call nothing")
+    parser.add_argument(
+        "--caller-only",
+        action="store_true",
+        help="только банк заявителя на обратном звонке, без сценариев и банка дежурного",
+    )
     args = parser.parse_args()
 
     env = load_env(ENV_FILE)
@@ -152,23 +294,31 @@ def main() -> None:
     if not key and not args.dry_run:
         raise SystemExit(f"ELEVENLABS_API_KEY не задан ({ENV_FILE})")
 
-    files = sorted(SCENARIOS_DIR.glob("*.json"))
+    files = [] if args.caller_only else sorted(SCENARIOS_DIR.glob("*.json"))
     if args.only:
         files = [f for f in files if f.stem in set(args.only)]
     todo: list[tuple[str, str, str, str, str]] = []  # key, stem, voice_id, tag, text
     skipped = 0
     for path in files:
         body = json.loads(path.read_text(encoding="utf-8"))
-        if body.get("kind") != "call_intake":
+        kind = body.get("kind")
+        if kind == "call_intake":
+            voice = (body.get("caller") or {}).get("voice") or "ru_male_1"
+            items = phrases(body)
+        elif kind == "card_response":
+            voice = SQUAD_VOICE
+            items = report_phrases(body)
+        else:
             continue
-        voice = (body.get("caller") or {}).get("voice") or "ru_male_1"
+        if not items:
+            continue
         voice_id = env.get(VOICE_ENV.get(voice, "ELEVENLABS_VOICE_MALE"), "")
         if not voice_id:
             raise SystemExit(f"{path.stem}: нет ElevenLabs-голоса для {voice} в {ENV_FILE}")
         folder = AUDIO_DIR / path.stem
         index_path = folder / "index.json"
         index = json.loads(index_path.read_text(encoding="utf-8")) if index_path.exists() else {}
-        for stem, tag, text in phrases(body):
+        for stem, tag, text in items:
             current = index.get(stem, {})
             if (
                 not args.force
@@ -178,6 +328,47 @@ def main() -> None:
                 skipped += 1
                 continue
             todo.append((path.stem, stem, voice_id, tag, text))
+
+    if not args.only:
+        folder = AUDIO_DIR / OFFICERS_KEY
+        for service, stem, tag, text in [] if args.caller_only else officer_phrases(env):
+            voice_id = env.get(VOICE_ENV.get(SQUAD_VOICE, "ELEVENLABS_VOICE_MALE"), "")
+            index_path = folder / service / "index.json"
+            index = (
+                json.loads(index_path.read_text(encoding="utf-8")) if index_path.exists() else {}
+            )
+            current = index.get(stem, {})
+            if (
+                not args.force
+                and current.get("sha256") == digest(voice_id, tag, text)
+                and (folder / service / f"{stem}.mp3").exists()
+            ):
+                skipped += 1
+                continue
+            todo.append((f"{OFFICERS_KEY}/{service}", stem, voice_id, tag, text))
+
+        # Банк заявителя на обратном звонке: та же раскладка, но папка своя на каждый голос.
+        for voice, stem, tag, text in caller_phrases():
+            voice_id = env.get(CALLER_VOICE_ENV.get(voice, "ELEVENLABS_VOICE_MALE"), "")
+            if not voice_id:
+                raise SystemExit(
+                    f"нет ElevenLabs-голоса для {voice} в {ENV_FILE}: "
+                    f"добавьте {CALLER_VOICE_ENV.get(voice)}"
+                )
+            key_path = f"{OFFICERS_KEY}/{CALLER_KEY}/{voice}"
+            index_path = AUDIO_DIR / key_path / "index.json"
+            index = (
+                json.loads(index_path.read_text(encoding="utf-8")) if index_path.exists() else {}
+            )
+            current = index.get(stem, {})
+            if (
+                not args.force
+                and current.get("sha256") == digest(voice_id, tag, text)
+                and (AUDIO_DIR / key_path / f"{stem}.mp3").exists()
+            ):
+                skipped += 1
+                continue
+            todo.append((key_path, stem, voice_id, tag, text))
 
     chars = sum(len(f"{tag} {text}") for _, _, _, tag, text in todo)
     print(f"озвучить: {len(todo)} фраз, {chars} символов; без изменений: {skipped}")
@@ -195,7 +386,7 @@ def main() -> None:
         folder.mkdir(parents=True, exist_ok=True)
         index_path = folder / "index.json"
         index = json.loads(index_path.read_text(encoding="utf-8")) if index_path.exists() else {}
-        audio = synthesize(client, voice_id, f"{tag} {text}")
+        audio = synthesize(client, voice_id, f"{tag} {text}", stability_of(tag))
         (folder / f"{stem}.mp3").write_bytes(audio)
         index[stem] = {
             "sha256": digest(voice_id, tag, text),

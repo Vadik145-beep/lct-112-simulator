@@ -1,0 +1,172 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Алло! На обочине мужчина лежит, весь в крови! Мы на кольцевой, я остановилась!",
+    "bytes": 85725,
+    "sha256": "12120b3af3cceaf5f65ea3ddd8e00095918984985a52cb5e6e27c76d2627ab74"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мужчина на обочине лежит, в крови весь. Я мимо ехала и увидела.",
+    "bytes": 89487,
+    "sha256": "a1cbf502169b498f38a3998e2b551c708fdea35b00c010eb5a9032116d7c60cd"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Господи, он не шевелится совсем. Лежит лицом вниз.",
+    "bytes": 59812,
+    "sha256": "808b1a541a2a072962b26b3b89fdf4bb910dad10ecf57f23d21e5067b00f8695"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мы на кольцевой, у поворота на Гольяново.",
+    "bytes": 48527,
+    "sha256": "98c1ca5cd506df8ca3e1249f9e164d80bba6f5831f6b8601fa0cbfa1b15b5a1c"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Внутренняя сторона, сто третий километр. Указатель отсюда видно.",
+    "bytes": 63991,
+    "sha256": "4a043fe8e1896292b8ccfe727cce17d960cb311bbc8d3012ce371322d8d94ae6"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, кольцевая. Тут граница рядом, но столб московский.",
+    "bytes": 79038,
+    "sha256": "adafbcc95b570ccf759d1dc6a3ce1a7f892feefb5fee559d4792aafec6ddccfa"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Один мужчина. На вид лет сорок, одет в тёмное.",
+    "bytes": 59812,
+    "sha256": "6e046fe233f505db8483bf25fc2be22112fa704190bc75337d025dc33d672f7b"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Кровь на голове и на асфальте. Дышит или нет, отсюда не вижу.",
+    "bytes": 74022,
+    "sha256": "e8e6662502ed22acc57ae319d7556bbcd2f0ecacf0e60538c001339f4bf1cf63"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Он у самого отбойника. Машины идут потоком, никто не тормозит.",
+    "bytes": 72768,
+    "sha256": "abeec60962a8b76909eeae13edc1d88c63227daf306b9ce85cc7a959e46de7c9"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Он один. Я тоже одна, из машины не выхожу, страшно.",
+    "bytes": 69007,
+    "sha256": "7c04fcec2996238c7fe0eecd9492591d4a9b4007698fd13c5e82e0e363391e54"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Только что увидела, с минуту назад. Сразу вам звоню.",
+    "bytes": 63991,
+    "sha256": "6330153a2254955320f3dfc575360c494b11075e112349627132564247e110a2"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 33062,
+    "sha256": "7bfcd957c95b94e1fe0c2e0f3e15448c2c74e32284a0925622fafe22e293781e"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 84471,
+    "sha256": "e16729ca8bec72134699936b4a76d92f064881f3eea1bf85f41b57b841c750ce"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я мимо проезжала. Не знаю его совсем.",
+    "bytes": 49781,
+    "sha256": "aa376c2cce572d150add205a66c6b8147dfec34ed394a4de915165469fb4bb74"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Рядом машин разбитых нет. Только он лежит, и всё.",
+    "bytes": 61066,
+    "sha256": "096a3850018e21aa702b205c2403a5381e76bd17d82bfd8ff5bc1bbfb0a91f40"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Что? Повторите, тут машины гудят!",
+    "bytes": 43511,
+    "sha256": "0285a220a9d8d6ab1fc2d6ede13528799dd29ca7dd1da09fbe2ed348f5a6cb7b"
+  },
+  "r16": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю я! Мне подойти к нему или в машине ждать?",
+    "bytes": 57304,
+    "sha256": "8b5977512eb5bb914955cc80c4afc4cc3224f093a0fa4446c664f14526bf991e"
+  }
+}

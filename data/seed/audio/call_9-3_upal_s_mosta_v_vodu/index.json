@@ -1,0 +1,172 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Человек упал с моста в воду! Кричит, что плавать не умеет! Барахтается, тонет!",
+    "bytes": 80292,
+    "sha256": "8a06dc6c6d435a75fc2b78bb6dd68e53843924f9fb787190c927fe7f22d38992"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мужчина в воде! С моста упал, кричит, что плавать не умеет!",
+    "bytes": 75276,
+    "sha256": "dfe3a4c3c3972f7697ca9151cfc510548f983d788ff0639629c4902699ee9ee9"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Ой, его течением уносит! Он уже еле держится!",
+    "bytes": 59812,
+    "sha256": "beaffe458bd0006454371ce561a9ee271590b81d9538278a46773be39c076d9e"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Бережковский мост! Мы на мосту, он под ним в воде.",
+    "bytes": 58558,
+    "sha256": "9fe3fb1a2d801e9f6247afffbd473e9bd7b24b96ab58c203b1123d850e278221"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Внутренняя сторона кольца, середина моста. Тут фонарный столб рядом.",
+    "bytes": 76530,
+    "sha256": "707f7b370cf2a88dc92415a65045b8fb984962f6427a86fa6643d8cce8964fe9"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, Дорогомилово.",
+    "bytes": 33062,
+    "sha256": "532f579c18f54846b7e2d4b92eb00c9d26f9a155e74101dc37a823f37f590edb"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Один мужчина в воде. Пока держится, кричит.",
+    "bytes": 49781,
+    "sha256": "10d6961975b49e97322f8b52a6169355b173a20188e6ffeb935730cddbceefcb"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Лет тридцать на вид. Куртку скинул, чтобы не тянула.",
+    "bytes": 53542,
+    "sha256": "0c209af7ca77dbece41408230bd9cbe2e36de9c9d7c42cedc60532a239a00514"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Его течением относит от опоры. Круга спасательного тут нет, я смотрела.",
+    "bytes": 79038,
+    "sha256": "6dad623324f03169989db6b3680327732c2f8672a0bae4ad1b934ed869c5b8d1"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Он один в воде. На мосту нас трое стоит, смотрим.",
+    "bytes": 58558,
+    "sha256": "fd1d078e788b47e8a6f960c3a6d270e17a7a333b0e0919a306498fc1714c64a9"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Минуту назад упал. Я сразу набрала.",
+    "bytes": 38078,
+    "sha256": "a905e9ee143e08ad2e0f037577486b106d6f2eab2fd70bfdfcb2a4549f93879d"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 28047,
+    "sha256": "6a567c989ef6c45c54654abb1afe2c72d8a689899176fbed5cb739f573fceef5"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 74022,
+    "sha256": "789e5b8d579e13571a6a104143ab6a11647a6d3fcb08b2d5baf25f2f62e76525"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я прохожая, шла по мосту. Его не знаю.",
+    "bytes": 49781,
+    "sha256": "15a0c8d7d2f4215e6560e8f37e5acda7df5b860f522dbde1176c70dd77da7403"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мост это, какие подъезды!",
+    "bytes": 36824,
+    "sha256": "cd9a2d95a71f2514987307986ff01a921caa1616c67109a6d4acd1c7d5fa87d8"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Что? Не слышу, машины едут! Повторите!",
+    "bytes": 47273,
+    "sha256": "d4c5c8e6d86ffeb9fdca0a0145adfa6913449fab5f95b22e78d04e1cf1c7bd9e"
+  },
+  "r16": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю! Ему что-то бросить можно? Он долго не продержится!",
+    "bytes": 67753,
+    "sha256": "16c9f709699dc6f85271866effca7c97da0e25887722963f77fb2cbf035d1dce"
+  }
+}

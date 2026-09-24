@@ -1,0 +1,172 @@
+{
+  "opening": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Здравствуйте. ДТП на МКАД, пежо и фольксваген. Пострадавших нет, но стоим в средних рядах и всех держим.",
+    "bytes": 112475,
+    "sha256": "f56a87e06876231e4a02d168df796d6292644bb0768cb6a03a5e4820d9be63ac"
+  },
+  "r1": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "ДТП у нас. Пежо и фольксваген, столкнулись на МКАД.",
+    "bytes": 61066,
+    "sha256": "8b42b6a677d48886d5ed4302c350e52448d7ac522e9e5e901bcff19144595fa6"
+  },
+  "r2": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Пострадавших нет и ранений нет. Просто железо помяли.",
+    "bytes": 62319,
+    "sha256": "e4aefbb38afcc6e3951f65f351eaa08015cc7407818bc27e833c0af292ea3ec0"
+  },
+  "r3": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "МКАД, напротив рынка Мельница. Если ехать от Рублёвского шоссе.",
+    "bytes": 65245,
+    "sha256": "ffd61badb4d2c41be9bcdbd29fe056d96ee23e08abd2a2fa1157d48dc2636cea"
+  },
+  "r4": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "В навигаторе шестьдесят шестой километр. Стоим в средних рядах.",
+    "bytes": 62319,
+    "sha256": "07db1c672fbff77e32a026e3280704f3a4b683876b6f897c44c7ff1f63e0dea5"
+  },
+  "r5": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Москва, Строгино.",
+    "bytes": 30555,
+    "sha256": "1096f242bea205d8a28f3ce6989aaef73ce3825099bbf749f83f0bd454c5f67a"
+  },
+  "r6": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Нет пострадавших, говорю же. Оба на ногах.",
+    "bytes": 48527,
+    "sha256": "d2161fb6cad2e5cf1e4176036f6f0849cb8e3bd9d60cfe976be0774df769ad67"
+  },
+  "r7": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Ничего не течёт и не дымит. Только пробку собираем.",
+    "bytes": 53542,
+    "sha256": "2549d450bcc983604706674de23742671a559df9b22d2b60cc883604a43c5edd"
+  },
+  "r8": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Пежо белый и фольксваген чёрный. Обе легковые.",
+    "bytes": 66499,
+    "sha256": "ac1cb07e73b7f5f4beb7833084b72d95fa84533418436d2ec00fe3f19d6d3cb5"
+  },
+  "r9": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Нас двое, по одному в машине. Пассажиров нет.",
+    "bytes": 54796,
+    "sha256": "855667ce4d6f2046e44cb9b59324d9451c778ed3c230e49cf529c64324f60367"
+  },
+  "r10": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Минуты три назад. Я сразу вам звоню.",
+    "bytes": 41839,
+    "sha256": "772d91434588a707c0b7556aafbc2250d89d79f3afe139ba4e2a86aaf779bd26"
+  },
+  "r11": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 34316,
+    "sha256": "8761ccb80e07752cf3fe69dd9d61594999f88ee92f31b34928be729b5a4ec2f9"
+  },
+  "r12": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 65245,
+    "sha256": "336fffcf6e4292a4de43aec856995d6ce6b472004e5a8ccb0864295dae4933ff"
+  },
+  "r13": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Участник я. Моя машина одна из двух.",
+    "bytes": 57304,
+    "sha256": "77e5f6ea3b9083906a9aec1e118c285d4e610f603d501eab6c913b44b4c977f6"
+  },
+  "r14": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Какие подъезды, это МКАД.",
+    "bytes": 39332,
+    "sha256": "51606ee7e2b65005d0769270c64575213e4a7f0b7bedf2ddf7ff8c81aad5d1b1"
+  },
+  "r15": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Что? Говорите громче, тут фуры идут!",
+    "bytes": 43511,
+    "sha256": "2505726c18d3597ead5fc21eb8c231694021d93789244b8dc0b0d26bb2956162"
+  },
+  "r16": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Откуда я знаю. Вы скажите, нам стоять или съезжать.",
+    "bytes": 59812,
+    "sha256": "6059959d1e73487913f43bc6ca7e9f5ba2b4755c66cebbfb9578a80947db66f3"
+  }
+}

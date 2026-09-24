@@ -7,6 +7,7 @@ import {
   END_REASON_TITLES,
   callTitle,
   factTitle,
+  isCaller,
   isReport,
   otherSide,
   type ServiceCallOut,
@@ -16,11 +17,12 @@ import { cn } from "@/lib/utils";
 import { watchLevel } from "@/softphone/sip-phone";
 
 /**
- * A call of the dispatcher to a service officer (issue #36, «звено Б → В»): the transcript,
- * the facts passed so far, a text field (the fallback of the voice path) and «Завершить».
- * With telephony the voice goes through the softphone (it answers the officer's call by
- * itself); without it the officer's replies play here and the dispatcher may speak into the
- * browser microphone (issue #60).
+ * A call of the dispatcher to a service officer (issue #36, «звено Б → В») or an incoming
+ * report of the squad (issue #103): the transcript, the facts passed so far, a text field
+ * (the fallback of the voice path) and «Завершить». With telephony the voice goes through the
+ * softphone (it answers a call the dispatcher started by itself); without it the officer's
+ * replies play here and the dispatcher may speak into the browser microphone (issue #60).
+ * A report is not answered for the trainee: it rings until «Ответить».
  */
 
 // A shorter recording is a click without holding the button, not a phrase.
@@ -52,6 +54,8 @@ export function ServiceCallPanel({
   error,
   onSay,
   onSpeak,
+  onAnswer,
+  cloud,
   onEnd,
 }: {
   call: ServiceCallOut;
@@ -69,6 +73,13 @@ export function ServiceCallPanel({
   error: string | null;
   onSay: (text: string, actionId: string) => void;
   onSpeak: (blob: Blob, actionId: string) => void;
+  /** «Ответить» on an incoming report of the squad (issue #103). */
+  onAnswer: () => void;
+  /**
+   * Облачный разговор (issue #59): «connecting» — соединяемся с Vapi, «live» — говорим
+   * голосом, «failed» — облако не поднялось и разговор идёт текстом и микрофоном.
+   */
+  cloud: "off" | "connecting" | "live" | "failed";
   onEnd: () => void;
 }) {
   const [text, setText] = useState("");
@@ -227,7 +238,9 @@ export function ServiceCallPanel({
           <Phone className="size-3.5" aria-hidden />
           {isReport(call)
             ? `Доклад бригады: ${call.service_title}`
-            : call.service_title}
+            : isCaller(call)
+              ? `Заявитель: ${call.service_title}`
+              : call.service_title}
         </span>
         <span className="text-[var(--arm-text-muted)]">
           {!open
@@ -268,7 +281,11 @@ export function ServiceCallPanel({
         ))}
         {call.turns.length === 0 && (
           <li className="text-[var(--arm-text-muted)]">
-            Соединение со службой…
+            {isReport(call)
+              ? "Звонит старший группы: ответьте, чтобы выслушать доклад."
+              : isCaller(call)
+                ? "Звоним заявителю…"
+                : "Соединение со службой…"}
           </li>
         )}
       </ol>
@@ -289,7 +306,15 @@ export function ServiceCallPanel({
           )}
         </div>
       )}
-      {open && call.answered && (
+      {open && cloud !== "off" && (
+        <div className="text-[10px] text-[var(--arm-text-muted)]" data-testid="service-cloud">
+          {cloud === "connecting" && "Соединяем с облачным голосом…"}
+          {cloud === "live" && "Разговор голосом через облако: говорите в гарнитуру."}
+          {cloud === "failed" &&
+            "Облако недоступно: отвечает локальная модель, пишите или говорите в микрофон."}
+        </div>
+      )}
+      {open && call.answered && cloud !== "live" && (
         <form
           className="flex gap-1"
           onSubmit={(e) => {
@@ -298,9 +323,11 @@ export function ServiceCallPanel({
           }}
         >
           <input
-            aria-label="Сказать дежурному"
+            aria-label={`Сказать: ${otherSide(call)}`}
             placeholder={
-              telephony ? "или напишите дежурному…" : "скажите дежурному…"
+              telephony
+                ? `или напишите: ${otherSide(call)}…`
+                : `скажите: ${otherSide(call)}…`
             }
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -309,7 +336,7 @@ export function ServiceCallPanel({
           />
           <button
             type="submit"
-            aria-label="Отправить дежурному"
+            aria-label={`Отправить: ${otherSide(call)}`}
             disabled={pending || !text.trim()}
             className="flex size-7 items-center justify-center rounded-sm bg-[var(--arm-blue)] text-white disabled:opacity-50"
           >
@@ -358,7 +385,7 @@ export function ServiceCallPanel({
           )}
         </form>
       )}
-      {open && call.answered && canSpeak && devices.length > 0 && (
+      {open && call.answered && cloud !== "live" && canSpeak && devices.length > 0 && (
         <label className="flex items-center gap-1 text-[10px] text-[var(--arm-text-muted)]">
           <Mic className="size-3" aria-hidden />
           <select
@@ -407,8 +434,19 @@ export function ServiceCallPanel({
       )}
       {open && call.answered && !telephony && !sttAvailable && (
         <span className="text-[10px] text-[var(--arm-text-muted)]">
-          Распознавание речи недоступно: пишите дежурному текстом.
+          Распознавание речи недоступно: пишите текстом ({otherSide(call)}).
         </span>
+      )}
+      {open && !call.answered && isReport(call) && (
+        <button
+          type="button"
+          onClick={onAnswer}
+          disabled={pending}
+          data-testid="answer-report"
+          className="inline-flex h-7 items-center justify-center gap-1 rounded-sm bg-[var(--arm-green)] px-2 font-semibold text-white hover:opacity-90 disabled:opacity-50"
+        >
+          <Phone className="size-3.5" aria-hidden /> Ответить
+        </button>
       )}
       {open && (
         <button

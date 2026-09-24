@@ -10,6 +10,7 @@ from typing import ClassVar
 import pytest
 from httpx import AsyncClient
 
+from app.config import get_settings
 from app.db import SessionLocal
 from app.models import MODE_CARD_RESPONSE, Attempt
 from app.providers.stt import Transcript
@@ -41,6 +42,12 @@ async def say(
     )
 
 
+async def answer(client: AsyncClient, token: dict, attempt_id: uuid.UUID, call_id: str):
+    return await client.post(
+        f"/api/attempts/{attempt_id}/service-call/{call_id}/answer", headers=bearer(token)
+    )
+
+
 async def end(client: AsyncClient, token: dict, attempt_id: uuid.UUID, call_id: str):
     return await client.post(
         f"/api/attempts/{attempt_id}/service-call/{call_id}/end", headers=bearer(token)
@@ -49,6 +56,79 @@ async def end(client: AsyncClient, token: dict, attempt_id: uuid.UUID, call_id: 
 
 async def status(client: AsyncClient, token: dict, attempt_id: uuid.UUID, **body):
     return await client.post(f"/api/attempts/{attempt_id}/status", headers=bearer(token), json=body)
+
+
+async def test_dds_lesson_carries_its_dialog_mode(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Режим диалога — настройка занятия ДДС: им отвечают дежурный службы и старший группы.
+    Облачный голос доступен и здесь, но только там, где установка его включила."""
+    token = await login(client, "teacher1")
+    groups = await client.get("/api/groups", headers=bearer(token))
+    assert groups.status_code == 200, groups.text
+    rows = groups.json()
+    group_id = (rows["items"] if isinstance(rows, dict) else rows)[0]["id"]
+    body = {
+        "title": "Режим в ДДС",
+        "mode": MODE_CARD_RESPONSE,
+        "group_id": group_id,
+        "difficulty": 1,
+        "norm_seconds": 30,
+        "pass_threshold": 70,
+        "dialog_mode": "buttons",
+        "voice_enabled": False,
+    }
+    created = await client.post("/api/sessions", headers=bearer(token), json=body)
+    assert created.status_code == 201, created.text
+    assert created.json()["dialog_mode"] == "buttons"
+    assert created.json()["voice_enabled"] is False
+
+    settings = get_settings()
+    monkeypatch.setattr(settings, "cloud_voice_enabled", True)
+    cloud = await client.post(
+        "/api/sessions",
+        headers=bearer(token),
+        json={**body, "title": "Облачный ДДС", "dialog_mode": "cloud"},
+    )
+    assert cloud.status_code == 201, cloud.text
+    assert cloud.json()["dialog_mode"] == "cloud"
+
+    monkeypatch.setattr(settings, "cloud_voice_enabled", False)
+    refused = await client.post(
+        "/api/sessions",
+        headers=bearer(token),
+        json={**body, "title": "Облако выключено", "dialog_mode": "cloud"},
+    )
+    assert refused.status_code == 422, refused.text
+    assert refused.json()["error"]["code"] == "cloud_voice_disabled"
+
+
+async def test_cloud_lesson_does_not_greet_twice(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """В облачном занятии «Позвонить» не пишет своё приветствие: первую фразу говорит
+    облако (иначе в стенограмме два приветствия, как было у заявителя до #104)."""
+    monkeypatch.setattr(get_settings(), "cloud_voice_enabled", True)
+    attempt_id = await make_attempt(CARD, mode=MODE_CARD_RESPONSE, dialog_mode="cloud")
+    token = await login(client, "student1")
+    r = await start(client, token, attempt_id)
+    assert r.status_code == 200, r.text
+    assert r.json()["call"]["turns"] == []
+    assert r.json()["call"]["answered"] is False
+
+
+async def test_call_is_voiced_even_when_the_old_flag_is_off(client: AsyncClient) -> None:
+    """Звонок звучит всегда, когда есть чем озвучить: поле voice_enabled осталось от убранной
+    галочки и ни на что не влияет (docs/DECISIONS.md, 23.09.2026)."""
+    attempt_id = await make_attempt(
+        CARD, mode=MODE_CARD_RESPONSE, dialog_mode="buttons", voice_enabled=False
+    )
+    token = await login(client, "student1")
+    r = await start(client, token, attempt_id)
+    assert r.status_code == 200, r.text
+    greeting = r.json()["call"]["turns"][0]
+    assert "слушаю" in greeting["text"]
+    assert greeting["audio_url"] is not None
 
 
 async def test_text_call_passes_facts_and_lands_in_the_evaluation(client: AsyncClient) -> None:
@@ -62,7 +142,8 @@ async def test_text_call_passes_facts_and_lands_in_the_evaluation(client: AsyncC
     assert call["service"] == "moek" and call["service_title"]
     assert call["answered"] is True and call["telephony"] is False
     assert call["turns"][0]["role"] == "caller" and "слушаю" in call["turns"][0]["text"]
-    assert call["facts_required"] == ["address", "incident_type", "injured", "order_number"]
+    # Наряд диспетчер не передаёт: его называет дежурный (решение 23.09.2026).
+    assert call["facts_required"] == ["address", "incident_type", "injured"]
     assert data["attempt"]["received_at"] is not None  # the call opened the card
     assert data["attempt"]["service_calls_required"] == ["moek"]
     call_id = call["id"]
@@ -135,7 +216,7 @@ async def test_text_call_passes_facts_and_lands_in_the_evaluation(client: AsyncC
     assert r.status_code == 409
 
 
-async def test_closing_the_card_ends_an_open_call_and_no_call_is_penalised(
+async def test_closing_the_card_ends_an_open_call_and_a_silent_call_scores_nothing(
     client: AsyncClient,
 ) -> None:
     attempt_id = await make_attempt(CARD, mode=MODE_CARD_RESPONSE, dialog_mode="buttons")
@@ -149,22 +230,28 @@ async def test_closing_the_card_ends_an_open_call_and_no_call_is_penalised(
     attempt = r.json()["attempt"]
     assert attempt["service_calls"][0]["ended_at"] is not None
     assert attempt["service_calls"][0]["end_reason"] == "card_closed"
-    component = attempt["evaluation"]["components"]["service_call"]
-    assert 0 < component["score"] < component["max"]  # reached, no facts
+    evaluation = attempt["evaluation"]
+    component = evaluation["components"]["service_call"]
+    # Greeting the officer and passing nothing scores as if the call was never made (#127).
+    assert component["score"] == 0
     assert component["items"][0]["facts_missing"] == [
         "address",
         "incident_type",
         "injured",
-        "order_number",
     ]
+    codes = {e["code"] for e in evaluation["errors"]}
+    assert "service_call_silent" in codes
+    assert "service_not_informed" not in codes  # the dispatcher did call
 
-    # A card accepted without any call: zero and the detector.
+    # A card accepted without any call: zero and the other detector.
     other = await make_attempt(CARD, mode=MODE_CARD_RESPONSE, dialog_mode="buttons")
     r = await status(client, token, other, status="accepted")
     r = await client.post(f"/api/attempts/{other}/finish", headers=bearer(token))
     evaluation = r.json()["attempt"]["evaluation"]
     assert evaluation["components"]["service_call"]["score"] == 0
-    assert "service_not_informed" in {e["code"] for e in evaluation["errors"]}
+    codes = {e["code"] for e in evaluation["errors"]}
+    assert "service_not_informed" in codes
+    assert "service_call_silent" not in codes
 
 
 async def test_service_call_access_and_validation(client: AsyncClient) -> None:

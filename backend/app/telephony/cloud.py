@@ -51,6 +51,7 @@ from app.telephony.calls import (
     Call,
     CallManager,
     load_attempt,
+    load_card_attempt,
 )
 from app.telephony.vapi import VapiClient, VapiError, build_assistant, server_config
 
@@ -78,9 +79,12 @@ def new_token() -> str:
 
 
 class CloudTurns(Protocol):
-    """What the shared transcript handling needs of a call, SIP or browser."""
+    """What the shared transcript handling needs of a call, SIP or browser. A call of the
+    card (``service_call_id``) stores its phrases in that call, not in the card's own
+    dialog: the dispatcher rings the duty officer, the squad leader rings the dispatcher."""
 
     attempt_id: uuid.UUID
+    service_call_id: str | None
     vapi_call_id: str | None
     vapi_ended: bool
     operator_stopped_at: float | None
@@ -137,6 +141,8 @@ async def record_transcript(call: CloudTurns, message: dict) -> dict | None:
     if not role:
         return None
     latency = call.pending_latency_ms if role == "caller" else None
+    if call.service_call_id:
+        return await _record_service_transcript(call, role, text, latency)
     async with SessionLocal() as session:
         loaded = await load_attempt(session, call.attempt_id)
         if loaded is None or loaded.attempt.call_state == CALL_ENDED:
@@ -155,6 +161,42 @@ async def record_transcript(call: CloudTurns, message: dict) -> dict | None:
     return turn
 
 
+async def _record_service_transcript(
+    call: CloudTurns, role: str, text: str, latency: int | None
+) -> dict | None:
+    """The phrase of a call on the card: it belongs to that call's transcript."""
+    from app.dialog import officer
+
+    async with SessionLocal() as session:
+        loaded = await load_card_attempt(session, call.attempt_id)
+        if loaded is None:
+            return None
+        assert call.service_call_id is not None
+        turn, events = await officer.external_turn(
+            session,
+            loaded.attempt,
+            call.service_call_id,
+            loaded.scenario,
+            role,
+            text,
+            latency_ms=latency,
+        )
+        await session.commit()
+    await publish_events(events)
+    if turn is not None and role == "caller":
+        call.pending_latency_ms = None
+    if turn is not None:
+        log.info(
+            "cloud phrase",
+            attempt=str(call.attempt_id),
+            call=call.service_call_id,
+            role=role,
+            text=text,
+            latency_ms=latency,
+        )
+    return turn
+
+
 async def apply_report(call: CloudTurns, message: dict) -> None:
     """The final transcript of ``end-of-call-report``: phrases the live messages missed are
     added; stored turns are never rewritten."""
@@ -164,6 +206,9 @@ async def apply_report(call: CloudTurns, message: dict) -> None:
         for m in artifact.get("messages") or []
         if m.get("role") in TRANSCRIPT_ROLES
     ]
+    if call.service_call_id:
+        await _apply_service_report(call, reported)
+        return
     async with SessionLocal() as session:
         loaded = await load_attempt(session, call.attempt_id)
         if loaded is None:
@@ -182,6 +227,35 @@ async def apply_report(call: CloudTurns, message: dict) -> None:
             for role, text in reported[stored:]:
                 _, turn_events = await dialog.external_turn(
                     session, attempt, loaded.ts, loaded.scenario, role, text
+                )
+                events.extend(turn_events)
+        await session.commit()
+    await publish_events(events)
+
+
+async def _apply_service_report(call: CloudTurns, reported: list[tuple[str, str]]) -> None:
+    """Same for a call on the card: only the phrases the live messages missed are added."""
+    from app.dialog import officer
+
+    async with SessionLocal() as session:
+        loaded = await load_card_attempt(session, call.attempt_id)
+        if loaded is None:
+            return
+        assert call.service_call_id is not None
+        record = officer.find_call(loaded.attempt, call.service_call_id)
+        stored = len(
+            [t for t in record.get("dialog") or [] if t.get("method") == dialog.EXTERNAL_METHOD]
+        )
+        events = []
+        if not record.get("ended_at") and len(reported) > stored:
+            for role, text in reported[stored:]:
+                _, turn_events = await officer.external_turn(
+                    session,
+                    loaded.attempt,
+                    call.service_call_id,
+                    loaded.scenario,
+                    role,
+                    text,
                 )
                 events.extend(turn_events)
         await session.commit()

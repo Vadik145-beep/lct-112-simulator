@@ -1,0 +1,172 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Господи... тут женщину изнасиловали. Она просит полицию вызвать, у неё травмы. Я с ней рядом.",
+    "bytes": 103279,
+    "sha256": "2d2585569562fae19a09bd84372f8c3fe4d604fd1e29d3ca14619df06777f0ca"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Женщину изнасиловали. Она сама ко мне подошла, в слезах.",
+    "bytes": 75276,
+    "sha256": "f531c45271b70dd91bac49636a1b8d605a7f0105d6a606847fa903dd88da0adc"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Просит полицию. Говорит, это случилось только что, тут же, во дворе.",
+    "bytes": 74022,
+    "sha256": "a57efc0a9f0793a6ef56881d82d004adb0af0a5e409ca47e3872ba8aa0911468"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Кастанаевская улица, дом сорок два, корпус два. Мы во дворе.",
+    "bytes": 74022,
+    "sha256": "d52798642082056816fe9c43afcc9a49465aa277eb03d2b061f466faa569d5fa"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, Фили-Давыдково.",
+    "bytes": 38078,
+    "sha256": "823ac3942b420f02cf72e7ea6b8775fcc10d704c5226009268181f6c9b67dabc"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Она одна пострадала. Около тридцати лет, в сознании.",
+    "bytes": 59812,
+    "sha256": "312b733b715719795e2cf847cb9e8622dbba543dc11184544d0664097d0c8e68"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Есть травмы, губа разбита и руки в ссадинах. Скорая нужна.",
+    "bytes": 75276,
+    "sha256": "3d217594cc873bef0ea43856b0a5f172cf562474e978ff4ceac1ff194b5c0b0e"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Имя своё она называть не хочет. Говорит, скажет только полиции.",
+    "bytes": 62319,
+    "sha256": "0354ed6cfcb8509ab30e7195c2618653d86680db597625248a3c799f9d4c1c7f"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Нападавший ушёл. Куда — она не видела, ей плохо было.",
+    "bytes": 62319,
+    "sha256": "3350f3612c45bd5b0716510bdfa490a9f7accc1afb315da4e028be18a53036c4"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Она одна. Я рядом, больше никого во дворе нет.",
+    "bytes": 69007,
+    "sha256": "b075963d4352573565b1f7a5c736b5588bf42d29f53543041ca48e1d5de5c73f"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Минут десять назад, она говорит. Ко мне подошла только что.",
+    "bytes": 56050,
+    "sha256": "febea0b55b51917c9f431c48a7aae9f6af440397b6cf50ef2997a90f66610c00"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Иванова Елена Сергеевна. Я тут живу.",
+    "bytes": 44765,
+    "sha256": "210a6a33a0fb6d9109af54ae3b3784dfa439ea9f9e329e3d199ce78f4796579e"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 84471,
+    "sha256": "b645919619f1ceb2c0ba2c2cc5571edfbe5f8a921494e9221224aaad7824ce07"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я не пострадавшая. Просто рядом оказалась, она ко мне обратилась.",
+    "bytes": 71515,
+    "sha256": "b9a3e66e4c64b7a4ba95191d07be82049e1bd531c9fca2a5c92256b8ff345b13"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мы во дворе, у скамейки. В подъезд не заходили.",
+    "bytes": 61066,
+    "sha256": "8c3a61fa7c8ade178cb49fde0b70b38f538e09803e2d532504f4a4b9bab3f6fc"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Повторите, пожалуйста, я говорю тихо, чтобы её не тревожить.",
+    "bytes": 59812,
+    "sha256": "d0eafff7b8e349cb30d123c3a911478120b60590950e92c65faa82b454588f57"
+  },
+  "r16": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю. Мы с ней подождём, никуда не уйдём.",
+    "bytes": 51035,
+    "sha256": "0ac6ff50b19b4a63c29f4af632a1177819ab6958b3ad318d990aa5f1452decc3"
+  }
+}

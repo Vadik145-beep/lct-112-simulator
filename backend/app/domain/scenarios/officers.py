@@ -17,6 +17,8 @@ progress from the same state (``squad_state``, topic ``progress``).
 
 from __future__ import annotations
 
+import hashlib
+import re
 from collections.abc import Mapping
 
 from app.domain.evaluation.schemas import (
@@ -28,6 +30,23 @@ from app.domain.evaluation.schemas import (
     Reply,
     ServiceCallRef,
 )
+
+# How the duty officer names his own service out loud. The reference titles come from the
+# classifier and carry the paperwork («Территориальные ОИВ (управы, префектуры)»), which a
+# voice reads aloud brackets and all (as the caller's types did before #104).
+SPOKEN_SERVICE_TITLES: dict[str, str] = {
+    "gkh": "ЕДЦ ЖКХ",
+    "moek": "МОЭК",
+    "mosvodokanal": "Мосводоканала",
+    "mosgaz": "Мосгаза",
+    "gormost": "Гормоста",
+    "moslift": "Мослифта",
+    "territorial_oiv": "управы",
+    "101": "пожарной охраны",
+    "102": "полиции",
+    "103": "скорой помощи",
+    "104": "газовой службы",
+}
 
 OFFICER_PERSONA = "service_officer"
 OFFICER_VOICE = "ru_male_2"
@@ -49,11 +68,11 @@ GENERIC_REPLIES: list[tuple[str, str]] = [
     ("incident_type", "Что именно произошло? Какой тип происшествия по карточке?"),
     ("injured", "Принято, по пострадавшим понял."),
     ("injured", "Пострадавшие есть?"),
-    ("order_number", "Наряд записал."),
-    ("order_number", "Номер наряда назовите."),
+    ("order_number", "Принял, направляю наряд {order}."),
+    ("order_number", "Наряд {order}, он и выезжает."),
     ("access", "Понял, доступ есть."),
     ("access", "Доступ на объект есть? Кто встретит бригаду?"),
-    ("confirm", "Информацию принял, бригаду направляю."),
+    ("confirm", "Информацию принял, направляю наряд {order}, бригада выезжает."),
     ("confirm", "Принято. Как будем на месте, доложу."),
     ("repeat", "Повторите, пожалуйста, плохо слышно."),
     ("unknown", "Это не ко мне, давайте по происшествию."),
@@ -71,32 +90,54 @@ PROGRESS_REPLIES: dict[str, str] = {
     "works_started": "Работы ведутся, пока без замечаний. По окончании доложу.",
     "works_done": "Работы завершены, докладывал. Всё по карточке отражено.",
 }
-# Replies of the squad leader during a report call: the dispatcher confirms or asks again.
+# Состояния, в которых бригаду уже видно на месте: это знает и заявитель, если ему позвонить
+# (app.domain.scenarios.caller_back).
+SQUAD_STATES_ON_SCENE = frozenset({"arrived", "works_started", "works_done"})
+# Replies of the squad leader during a report call. After the report the dispatcher asks the
+# usual things: how long it will take, who is on site, whether help is needed, what about the
+# people. The set is universal — no address, no service, so it fits any card.
 REPORT_REPLIES: list[tuple[str, str]] = [
     ("confirm", "Принято, работаем дальше."),
+    ("confirm", "Принято, остаёмся на связи."),
+    ("confirm", "Понял вас, диспетчер."),
     ("confirm", "Так точно, продолжаем."),
+    ("progress", "{report}"),
+    ("progress", "Работаем, пока по плану. Как будет результат — доложу."),
+    ("progress", "Ещё в работе, думаю час-полтора. Точнее скажу позже."),
+    ("progress", "Пока без изменений, продолжаем."),
+    ("progress", "На месте бригада и дежурная машина, сил хватает."),
+    ("progress", "Дополнительных служб пока не требуется, справляемся."),
+    ("progress", "Работаем вдвоём, людей хватает."),
+    ("progress", "Участок огородили, проезд ограничили."),
+    ("progress", "Опасности для жильцов нет."),
     ("address", "Мы на адресе по карточке, всё верно."),
     ("incident_type", "По происшествию всё как в карточке, работаем."),
-    ("injured", "Пострадавших нет, докладываю как есть."),
-    ("order_number", "Наряд тот же, что вы передавали."),
-    ("access", "Доступ есть, встретили."),
+    ("injured", "Пострадавших нет, людей вывели."),
+    ("injured", "Медпомощь никому не требуется."),
+    ("order_number", "Наряд {order}, по нему и работаем."),
+    ("access", "Доступ есть, заявитель встретил."),
+    ("access", "В подъезд попали, открыл консьерж."),
     ("repeat", "Повторяю: {report}"),
-    ("progress", "{report}"),
-    ("unknown", "Диспетчер, это старший наряда, докладываю по происшествию."),
+    ("unknown", "Диспетчер, это старший группы, докладываю по происшествию."),
 ]
 SQUAD_LEADER_PERSONA = "squad_leader"
 SQUAD_LEADER_BEHAVIOUR = (
-    "старший наряда на месте: докладывает коротко, по делу, отвечает на уточняющие вопросы "
+    "старший группы реагирования на месте: докладывает коротко, по делу, отвечает "
+    "на уточняющие вопросы "
     "диспетчера, повторяет доклад по просьбе"
 )
 # Default timeline of the squad (seconds after the previous milestone) and how the leader
 # words each report; ``{comment}`` is the reference comment of the step, ``{address}`` the
 # street and the house of the card.
 DEFAULT_REPORTS: list[tuple[str, int, str]] = [
-    ("response_started", 30, "Диспетчер, старший наряда. Выехали по адресу: {address}."),
-    ("arrived", 45, "Старший наряда. Прибыли по адресу: {address}, приступаем."),
-    ("works_started", 30, "Старший наряда. {comment}"),
-    ("works_done", 60, "Старший наряда. Работы завершены: {comment}"),
+    (
+        "response_started",
+        30,
+        "Алло, диспетчер? Это старший группы реагирования. Выехали по адресу: {address}.",
+    ),
+    ("arrived", 45, "Алло, это снова старший группы. Прибыли по адресу: {address}, приступаем."),
+    ("works_started", 30, "Алло, диспетчер, старший группы. Докладываю: {comment}"),
+    ("works_done", 60, "Алло, диспетчер? Старший группы. Работы завершены: {comment}"),
 ]
 DEFAULT_WORK_COMMENTS: dict[str, str] = {
     "works_started": "Приступили к работам на месте.",
@@ -136,6 +177,15 @@ SERVICE_REPLIES: dict[str, list[tuple[str, str]]] = {
 }
 
 
+def order_number(scenario: CardResponseScenario, service: str) -> str:
+    """Номер наряда службы: свой у каждой карточки и службы, но всегда один и тот же, чтобы
+    диспетчер мог записать его в статус, а проверка — сверить. Наряд принадлежит службе,
+    диспетчер ДДС его не назначает и не передаёт (решение пользователя 23.09.2026)."""
+    key = f"{scenario.ticket_ref or scenario.title}|{service}".encode()
+    digest = hashlib.sha1(key).hexdigest()  # noqa: S324 - номер, а не защита
+    return str(1000 + int(digest[:4], 16) % 9000)
+
+
 def squad_state(delivered: list[str]) -> str:
     """The squad's state from the reports already delivered (progress status codes)."""
     for status in ("works_done", "works_started", "arrived", "response_started"):
@@ -144,17 +194,28 @@ def squad_state(delivered: list[str]) -> str:
     return SQUAD_STATE_PENDING
 
 
+def spoken_service(service: str, service_title: str) -> str:
+    """What the officer calls his service out loud: the spoken name when there is one, else
+    the reference title without its bracketed paperwork."""
+    spoken = SPOKEN_SERVICE_TITLES.get(service)
+    if spoken:
+        return spoken
+    without = re.sub(r"\s*\([^()]*\)", "", service_title)
+    return re.sub(r"\s{2,}", " ", without).strip(" ,;«»") or service_title
+
+
 def builtin_replies(
-    service: str, service_title: str, state: str = SQUAD_STATE_PENDING
+    service: str, service_title: str, state: str = SQUAD_STATE_PENDING, order: str = ""
 ) -> list[Reply]:
     """The built-in replies of a service's officer, ids from ``BUILTIN_REPLY_ID_BASE``. The
     «progress» reply follows the squad's state, so its id changes with the state."""
     rows = [*GENERIC_REPLIES, *SERVICE_REPLIES.get(service, [])]
+    spoken = spoken_service(service, service_title)
     replies = [
         Reply(
             id=BUILTIN_REPLY_ID_BASE + i,
             topic=topic,
-            text=text.format(service=service_title),
+            text=text.format(service=spoken, order=order or "наряд"),
             approved=True,
         )
         for i, (topic, text) in enumerate(rows)
@@ -183,11 +244,13 @@ def officer_replies(
         for r in scenario.service_replies
         if r.service in (None, "", service)
     ]
-    return [*own, *builtin_replies(service, service_title, state)]
+    ref = next((c for c in scenario.reference.service_calls if c.service == service), None)
+    order = (ref.order_number if ref else None) or order_number(scenario, service)
+    return [*own, *builtin_replies(service, service_title, state, order)]
 
 
 def greeting(service: str, service_title: str) -> str:
-    return GENERIC_REPLIES[0][1].format(service=service_title)
+    return GENERIC_REPLIES[0][1].format(service=spoken_service(service, service_title))
 
 
 def _reference_card(scenario: CardResponseScenario) -> ReferenceCard:
@@ -215,6 +278,7 @@ def officer_scenario(
     (``squad_state``): the officer answers about the progress from it."""
     facts = {
         "служба": service_title,
+        "твой наряд": ref.order_number or order_number(scenario, ref.service),
         "что знает": "о происшествии — только то, что сообщает диспетчер",
         "где бригада": PROGRESS_REPLIES[state],
     }
@@ -238,13 +302,13 @@ def officer_scenario(
     )
 
 
-def report_replies(report: BrigadeReport) -> list[Reply]:
+def report_replies(report: BrigadeReport, order: str = "") -> list[Reply]:
     """Replies of the squad leader in a report call: confirmations, the report again."""
     return [
         Reply(
             id=BUILTIN_REPLY_ID_BASE + i,
             topic=topic,
-            text=text.format(report=report.text),
+            text=text.format(report=report.text, order=order or "наш"),
             approved=True,
         )
         for i, (topic, text) in enumerate(REPORT_REPLIES)
@@ -267,10 +331,15 @@ def report_scenario(
             voice=OFFICER_VOICE,
             noise="street",
             opening=report.text,
-            facts={"служба": service_title, "доклад": report.text, "статус": report.status},
+            facts={
+                "служба": service_title,
+                "наряд": order_number(scenario, scenario.service),
+                "доклад": report.text,
+                "статус": report.status,
+            },
             behaviour=SQUAD_LEADER_BEHAVIOUR,
         ),
-        replies=report_replies(report),
+        replies=report_replies(report, order_number(scenario, scenario.service)),
         required_topics=[],
         reference_card=_reference_card(scenario),
     )
@@ -305,8 +374,9 @@ def default_reports(scenario_body: Mapping) -> list[dict]:
         comment = comment or DEFAULT_WORK_COMMENTS.get(status, "")
         if comment and not comment.endswith((".", "!", "?")):
             comment += "."
-        if status == "works_done" and comment[:1].isupper() and not comment[:2].isupper():
-            comment = comment[0].lower() + comment[1:]  # after «Работы завершены:»
+        if status in ("works_done", "works_started") and comment[:1].isupper():
+            if not comment[:2].isupper():  # ЦТП, ИТП stay as they are
+                comment = comment[0].lower() + comment[1:]  # after «завершены:» / «докладываю:»
         text = template.format(address=address, comment=comment).strip()
         reports.append({"status": status, "after_seconds": after, "text": text})
     return reports
@@ -322,7 +392,8 @@ def default_service_calls(scenario_body: Mapping) -> list[dict]:
     card = scenario_body.get("card") or {}
     address = card.get("address") or {}
     flags = card.get("flags") or {}
-    facts = ["address", "incident_type", "injured", "order_number"]
+    # Наряд принадлежит службе: диспетчер его не передаёт, а записывает со слов дежурного.
+    facts = ["address", "incident_type", "injured"]
     if address.get("code") or flags.get("no_access"):
         facts.append("access")
     own = scenario_body.get("service")

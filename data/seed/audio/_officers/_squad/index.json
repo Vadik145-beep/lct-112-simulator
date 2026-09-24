@@ -1,0 +1,162 @@
+{
+  "0f70ecc2": {
+    "sha256": "3463939b8bf583979703f1e57ee63c5450b45c29",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Дополнительных служб пока не требуется, справляемся.",
+    "bytes": 56050
+  },
+  "18003880": {
+    "sha256": "828810714f51297dad64620eb2ad26ed7a6e3fb7",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Пострадавших нет, людей вывели.",
+    "bytes": 35570
+  },
+  "1f444c3b": {
+    "sha256": "a46e6be5ef849d6d30c8575a8c7e08864223ae5b",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд тот же, что вы передавали.",
+    "bytes": 36824
+  },
+  "2cd370ed": {
+    "sha256": "c9289f6eaf215eb5326d48970688e7771b0ed12f",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принято, работаем дальше.",
+    "bytes": 36824
+  },
+  "3d407fdf": {
+    "sha256": "c0bdf7d4706f9eca730715a97fb81052a10f3263",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "В подъезд попали, открыл консьерж.",
+    "bytes": 43511
+  },
+  "3d82b2dc": {
+    "sha256": "623e8b57f07b5f14a054a5c6d73238a94769a9d8",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Работаем вдвоём, людей хватает.",
+    "bytes": 35570
+  },
+  "53357699": {
+    "sha256": "5d6798575fea420d7bb56bda029c235be6f61d31",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Пока без изменений, продолжаем.",
+    "bytes": 39332
+  },
+  "53f4dc50": {
+    "sha256": "77e061d9d6e5abd2fe697dabc0ac600168730a40",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принято, остаёмся на связи.",
+    "bytes": 31808
+  },
+  "66c53390": {
+    "sha256": "4c72787a9d28cb5334d2078b62708113c031bc85",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Так точно, продолжаем.",
+    "bytes": 25539
+  },
+  "79b486b9": {
+    "sha256": "57a39c29a72d8a846ad1a4cd6055a52f60f22bbe",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Мы на адресе по карточке, всё верно.",
+    "bytes": 38078
+  },
+  "81425f29": {
+    "sha256": "27d7358e5d53d0c6f5be733b106b99cc8945c931",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "По происшествию всё как в карточке, работаем.",
+    "bytes": 47273
+  },
+  "8f462a29": {
+    "sha256": "4c2a2708b02181f9d5295d9e1c9926037280b31d",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Опасности для жильцов нет.",
+    "bytes": 40586
+  },
+  "b1f2707c": {
+    "sha256": "0bd15c102329b0eca7a297e4577a1cd89476a44d",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Диспетчер, это старший группы, докладываю по происшествию.",
+    "bytes": 57304
+  },
+  "bd02748c": {
+    "sha256": "59a3d5ab2bf77bf6eb3656a698879e927fe6ce71",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Понял вас, диспетчер.",
+    "bytes": 21359
+  },
+  "cfe462f5": {
+    "sha256": "9ffe0101151f45141640566d85206abe20f47393",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Участок огородили, проезд ограничили.",
+    "bytes": 41839
+  },
+  "d20b5f0a": {
+    "sha256": "72fd4543f9abc087c54db3329fb356ad3128d75d",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Ещё в работе, думаю час-полтора. Точнее скажу позже.",
+    "bytes": 76530
+  },
+  "e092cd91": {
+    "sha256": "f5b0fbf5ea7d4fa357d8d5601bfb6ca59c915a02",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Работаем, пока по плану. Как будет результат — доложу.",
+    "bytes": 56050
+  },
+  "e292f0c8": {
+    "sha256": "b6c95858c81770fd4e108f5dc2d98d8739682138",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "На месте бригада и дежурная машина, сил хватает.",
+    "bytes": 49781
+  },
+  "e8d1a242": {
+    "sha256": "8fbfa1118213e3e7ccc2a0cd3888b7b46c768c09",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Доступ есть, заявитель встретил.",
+    "bytes": 35570
+  },
+  "f8cf1f1d": {
+    "sha256": "2f05069067bce7c43e6b9d8a76ea6d64aec50f42",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Медпомощь никому не требуется.",
+    "bytes": 47273
+  }
+}

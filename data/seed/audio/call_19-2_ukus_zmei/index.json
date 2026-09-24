@@ -1,0 +1,162 @@
+{
+  "opening": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Здравствуйте. Тут мужчину змея укусила, прямо у входа в монастырь. Он в сознании, нога распухает.",
+    "bytes": 102026,
+    "sha256": "a55b79f085c1fc374f94aabb73d8e00bf089b5bf935657b828b86469b6e6c8c7"
+  },
+  "r1": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Мужчину змея укусила. В ногу, чуть выше щиколотки.",
+    "bytes": 62319,
+    "sha256": "42d031a18a478174f3b06470250700ada3989cc1bdd19cf4ea20433aef4cfacb"
+  },
+  "r2": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Змею не поймали, ушла в траву. Серая была, с узором, я толком не разглядел.",
+    "bytes": 74022,
+    "sha256": "f32626f22c2ddbdffede3f20599421d88f6d190529dbe08baca7daa47939921e"
+  },
+  "r3": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Рязанская область. Свято-Иоанно-Богословский мужской монастырь.",
+    "bytes": 62319,
+    "sha256": "b94ee24d3260b9283ab75cc5502882edcddf1dffa2cc5d02c37c0f8b9a903cfb"
+  },
+  "r4": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Мы прямо у входа, у ворот. Тут его на лавку посадили.",
+    "bytes": 47273,
+    "sha256": "29db423c7014b761782883c726c5f11f6b7c54c4cea8ef48aae0a91a11f33190"
+  },
+  "r5": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Пострадавший один. Сизов Иван Петрович, шестьдесят лет.",
+    "bytes": 58558,
+    "sha256": "00e7740acfa9fb759432ac7601ae0414483f45b915e190616a2d1aa5f445218c"
+  },
+  "r6": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "В сознании, разговаривает. Нога опухает, он говорит, жжёт сильно.",
+    "bytes": 70261,
+    "sha256": "9a76f96a51a153afccadc304df268e39e5cbda20ff08513b1c075cfc7db7de19"
+  },
+  "r7": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Змея где-то в траве рядом. Люди тут ходят, могут наступить.",
+    "bytes": 61066,
+    "sha256": "578615ab7dba728461d9b54c479e8654f3275e041774c408c5a57ff3e781a55c"
+  },
+  "r8": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Пострадавший один. Вокруг человек пять собралось.",
+    "bytes": 48527,
+    "sha256": "881d40f7b987bf8a6358452b6c7424b37aabd434939bc5a1e6a5d9620294b98d"
+  },
+  "r9": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Минут пять назад укусила. Он сразу закричал.",
+    "bytes": 43511,
+    "sha256": "43aa1f42ec3475c3ac2bd43b1da730296bbec58dcf9bd4bd927dc53cbe32f4b1"
+  },
+  "r10": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Петров Илья Владимирович. Я прохожий.",
+    "bytes": 41839,
+    "sha256": "1743d25fca4bd77ded48e7389026191da1e46af981f56b277af014cdc666897b"
+  },
+  "r11": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 59812,
+    "sha256": "3fdafc73d7ffa631c83c657ab2612787e60299ae2d335e606cd23dc402eeb93d"
+  },
+  "r12": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Я не родственник. Мимо шёл, остановился помочь.",
+    "bytes": 49781,
+    "sha256": "f6864321360a3139918d9caef21c556057fa89453e61c67d9e533cacc3f19070"
+  },
+  "r13": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Это монастырь, подъездов нет. Мы у главных ворот.",
+    "bytes": 52288,
+    "sha256": "48b9f6f71280c29e3e1f008e353736f612e6880ec1a8d1134f67bc0d938f5db5"
+  },
+  "r14": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Повторите, пожалуйста, я не расслышал.",
+    "bytes": 38078,
+    "sha256": "a059119bba9e4274c21c9f6b515ab5dd048136a0a2da5bf0239f7c476298f38d"
+  },
+  "r15": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Не знаю. Ему ногу перетянуть или не надо?",
+    "bytes": 43511,
+    "sha256": "05901836c624512ee9d2942aeb74652818d079580fdd206220dd5b5c8ae25d30"
+  }
+}

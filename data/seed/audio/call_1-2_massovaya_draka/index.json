@@ -1,0 +1,172 @@
+{
+  "opening": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Тут драка! Человек пятнадцать, палками дерутся, есть побитые, лежат на тротуаре!",
+    "bytes": 80292,
+    "sha256": "085d8208a0530c6067cd5313616c676433b649867cf1ef1ae793b190a70af380"
+  },
+  "r1": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Драка! Человек пятнадцать, может больше. Палками машут, прутьями железными!",
+    "bytes": 80292,
+    "sha256": "efd47ea451e46c9dc7cda9458b951e842d1c40dbc5fd759ffceb55e9217888d1"
+  },
+  "r2": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Уже несколько лежат, их бьют лежачих. Это не разнимут сами, тут месиво!",
+    "bytes": 76530,
+    "sha256": "9ec6b249d07be1186d982dd1a91c8e70b1ead14288ce3a21ab1d5f9fd1cc9662"
+  },
+  "r3": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Мы рядом с посольством Азербайджана, на тротуаре.",
+    "bytes": 47273,
+    "sha256": "74a7e8a4824e2c0011e836f48ed8009e1517bc1c95c58a237d80d28b98d2e77b"
+  },
+  "r4": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Леонтьевский переулок, дом шестнадцать. Строение первое, там табличка.",
+    "bytes": 61066,
+    "sha256": "fcff4c4bcd601f2a2ee397c3886cfb125a4e09dd3682f4205ab3b363286c8111"
+  },
+  "r5": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Москва, центр! Тверская рядом.",
+    "bytes": 31808,
+    "sha256": "90f2f9eac4bec70130d2c0dc84bfab39172bab184dba521d34c1db5315f00717"
+  },
+  "r6": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Пятеро точно побиты. Двое вообще не встают, головы разбиты.",
+    "bytes": 63991,
+    "sha256": "b5ea96ae8b2de4606cf5acc97b5d350db7f807ea90c76b70c71e739b17ea178f"
+  },
+  "r7": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Скорая нужна, и не одна. Кровь на тротуаре.",
+    "bytes": 47273,
+    "sha256": "0cc860691c39762b8cefd266bc3e1f30b11f3211efe73b5185769d1baf184b83"
+  },
+  "r8": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Ножей не видел, но палки и прутья железные точно. Драка не кончается.",
+    "bytes": 77784,
+    "sha256": "b3b19f45619011f5b1fda2242676e723124fd48f83a5b009b7e2257abaa1be71"
+  },
+  "r9": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Человек пятнадцать дерутся. Вокруг ещё люди стоят, снимают на телефоны.",
+    "bytes": 70261,
+    "sha256": "b6c8df39040c457da648ae01c7fad9ab7c613d3a2a46bf9671df08c9a51ebe9c"
+  },
+  "r10": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Минуты три назад началось, я сразу набрал.",
+    "bytes": 39332,
+    "sha256": "bc9962d55604fecfa42d9297de412f0db422e83af1121ae8aea8264b8a29f89b"
+  },
+  "r11": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Иванов Петр Иванович.",
+    "bytes": 29301,
+    "sha256": "54ca8cd4b8a94a1d4d42a414169ef2b18bac339ca1067dd58e0c2b25ae94331e"
+  },
+  "r12": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+    "bytes": 65245,
+    "sha256": "4dc67e6c56eb2f133f7eda320f571646d94a10f494af2fb03486c587a4863608"
+  },
+  "r13": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Я мимо шёл, в драку не лез. Смотрю с другой стороны улицы.",
+    "bytes": 65245,
+    "sha256": "0c72117f08ead342f4c73e2298ba43af029764ab20a4cf0b8d4c1d3b8ea1dc95"
+  },
+  "r14": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Какой подъезд, они на улице дерутся, на тротуаре!",
+    "bytes": 49781,
+    "sha256": "4f6c4fef101c234d10fe73780ccd33f37e9d200bde4b6b36fa037e4b5df2ad45"
+  },
+  "r15": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Что? Не слышу, тут крики! Повторите!",
+    "bytes": 46019,
+    "sha256": "91cad3c2a15a7160b2f1c141594fb91b815d562792dc8d25a8af9855de7f290a"
+  },
+  "r16": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Не знаю я, кто они такие! Присылайте наряд и скорую!",
+    "bytes": 52288,
+    "sha256": "bd4a08577c400e03632fdd5225e35f21db2c8665932e8711c1bb8041d2885935"
+  }
+}

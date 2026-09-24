@@ -1,0 +1,156 @@
+{
+  "kind": "call_intake",
+  "title": "Дерутся двое мужчин в квартире у соседей",
+  "ticket_ref": "22-1",
+  "difficulty": 1,
+  "norm_seconds": 60,
+  "caller": {
+    "persona": "worried_resident",
+    "voice": "ru_male_1",
+    "noise": "indoor",
+    "opening": "Здравствуйте. У соседей драка в квартире, двое мужчин. Грохот такой, что стены трясутся.",
+    "facts": {
+      "what_happened": "в соседней квартире дерутся двое мужчин, оружия нет, пострадавших нет",
+      "address": "улица Маршала Василевского, дом 13, корпус 3, квартира 2, подъезд 1, этаж 1, код домофона 2",
+      "injured": "пострадавших нет, криков о помощи не слышно",
+      "danger": "оружия не слышно, дерутся руками, мебель падает",
+      "caller_name": "Соколов Иван Петрович",
+      "callback_phone": "916-896-32-54"
+    },
+    "behaviour": "спокоен, говорит по делу; сам сообщает, что криков о помощи нет; про то, что в квартире живут двое братьев и такое уже было, скажет по вопросу",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Соседи дерутся. Двое мужчин, слышу через стену.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "what_happened",
+      "text": "Грохот, мебель падает, мат стоит. Женских голосов нет.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "address",
+      "text": "Улица Маршала Василевского, дом тринадцать, корпус три. Квартира два.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "entrance_floor_code",
+      "text": "Первый подъезд, первый этаж. Код домофона два.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "region",
+      "text": "Москва, Щукино.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "injured",
+      "text": "Пострадавших вроде нет. Криков о помощи не слышал, только ругань.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "danger",
+      "text": "Оружия не слышно, дерутся руками. Стёкла целы.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "count_people",
+      "text": "Двое их. Там братья живут, больше никого не слышно.",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "time",
+      "text": "Минут десять шумят. У них такое уже было в прошлом месяце.",
+      "approved": true
+    },
+    {
+      "id": 10,
+      "topic": "caller_name",
+      "text": "Соколов Иван Петрович.",
+      "approved": true
+    },
+    {
+      "id": 11,
+      "topic": "callback_phone",
+      "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+      "approved": true
+    },
+    {
+      "id": 12,
+      "topic": "caller_role",
+      "text": "Сосед я, из квартиры напротив.",
+      "approved": true
+    },
+    {
+      "id": 13,
+      "topic": "repeat",
+      "text": "Повторите, пожалуйста, за стеной шумят.",
+      "approved": true
+    },
+    {
+      "id": 14,
+      "topic": "unknown",
+      "text": "Не знаю. Стучать к ним я не пойду, ещё мне достанется.",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "entrance_floor_code",
+    "injured",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "Драка",
+      "Квартира"
+    ],
+    "incident_type": "15.6.1.0",
+    "flags": {
+      "injured": false
+    },
+    "address": {
+      "street": "улица Маршала Василевского",
+      "house": "13",
+      "building": "3",
+      "apartment": "2",
+      "entrance": "1",
+      "floor": "1",
+      "code": "2",
+      "okrug": "СЗАО",
+      "district": "район Щукино"
+    },
+    "caller": {
+      "name": "Соколов Иван Петрович",
+      "role": "сосед",
+      "phone": "916-896-32-54"
+    },
+    "description_keywords": [
+      "дерутся в квартире",
+      "двое мужчин",
+      "без пострадавших",
+      "без оружия"
+    ],
+    "description": "Дерутся в квартире двое мужчин, без пострадавших, без оружия.",
+    "expected_services": [
+      "102",
+      "mayor_office",
+      "rosgvardia",
+      "ntu"
+    ]
+  }
+}

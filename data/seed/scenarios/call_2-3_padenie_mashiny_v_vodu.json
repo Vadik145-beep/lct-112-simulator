@@ -1,0 +1,173 @@
+{
+  "kind": "call_intake",
+  "title": "Машина съехала в Яузу",
+  "ticket_ref": "2-3",
+  "difficulty": 3,
+  "norm_seconds": 60,
+  "caller": {
+    "persona": "witness_shaken",
+    "voice": "ru_female_3",
+    "noise": "street",
+    "opening": "Машина в воду упала! Прямо с набережной, в Яузу! Я всё видела, она под воду ушла!",
+    "facts": {
+      "what_happened": "легковая машина съехала с набережной в Яузу и ушла под воду, водитель внутри",
+      "address": "Лефортовская набережная, напротив Большого Нижнего пруда, в сторону области",
+      "injured": "водитель в машине, наружу не выбрался, сколько людей в салоне — неизвестно",
+      "danger": "машина под водой, видно только крышу, течение",
+      "vehicle": "Рено серого цвета, номер разглядеть не успела",
+      "caller_name": "Иванова Елена Сергеевна",
+      "callback_phone": "916-896-32-54"
+    },
+    "behaviour": "в шоке, говорит рывками, повторяет, что машина ушла под воду; адрес называет как набережная Яузы и уточняет название только по вопросу; номер машины не знает",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Машина в воду упала. Съехала с набережной и сразу под воду.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "what_happened",
+      "text": "Господи, она же под воду ушла совсем! Только крыша видна!",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "address",
+      "text": "Набережная Яузы. Погодите, тут табличка... Лефортовская набережная.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "address",
+      "text": "Напротив Большого Нижнего пруда, сторона в область.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "region",
+      "text": "Москва, Басманный.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "injured",
+      "text": "Водитель внутри остался. Никто не вылез, я бы увидела.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "danger",
+      "text": "Машина под водой, течение сильное. С берега её не достать.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "vehicle",
+      "text": "Рено, серая. Номер я не разглядела, всё быстро было.",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "count_people",
+      "text": "Сколько их там было, не знаю. Водителя точно видела.",
+      "approved": true
+    },
+    {
+      "id": 10,
+      "topic": "time",
+      "text": "Только что. Минуты не прошло, я сразу набрала.",
+      "approved": true
+    },
+    {
+      "id": 11,
+      "topic": "caller_name",
+      "text": "Иванова Елена Сергеевна.",
+      "approved": true
+    },
+    {
+      "id": 12,
+      "topic": "callback_phone",
+      "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+      "approved": true
+    },
+    {
+      "id": 13,
+      "topic": "caller_role",
+      "text": "Я очевидец. Мимо шла, к воде близко не подхожу.",
+      "approved": true
+    },
+    {
+      "id": 14,
+      "topic": "entrance_floor_code",
+      "text": "Это набережная, тут нет подъездов.",
+      "approved": true
+    },
+    {
+      "id": 15,
+      "topic": "repeat",
+      "text": "Что? Повторите, у меня руки трясутся.",
+      "approved": true
+    },
+    {
+      "id": 16,
+      "topic": "unknown",
+      "text": "Не знаю. Я буду тут стоять, покажу место.",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "injured",
+    "danger",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "Человек в воде, на льдине",
+      "Падение автомашины в воду"
+    ],
+    "incident_type": "17.7.7.0",
+    "flags": {
+      "injured": true
+    },
+    "address": {
+      "street": "Лефортовская набережная",
+      "okrug": "ЦАО",
+      "district": "Басманный район",
+      "descriptive": "напротив Большого Нижнего пруда, сторона в область"
+    },
+    "caller": {
+      "name": "Иванова Елена Сергеевна",
+      "role": "очевидец",
+      "phone": "916-896-32-54"
+    },
+    "description_keywords": [
+      "машина упала в воду",
+      "водитель в машине",
+      "ушла под воду"
+    ],
+    "description": "Машина упала в воду с набережной, ушла под воду, водитель в машине.",
+    "expected_services": [
+      "101",
+      "ods_psc",
+      "mgpss",
+      "102",
+      "103",
+      "cemp",
+      "gormost",
+      "codd",
+      "mayor_office",
+      "oati",
+      "territorial_oiv",
+      "territorial_oiv_tinao",
+      "ntu",
+      "cukb_mo"
+    ]
+  }
+}

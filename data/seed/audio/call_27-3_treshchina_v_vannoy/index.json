@@ -1,0 +1,152 @@
+{
+  "opening": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. У меня в ванной плитка со стены отлетела и трещина пошла, метр длиной. Соседи сверху ремонт делают.",
+    "bytes": 117490,
+    "sha256": "289fb0a05b0e58cce3a0cba773ab43299c050058eb4518adc11cca8b16f396bf"
+  },
+  "r1": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "В ванной плитка со стены отлетела, а под ней трещина. Длиной с метр, наверное.",
+    "bytes": 76530,
+    "sha256": "64ec894c7950ee70de80982d68af89d122aff01cce306309a0b51f28ac98c994"
+  },
+  "r2": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Соседи сверху ремонт затеяли, стену долбят третий день. Вот у меня и посыпалось.",
+    "bytes": 84471,
+    "sha256": "a63f0ab6cba111103ecaca87250a3dc2d1dc9f6128921f9031a228c381486045"
+  },
+  "r3": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Ленинский проспект, дом пятьдесят семь, квартира двадцать восемь.",
+    "bytes": 51035,
+    "sha256": "e34f2b42d84f98c37f5a1936ee86a0c19d5db2c70c7cc91f46b537eefb0ad268"
+  },
+  "r4": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Первый подъезд, пятый этаж. Код домофона пятьдесят семь вэ.",
+    "bytes": 57304,
+    "sha256": "c52c4ca7a095e89c7454c185d96560ab255cf758e2902a350226fe2116ff4664"
+  },
+  "r5": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Москва, Гагаринский район.",
+    "bytes": 29301,
+    "sha256": "f4a976d4956701ed49d324e0254862224dcdd515380b899b9ea9fff51a12d5cd"
+  },
+  "r6": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Нет, никто не пострадал. Я в ванной была, когда плитка упала, но меня не задело.",
+    "bytes": 86979,
+    "sha256": "8b03b2a43e5bbe53dd643136eb326297aacb0d0f13bc60ecff3ff11221a44291"
+  },
+  "r7": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Трещина широкая, палец пролезает. Сверху до сих пор долбят, я боюсь, дальше пойдёт.",
+    "bytes": 109967,
+    "sha256": "9376c36fd917ebc7af0a57166c6c723d1c31e61e5ca2b627e9efce57e0712c31"
+  },
+  "r8": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я дома одна. У соседей рабочие, трое кажется.",
+    "bytes": 65245,
+    "sha256": "2dcf8a045b74372f301c8aee71adfbf150105a916233bbcbc2154e133c370dd1"
+  },
+  "r9": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Плитка сегодня утром упала. А стучат они с понедельника.",
+    "bytes": 57304,
+    "sha256": "11edde41555334ae20c5ca512f5f9c13e9c595636459b8fddf87ff6ae8c54034"
+  },
+  "r10": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Селезнева Наталья Петровна.",
+    "bytes": 24285,
+    "sha256": "d6016781ca1939e55ac152fe6711f13d8ee93a35d0ff7b6250d5d7156833d268"
+  },
+  "r11": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девятьсот три, двести двадцать шесть, тринадцать, восемьдесят три.",
+    "bytes": 57304,
+    "sha256": "fc4c8589540a51837f444d8080fab06cd937940e6bfd8df99064715d4021c673"
+  },
+  "r12": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я хозяйка квартиры, тут живу.",
+    "bytes": 30555,
+    "sha256": "1c233fda3cdb5f724caae840857730e43b112b09cbd88578c5f8307b378b9c9d"
+  },
+  "r13": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, сверху долбят, не слышно.",
+    "bytes": 44765,
+    "sha256": "0561519061fb193d36290779071c4c455d40a3f3f584fd6c0c06236f06452986"
+  },
+  "r14": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. В управляющую компанию я звонила, там трубку не берут.",
+    "bytes": 63991,
+    "sha256": "b5e1da6892cd2f95b8c6a788663041b01c8ee63e3d8fbab70725fb2a9a27617c"
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Ой, тут ДТП! Троллейбус и легковая. В троллейбусе трое пострадавших. И бензин течёт из машины, лужа под ней!",
+    "bytes": 131701,
+    "sha256": "03d1b41ae9745251e4bc09bcaf17c404075b74595b11b92b333580a05302643b"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Троллейбус с легковой столкнулись. На остановке прямо.",
+    "bytes": 57304,
+    "sha256": "7b2a4fb30c6259b70c5882bd3187a006c9b6ddf7570d0aebf3bff9acdb0b7191"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Из машины бензин течёт. Лужа под ней растекается, запах сильный.",
+    "bytes": 94502,
+    "sha256": "46487d654002446c63139bec2bd03ec51fa279cd737c9760a5a2635abcfd72fd"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Волгоградский проспект, в сторону области. Остановка Завод Спецэлектрод.",
+    "bytes": 77784,
+    "sha256": "d13c9bc15d8be8c58dee51821104b680508e28dfe9a8f7808a06e268c9bb3427"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, Нижегородский район.",
+    "bytes": 39332,
+    "sha256": "50897460ed75ababb2153aaf095c0972cb987f7a16b75a83193070867da0f232"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Пострадавших трое, все в троллейбусе. Не заблокированы, выходят сами.",
+    "bytes": 71515,
+    "sha256": "9e8b8148a41f6a225d54939803a4ed84ef0f1355b2a5339c1780953fb1be8a6e"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Все в сознании. У одной женщины рассечена бровь, остальные ушиблись.",
+    "bytes": 75276,
+    "sha256": "3802c531705699655cc62200ffbe0841decab0b8d8a2186c089d280ae6c26947"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Бензин течёт, а тут люди курят рядом. Я им кричу, чтобы отошли.",
+    "bytes": 76530,
+    "sha256": "1a065f24f9793f064646fe759f40196a3a5a4e504cfb215177e7c75921aa6939"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Троллейбус двадцать седьмого маршрута, бортовой номер одиннадцать четыреста пятьдесят восемь. И ВАЗ, пятнадцатая.",
+    "bytes": 129193,
+    "sha256": "f603aa3f534e4560d13861504b37ae7acd99012032ba0182016b5ce59bf86f8a"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "В троллейбусе человек двадцать было. Пострадали трое.",
+    "bytes": 59812,
+    "sha256": "4b0024a6af1f42328d064090a5baa198db2cb3c79a563bdf8e0c85370ba8ac91"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Минуты три назад. Я на остановке стояла, всё видела.",
+    "bytes": 63991,
+    "sha256": "5382c0a8721f4bb6e394198b1265b894240e4d5fd55fa2dd18b252a844498cbc"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 34316,
+    "sha256": "13eb092ba848898bbabd99f191e5fdf66d3f4e0a84603671bfcbf7244b120b9d"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 93248,
+    "sha256": "fe5629704275e3d401303af374fae7f23f90348588fa65858c172ed89d0d9495"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я очевидец. В троллейбусе не ехала, на остановке ждала.",
+    "bytes": 71515,
+    "sha256": "bc9d9b206bed213860fb5a2890282a9fea1671d0e7cd013c968772d5999da7b0"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Это проспект, подъездов нет.",
+    "bytes": 43511,
+    "sha256": "6f4c4d9a904b6ff9b1202d3cdef0197a650129c0db1d94304a366e0cbe6324ba"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Повторите, пожалуйста, тут все кричат!",
+    "bytes": 44765,
+    "sha256": "40070eb94589e24892adad71edb7634b566973b0a96d5a6e3184b640e0cddc01"
+  },
+  "r16": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю. Водитель троллейбуса людей выводит, я помогаю.",
+    "bytes": 69007,
+    "sha256": "2b1b570a371bacebf3b83e1f1243507b2f9a699bc332f99ddafa5ed3f08c4f77"
+  }
+}

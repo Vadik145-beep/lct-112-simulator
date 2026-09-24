@@ -12,7 +12,9 @@ evaluation engine recounts them from the stored turns.
 A report (``kind: "report"``) is the same record started by the system on the squad's
 timeline (``training.service.sweep_reports``): turn 0 is the squad leader's report instead of
 a greeting, ``report_status`` names the status it stands for, and the leader answers from a
-small set of confirmations. Facts are not counted on reports.
+small set of confirmations. Facts are not counted on reports. A report is an incoming call:
+the record waits for the trainee to answer it in both modes (issue #103), and one nobody
+answered ends as ``not_taken``.
 
 Rows of ``attempts.service_calls``::
 
@@ -25,6 +27,7 @@ Every function works inside the caller's transaction and returns the events it a
 
 from __future__ import annotations
 
+import hashlib
 import uuid
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -41,7 +44,8 @@ from app.domain.evaluation.schemas import (
     DialogTurn,
     ServiceCallRef,
 )
-from app.domain.scenarios import officers
+from app.domain.evaluation.text import detect_topics
+from app.domain.scenarios import caller_back, officers
 from app.errors import ApiError
 from app.events import append_event
 from app.models import (
@@ -53,7 +57,13 @@ from app.models import (
     SessionEvent,
     TrainingSession,
 )
-from app.providers.dialog import ROLE_OFFICER, CallerReply, DialogContext
+from app.providers.dialog import (
+    ROLE_CALLER,
+    ROLE_OFFICER,
+    CallerReply,
+    DialogContext,
+    detect_officer_topics,
+)
 from app.training import service as training
 
 EVENT_STARTED = "service_call.started"
@@ -67,6 +77,16 @@ END_CARD_CLOSED = "card_closed"  # the card was closed with the call still open
 END_NOT_TAKEN = "not_taken"  # a report the dispatcher never picked up / answered in time
 KIND_OUTGOING = "outgoing"
 KIND_REPORT = "report"
+# Звонок диспетчера самому заявителю по номеру из карточки (ответ заказчика 23.09.2026).
+# Собеседник не служба, поэтому у записи звонка служебный код-заглушка.
+KIND_CALLER = "caller"
+CALLER_TARGET = "caller"
+# Studio recordings of the built-in banks in STORAGE_DIR (app.seed, issue #59): one folder
+# per service for the duty officers, one shared for the squad leader — his answers are the
+# same whatever the service.
+STUDIO_OFFICERS_DIR = "tts/seed/_officers"
+STUDIO_SQUAD_KEY = "_squad"
+STUDIO_CALLER_KEY = "_caller"
 _RETRY_WINDOW = 5
 
 
@@ -102,6 +122,11 @@ def open_call(attempt: Attempt) -> dict | None:
 
 def is_report(call: dict) -> bool:
     return call.get("kind") == KIND_REPORT
+
+
+def is_caller(call: dict) -> bool:
+    """A call back to the person who reported the incident, not to a service."""
+    return call.get("kind") == KIND_CALLER
 
 
 def reports_of(attempt: Attempt) -> list[dict]:
@@ -153,20 +178,31 @@ def reference_for(scenario: CardResponseScenario, service: str) -> ServiceCallRe
 def officer_scenario(
     scenario: CardResponseScenario, service: str, service_title: str, attempt: Attempt
 ) -> CallIntakeScenario:
-    """The officer of ``service`` as he is now: the progress answer follows the squad."""
-    return officers.officer_scenario(
+    """The officer of ``service`` as he is now: the progress answer follows the squad, the
+    built-in replies carry their studio recordings when the installation has them."""
+    built = officers.officer_scenario(
         scenario, reference_for(scenario, service), service_title, squad_state(attempt)
     )
+    return with_studio_audio(built, service)
 
 
 def call_scenario(
     scenario: CardResponseScenario, call: dict, attempt: Attempt
 ) -> CallIntakeScenario:
-    """The other side of ``call``: the squad leader with his report, or the duty officer."""
+    """The other side of ``call``: the person who reported the incident, the squad leader
+    with his report, or the duty officer of a service."""
     title = call.get("service_title") or ""
+    if is_caller(call):
+        # Заявитель видит то же, что и диспетчер: выехала бригада или уже работает на месте.
+        arrived = squad_state(attempt) in officers.SQUAD_STATES_ON_SCENE
+        built = caller_back.callback_scenario(scenario, arrived=arrived)
+        # Записи заявителя лежат по голосам: одна и та же фраза мужским и женским голосом
+        # это два разных файла.
+        return with_studio_audio(built, f"{STUDIO_CALLER_KEY}/{built.caller.voice}")
     if is_report(call):
         report = _report_of(scenario, call)
-        return officers.report_scenario(scenario, report, title)
+        leader = officers.report_scenario(scenario, report, title)
+        return with_studio_audio(leader, STUDIO_SQUAD_KEY)
     return officer_scenario(scenario, call["service"], title, attempt)
 
 
@@ -180,6 +216,12 @@ def _report_of(scenario: CardResponseScenario, call: dict) -> BrigadeReport:
     )
 
 
+def passes_facts(call: dict) -> bool:
+    """Facts are passed to a duty officer only: a report brings them, and a call back to the
+    caller of the card is not about passing anything (ответ заказчика 23.09.2026)."""
+    return not is_report(call) and not is_caller(call)
+
+
 def _context(attempt: Attempt, call: dict, officer: CallIntakeScenario) -> DialogContext:
     used = {t["reply_id"] for t in call.get("dialog") or [] if t.get("reply_id")}
     return DialogContext(
@@ -187,7 +229,8 @@ def _context(attempt: Attempt, call: dict, officer: CallIntakeScenario) -> Dialo
         history=turns_of(call),
         conversation_id=f"{attempt.id}:{call['id']}",
         used_reply_ids=used,
-        role=ROLE_OFFICER,
+        # На обратном звонке говорит заявитель, значит и подсказки, и словарь тем — его.
+        role=ROLE_CALLER if is_caller(call) else ROLE_OFFICER,
     )
 
 
@@ -227,9 +270,14 @@ async def start(
     service_title: str,
     *,
     telephony: bool,
+    answer_now: bool = True,
+    kind: str = KIND_OUTGOING,
 ) -> tuple[dict, list[SessionEvent]]:
-    """«Позвонить»: a new call record. Without telephony the officer answers at once and the
-    greeting is turn 0; with telephony the record waits for the SIP leg (``answer``)."""
+    """«Позвонить»: a new call record. Without telephony the other side answers at once and
+    the greeting is turn 0; with telephony the record waits for the SIP leg (``answer``). In a
+    cloud lesson the browser call answers it instead (``answer_now=False``): the first phrase
+    is said by the cloud, and writing our own greeting would double it. ``kind`` tells a call
+    to a service officer from a call back to the caller of the card (``KIND_CALLER``)."""
     if attempt.state in training.CLOSED_STATES:
         raise ApiError(409, "card_closed", "Работа с карточкой завершена: звонить уже нельзя.")
     current = open_call(attempt)
@@ -237,18 +285,18 @@ async def start(
         raise ApiError(
             409,
             "call_in_progress",
-            "Уже идёт разговор со службой: завершите его, прежде чем звонить снова.",
+            "Уже идёт разговор: завершите его, прежде чем звонить снова.",
         )
     now = training.utcnow()
     events: list[SessionEvent] = []
     if attempt.state == ATTEMPT_ISSUED:
         # Calling from a card not opened yet still means it was received.
         events += await training.open_attempt(session, attempt, ts)
-    call = _new_call(service, service_title, now, telephony=telephony)
+    call = _new_call(service, service_title, now, telephony=telephony, kind=kind)
     attempt.service_calls = [*calls_of(attempt), call]
     flag_modified(attempt, "service_calls")
     events.append(await _event(session, attempt, EVENT_STARTED, call))
-    if not telephony:
+    if not telephony and answer_now:
         answered = await answer(session, attempt, ts, version, scenario, call["id"], now=now)
         events.extend(answered[1])
         call = answered[0]
@@ -256,12 +304,19 @@ async def start(
     return call, events
 
 
-def _new_call(service: str, service_title: str, now: datetime, *, telephony: bool) -> dict:
+def _new_call(
+    service: str,
+    service_title: str,
+    now: datetime,
+    *,
+    telephony: bool,
+    kind: str = KIND_OUTGOING,
+) -> dict:
     return {
         "id": uuid.uuid4().hex,
         "service": service,
         "service_title": service_title,
-        "kind": KIND_OUTGOING,
+        "kind": kind,
         "report_status": None,
         "started_at": _iso(now),
         "answered": False,
@@ -278,8 +333,6 @@ def _new_call(service: str, service_title: str, now: datetime, *, telephony: boo
 async def start_report(
     session: AsyncSession,
     attempt: Attempt,
-    ts: TrainingSession,
-    version: ScenarioVersion,
     scenario: CardResponseScenario,
     report: BrigadeReport,
     service_title: str,
@@ -288,9 +341,9 @@ async def start_report(
     now: datetime | None = None,
 ) -> tuple[dict, list[SessionEvent]]:
     """The squad leader calls the dispatcher with ``report``: a new record of kind «report».
-    Without telephony the report is «answered» at once and its text is turn 0; with telephony
-    the record waits for the trainee to pick up (``answer``). The caller makes sure no other
-    call is open and the report was not delivered yet."""
+    The record always waits for the trainee to pick up (``answer``), by the phone with
+    telephony and by the button in the card without it (issue #103). The caller makes sure no
+    other call is open and the report was not delivered yet."""
     if attempt.state in training.CLOSED_STATES:
         raise ApiError(409, "card_closed", "Работа с карточкой завершена.")
     if open_call(attempt) is not None:
@@ -305,10 +358,6 @@ async def start_report(
     attempt.service_calls = [*calls_of(attempt), call]
     flag_modified(attempt, "service_calls")
     events = [await _event(session, attempt, EVENT_STARTED, call)]
-    if not telephony:
-        answered = await answer(session, attempt, ts, version, scenario, call["id"], now=now)
-        events.extend(answered[1])
-        call = answered[0]
     await session.flush()
     return call, events
 
@@ -322,9 +371,11 @@ async def answer(
     call_id: str,
     *,
     now: datetime | None = None,
+    with_opening: bool = True,
 ) -> tuple[dict, list[SessionEvent]]:
-    """The officer picked up: the greeting becomes turn 0 (voiced when a voice is available).
-    Idempotent."""
+    """The officer picked up: the greeting becomes turn 0 (voiced whenever a voice is
+    available). In a cloud call the first phrase is said by the cloud itself, so
+    ``with_opening=False`` leaves the transcript to the provider. Idempotent."""
     call = find_call(attempt, call_id)
     if call.get("ended_at"):
         raise ApiError(409, "call_ended", "Звонок уже завершён.")
@@ -332,17 +383,19 @@ async def answer(
         return call, []
     now = now or training.utcnow()
     officer = call_scenario(scenario, call, attempt)
-    if is_report(call):
-        audio = await _report_audio(version, officer, call)
+    # В облачном звонке первую фразу говорит сам провайдер: своей реплики не пишем и не озвучиваем.
+    if not with_opening:
+        audio, topics = None, []
+    elif is_report(call):
+        audio = await _report_audio(version, officer, _report_of(scenario, call))
         topics = ["report", call.get("report_status") or ""]
     else:
-        audio = await _greeting_audio(version, officer, call["service"])
+        # A call back uses the caller's own folder of recordings, split by voice.
+        key = f"{STUDIO_CALLER_KEY}/{officer.caller.voice}" if is_caller(call) else call["service"]
+        audio = await _greeting_audio(version, officer, key)
         topics = ["greeting"]
-    call = {
-        **call,
-        "answered": True,
-        "answered_at": _iso(now),
-        "dialog": [
+    opening = (
+        [
             _turn(
                 "caller",
                 officer.caller.opening,
@@ -351,8 +404,11 @@ async def answer(
                 method="opening",
                 audio=audio,
             )
-        ],
-    }
+        ]
+        if with_opening
+        else []
+    )
+    call = {**call, "answered": True, "answered_at": _iso(now), "dialog": opening}
     _store(attempt, call)
     if attempt.state in (ATTEMPT_ISSUED, ATTEMPT_RECEIVED):
         attempt.state = ATTEMPT_IN_PROGRESS
@@ -410,6 +466,75 @@ def _find_retry(call: dict, action_id: str | None) -> OfficerTurn | None:
     return None
 
 
+async def external_turn(
+    session: AsyncSession,
+    attempt: Attempt,
+    call_id: str,
+    scenario: CardResponseScenario,
+    role: str,
+    text: str,
+    *,
+    now: datetime | None = None,
+    latency_ms: int | None = None,
+) -> tuple[dict | None, list[SessionEvent]]:
+    """One phrase of a service call heard from the cloud voice (issue #59, browser calls):
+    the dispatcher's own words as the provider transcribed them, or the reply of the officer
+    (the squad leader on a report). Topics come from keywords, so the evaluation reads the
+    turn like any other. ``role`` is «operator» (the trainee) or «caller» (the other side)."""
+    if role not in ("operator", "caller"):
+        raise ValueError(f"unknown dialog role: {role!r}")
+    text = text.strip()
+    if not text:
+        return None, []
+    call = find_call(attempt, call_id)
+    if call.get("ended_at"):
+        return None, []
+    now = now or training.utcnow()
+    if role != "operator":
+        topics = []
+    elif is_caller(call):
+        topics = detect_topics(text)
+    else:
+        topics = detect_officer_topics(text)
+    turn = _turn(
+        role,
+        text,
+        topics,
+        now,
+        method=dialog.EXTERNAL_METHOD,
+        heard=role == "operator",
+        latency_ms=latency_ms if role == "caller" else None,
+    )
+    turns = [*(call.get("dialog") or []), turn]
+    facts = list(call.get("facts_passed") or [])
+    if passes_facts(call):
+        facts = engine.facts_from_dialog(
+            scenario.card,
+            [
+                DialogTurn(role=t["role"], text=t["text"], topics=list(t.get("topics") or []))
+                for t in turns
+            ],
+        )
+    call = {**call, "dialog": turns, "facts_passed": facts, "answered": True}
+    if not call.get("answered_at"):
+        call["answered_at"] = _iso(now)
+    _store(attempt, call)
+    if attempt.state in (ATTEMPT_ISSUED, ATTEMPT_RECEIVED):
+        attempt.state = ATTEMPT_IN_PROGRESS
+    await session.flush()
+    event = await _event(
+        session,
+        attempt,
+        EVENT_TURN,
+        call,
+        turns=len(turns),
+        operator=turn if role == "operator" else None,
+        officer=turn if role == "caller" else None,
+        pending_reply=False,
+    )
+    return turn, [event]
+
+
 async def say(
     session: AsyncSession,
     attempt: Attempt,
@@ -422,12 +547,18 @@ async def say(
     action_id: str | None = None,
     heard: bool = False,
 ) -> OfficerTurn:
-    """The dispatcher's phrase and the officer's answer."""
+    """The dispatcher's phrase and the answer of the other side."""
     call = find_call(attempt, call_id)
+    caller_side = is_caller(call)
     if call.get("ended_at"):
-        raise ApiError(409, "call_ended", "Звонок завершён: дежурному больше не сказать.")
+        whom = "заявителю" if caller_side else "дежурному"
+        raise ApiError(409, "call_ended", f"Звонок завершён: {whom} больше не сказать.")
     if not call.get("answered"):
-        raise ApiError(409, "not_answered", "Дежурный ещё не ответил.")
+        if is_report(call):
+            message = "Вы ещё не ответили на звонок: нажмите «Ответить»."
+        else:
+            message = "Заявитель ещё не ответил." if caller_side else "Дежурный ещё не ответил."
+        raise ApiError(409, "not_answered", message)
     retry = _find_retry(call, action_id)
     if retry is not None:
         return retry
@@ -448,7 +579,7 @@ async def say(
     )
     turns = [*(call.get("dialog") or []), operator, officer_turn]
     facts: list[str] = []
-    if not is_report(call):
+    if passes_facts(call):
         facts = engine.facts_from_dialog(
             scenario.card,
             [
@@ -459,7 +590,7 @@ async def say(
     call = {**call, "dialog": turns, "facts_passed": facts}
     _store(attempt, call)
     pending = False
-    if reply.generated and not is_report(call):
+    if reply.generated and passes_facts(call):
         pending = _add_pending_reply(version, call["service"], reply)
     await session.flush()
     event = await _event(
@@ -483,28 +614,66 @@ async def say(
     )
 
 
+def _text_key(text: str) -> str:
+    """Short digest of a phrase: the voice file of an edited text is a different file."""
+    return hashlib.sha1(text.encode()).hexdigest()[:8]  # noqa: S324 - a cache key, not security
+
+
+def studio_audio(service: str, text: str) -> str | None:
+    """Studio recording of a built-in phrase of a service's officer (issue #59), when the
+    installation carries one (``scripts/voice_replies.py`` → ``app.seed``). Without it the
+    stand synthesizes the phrase as before."""
+    relative = f"{STUDIO_OFFICERS_DIR}/{service}/{_text_key(text)}.mp3"
+    return relative if (dialog.storage_root() / relative).is_file() else None
+
+
+def with_studio_audio(scenario: CallIntakeScenario, service: str) -> CallIntakeScenario:
+    """The officer's replies with their recordings: a reply that has none keeps ``audio``
+    empty and is voiced by the stand."""
+    replies = [
+        r if r.audio else r.model_copy(update={"audio": studio_audio(service, r.text)})
+        for r in scenario.replies
+    ]
+    return scenario.model_copy(update={"replies": replies})
+
+
 def _reply_stem(call: dict, reply: CallerReply) -> str:
+    if is_caller(call):
+        # The caller of the card: his answers are his own, so cache them per attempt call.
+        if reply.reply_id:
+            return f"caller-back-r{reply.reply_id}-{_text_key(reply.text)}"
+        return f"caller-back-{_text_key(reply.text)}"
     if is_report(call):
-        # Report replies quote the report itself: cache per scenario status, not per service.
-        return f"report-{call['id'][:8]}-{len(call.get('dialog') or [])}"
+        # Report replies quote the report itself: cache per phrase, so every trainee who
+        # hears the same squad leader gets the same file instead of a fresh synthesis.
+        return f"report-{call.get('report_status') or 'report'}-{_text_key(reply.text)}"
     if reply.reply_id:
         return f"officer-{call['service']}-r{reply.reply_id}"
-    return f"officer-{call['id'][:8]}-{len(call.get('dialog') or [])}"
+    return f"officer-{call['service']}-{_text_key(reply.text)}"
 
 
 async def _report_audio(
-    version: ScenarioVersion, leader: CallIntakeScenario, call: dict
+    version: ScenarioVersion, leader: CallIntakeScenario, report: BrigadeReport
 ) -> str | None:
-    reply = CallerReply(text=leader.caller.opening, topics=["report"], operator_topics=[])
-    return await dialog.reply_audio(
-        None, version, leader, reply, stem=f"report-{call['id'][:8]}-opening"
+    """The squad leader's report: the recording of the scenario when it has one, else a
+    synthesis cached per scenario version and text (issue #67)."""
+    reply = CallerReply(
+        text=leader.caller.opening, topics=["report"], operator_topics=[], audio=report.audio
     )
+    stem = f"report-{report.status}-{_text_key(report.text)}"
+    return await dialog.reply_audio(None, version, leader, reply, stem=stem)
 
 
 async def _greeting_audio(
     version: ScenarioVersion, officer: CallIntakeScenario, service: str
 ) -> str | None:
-    reply = CallerReply(text=officer.caller.opening, topics=["greeting"], operator_topics=[])
+    opening = officer.caller.opening
+    reply = CallerReply(
+        text=opening,
+        topics=["greeting"],
+        operator_topics=[],
+        audio=studio_audio(service, opening),
+    )
     return await dialog.reply_audio(
         None, version, officer, reply, stem=f"officer-{service}-greeting"
     )

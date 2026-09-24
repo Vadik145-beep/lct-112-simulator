@@ -1,0 +1,162 @@
+{
+  "opening": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Здравствуйте, у нас в торговом центре дым на минус первом этаже! Откуда идёт, непонятно, люди выходят.",
+    "bytes": 91995,
+    "sha256": "8403e6b6f850f137891a4cb97e11195d62af2a204e366e4fc7812a4a01255b4c"
+  },
+  "r1": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Дым на минус первом этаже. Сильный, глаза режет.",
+    "bytes": 54796,
+    "sha256": "10a07947e76c72fdd71935d64165e2afb21f1e8f4d92b07e5c836598dc9145ec"
+  },
+  "r2": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Откуда идёт, не пойму. Огня не видно, но дымит всё сильнее.",
+    "bytes": 65245,
+    "sha256": "064643677f36f624cba709189d28ce969ca694a906ab7881c9817e2825beb934"
+  },
+  "r3": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Торговый центр Электронный рай, у метро Пражская.",
+    "bytes": 46019,
+    "sha256": "d3e79c6df93b1669d070722e55aa327173ef0c0dfbdb5e120e740fb416d876a6"
+  },
+  "r4": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Кировоградская улица, дом пятнадцать. Это адрес центра.",
+    "bytes": 56050,
+    "sha256": "9a4ca9d6dde09b8bf27b186815d9addbe923b35423b570144e1ac0b06565e8e5"
+  },
+  "r5": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Москва, Чертаново Северное.",
+    "bytes": 35570,
+    "sha256": "e6367be5bd5b7147acca4e9c93e65978c6a2f4e3c169bea26df2526132499d9e"
+  },
+  "r6": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Точно не скажу. Вроде все на ногах, но там народу много.",
+    "bytes": 66499,
+    "sha256": "2e616950e0478bf60988b2594d5952fff779d26bf9ad72ea1a3e59b8de636a0e"
+  },
+  "r7": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Сигнализация не сработала, объявлений не было. Люди сами пошли к выходу.",
+    "bytes": 74022,
+    "sha256": "d90f6e931e067f034b3c459ff72a678bff3ec866817217480bd62dbf626b773a"
+  },
+  "r8": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "На минус первом обычно человек сто, сейчас выходят. Я на первом стою.",
+    "bytes": 65245,
+    "sha256": "5495685c297dedf2edf678a7ee8a2ce69e0950fbb62418de6993ede07964da7c"
+  },
+  "r9": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Минут пять назад запахло, потом дым пошёл.",
+    "bytes": 40586,
+    "sha256": "0bac16fd6d73fc05e009962b8dfb4f1e4bfe978c8cab0fcccce530e09ec0a2df"
+  },
+  "r10": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Ивлев Артем Олегович. Я тут работаю, в мебельном.",
+    "bytes": 49781,
+    "sha256": "9dccc51a986c83afc3c432ae6bec46e5bcc77b1237f58eb9d08741f43d777e18"
+  },
+  "r11": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+    "bytes": 58558,
+    "sha256": "f4afcd9a18b7ec46b1037e98e0003693e3bc6bba6631030929f966b810149fcd"
+  },
+  "r12": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Работник я, продавец. Не пострадавший.",
+    "bytes": 47273,
+    "sha256": "cf47dc16c848c509ac0513cb5257f822160d614ea3cfdc4adbdd7a4f2917cf13"
+  },
+  "r13": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Это торговый центр. Минус первый этаж, вход с парковки или с главного.",
+    "bytes": 65245,
+    "sha256": "8a36b07c517cb8576b54eb33081081c49305c27c395a592848b15fa7f4783eb1"
+  },
+  "r14": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Повторите, тут гул стоит, плохо слышно!",
+    "bytes": 41839,
+    "sha256": "43b6e78e88ef8276e57237b0ea69642ba7045f0335c0dbdf7ebffeae1da49ada"
+  },
+  "r15": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Не знаю я. Мне людей выводить или на месте оставаться?",
+    "bytes": 63991,
+    "sha256": "1ef3b8a751f6c4ce672bdfd52e41392f9685ba16febcdfcadfb33de9c7c429c3"
+  }
+}

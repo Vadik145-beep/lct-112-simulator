@@ -1,0 +1,172 @@
+{
+  "opening": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. ДТП на Садовом кольце, пежо и фольксваген. Пострадавших нет, но мы прямо перед въездом в тоннель.",
+    "bytes": 121252,
+    "sha256": "8d8217d2bb10fa52423cb18c1435afec9d8f1a20368d2267501a73099e665aec"
+  },
+  "r1": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "ДТП, две легковые. Пежо и фольксваген.",
+    "bytes": 54796,
+    "sha256": "3bdbd2991e286a140358a08e9153b999515c032be2e2dacdf0775ae67bd5bddb"
+  },
+  "r2": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пострадавших нет, ранений тоже. Машины помяты, и всё.",
+    "bytes": 72768,
+    "sha256": "e04077824023dceaf19d60007e75341fbab8d72ce71a71f1e3ebc0b2a0dbdd48"
+  },
+  "r3": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Садовое кольцо. Ехали от проспекта Мира, проехали Малую Дмитровку.",
+    "bytes": 103279,
+    "sha256": "d5ed3cd24746e14498910345d8f13b7e43aba87fd36302d9d5cb5397fc9fbd57"
+  },
+  "r4": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Стоим прямо перед въездом в тоннель. Улица тут Садовая-Каретная.",
+    "bytes": 74022,
+    "sha256": "079256eb26510fff7a5618b06bcf2073bd028d919e3279ba18026df7564b4670"
+  },
+  "r5": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Москва, Тверской район.",
+    "bytes": 33062,
+    "sha256": "38510d169b89d8fd70c62662fd63e8211ef664b13843e0628dd67ed4609dcf87"
+  },
+  "r6": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пострадавших нет. Оба водителя вышли и стоят на обочине.",
+    "bytes": 70261,
+    "sha256": "859d878d6598f1a9f28e5738f5ca5884c109419b5248d3a1b827a025681eaddd"
+  },
+  "r7": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Тут тоннель сразу, объехать нас трудно. Ничего не течёт.",
+    "bytes": 82799,
+    "sha256": "ab7e9aa41e79048c9255016af4ed35b9602fd88dd52e50adc26b58187ff70b2a"
+  },
+  "r8": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пежо тёмно-синий и фольксваген серебристый.",
+    "bytes": 58558,
+    "sha256": "8eec406ed49b7472c6467358a5a65f7eb026f228f5c01fc407171140633fa7fb"
+  },
+  "r9": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Двое нас, по водителю в каждой машине.",
+    "bytes": 41839,
+    "sha256": "255bb74f7957d93e37ecfe08bd4d503e4d10d3082a8cc8a9a92ba16e3a4bc4b8"
+  },
+  "r10": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Минуты четыре назад. Знак я уже выставила.",
+    "bytes": 54796,
+    "sha256": "a51be91aad7e2c636c17f4082c257c716a296faa8419b48ba59b93d7c606b1ce"
+  },
+  "r11": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 28047,
+    "sha256": "79ecd4ecd9db336aa631cd1d3a400bd4ad3d3ca95c79451927cab87b70650a4a"
+  },
+  "r12": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, восемьсот девяносто семь, пятьдесят шесть, двадцать три.",
+    "bytes": 65245,
+    "sha256": "fbc6a27e9db43dac076798f5e4c7c126b7e88e293f1e451c05e12a96198926b2"
+  },
+  "r13": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я участник. Была за рулём пежо.",
+    "bytes": 40586,
+    "sha256": "4cae863ed5f77fd28a1dc32e05c487b90b86afcdea3193d06f7f83b1b9ea031e"
+  },
+  "r14": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Это проезжая часть, подъездов нет.",
+    "bytes": 39332,
+    "sha256": "a06e2e1bc37ef89962f4ca2c03fa94afe6e62e04c1858fc3cd612b8e1a939c60"
+  },
+  "r15": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, машины сигналят.",
+    "bytes": 44765,
+    "sha256": "682a7ffe27da7b6dd21fe734b38f9866d85035e2efa2176b4befcc483faa1d89"
+  },
+  "r16": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Нам за тоннель откатиться или тут ждать?",
+    "bytes": 49781,
+    "sha256": "95ea471e7e66b740633923372128afaa4eda093114adccf62eea6c45403083c2"
+  }
+}

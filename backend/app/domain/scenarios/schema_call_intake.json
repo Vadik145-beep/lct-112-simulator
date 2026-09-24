@@ -280,6 +280,11 @@
           "default": false,
           "title": "No Contact",
           "type": "boolean"
+        },
+        "calls_back": {
+          "default": false,
+          "title": "Calls Back",
+          "type": "boolean"
         }
       },
       "title": "CallerProfile",

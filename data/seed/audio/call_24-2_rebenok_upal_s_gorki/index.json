@@ -1,0 +1,172 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Пожалуйста, скорее! Сын с горки упал, лицо разбил, кровь идёт!",
+    "bytes": 69007,
+    "sha256": "b1584fd3d6e4a1487fd4d2a8ee28f1dd12281ed951c6683403ec9aa82057ba9b"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Сын с горки упал! Лицом вниз, кровь из носа и губа разбита.",
+    "bytes": 74022,
+    "sha256": "ce4bfdc36bbd35516667270658dfd00cf97a6f57c471636cd8cb0001c5bb1712"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Ой, кровь прямо по лицу течёт, он кричит!",
+    "bytes": 46019,
+    "sha256": "98470331b7354ec4ca7fbbde6469acd9aa96b4e2ca1a4f31bb41d2487060f3c2"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Погонный проезд, дом один. Мы во дворе, на детской площадке.",
+    "bytes": 59812,
+    "sha256": "52da7e6fa3c232654d941e4f52d95eba4610a2344a85036922be8c216f48ea7b"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Корпус четыре. Площадка между домами, её от дороги видно.",
+    "bytes": 66499,
+    "sha256": "7c437ad8d4c585ac3528b573f189fbb8bc36e4917410468dec6eb725464afb1f"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, Богородское.",
+    "bytes": 31808,
+    "sha256": "cee0be2cbdd7220223ebe38b2749a7f87c411d7f76686ceb0bb7bfd6c2d5255b"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Сын, Костя. Касанов Константин Константинович, восемь лет.",
+    "bytes": 76530,
+    "sha256": "9ee658a836f0c9e0c821becb018a41c462c346e543a341ea8a9bd35dadfea0eb"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "В сознании, плачет. Сознание не терял, я рядом была, всё видела.",
+    "bytes": 76530,
+    "sha256": "c37acc733fc9071cef5ef16fd5122c86c4623c58e2c035b8a3ffe887e17f1645"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Нет, ничего не угрожает. Мы в стороне сидим, я его на лавочку посадила.",
+    "bytes": 69007,
+    "sha256": "16666c2276ef35d3b74ca70ae56d05439a7e64dc863877051ebd5534768156a4"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Он один упал. Других детей на площадке сейчас нет.",
+    "bytes": 59812,
+    "sha256": "e9549b6d45f5ede28b3e4b4ae022df9a424de79e869712590e2ecb9dfc491414"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Только что, пару минут назад. Кровь салфеткой прижимаю.",
+    "bytes": 69007,
+    "sha256": "8b3b8e2349360693f14fc51219c8afc2a6d24391cb04ba61a789bc1332c46146"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я мама его. Сына зовут Касанов Константин Константинович.",
+    "bytes": 77784,
+    "sha256": "6b8e635bce8a519560a20a1ef3ee02c994103c85206e788ef706d5dcbc288558"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 57304,
+    "sha256": "9bd72317fa553ba7f8e74336196840d994d6798097f16e21d5071000b8adc546"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мама я. Мы вдвоём гуляли.",
+    "bytes": 35570,
+    "sha256": "a6efccd477f79388c1993cdb05215191549ea12219dc76a55724d12c0dc69305"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мы на улице, во дворе. В подъезд не заходили.",
+    "bytes": 51035,
+    "sha256": "924d090f561a3c83216a69b4e2f8564e67d988a1915a990304768c2b73363982"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Повторите, пожалуйста, он плачет, я плохо слышу.",
+    "bytes": 46019,
+    "sha256": "badbdfd40392df84f4e2ab80f573b5d44c756b1ab8c1833fad74d72ce1daa79f"
+  },
+  "r16": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю я, приезжайте скорее, у него кровь!",
+    "bytes": 46019,
+    "sha256": "ff798f9a9a372ef7be62ad4e3cf6580c209a441c42e52d9de049c1c67d169ee2"
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "kind": "call_intake",
+  "title": "ДТП без пострадавших на Садовом напротив министерства",
+  "ticket_ref": "28-2",
+  "difficulty": 2,
+  "norm_seconds": 60,
+  "caller": {
+    "persona": "calm",
+    "voice": "ru_female_1",
+    "noise": "street",
+    "opening": "Здравствуйте. ДТП на Садовом кольце, пежо и фольксваген. Пострадавших нет. Мы напротив министерства иностранных дел.",
+    "facts": {
+      "what_happened": "столкнулись две легковые машины, пежо и фольксваген, пострадавших и ранений нет",
+      "address": "Смоленская-Сенная площадь, Садовое кольцо напротив министерства иностранных дел, в сторону Тверской улицы",
+      "injured": "пострадавших нет",
+      "danger": "стоят в правом ряду, движение идёт мимо",
+      "vehicle": "Пежо и Фольксваген, обе легковые",
+      "caller_name": "Иванова Елена Сергеевна",
+      "callback_phone": "916-897-56-23"
+    },
+    "behaviour": "спокойна, говорит коротко; ориентир по министерству даёт сразу, название площади вспоминает по вопросу",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "ДТП, две машины. Пежо и фольксваген.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "what_happened",
+      "text": "Пострадавших нет, ранений нет. Обошлось железом.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "address",
+      "text": "Садовое кольцо, напротив министерства иностранных дел. Едем в сторону Тверской.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "address",
+      "text": "Площадь тут Смоленская-Сенная, если по названию.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "region",
+      "text": "Москва, район Арбат.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "injured",
+      "text": "Пострадавших нет. Оба водителя вышли, целы.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "danger",
+      "text": "Стоим в правом ряду. Ничего не течёт, не дымит.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "vehicle",
+      "text": "Пежо серый и фольксваген белый. Обе легковые.",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "count_people",
+      "text": "Двое, по одному в машине.",
+      "approved": true
+    },
+    {
+      "id": 10,
+      "topic": "time",
+      "text": "Минуты две назад. Только что произошло.",
+      "approved": true
+    },
+    {
+      "id": 11,
+      "topic": "caller_name",
+      "text": "Иванова Елена Сергеевна.",
+      "approved": true
+    },
+    {
+      "id": 12,
+      "topic": "callback_phone",
+      "text": "Девять один шесть, восемьсот девяносто семь, пятьдесят шесть, двадцать три.",
+      "approved": true
+    },
+    {
+      "id": 13,
+      "topic": "caller_role",
+      "text": "Я участник, за рулём была.",
+      "approved": true
+    },
+    {
+      "id": 14,
+      "topic": "entrance_floor_code",
+      "text": "Это проезжая часть, подъездов нет.",
+      "approved": true
+    },
+    {
+      "id": 15,
+      "topic": "repeat",
+      "text": "Повторите, пожалуйста, тут шумно.",
+      "approved": true
+    },
+    {
+      "id": 16,
+      "topic": "unknown",
+      "text": "Не знаю. Ждём вас на месте.",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "injured",
+    "vehicle",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "ДТП",
+      "Транспорт легковой"
+    ],
+    "incident_type": "2.1.1.0",
+    "flags": {
+      "injured": false
+    },
+    "address": {
+      "street": "Смоленская-Сенная площадь",
+      "okrug": "ЦАО",
+      "district": "район Арбат",
+      "descriptive": "Садовое кольцо напротив министерства иностранных дел, в сторону Тверской улицы"
+    },
+    "caller": {
+      "name": "Иванова Елена Сергеевна",
+      "role": "участник",
+      "phone": "916-897-56-23"
+    },
+    "description_keywords": [
+      "дтп без пострадавших",
+      "пежо и фольксваген",
+      "без ранений"
+    ],
+    "description": "ДТП без пострадавших и без ранений, пежо и фольксваген.",
+    "expected_services": [
+      "102",
+      "codd",
+      "mayor_office",
+      "ntu",
+      "fso",
+      "cukb_mo"
+    ]
+  }
+}

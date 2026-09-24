@@ -1,0 +1,162 @@
+{
+  "opening": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Здравствуйте. Я дрова рубила и топором по руке себе попала. Кровь сильно идёт, замотала полотенцем.",
+    "bytes": 153435,
+    "sha256": "40794812a1f8f7cc83a0f7bb6eb4f3d3f96fee46e5844f52dae0c52922c617f0"
+  },
+  "r1": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Дрова рубила и по руке себе попала. Топором, случайно, соскользнул.",
+    "bytes": 86979,
+    "sha256": "f1e0a01444b965a19bd5529045fa38653898c154eefd1403b49b0bff413cb592"
+  },
+  "r2": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Кровь сильно идёт. Полотенцем замотала, а оно уже промокло.",
+    "bytes": 79038,
+    "sha256": "0c41a51ea140c7578dd526899430c7b9eba182c5dae02852c2e20bd2e1ece83b"
+  },
+  "r3": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Это область, Московская. От Клина в сторону Лотошино.",
+    "bytes": 67753,
+    "sha256": "ac0429ab10a92bdf1f4c446403ddb400b4f87413f030443ebafda40302c0e197"
+  },
+  "r4": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Не доезжая Теряевских прудов надо повернуть к церкви. Мой дом напротив остановки.",
+    "bytes": 112475,
+    "sha256": "27e2d7e5ae37b6ed359307743c1bbebcc29e8f253d39bcd8bf599a67e50f30b9"
+  },
+  "r5": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Пострадавшая я. Перова Ирина Ивановна, семьдесят лет.",
+    "bytes": 82799,
+    "sha256": "d885d96d212e210d0e9f63288aed763fb486ba17aebcfd8c40d1844ba6a92df8"
+  },
+  "r6": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "В сознании, сижу. Рука ниже локтя, рана глубокая.",
+    "bytes": 82799,
+    "sha256": "cd150d83d57495f8abb01390d8c437bb419c8b9d15e9d13454e2d1d4b073588c"
+  },
+  "r7": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Я дома одна. Помочь мне тут некому.",
+    "bytes": 59812,
+    "sha256": "c441a5b09022edbc3287b43aeac62be3b2ba8f0114e75283e1d4c6cf59fe0d9c"
+  },
+  "r8": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Одна я. Соседи через два дома, дачники, сейчас никого.",
+    "bytes": 90741,
+    "sha256": "9c60550917f01c695d5324837a696a7170bc3fcf4982ce6f01abe3a9c87d425a"
+  },
+  "r9": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Минут десять назад. Сначала перевязать пробовала, потом уж звоню.",
+    "bytes": 76530,
+    "sha256": "e9a0f8ec9b25b412fb87598cb2176b658661da8a2c5304c8e57ca122ad7a1867"
+  },
+  "r10": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Перова Ирина Ивановна. Вызываю себе.",
+    "bytes": 49781,
+    "sha256": "ee7ec0b55cc177724e2f28e3d16cf3bed7a58ba4aa37434dfc1cd3fe52f26511"
+  },
+  "r11": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 107459,
+    "sha256": "d1ca8dff7cab8fb2b266438a0e18535ebe3bc776fbfe23a3a98eb8010f0b46ad"
+  },
+  "r12": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Я сама пострадавшая. Никто другой не звонит.",
+    "bytes": 62319,
+    "sha256": "74acb1ffbd11264f803672612484b76e1658ddb537a4958720056735ae11d873"
+  },
+  "r13": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Дом частный, один этаж. Калитка не заперта, заходите.",
+    "bytes": 76530,
+    "sha256": "69356c8aefe6de519c61cf592978bc73ba0e3e42d53265ff17f53b01cb646177"
+  },
+  "r14": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Повторите, пожалуйста, я плохо слышу.",
+    "bytes": 35570,
+    "sha256": "e41f8ce15a0b0645ea512def9b55042472aa2f7d37af9e4ef55e99fbce6bb4ae"
+  },
+  "r15": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Не знаю, милая. Мне руку выше перетянуть?",
+    "bytes": 51035,
+    "sha256": "9cea891f62dbeecc5d37213c29f39932a635e06f6eeb126d23beaf4230357b44"
+  }
+}

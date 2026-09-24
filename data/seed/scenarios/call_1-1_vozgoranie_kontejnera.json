@@ -1,0 +1,162 @@
+{
+  "kind": "call_intake",
+  "title": "Возгорание мусорного контейнера у депо",
+  "ticket_ref": "1-1",
+  "difficulty": 2,
+  "norm_seconds": 60,
+  "caller": {
+    "persona": "calm",
+    "voice": "ru_male_1",
+    "noise": "street",
+    "opening": "Здравствуйте. У нас тут мусорный контейнер горит, у депо. Пострадавших нет, но дым сильный.",
+    "facts": {
+      "what_happened": "горит мусорный контейнер, открытое пламя, пострадавших нет",
+      "address": "депо около станции Москва-Пассажирская Киевская, длинное помещение недалеко от участкового пункта полиции",
+      "injured": "пострадавших нет",
+      "danger": "рядом длинное здание депо, дым тянет на пути",
+      "caller_name": "Сидоров Иван Сергеевич",
+      "callback_phone": "916-126-34-71"
+    },
+    "behaviour": "спокоен, говорит по делу; точного адреса нет, ориентируется по депо и участковому пункту; готов встретить пожарных у ворот, если попросят",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Мусорный контейнер горит. Открытым пламенем, дым чёрный идёт.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "what_happened",
+      "text": "Один контейнер занялся, рядом ещё два стоят. Тушить нечем.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "address",
+      "text": "Это депо, около станции Москва-Пассажирская Киевская.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "address",
+      "text": "Длинное такое помещение, недалеко от участкового пункта полиции. Номера дома тут нет.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "region",
+      "text": "Москва, Дорогомилово.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "injured",
+      "text": "Пострадавших нет. Рядом никого не было, когда загорелось.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "danger",
+      "text": "Здание депо метрах в десяти. Дым на пути тянет.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "count_people",
+      "text": "Я тут один стою. Остальные внутри работают.",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "time",
+      "text": "Минуты три назад загорелось. Я сразу вышел и звоню.",
+      "approved": true
+    },
+    {
+      "id": 10,
+      "topic": "caller_name",
+      "text": "Сидоров Иван Сергеевич.",
+      "approved": true
+    },
+    {
+      "id": 11,
+      "topic": "callback_phone",
+      "text": "Девять один шесть, сто двадцать шесть, тридцать четыре, семьдесят один.",
+      "approved": true
+    },
+    {
+      "id": 12,
+      "topic": "caller_role",
+      "text": "Я тут работаю, очевидец. Сам увидел и позвонил.",
+      "approved": true
+    },
+    {
+      "id": 13,
+      "topic": "entrance_floor_code",
+      "text": "Это на улице, у ворот. Подъездов тут нет.",
+      "approved": true
+    },
+    {
+      "id": 14,
+      "topic": "repeat",
+      "text": "Повторите, пожалуйста, тут состав проходит.",
+      "approved": true
+    },
+    {
+      "id": 15,
+      "topic": "unknown",
+      "text": "Не знаю. Могу встретить у ворот, чтобы не искали.",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "injured",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "на улице",
+      "мусор",
+      "открытое пламя"
+    ],
+    "incident_type": "1.1.1.1",
+    "flags": {
+      "injured": false
+    },
+    "address": {
+      "descriptive": "депо около станции Москва-Пассажирская Киевская, длинное помещение недалеко от участкового пункта полиции"
+    },
+    "caller": {
+      "name": "Сидоров Иван Сергеевич",
+      "role": "очевидец",
+      "phone": "916-126-34-71"
+    },
+    "description_keywords": [
+      "возгорание",
+      "мусорного контейнера",
+      "пострадавших нет",
+      "дым"
+    ],
+    "description": "Возгорание мусорного контейнера у депо, пострадавших нет, идёт дым.",
+    "expected_services": [
+      "101",
+      "gkh",
+      "codd",
+      "mayor_office",
+      "oati",
+      "territorial_oiv",
+      "territorial_oiv_tinao",
+      "ntu",
+      "fso",
+      "msr_fires",
+      "cukb_mo",
+      "mosecomonitoring"
+    ]
+  }
+}

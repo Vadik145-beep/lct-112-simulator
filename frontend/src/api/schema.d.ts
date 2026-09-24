@@ -716,7 +716,9 @@ export interface paths {
         put?: never;
         /**
          * Start Service Call
-         * @description ����������� a service from the card: one call at a time, only while the card is open.
+         * @description ����������� from the card: one call at a time, only while the card is open. The target
+         *     is a service of the strip or the caller of the card himself (``officer.CALLER_TARGET``,
+         *     ����� ��������� 23.09.2026: ���������� ��� ����� �������� ����� �� ����������).
          */
         post: operations["start_service_call_api_attempts__attempt_id__service_call_post"];
         delete?: never;
@@ -761,6 +763,28 @@ export interface paths {
          *     the answer is 503 and the dispatcher types instead � as in the 112 operator's card.
          */
         post: operations["speak_to_officer_api_attempts__attempt_id__service_call__call_id__utterance_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/service-call/{call_id}/answer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Answer Service Call
+         * @description ���������� on the squad's incoming report (issue #103). With telephony the trainee
+         *     answers the phone and Asterisk reports it; this is the path of the card without
+         *     telephony. Answering twice changes nothing.
+         */
+        post: operations["answer_service_call_api_attempts__attempt_id__service_call__call_id__answer_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1652,6 +1676,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/attempts/{attempt_id}/service-call/{call_id}/cloud-call": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Service Web Call
+         * @description Keys of the browser call for a call on the card (issue #59): the cloud plays the duty
+         *     officer or the squad leader. 409 when the lesson is not in the cloud mode or the calls
+         *     go through telephony; 503 when the cloud is unreachable (the panel then keeps the text
+         *     and microphone path).
+         */
+        post: operations["start_service_web_call_api_attempts__attempt_id__service_call__call_id__cloud_call_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/attempts/{attempt_id}/cloud-call/failed": {
         parameters: {
             query?: never;
@@ -2323,6 +2370,8 @@ export interface components {
             norm_seconds: number;
             /** Hints Enabled */
             hints_enabled: boolean;
+            /** Dialog Mode */
+            dialog_mode: string;
             /** Started At */
             started_at: string | null;
             /** Finished At */
@@ -4163,6 +4212,11 @@ export interface components {
         /** ScenarioListItem */
         ScenarioListItem: {
             /**
+             * Delivered
+             * @default false
+             */
+            delivered: boolean;
+            /**
              * Id
              * Format: uuid
              */
@@ -4257,6 +4311,11 @@ export interface components {
              */
             id: string;
             /**
+             * Delivered
+             * @default false
+             */
+            delivered: boolean;
+            /**
              * Kind
              * @enum {string}
              */
@@ -4307,6 +4366,8 @@ export interface components {
             fully_approved: boolean;
             /** Problems */
             problems: string[];
+            /** Quality */
+            quality: string[];
             /** Services */
             services: components["schemas"]["NoiseOut"][];
             /** Versions */
@@ -4333,8 +4394,10 @@ export interface components {
         };
         /**
          * ServiceCallOut
-         * @description A call on the card: the dispatcher's call to a service officer (issue #36, ``outgoing``)
-         *     or the squad leader's report to the dispatcher (``report``, customer 21.09.2026).
+         * @description A call on the card: the dispatcher's call to a service officer (issue #36, ``outgoing``),
+         *     the squad leader's report to the dispatcher (``report``, customer 21.09.2026) or the
+         *     dispatcher's call back to the person who reported the incident (``caller``, customer
+         *     23.09.2026).
          */
         ServiceCallOut: {
             /** Id */
@@ -4348,7 +4411,7 @@ export interface components {
              * @default outgoing
              * @enum {string}
              */
-            kind: "outgoing" | "report";
+            kind: "outgoing" | "report" | "caller";
             /** Report Status */
             report_status?: string | null;
             /** Report Status Title */
@@ -4621,6 +4684,8 @@ export interface components {
             norm_seconds: number;
             /** Hints Enabled */
             hints_enabled: boolean;
+            /** Dialog Mode */
+            dialog_mode: string;
             /** Started At */
             started_at: string | null;
             /** Finished At */
@@ -6313,6 +6378,38 @@ export interface operations {
             };
         };
     };
+    answer_service_call_api_attempts__attempt_id__service_call__call_id__answer_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+                call_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceCallResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     end_service_call_api_attempts__attempt_id__service_call__call_id__end_post: {
         parameters: {
             query?: never;
@@ -7937,6 +8034,38 @@ export interface operations {
             header?: never;
             path: {
                 attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebCallOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    start_service_web_call_api_attempts__attempt_id__service_call__call_id__cloud_call_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+                call_id: string;
             };
             cookie?: never;
         };

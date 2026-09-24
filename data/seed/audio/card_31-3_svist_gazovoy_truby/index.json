@@ -1,0 +1,34 @@
+{
+  "report-arrived": {
+    "sha256": "79f284384ccd5af166db3fbd420531b0043e4209",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Алло, это снова старший группы. Прибыли по адресу: улица Вавилова, дом 81, корпус 1, приступаем.",
+    "bytes": 114982
+  },
+  "report-response_started": {
+    "sha256": "525fe790eeb2c7e4e06760fdee0e0128bc75c1bf",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Алло, диспетчер? Это старший группы реагирования. Выехали по адресу: улица Вавилова, дом 81, корпус 1.",
+    "bytes": 122506
+  },
+  "report-works_done": {
+    "sha256": "e4a6affcdd44698111b83b7a1e14f398a662c85c",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[tired] [exhales]",
+    "text": "Алло, диспетчер? Старший группы. Работы завершены: устранена утечка на резьбовом соединении, газоснабжение восстановлено.",
+    "bytes": 135462
+  },
+  "report-works_started": {
+    "sha256": "f8914d8a3d0f8c7a08a1467ab9434cbc64315187",
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Алло, диспетчер, старший группы. Докладываю: перекрыт кран на вводе, проверка соединений.",
+    "bytes": 86979
+  }
+}

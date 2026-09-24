@@ -1,0 +1,162 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Ой, у нас человек упал! На стройке, в котлован. Глубоко, метра четыре. Он стонет, сам не выберется.",
+    "bytes": 119998,
+    "sha256": "0e07f8b7c1227b3d139d178cda19b3adab094ba89786bd8be9bed6dfdca193ae"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Рабочий в котлован упал. На стройке жилого дома, тут дом строят.",
+    "bytes": 71515,
+    "sha256": "5b8f4f3c5d561a6ec85514e5899f3f1bf867131582b6b25b881fc11769c84e7f"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Он внизу лежит, стонет. Мужики сверху кричат ему, он отзывается.",
+    "bytes": 82799,
+    "sha256": "220aa3c9eee60f3ea8a71745f60305138b9495078cd0eecb67f4b50195359a30"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Это не Москва. Московская область, Химки, микрорайон Подрезково.",
+    "bytes": 81546,
+    "sha256": "fdef84c30f0ada4d8eed671ef25329a06aee0d427e816b1d40a21b085dfa4f83"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Стройка между улицей Центральной и улицей Первой Лесной.",
+    "bytes": 59812,
+    "sha256": "115013a3c952fe5a5f638c4090e53ac2d2e73542ad69dcd5457e68bea08dfb0b"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Пострадавший один. Мужчина, лет сорок, в сознании.",
+    "bytes": 57304,
+    "sha256": "912c09fd48ac2d5b58f5c310bed40bfcc88328e04fa3c81a3a2a8536e1b7fa2d"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Говорит, спина и нога. Встать не может, лежит на боку.",
+    "bytes": 69007,
+    "sha256": "911b9009c3694be20019d1cc6281d283badcf0ccb8c45a037b938f817bbd986d"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Котлован метра четыре глубиной. Стенки сыпятся, лестницы нет.",
+    "bytes": 79038,
+    "sha256": "9256d4e8e51d6f139c75d3fcdd241fec65b1c26a2bf4692a2379075ad401765e"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Внизу он один. Наверху бригада, человек шесть.",
+    "bytes": 61066,
+    "sha256": "108d1eb68fd4153b7871b2435f05aa60691f0aa4caabb9aba752ca0b014a127b"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Минут пять назад упал. Сразу вам звоним.",
+    "bytes": 57304,
+    "sha256": "993b5d7dc269e364ae0815a74ccf028a8087f945abcb6bdc51709edf6da58e08"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 30555,
+    "sha256": "ecd9d58367bb281e792c53e13380e7c8e8f625249d57661110fbbe029ea8a670"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 84471,
+    "sha256": "fe15d3a652e96069a0c373203ff8cfa628773c4fd7e460d12af9ff1dc10ed04c"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я очевидец. Тут рядом живу, увидела через забор.",
+    "bytes": 57304,
+    "sha256": "6589297511117aecf131b23860b7a7078a8be7a5a7e8cfd671d77e84aa26ec83"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Тут стройка, подъездов нет. Заезд с улицы Центральной, ворота открыты.",
+    "bytes": 82799,
+    "sha256": "441bc2748e1319557bc4a27f42d1f3df0141657fd91fb2729d93e22bd70db14b"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Повторите, пожалуйста, тут техника шумит.",
+    "bytes": 43511,
+    "sha256": "b4582ea3dbdc473c3c95f0857d19b8bc5fcb32f4cb51a9f50c4688da579680e3"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю. Прораба позвать?",
+    "bytes": 34316,
+    "sha256": "bef3c8578818e311cce27ae836469a4b2685d6abcb980d959fd015accff499e8"
+  }
+}

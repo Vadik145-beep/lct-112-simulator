@@ -1,0 +1,162 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Ой, ребёнок в машине закрылся! Четыре года, двери заблокировались, я снаружи, ключи внутри!",
+    "bytes": 88233,
+    "sha256": "1523136db296609bff79c7d02a1cec3f31cd4b38a65487e774157694bc917c90"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Ребёнок в машине закрылся. Четыре года ему, двери заблокировались.",
+    "bytes": 66499,
+    "sha256": "40e30962796a28c259dd880c50dc7eefda8cf051fad7fb19b08f948d7a7e2742"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Ключи внутри остались, на сиденье. Я снаружи, открыть не могу.",
+    "bytes": 71515,
+    "sha256": "9093311980a4fa041a0d29da434eb0058934d0a08e8b9ea772906f42045e36a2"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Парковка ресторана Вайт, около Живописной бухты. Живописная улица.",
+    "bytes": 69007,
+    "sha256": "47907d3c50297bbf9cd9b20814c59a8cb910381e86fb0c807f42a308ca69bb35"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, Щукино.",
+    "bytes": 34316,
+    "sha256": "a2ffd3e039d67e3432c0a5aa7cfc8bfe8a3643fc9104bab6ead7fb3df5df3e7f"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Он не пострадал, плачет только. Ударов не было.",
+    "bytes": 47273,
+    "sha256": "fb9e0ea721f7bc6cddecc9661d23581fe42d9e77d8c63b2d71bd205a2ae74ddf"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Машина на солнце стоит, окна закрыты все. Он уже красный весь.",
+    "bytes": 66499,
+    "sha256": "10686fa61707ff3bad8b6018be553fb49df2d4b6df36196705a5b74ff47a963c"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "В машине он один. Я рядом, и охранник подошёл.",
+    "bytes": 52288,
+    "sha256": "622e1fdc5695fdaefa7a7e7330fbca479bb41fd1e4f4356d28f6a840f3992c1f"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Машина наша, Хёндай синий. Стоит на парковке у входа.",
+    "bytes": 63991,
+    "sha256": "ea1c4d688bef410aa811c8f4109acd987ff36850dc35a1e889b441e1f67ec735"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Минуты три назад закрылось. Я сразу набрала.",
+    "bytes": 53542,
+    "sha256": "1ed868c26bfa7e6b9cc21f3bca34346f49c1e4e744d50dde5f522ecc05a95bc4"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Иванова Елена Сергеевна.",
+    "bytes": 30555,
+    "sha256": "45fcbd9652cec4d5fd9b26cdd60fd81c2d0da9b7bb6e1dd947eb9dc94ff51dbd"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 74022,
+    "sha256": "5eee533a63c9a7efabfa9b455a95ea97b07ee4724fc9d85011c3ec1bf7df8390"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я мать. Это мой сын и моя машина.",
+    "bytes": 41839,
+    "sha256": "cde12aa7ae50c5d206775e30af467567848285215268d5df8facdc263638d5e3"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Парковка открытая, подъездов нет. Заезд с Живописной.",
+    "bytes": 54796,
+    "sha256": "5c352df9428b4863f6cc4d78d6450b97149683591db83260594d2e9cc4b9b408"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Повторите, пожалуйста, он кричит, я не слышу!",
+    "bytes": 47273,
+    "sha256": "0f941a47ae817c2fb8988c3ab1a47ac6260766d2cc2df289a1e28a9a010915ee"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[urgent] [fast]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю. Мне стекло разбить или вас дождаться?",
+    "bytes": 46019,
+    "sha256": "0fbf43c4f6947dea46cde501cc78c89b26b2e0fcade214e57c583c13170d7d6a"
+  }
+}

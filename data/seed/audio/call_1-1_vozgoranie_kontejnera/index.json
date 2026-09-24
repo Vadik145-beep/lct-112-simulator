@@ -1,0 +1,162 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. У нас тут мусорный контейнер горит, у депо. Пострадавших нет, но дым сильный.",
+    "bytes": 117490,
+    "sha256": "379acc53cfb1ff3c85856f0fdb10043b6f82e99557e8437b25860ad2c52a7e23"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Мусорный контейнер горит. Открытым пламенем, дым чёрный идёт.",
+    "bytes": 74022,
+    "sha256": "6ec2e82b92b1082fc2c4ce67710c2bbec3cd45bc771da02d9c8468e19ba6887b"
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Один контейнер занялся, рядом ещё два стоят. Тушить нечем.",
+    "bytes": 58558,
+    "sha256": "196fb043b39d65ead2d32422d8b88882ca8ad7359efd0e0f908fb39843ff5cc8"
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Это депо, около станции Москва-Пассажирская Киевская.",
+    "bytes": 65245,
+    "sha256": "a358e76069a9eb2db64edbf6c6c37c5eaccf776e8b4eeb9ddc88ae5964fb3047"
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Длинное такое помещение, недалеко от участкового пункта полиции. Номера дома тут нет.",
+    "bytes": 95756,
+    "sha256": "9352da252b7490721d0ecc9191f67c460a7ba551da62c538dae934f9fbd9cfbb"
+  },
+  "r5": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Москва, Дорогомилово.",
+    "bytes": 30555,
+    "sha256": "6031720d58811b2418dc0c3fd8ede32bf5ecff27e86c9a347939842dc16acd42"
+  },
+  "r6": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пострадавших нет. Рядом никого не было, когда загорелось.",
+    "bytes": 58558,
+    "sha256": "d6404a76d32787d0465af4aa699b51870f4197e225efc0586d6813780d74ee0b"
+  },
+  "r7": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здание депо метрах в десяти. Дым на пути тянет.",
+    "bytes": 53542,
+    "sha256": "a74bfc661d11c0f8ef42ad7336d889aa679a3ccde5869006f773e6a476a7b884"
+  },
+  "r8": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я тут один стою. Остальные внутри работают.",
+    "bytes": 74022,
+    "sha256": "2f2587c934e5860326b6ca424a56b58eb0f58949cbb52058b2481a3950df3f7e"
+  },
+  "r9": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Минуты три назад загорелось. Я сразу вышел и звоню.",
+    "bytes": 61066,
+    "sha256": "b5d18a8419068887db4a616959e01ec909076794a1fc2eff9e289c6fa942df2d"
+  },
+  "r10": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Сидоров Иван Сергеевич.",
+    "bytes": 33062,
+    "sha256": "756e4dc780789f1b9f39adb46b5d0c118daf0fb6c076470a5899383663972079"
+  },
+  "r11": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, сто двадцать шесть, тридцать четыре, семьдесят один.",
+    "bytes": 67753,
+    "sha256": "99394ff6117fe87e336584e781ef9569027c3d27d12e6928674e06fd5cb6ed41"
+  },
+  "r12": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я тут работаю, очевидец. Сам увидел и позвонил.",
+    "bytes": 52288,
+    "sha256": "1c75d7e121fd87c535ae8d7c2c09914b8d77f9621469c480c71812604c3c79ec"
+  },
+  "r13": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Это на улице, у ворот. Подъездов тут нет.",
+    "bytes": 65245,
+    "sha256": "c75bc1bab3a294f1bc931ef95fdfe9db722bb26e44309ef81c59f46f5d825808"
+  },
+  "r14": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, тут состав проходит.",
+    "bytes": 43511,
+    "sha256": "1fb976a064499f5edef64b17e0f109a3c6493c6c3ac5527034f3501c7abaad5f"
+  },
+  "r15": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Могу встретить у ворот, чтобы не искали.",
+    "bytes": 59812,
+    "sha256": "3f45e117dd53e53d14fb91ad28711a60f6d2274dac1d00243f63ff3685217334"
+  }
+}

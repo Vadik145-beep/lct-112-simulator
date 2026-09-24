@@ -7,7 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from app.domain.evaluation.schemas import CallIntakeScenario, DialogTurn
+from app.domain.evaluation.schemas import CallIntakeScenario, DialogTurn, Reply
+from app.domain.scenarios import fallback
 from app.providers.dialog import (
     FALLBACK_UNKNOWN,
     ButtonsDialog,
@@ -17,6 +18,7 @@ from app.providers.dialog import (
     HybridDialog,
     SelectDialog,
     build_dialog_provider,
+    canned_reply,
     select_messages,
     select_schema,
 )
@@ -73,7 +75,68 @@ async def test_buttons_unknown_topic_gets_canned_answer(ctx: DialogContext) -> N
     reply = await ButtonsDialog().reply(ctx, "Какая у вас погода?")
     assert reply.reply_id is None
     assert reply.topics == ["unknown"]
-    assert reply.text == FALLBACK_UNKNOWN
+    # A scenario without an «unknown» reply is answered from the bank, in the caller's voice.
+    voice = ctx.scenario.caller.voice
+    assert reply.text == fallback.pick("unknown", voice, set()).text(voice)
+    assert reply.audio == f"tts/seed/_fallback/{voice}/dont_know.mp3"
+
+
+async def test_bank_answers_when_the_scenario_reply_was_already_said(ctx: DialogContext) -> None:
+    """The scenario has one «repeat» reply; the second time the operator asks, the caller takes
+    a phrase from the bank instead of saying the same line again."""
+    first = canned_reply(ctx, "repeat", [], "buttons")
+    assert first.reply_id == reply_by_topic(ctx.scenario, "repeat").id
+    ctx.used_reply_ids.add(first.reply_id)
+    ctx.history.append(DialogTurn(role="caller", text=first.text, topics=first.topics))
+
+    second = canned_reply(ctx, "repeat", [], "buttons")
+    assert second.reply_id is None
+    assert second.text != first.text
+    voice = ctx.scenario.caller.voice
+    assert second.text == fallback.pick("repeat", voice, {first.text}).text(voice)
+    assert second.audio == f"tts/seed/_fallback/{voice}/{fallback.pick('repeat', voice, {first.text}).id}.mp3"
+
+
+async def test_repeat_plays_the_recording_of_the_phrase_again(ctx: DialogContext) -> None:
+    """«Повторите» must not lose the recording: the same file plays, not a fresh synthesis."""
+    address = reply_by_topic(ctx.scenario, "address")
+    address.audio = "tts/seed/call_31-3/r2.mp3"
+    ctx.history.append(DialogTurn(role="caller", text=address.text, topics=["address"]))
+    again = await ButtonsDialog().reply(ctx, "Повторите, пожалуйста")
+    assert again.text == address.text
+    assert again.audio == address.audio
+
+
+async def test_repeat_of_a_bank_phrase_keeps_its_recording(ctx: DialogContext) -> None:
+    voice = ctx.scenario.caller.voice
+    phrase = fallback.pick("unknown", voice, set())
+    ctx.history.append(DialogTurn(role="caller", text=phrase.text(voice), topics=["unknown"]))
+    again = await ButtonsDialog().reply(ctx, "Повторите, пожалуйста")
+    assert again.audio == phrase.audio(voice)
+
+
+async def test_bank_phrase_matches_the_gender_of_the_voice() -> None:
+    male = fallback.pick("repeat", "ru_male_1", set())
+    female = fallback.pick("repeat", "ru_female_1", set())
+    assert male.text("ru_male_1").endswith("не расслышал.")
+    assert female.text("ru_female_1").endswith("не расслышала.")
+
+
+async def test_bank_does_not_repeat_a_phrase_said_in_this_call() -> None:
+    voice = "ru_male_1"
+    first = fallback.pick("unknown", voice, set())
+    second = fallback.pick("unknown", voice, {first.text(voice)})
+    assert second is not None and second.id != first.id
+
+
+async def test_scenario_reply_wins_over_the_bank(ctx: DialogContext) -> None:
+    scenario = ctx.scenario.model_copy(deep=True)
+    scenario.replies.append(
+        Reply(id=99, topic="unknown", text="Не знаю, я только подошёл.", approved=True)
+    )
+    reply = await ButtonsDialog().reply(DialogContext(scenario=scenario), "Какая у вас погода?")
+    assert reply.reply_id == 99
+    assert reply.audio is None
 
 
 async def test_buttons_prefers_unused_reply_of_topic(ctx: DialogContext) -> None:

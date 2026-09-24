@@ -1,0 +1,162 @@
+{
+  "opening": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Здравствуйте, у жены воды отошли! Срок тридцать девять недель. Мы на дороге, до роддома не успеем.",
+    "bytes": 94502,
+    "sha256": "4070cf54865cc343ce73b2a6ad0d0c007d8c5f774d65c38c0677b45c48534314"
+  },
+  "r1": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "У жены отошли воды. Срок тридцать девять недель, вот-вот родит.",
+    "bytes": 61066,
+    "sha256": "cd02b599b2759179bf6506e4b5ed911c55db1a7c19fe89368ed15cf4e4a195d6"
+  },
+  "r2": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Схватки пошли, говорит, каждые пять минут. Мы в машине, я её на сиденье уложил.",
+    "bytes": 75276,
+    "sha256": "803d8b6c7e28deb2b0e99eb36c86650285e3c8e9654f63e893b075d9f370e7c5"
+  },
+  "r3": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Это область, не Москва. Московская область, у Купавны.",
+    "bytes": 66499,
+    "sha256": "cbc065b4a7ed2493e22000cb491d34b1bd3baf6a19d2fdf029b588bdf63d4f67"
+  },
+  "r4": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Дорога от Носовихинского шоссе, от станции Купавна в сторону Горьковского. Напротив Бисерова озера, остановка Кафе.",
+    "bytes": 121252,
+    "sha256": "431b9195cef25c76665ccf8cfec8520e08ed324df95991cf55c13bef883d85a5"
+  },
+  "r5": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Жена, Минина Ольга Петровна. Тридцать шесть лет.",
+    "bytes": 59812,
+    "sha256": "0f18999f5ce8aee92dce1208ca7f373cb323195df1a60088cb5de6767be72186"
+  },
+  "r6": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "В сознании, разговаривает. Кровотечения нет, только воды отошли.",
+    "bytes": 70261,
+    "sha256": "f74dce9829a8e289c89e08618621cf41265cb97ca8620dedaf672a3d8c6f4c79"
+  },
+  "r7": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "До роддома нам километров тридцать. Я боюсь везти, а стоять тоже страшно.",
+    "bytes": 77784,
+    "sha256": "73d66d3449c2977f8a998a708e0bc5691160bbad46b169ac8e54d6dad2c62d9b"
+  },
+  "r8": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Мы вдвоём. Больше никого рядом нет, остановка пустая.",
+    "bytes": 65245,
+    "sha256": "64d4cf3bce44ae33f4354f237e2ac4d5b0ffe69fa85de26921d3b5a75bc65dc4"
+  },
+  "r9": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Воды отошли минут пятнадцать назад. Схватки начались следом.",
+    "bytes": 61066,
+    "sha256": "77b21c2e32da3adbe3f5daacfe85bda603d6e21b8a42f97a83331a8d5d5d5984"
+  },
+  "r10": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Минин Сергей Антонович. Я супруг.",
+    "bytes": 34316,
+    "sha256": "97c1a0635672eaf10baace461f57976502a2679a1664a0583b9f3044a1e9f361"
+  },
+  "r11": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Девять один шесть, восемьсот девяносто семь, пятьдесят шесть, двадцать три.",
+    "bytes": 71515,
+    "sha256": "9c1e9a3a5dcb8faeaa880ac3513a89ee9ae09e5e7217d5029be2fbd3f62dc51d"
+  },
+  "r12": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Муж я. Рядом с ней, за рулём был.",
+    "bytes": 39332,
+    "sha256": "25f2e0ec2cef9ed239e3a59d28ac2ea542e22be6669a0a6fe384ac50b5f89770"
+  },
+  "r13": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Машина наша, серая Киа. Стоим с аварийкой у остановки.",
+    "bytes": 59812,
+    "sha256": "18c551191f9eb80e46363b0fad52367bd698669f1e157c0bfec8c10e40277bfa"
+  },
+  "r14": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Повторите, пожалуйста, мимо фуры идут.",
+    "bytes": 38078,
+    "sha256": "3028dee9a8906396287965cec99cc4f6f8b98a964701f47d408340df58bcf60e"
+  },
+  "r15": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Не знаю. Мне её везти или ждать вас на месте?",
+    "bytes": 44765,
+    "sha256": "bed4645e17f44d8fdda5d21f2d6ecba395782c198adc067c1165a348a9c1b27f"
+  }
+}

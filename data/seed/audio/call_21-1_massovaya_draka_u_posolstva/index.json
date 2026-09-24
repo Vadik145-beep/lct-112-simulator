@@ -1,0 +1,172 @@
+{
+  "opening": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Здравствуйте! Тут человек пятнадцать дерутся, палками и прутами железными! Пятеро уже лежат в крови!",
+    "bytes": 106205,
+    "sha256": "c81631cc8540a7be36b9481ec593bccd452011b62560cca0fdd9887a972e9f6d"
+  },
+  "r1": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Массовая драка! Человек десять, а то и пятнадцать!",
+    "bytes": 56050,
+    "sha256": "85bfee33004a3f4e115f5facd30339a20094861e6c84571c735bf951db82da62"
+  },
+  "r2": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Дерутся палками и железными прутами. Не кулаками, слышите!",
+    "bytes": 77784,
+    "sha256": "238e72a201764044b69888eb07ead48b6ebda5198ead812006bf0eca66752203"
+  },
+  "r3": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Леонтьевский переулок, дом шестнадцать, строение один. Рядом посольство Азербайджана.",
+    "bytes": 90741,
+    "sha256": "9012322e95ff16c95c9aa4fe122745663d4ee7dfb0a5af01b807ca00f5977c1f"
+  },
+  "r4": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Прямо на тротуаре всё, не во дворе.",
+    "bytes": 36824,
+    "sha256": "46311caa99abcf76168f141923ef7fd82ee3b9981f67999bb0c0c7641e049c6c"
+  },
+  "r5": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Москва, Тверской район.",
+    "bytes": 33062,
+    "sha256": "433e3e573cdbd16416c93a1ee31b75af4153a84c3efbfdff7c836e23f5bc14c2"
+  },
+  "r6": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Пострадавших пятеро. Травмы разные, кто-то лежит и не встаёт.",
+    "bytes": 62319,
+    "sha256": "240b9aaf46724db41c004dc8e3966d7f36fbb62efb1bed4eedbcb243402e7e5b"
+  },
+  "r7": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Одному голову рассекли, кровь на лице. Остальные держатся за руки и рёбра.",
+    "bytes": 77784,
+    "sha256": "3b560e9ce310c4761fd17183ec5a1941a290bf92d8ea2a713e6aaefd31bbf016"
+  },
+  "r8": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "У них прутья железные! Драка идёт прямо сейчас, никто не расходится.",
+    "bytes": 79038,
+    "sha256": "1283952718bba22ef7d117535f0ad45a6b3a1bd292d5407fa0444843296b11c7"
+  },
+  "r9": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Дерущихся от десяти до пятнадцати. Считать некогда.",
+    "bytes": 58558,
+    "sha256": "5abd27ccc98f481fe3b6eeeecad13176507a5b30dac44c63beb68f4336476c08"
+  },
+  "r10": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Минут пять назад началось. И только хуже становится.",
+    "bytes": 58558,
+    "sha256": "b38c314a3ad4a947035da16438ab112cc0c3b8cf98bb726ac4af7020fa9388ae"
+  },
+  "r11": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Иванов Пётр Иванович.",
+    "bytes": 30555,
+    "sha256": "34d5bb4210db50b03ddf0364cd96bc51bc33fee33a179cecb0fc8362d55f098c"
+  },
+  "r12": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+    "bytes": 67753,
+    "sha256": "3f9e9015c21f374d48e868038ce2bb9f96a86b03abaa9ea4e8618351e8ccce52"
+  },
+  "r13": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Я очевидец! Стою через дорогу, не лезу туда.",
+    "bytes": 57304,
+    "sha256": "a566609dd997126d45dc4e044bf2adba8c3e493aa42feef1010da3aa737a6df9"
+  },
+  "r14": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Тротуар это, какие подъезды.",
+    "bytes": 33062,
+    "sha256": "9018f68b627209a5f329e5b80a636e3b5482fa1bb6c7e7e52c1267bf5f456c78"
+  },
+  "r15": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Что? Громче говорите, тут орут все!",
+    "bytes": 46019,
+    "sha256": "9cb27e11430d2de0091c9bcac1c95dfde7eb964fb9fcaab20e4b96df7b94b189"
+  },
+  "r16": {
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[angry] [irritated]",
+    "speed": 1.05,
+    "stability": 0.4,
+    "text": "Откуда я знаю! Вы наряд шлите, потом разберётесь!",
+    "bytes": 56050,
+    "sha256": "f207e4e0d83312295640b0b17131027108763639058595cf448865a81f3bbd4e"
+  }
+}

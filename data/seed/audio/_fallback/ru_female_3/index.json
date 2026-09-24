@@ -1,0 +1,102 @@
+{
+  "repeat": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Что? Повторите, пожалуйста, я не расслышала.",
+    "bytes": 49781,
+    "sha256": "909070befa8b568402e9c33bdba16d6005ca218da0997b3068c0c87d3dfccd3d"
+  },
+  "not_understood": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не поняла вопроса. Спросите по-другому.",
+    "bytes": 53542,
+    "sha256": "cb6842074aab478fb4d851f3807efc2e957c30f7d5580cb71903306961940e99"
+  },
+  "already_said": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я же говорила уже про это. Повторить?",
+    "bytes": 47273,
+    "sha256": "942bf351b3981b48b402bd2c29123f92d70180a1abad00959a0d205255a82a3c"
+  },
+  "bad_line": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Плохо слышно, связь рвётся. Говорите громче.",
+    "bytes": 70261,
+    "sha256": "81cfd3366b5bc41b06710c7ab1b2701f96a06d707aedcff779466a3190881525"
+  },
+  "dont_know": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю. Честно, не знаю.",
+    "bytes": 31808,
+    "sha256": "d884b3d54a23e97fd2e4d85d805c8e5f2b481a5c0fb096f9da7b710bc951a7ed"
+  },
+  "not_expert": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Откуда мне знать, я не специалист.",
+    "bytes": 38078,
+    "sha256": "c7e78ae118933a8a4899274633a81d120d0b1155870d43dee77bc91b64555e60"
+  },
+  "wait_moment": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Подождите, сейчас посмотрю.",
+    "bytes": 33062,
+    "sha256": "06ad053d5e65be456810c435083e9419653da612042cd3db6f7a856468e9c7bb"
+  },
+  "hurry": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Это сейчас важно? Вы приезжайте скорее.",
+    "bytes": 46019,
+    "sha256": "7f81de0f386e88d8ae972fdcf8da06459c9aed2b03859bd8603a425ed39c1762"
+  },
+  "im_here": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я на месте, никуда не уйду.",
+    "bytes": 35570,
+    "sha256": "61f303bd1ec9d37bfa4548491cc750b9b7b4c6d0e62ce23cc3c3d90b5f409107"
+  },
+  "listening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Да-да, я слушаю.",
+    "bytes": 25539,
+    "sha256": "7348e5c06e2b2b63e0057d285605e41fdcdace62819a238dd199a28326d4483b"
+  }
+}

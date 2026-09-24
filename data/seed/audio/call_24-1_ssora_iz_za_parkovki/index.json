@@ -1,0 +1,162 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. У нас во дворе двое ругаются из-за парковки. До драки пока не дошло, но орут громко.",
+    "bytes": 112475,
+    "sha256": "2223188c70f6ed796cb97dd5a00a69d9207c89edda51f1c7dca524a6e203736d"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Двое ругаются из-за парковки. Один второму машину перегородил.",
+    "bytes": 61066,
+    "sha256": "712b618de9a08b3eb4c02a79ad84f7b60bf8f762411d2ae8b75e281942884737"
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Орут на весь двор минут десять. Люди в окна смотрят.",
+    "bytes": 66499,
+    "sha256": "88c47a84e24a583578b076e1cd2c687568d3884d291ea6c93ad1df79d043f514"
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Вешняковская улица, дом тридцать семь. Двор у пятого подъезда.",
+    "bytes": 67753,
+    "sha256": "381a91483814dc86e9317a0e664f3dc504b0c49d9ba0ec574caf7c8003336dec"
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Москва, Вешняки.",
+    "bytes": 31808,
+    "sha256": "1317b7c9826fdcb99e4c6cb00d707783376d217465f22e8612940366bc68da82"
+  },
+  "r5": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Пострадавших нет. Оба на ногах, целые.",
+    "bytes": 48527,
+    "sha256": "7677e7a9b2d814d915c4b15d5fdb81d81b27746b3fcbd9defa5d29e8743c2688"
+  },
+  "r6": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "До драки не дошло. Хотя один другого в плечо толкнул уже.",
+    "bytes": 74022,
+    "sha256": "849ad2d1e7ac5cf10abd59dd1137c2a88e2a5f9cc9b4bb7694e6bc76a89acb2e"
+  },
+  "r7": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Двое ругаются. Ещё трое рядом стоят, наблюдают.",
+    "bytes": 67753,
+    "sha256": "955d0cf8eeb3e9611fc0048a5c12015c7b38722b83864b92f778a0c708bcd2a2"
+  },
+  "r8": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Машины две, обе легковые. Одна проезд перекрыла.",
+    "bytes": 57304,
+    "sha256": "dcd0b187b303a5ba167e625eb788f9fea8a927df492531030be5edff02bd4c4e"
+  },
+  "r9": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Минут десять уже. Началось, когда один приехал.",
+    "bytes": 53542,
+    "sha256": "04b65f445a5084418757a5c665f38acdbf05fd07cbc3a5298955f241b62a439a"
+  },
+  "r10": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Соколов Иван Петрович.",
+    "bytes": 34316,
+    "sha256": "0c0cd2f223a3209c25dd23dbfabce6164cfed6ab234cc1958244c6015324123e"
+  },
+  "r11": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 75276,
+    "sha256": "267edf6bd1ebf0dd0c43b730673a760a1f04a427c87d470d52c9077a2c5179e5"
+  },
+  "r12": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я очевидец, живу в этом доме. К ним отношения не имею.",
+    "bytes": 59812,
+    "sha256": "24c8ad675644d6ddf407cb6fe5c4dd65b4bebfafca81c1041343257a09b51690"
+  },
+  "r13": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Они во дворе стоят, не в подъезде.",
+    "bytes": 35570,
+    "sha256": "f472ca3d8a93f2719792584a22407f4482b46f0547999a6e7cf274d8d5d1d8af"
+  },
+  "r14": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, они громко ругаются.",
+    "bytes": 38078,
+    "sha256": "66211f68647246da54ea09c50a80d5d763583d8b3d08501a3bc3c49a778b12fd"
+  },
+  "r15": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Могу подождать наряд у подъезда.",
+    "bytes": 39332,
+    "sha256": "e9bb7278063d3383d78f3a9bfef2044683fc026b926f98af67fddf5cf2bb2f8c"
+  }
+}

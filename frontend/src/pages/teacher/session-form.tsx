@@ -36,7 +36,7 @@ const DEFAULTS: Omit<SessionIn, "group_id"> = {
   cards_per_student: 0,
   unfinished_seconds: 48 * HOUR,
   weights: {},
-  voice_enabled: false,
+  voice_enabled: true,
   dialog_mode: "select",
   adaptive: false,
 };
@@ -52,15 +52,36 @@ const CARD_SOURCES = [
   { code: "student_made", title: "Только карточки обучающихся" },
 ];
 
-const DIALOG_MODES: { code: string; title: string; hint: string }[] = [
-  { code: "select", title: "Готовые реплики", hint: "модель выбирает утверждённую реплику, звучит её запись; режим стенда" },
-  { code: "hybrid", title: "Готовые + новые", hint: "если реплики нет, модель сочиняет; новое — на утверждение после занятия" },
-  { code: "generate", title: "Свободная генерация", hint: "модель сочиняет каждую реплику; медленнее и менее предсказуемо" },
-  { code: "buttons", title: "Кнопки тем", hint: "без модели" },
+// ``hint`` — про заявителя (приём вызова), ``dds`` — про дежурного службы и старшего группы.
+const DIALOG_MODES: { code: string; title: string; hint: string; dds?: string }[] = [
+  {
+    code: "select",
+    title: "Готовые реплики",
+    hint: "модель выбирает утверждённую реплику, звучит её запись; режим стенда",
+    dds: "модель выбирает реплику из банка службы, звучит её запись; режим стенда",
+  },
+  {
+    code: "hybrid",
+    title: "Готовые + новые",
+    hint: "если реплики нет, модель сочиняет; новое — на утверждение после занятия",
+    dds: "если реплики нет, модель сочиняет; новое — на утверждение после занятия",
+  },
+  {
+    code: "generate",
+    title: "Свободная генерация",
+    hint: "модель сочиняет каждую реплику; медленнее и менее предсказуемо",
+    dds: "дежурный и старший группы отвечают свободно; медленнее и менее предсказуемо",
+  },
+  { code: "buttons", title: "Кнопки тем", hint: "без модели", dds: "без модели, по ключевым словам" },
 ];
 // plan/track-c-vapi.md: the caller lives in Vapi; offered only where the stand enables it
 // (ALLOW_EXTERNAL_AI=true, outside the closed contour).
-const CLOUD_MODE = { code: "cloud", title: "Облачный голос", hint: "заявителя играет облачная модель с живым голосом; демо вне закрытого контура" };
+const CLOUD_MODE: (typeof DIALOG_MODES)[number] = {
+  code: "cloud",
+  title: "Облачный голос",
+  hint: "заявителя играет облачная модель с живым голосом; демо вне закрытого контура",
+  dds: "дежурного и бригаду играет облачная модель с живым голосом; демо вне закрытого контура",
+};
 const NORM_DEFAULT = { card_response: 30, call_intake: 60 } as const;
 
 const selectClass =
@@ -111,7 +132,9 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
   const create = useCreateSession();
   const update = useUpdateSession(existing?.id ?? "");
   const [form, setForm] = useState<SessionIn>(() => (existing ? toInput(existing) : { ...DEFAULTS, group_id: "" }));
-  const models = useModels(form.mode === "call_intake");
+  const isCall = form.mode === "call_intake";
+  // Модели нужны обоим режимам: в ДДС ими отвечают дежурный службы и старший группы.
+  const models = useModels();
   const preview = useQueuePreview({
     mode: form.mode,
     card_source: form.card_source,
@@ -192,39 +215,58 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               Приём вызова (оператор 112)
             </label>
           </fieldset>
-          {form.mode === "call_intake" && (
+          {(
             <div className="space-y-3 sm:col-span-2" data-testid="call-intake-settings">
               <div className="space-y-1.5">
-                <Label htmlFor="dialog-mode">Как отвечает заявитель</Label>
+                <Label htmlFor="dialog-mode">
+                  {isCall ? "Как отвечает заявитель" : "Как отвечают служба и бригада"}
+                </Label>
                 <select id="dialog-mode" className={selectClass} value={form.dialog_mode} onChange={(e) => patch({ dialog_mode: e.target.value })}>
-                  {[...DIALOG_MODES, ...(models.data?.cloud || form.dialog_mode === "cloud" ? [CLOUD_MODE] : [])].map((m) => (
+                  {[
+                    ...DIALOG_MODES,
+                    // Облачный голос играет только заявителя: служебные звонки ДДС идут
+                    // через локальный конвейер (plan/track-c-vapi.md).
+                    ...(models.data?.cloud || form.dialog_mode === "cloud"
+                      ? [CLOUD_MODE]
+                      : []),
+                  ].map((m) => (
                     <option key={m.code} value={m.code}>
-                      {m.title} — {m.hint}
+                      {m.title} — {isCall ? m.hint : (m.dds ?? m.hint)}
                     </option>
                   ))}
                 </select>
+                {!isCall && (
+                  <p className="text-xs text-muted-foreground" data-testid="dds-mode-note">
+                    Режим общий для звонка диспетчера дежурному службы и для докладов старшего
+                    группы.
+                  </p>
+                )}
                 {form.dialog_mode === "cloud" && (
                   <p className="text-xs text-muted-foreground" data-testid="cloud-mode-note">
-                    Голос оператора и выдуманные данные билета уходят во внешний облачный сервис. Без телефонии разговор идёт прямо из браузера; если облако недоступно, заявитель отвечает локальной моделью.
+                    {isCall
+                      ? "Голос оператора и выдуманные данные билета уходят во внешний облачный сервис. Без телефонии разговор идёт прямо из браузера; если облако недоступно, заявитель отвечает локальной моделью."
+                      : "Голос диспетчера и данные карточки уходят во внешний облачный сервис. Без телефонии разговор идёт прямо из браузера; если облако недоступно, дежурный и бригада отвечают локальной моделью."}
                   </p>
                 )}
                 {models.data && !models.data.dialog && form.dialog_mode !== "buttons" && form.dialog_mode !== "cloud" && (
                   <p className="text-xs text-destructive" role="alert" data-testid="dialog-model-warning">
-                    Модель диалога сейчас недоступна: заявитель будет отвечать по ключевым словам, как в режиме «Кнопки тем».
+                    Модель диалога сейчас недоступна: {isCall ? "заявитель" : "служба и бригада"} будет
+                    отвечать по ключевым словам, как в режиме «Кнопки тем».
                   </p>
                 )}
               </div>
-              <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={form.voice_enabled} onChange={(e) => patch({ voice_enabled: e.target.checked })} />
-                Голос: заявитель звучит, обучающийся говорит в гарнитуру
-              </label>
+              {/* Голос не переключают: занятие всегда идёт голосом, когда озвучка и
+                  распознавание подняты, и само переходит в текст, когда их нет. */}
               <p className="text-xs text-muted-foreground">
-                Без голоса разговор идёт текстом в панели тренажёра. Утверждённые реплики эталонных сценариев звучат записанным
-                голосом с эмоцией, остальные — синтезом.
+                {isCall
+                  ? "Заявитель звучит, обучающийся говорит в гарнитуру."
+                  : "Служба и бригада звучат, обучающийся говорит в гарнитуру."}{" "}
+                Реплики эталонных сценариев звучат записанным голосом с эмоцией, остальные — синтезом.
+                Без озвучки или распознавания разговор идёт текстом в панели тренажёра.
               </p>
-              {models.data && form.voice_enabled && (!models.data.tts || !models.data.stt) && (
+              {models.data && (!models.data.tts || !models.data.stt) && (
                 <p className="text-xs text-destructive" role="alert" data-testid="voice-warning">
-                  {!models.data.tts && "Озвучка недоступна: заявитель ответит текстом. "}
+                  {!models.data.tts && `Озвучка недоступна: ${isCall ? "заявитель ответит" : "служба и бригада ответят"} текстом. `}
                   {!models.data.stt && "Распознавание речи недоступно: обучающийся сможет только писать."}
                 </p>
               )}

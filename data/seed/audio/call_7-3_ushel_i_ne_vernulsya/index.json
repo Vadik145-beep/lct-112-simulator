@@ -1,0 +1,172 @@
+{
+  "opening": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. У меня отец ушёл в поликлинику шесть часов назад и не вернулся. Ему восемьдесят пять, он памятью страдает.",
+    "bytes": 129193,
+    "sha256": "55abe614584c2dc776a33c1c6536a9966d3f2096c164c3859a72b0c896a250ce"
+  },
+  "r1": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Отец ушёл в поликлинику утром и до сих пор не вернулся. Шесть часов прошло.",
+    "bytes": 72768,
+    "sha256": "4b80baee45e52cd9d452f276eebf697a94be7f5c07821e3ae900b76d0c54e195"
+  },
+  "r2": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Он памятью страдает. Может забыть, куда шёл, и уехать не в ту сторону.",
+    "bytes": 72768,
+    "sha256": "445516d7f73e3b21061f3bfe802e393ab30b7c192c94977ffedaeab98f55ea10"
+  },
+  "r3": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Улица Маршала Соколовского, дом один, квартира пять. Мы тут живём.",
+    "bytes": 61066,
+    "sha256": "4688fe40ecb9e21aaaafc126978d6ef45bfac5a76db5f469a7b7e72ac9bc345f"
+  },
+  "r4": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Первый подъезд, второй этаж. Код домофона пять вэ.",
+    "bytes": 65245,
+    "sha256": "8fb84ecded8e2517b439d5fbee693ebc7968435022d28676214ce991058d3dc6"
+  },
+  "r5": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Москва, Щукино.",
+    "bytes": 31808,
+    "sha256": "76202ec0eb06914509b4ff12eb869a9a985ffb4b20574c2d8ddc13bdc217a0bb"
+  },
+  "r6": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не пострадал, надеюсь. Просто потерялся, он так уже уходил однажды.",
+    "bytes": 66499,
+    "sha256": "a554a43ad06035613520a26dc6be1e195aec645bea96b3661576182ba2127ef4"
+  },
+  "r7": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Марков Илья Кузьмич, восемьдесят пять лет. Рост невысокий, седой, в очках.",
+    "bytes": 82799,
+    "sha256": "7508272ae454e871a5b179a91133859247e9da7b18a1b7118548a526c41982c9"
+  },
+  "r8": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Телефона с собой нет, документов тоже. На улице холодно, а он в лёгкой куртке.",
+    "bytes": 81546,
+    "sha256": "86e7f5018b77e87d6ecdbfb7d8648502bf0991fa8fb36ade20d0a0355b6d1014"
+  },
+  "r9": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Одет в серую куртку, тёмные брюки, кепка коричневая. С палочкой ходит.",
+    "bytes": 74022,
+    "sha256": "543cbd86d8fc321227c4e67290ae9688518b7b9446e3e83a9a1f0b07f8f3f442"
+  },
+  "r10": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Он один ушёл. Я дома была, думала, вернётся к обеду.",
+    "bytes": 58558,
+    "sha256": "63afe323e664b04fd54c5510c76dbef7fc220d36231e9cef6524ea80c797e98d"
+  },
+  "r11": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Вышел в девять утра, сейчас третий час. Шесть часов уже.",
+    "bytes": 69007,
+    "sha256": "efaef9c4b28aa3dcd7dbac1fef3d5935f3932873dec4f506270f3b97994c1ea1"
+  },
+  "r12": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Маркова Ирина Сергеевна, дочь его.",
+    "bytes": 35570,
+    "sha256": "527c3a9d6155f05929c8c87d377e82c3692eb114feafe4c602a153a91b5f66ac"
+  },
+  "r13": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 74022,
+    "sha256": "c0b5bc005057e8c38092f43d84f60c7304c2e599d2b3e33ebbae113a462b39bf"
+  },
+  "r14": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Дочь я. Мы вместе живём.",
+    "bytes": 34316,
+    "sha256": "eab185bfabaf02a17c8731505010e00893b919b31fcf5af814a4467a79440315"
+  },
+  "r15": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, я разволновалась.",
+    "bytes": 39332,
+    "sha256": "c172e9ef83915914d85214c13274b9356bd0b755f2ef45e322cfb2601a6ece91"
+  },
+  "r16": {
+    "voice_id": "p6vKV7V6zDIyRuF9f39P",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. В поликлинику я звонила, там его не было сегодня.",
+    "bytes": 70261,
+    "sha256": "ffb1f49549b3b330484ccde65c7cc1cc1f66af62e30685a2a2c941879649078b"
+  }
+}

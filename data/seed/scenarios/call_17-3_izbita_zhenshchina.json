@@ -1,0 +1,170 @@
+{
+  "kind": "call_intake",
+  "title": "Избита женщина у магазина, травма головы и кровотечение",
+  "ticket_ref": "17-3",
+  "difficulty": 3,
+  "norm_seconds": 60,
+  "caller": {
+    "persona": "witness_shaken",
+    "voice": "ru_female_3",
+    "noise": "street",
+    "opening": "Помогите! Тут женщину избили, у неё голова разбита, кровь идёт!",
+    "facts": {
+      "what_happened": "избита женщина около тридцати лет, травма головы, кровотечение",
+      "address": "Дмитровское шоссе, дом 155, корпус 1, около магазина Пятёрочка",
+      "injured": "одна пострадавшая, около тридцати лет, в сознании, кровь из головы",
+      "danger": "нападавшего рядом нет, ушёл во дворы",
+      "caller_name": "Иванова Елена Сергеевна",
+      "callback_phone": "916-896-32-54"
+    },
+    "behaviour": "в шоке, говорит обрывками; имени пострадавшей не знает; про то, что нападавший ушёл, скажет по вопросу; корпус дома уточняет, если спросить",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Женщину избили! Лежит у магазина, голова в крови.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "what_happened",
+      "text": "Господи, у неё всё лицо в крови, она еле говорит.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "address",
+      "text": "Дмитровское шоссе, дом сто пятьдесят пять. Около Пятёрочки.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "address",
+      "text": "Корпус первый. Магазин с торца, вход со двора.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "region",
+      "text": "Москва, Восточное Дегунино.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "injured",
+      "text": "Одна женщина, молодая, лет тридцать. Голова разбита, кровь идёт.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "injured",
+      "text": "В сознании, но говорит плохо, путается. Имени не назвала.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "danger",
+      "text": "Того, кто бил, рядом нет. Люди говорят, он во дворы ушёл.",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "count_people",
+      "text": "Пострадавшая одна. Нас вокруг человека четыре стоит.",
+      "approved": true
+    },
+    {
+      "id": 10,
+      "topic": "time",
+      "text": "Минуты три назад. Я сразу вам звоню.",
+      "approved": true
+    },
+    {
+      "id": 11,
+      "topic": "caller_name",
+      "text": "Иванова Елена Сергеевна.",
+      "approved": true
+    },
+    {
+      "id": 12,
+      "topic": "callback_phone",
+      "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+      "approved": true
+    },
+    {
+      "id": 13,
+      "topic": "caller_role",
+      "text": "Я прохожая. Шла мимо, увидела и подошла.",
+      "approved": true
+    },
+    {
+      "id": 14,
+      "topic": "entrance_floor_code",
+      "text": "На улице она, у магазина. Никакого подъезда.",
+      "approved": true
+    },
+    {
+      "id": 15,
+      "topic": "repeat",
+      "text": "Что? Повторите, у меня руки трясутся, не соображу.",
+      "approved": true
+    },
+    {
+      "id": 16,
+      "topic": "unknown",
+      "text": "Не знаю я! Скорую скорее, у неё кровь не останавливается!",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "injured",
+    "danger",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "Человек в опасности",
+      "Прочее ранение"
+    ],
+    "incident_type": "17.1.6.0",
+    "flags": {
+      "injured": true
+    },
+    "address": {
+      "street": "Дмитровское шоссе",
+      "house": "155",
+      "building": "1",
+      "okrug": "САО",
+      "district": "район Восточное Дегунино",
+      "descriptive": "около магазина Пятёрочка"
+    },
+    "caller": {
+      "name": "Иванова Елена Сергеевна",
+      "role": "очевидец",
+      "phone": "916-896-32-54"
+    },
+    "description_keywords": [
+      "избита женщина",
+      "около тридцати лет",
+      "травма головы",
+      "кровотечение"
+    ],
+    "description": "Избита женщина около тридцати лет, травма головы, кровотечение. Нападавший ушёл.",
+    "expected_services": [
+      "102",
+      "103",
+      "duty_arm112",
+      "mkp_analytics",
+      "mayor_office",
+      "rosgvardia",
+      "ntu",
+      "fso",
+      "cukb_mo"
+    ]
+  }
+}

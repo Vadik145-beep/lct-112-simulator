@@ -1,0 +1,182 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Ой, тут машина горит! Прямо на дороге, водитель руки обжёг!",
+    "bytes": 65245,
+    "sha256": "376917b50b1ca567ab92dc62873f5b4e065407600589f0256bdd08c4ccb507f3"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Машина горит! Легковая, бежевая, пламя из-под капота прямо валит.",
+    "bytes": 88233,
+    "sha256": "f71706e9afcb8c9d9654ce81b2de68a7590540e8550a2edc1219ccb069aae897"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Уже вся передняя часть занялась, дым чёрный. Водитель выскочил.",
+    "bytes": 70261,
+    "sha256": "e2c490fbbfcb981fc515c563ba74405cf391e0726c0e44c93e6c94e50b62a326"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Это у метро Отрадное, около торгового центра Золотой Вавилон.",
+    "bytes": 65245,
+    "sha256": "724783c65dbe8037df1da69cb500dbccaebc2026c3454035f069985961d7fd5f"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Улица... Декабристов, да. Машина на проезжей части стоит, торговый центр справа.",
+    "bytes": 127939,
+    "sha256": "1f4882a1da1616c2118d1a1be5a7ed6130684054b818067a629fda80dbd3cf2a"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Какой подъезд, это же на дороге, на улице всё.",
+    "bytes": 52288,
+    "sha256": "bd7701261f507371e7706bdfec2763b2aead283d65a4bfe2e65edc11136e7994"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, Москва, Северо-Восток, Отрадное.",
+    "bytes": 54796,
+    "sha256": "700e5c2a0b82faaf2fdd58cb209e3dd0e47a7976bcf7a526852b6224329a486b"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Есть, водитель. Руки обжёг, держит перед собой, больно ему очень.",
+    "bytes": 79038,
+    "sha256": "373ddb03c2395e4e57e618aa51cc718459d7c01d2b3cbbbde41cd9b41fbdcb1b"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мужчина, лет пятьдесят с небольшим. Говорит, Дюжев Юрий Петрович. В сознании, на ногах стоит.",
+    "bytes": 111221,
+    "sha256": "3c7001edc274f901a5afb176d2a2e0acfe7176f51a06cca572723354ce77840b"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Страшно, что рванёт. Рядом машины стоят, люди подходят близко.",
+    "bytes": 76530,
+    "sha256": "d13c3f6ea4c479cd661daf0c629c8e916ffce9e81458a78c78513c08f73ac69c"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Тойота, бежевая. Номер эр двести пятьдесят четыре тэ эс, регион девяносто девять.",
+    "bytes": 108713,
+    "sha256": "751e1a276228ed9348517a51c617f7b193d86c39d0a9947bb8e74ad5b36ebb8f"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Водитель один был, больше никого в машине.",
+    "bytes": 48527,
+    "sha256": "1e95d3d6967680434028d98a89070c9517b37bab5611edf7f9807adc4fa9bf32"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Только что загорелась, минуты три назад, я сразу вам звоню.",
+    "bytes": 62319,
+    "sha256": "eb5aee1bdcef47430396a79bfc364d49acab778319f0bad77d1790eb06a4f4f6"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Фролова Яна Игоревна. Я мимо шла, всё видела.",
+    "bytes": 71515,
+    "sha256": "31c55683c90d97c51e1aa543522e0a242736f286cfd55ed3d4b437495c9f5f4b"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+    "bytes": 81546,
+    "sha256": "38fd53190c64745747504909e80dd9a76f51be018711609f0bd593d879eedb15"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Нет, я не с ним. Просто рядом оказалась.",
+    "bytes": 51035,
+    "sha256": "dbd170c7ca0413a46ac6d3ff4ce4dfee979961ec803ca0a2114700591d071249"
+  },
+  "r16": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Что? Тут шумно, повторите, пожалуйста.",
+    "bytes": 49781,
+    "sha256": "3e09a68cd43e3467c9a70a586cdb357d28eb0f74f1b6e940e5bcd72635c10e67"
+  },
+  "r17": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю я, приезжайте скорее, оно разгорается!",
+    "bytes": 56050,
+    "sha256": "eafbdfd37d2cc9f734672d8bbfc82bee7d29fdfc42dffeba75ba50e093807ff8"
+  }
+}

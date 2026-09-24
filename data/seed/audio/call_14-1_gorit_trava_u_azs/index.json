@@ -1,0 +1,152 @@
+{
+  "opening": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Здравствуйте, у нас рядом с заправкой горит сухая трава. Огонь идёт прямо к территории, мы тут работаем!",
+    "bytes": 98264,
+    "sha256": "c231e06ef5e3ad1b29cdeaeb98a23b93504f4f6d6d47654cf513fd76fdb74010"
+  },
+  "r1": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Горит сухая трава. Рядом с нашей заправкой, за забором.",
+    "bytes": 53542,
+    "sha256": "0879910200365e14b5ce6e0335b664987c835cfd332b0a50f9b41e66a8e9b12f"
+  },
+  "r2": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Огонь идёт к территории. Уже метров десять осталось до отбойника.",
+    "bytes": 61066,
+    "sha256": "3b7f8a23c4d985cb947c8ee6a422b6150f578908344a5955698a6e385c41edff"
+  },
+  "r3": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Это область, Московская. Трасса М-два.",
+    "bytes": 43511,
+    "sha256": "6c4272f01e6f8d3dd056d54f1cb1f5454b8541b2ce915833fae5e6538f74db3d"
+  },
+  "r4": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Заправка Роснефть, не доезжая до Расторгуевского шоссе. По столбам двадцать пятый километр в сторону Москвы, владение два.",
+    "bytes": 118744,
+    "sha256": "8c0e60add1f53671cccf7411ab49571223231306fc7318c1e761439e60d0cc88"
+  },
+  "r5": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Пострадавших нет. Все на ногах, никто не обжёгся.",
+    "bytes": 47273,
+    "sha256": "4bb4ce5abb2c9332cb51a6258674e3d697941228e4b9e3644f40da42d2d958b9"
+  },
+  "r6": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Тут колонки и резервуар. Ветер прямо на нас тянет.",
+    "bytes": 57304,
+    "sha256": "674a0fecee43e444aede4ed678f895aceb1b19da22f3b72ed2b8a8ee98860663"
+  },
+  "r7": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "На смене нас двое. Клиентов сейчас трое на заправке.",
+    "bytes": 54796,
+    "sha256": "9e6c0a87b084ab13cd9c48c0521547bd6854d82ef0cfb55011b1620b3e3e02a2"
+  },
+  "r8": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Минут пять как заметили. Сначала дымок был, теперь полоса огня.",
+    "bytes": 63991,
+    "sha256": "82c2ea1868c9529542ee03dd2cca94bfd81ba2c71b1f5f011c5a4cc21c0da32b"
+  },
+  "r9": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Потапов Иван Сергеевич. Работник заправки.",
+    "bytes": 40586,
+    "sha256": "96a9d9e61146d66fc08515e137d604c83e2bc569fbfe6ac71f0b377e11e89ab9"
+  },
+  "r10": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+    "bytes": 61066,
+    "sha256": "e4a8f6fe1e086b070bf9aa34ed1a104be704570ce3239ec6fd538eb769f52bae"
+  },
+  "r11": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Я тут работаю, оператор смены. Звоню с рабочего места.",
+    "bytes": 56050,
+    "sha256": "14469cffffeb4b122d633cfbc31b767eae11dfcc6a5e0ba2ca1c292aeb51d6e3"
+  },
+  "r12": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Заезд с трассы, шлагбаум подниму. Подъездов нет, это заправка.",
+    "bytes": 63991,
+    "sha256": "3c242495c04141e5c41f8a66c5761af9b17c58591b58139ea23c8cf08e18450b"
+  },
+  "r13": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Повторите, пожалуйста, тут фуры проходят.",
+    "bytes": 43511,
+    "sha256": "d9bda9fe81179de9d692927700282525f7318e1958e08fef0d8f0b8d29e1d943"
+  },
+  "r14": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Не знаю. Нам колонки глушить и людей отводить?",
+    "bytes": 57304,
+    "sha256": "3e5edb09bd7f836ddb154973de0d179563e301116277b46cdec196b28f78baca"
+  }
+}

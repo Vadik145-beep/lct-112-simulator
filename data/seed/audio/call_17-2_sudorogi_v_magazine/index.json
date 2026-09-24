@@ -1,0 +1,172 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Помогите, у нас покупателю плохо! Его трясёт, пена изо рта, он упал и голову разбил!",
+    "bytes": 102026,
+    "sha256": "be14341012e667420de94ec3bb5842f13456765a172bd08507a8cc12ac09aa85"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мужчине плохо! Его трясёт всего, пена изо рта идёт.",
+    "bytes": 63991,
+    "sha256": "d55fd35fe9161db7bc57ed578e64b92e3f54027dbd580aa8f7a014d9e273c7e6"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Ой, он головой об пол ударился, когда падал!",
+    "bytes": 53542,
+    "sha256": "27882871dbaca5f1ecb053e2f6c577405852c61bd7d431e91aa9e484646e9778"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Магазин Лента, у касс. Мы на улице Твардовского.",
+    "bytes": 71515,
+    "sha256": "a1562ba4f635aa347e4c8212118e2570ec4386dacf250ea9d18370744d2789fa"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Владение два, корпус один. Вход с парковки.",
+    "bytes": 53542,
+    "sha256": "76ebae14ffec43d48d38aa62a46eecdc31794f7f6680d7f7cf1990530acb2fa6"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, Строгино.",
+    "bytes": 33062,
+    "sha256": "6cb1fbc3dcb084cb1f821ae764d73dce8d363b311d3434e31061c3c6c9878ffd"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Один мужчина, лет сорок пять. Имени не знаем, он покупатель.",
+    "bytes": 76530,
+    "sha256": "c8a89f4db678d0ffe6055be32c93555d894d337b5abf9551243aba4ba62862d2"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Судороги были, сейчас затихает. Голова разбита, кровь на полу.",
+    "bytes": 89487,
+    "sha256": "ba942ec17a8152aca984e276432265b034bd93a4c8c177c139e5fd13b406385e"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мы куртку под голову подложили. Покупателей отодвинули.",
+    "bytes": 75276,
+    "sha256": "fb16a2c82b4f96ee9e4926660a2e908f993e894369239f2da8d6da7f158f221b"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Он один упал. Народу в зале много, человек двадцать у касс.",
+    "bytes": 79038,
+    "sha256": "9107943d48476473a466e048c4f3f8ab7ced774ea55899a7814bef471102b8f4"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Минуты две назад. Я сразу вам позвонила.",
+    "bytes": 56050,
+    "sha256": "35b6c96aa4c28c6e15e50a832db31a5f6bc5b213d7713d0a495e07ee39338122"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Соколова Вера Ивановна, кассир я.",
+    "bytes": 38078,
+    "sha256": "357f2d19b880d00141d1e27c1bcefacea653509906e76463ef1622a997b0eeb6"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, триста двадцать, двенадцать, восемьдесят три.",
+    "bytes": 77784,
+    "sha256": "4d6e7f043da4099fcf1f1301c341f7b309b61ed94bab43c823ef809ac28fa6b7"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я тут работаю, кассир. Его не знаю.",
+    "bytes": 56050,
+    "sha256": "d850e87c16ec25ba337346e7ecc0eed46174ed738e5246cc00c5d5d7da8aebb5"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Это магазин, первый этаж. Вход с парковки, я встречу.",
+    "bytes": 76530,
+    "sha256": "c2eff8ba04cc0f081ac7992dac377f4a3153c40e6f303c367540de1db60a66a2"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Что? Тут шумно, повторите!",
+    "bytes": 40586,
+    "sha256": "7c82ffa238a0adee647de7223a923ba16051de4d3ec23bd64ee7fdf431b5ca04"
+  },
+  "r16": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю. Его на бок повернуть или не трогать?",
+    "bytes": 62319,
+    "sha256": "84345848a2c078c2f18a6fa2230a6e84f10b6dd0d5cfd74f87602d01b6845ae0"
+  }
+}

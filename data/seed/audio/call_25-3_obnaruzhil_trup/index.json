@@ -1,0 +1,162 @@
+{
+  "opening": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Господи... Я пришёл в квартиру бывшей жены, она на полу. Мёртвая. Рядом кровь, много. Я не знаю, что делать.",
+    "bytes": 153435,
+    "sha256": "9a450fe26cd137b37dbc72ae265f677b27305c95204cdc2fe687e44dab6a27b9"
+  },
+  "r1": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Я нашёл бывшую жену мёртвой. Лежит на полу в комнате.",
+    "bytes": 74022,
+    "sha256": "0ea1d57bbbcb5377f751007d0c8212a94adcb01475a22c313ea930db301a8dd6"
+  },
+  "r2": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Соседи позвонили, сказали, четыре дня собака воет. Я приехал и открыл.",
+    "bytes": 79038,
+    "sha256": "aef06a3fe5214178dc886e57c343b4ef33298dc1c14c84a766fc778e578d2f70"
+  },
+  "r3": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Это область. Московская область, город Домодедово.",
+    "bytes": 72768,
+    "sha256": "3e21c2b7305a9f58af7ff0cf853bb49917362a8e471315d800f2682802e16523"
+  },
+  "r4": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Улица Текстильщиков, дом тридцать один, квартира пять.",
+    "bytes": 61066,
+    "sha256": "4aec094f76f2217cf75e2bb4319d2c83b8c5038931b2e9a1dea22e8aa58dd3ef"
+  },
+  "r5": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Первый подъезд, первый этаж. Дверь я открыл, она не заперта теперь.",
+    "bytes": 77784,
+    "sha256": "daa24b6203a7ae2380e6025a9b868af7d8b20c03fbdbfd67cde87ef96f0c7614"
+  },
+  "r6": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Она одна. Признаков жизни нет, я проверял, не дышит.",
+    "bytes": 63991,
+    "sha256": "4c118daaf9729b5ef0d73617dfe238f74f28555e3682ba38543445c82fcfd743"
+  },
+  "r7": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "На теле пятна тёмные. Похоже, давно уже.",
+    "bytes": 49781,
+    "sha256": "02350a210bec2510d58c4a3d2a9d0d726160980035ebe1ba79070e5f23d09713"
+  },
+  "r8": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Рядом с ней большая лужа крови. Я к ней не подходил близко.",
+    "bytes": 57304,
+    "sha256": "0ac1fa812f0e141c862300a2e8c012d2d39e032fdee806e76f2cd75a9d2e12d5"
+  },
+  "r9": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "В квартире она и собака. Больше никого, я обошёл комнаты.",
+    "bytes": 66499,
+    "sha256": "eb5f01b8d284ba50b1560d505f5c841ed7ff42cf55e19b92abe3db5d8921af72"
+  },
+  "r10": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Я минут пять как зашёл. А она, судя по всему, несколько дней.",
+    "bytes": 63991,
+    "sha256": "a67d15fe60ce1b74a2a3b62a5818717a65478b563ad9a4852c67aaf688be476e"
+  },
+  "r11": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Титов Игорь Романович.",
+    "bytes": 34316,
+    "sha256": "3a1620a58bc9e6874a3beff45b51c5797f6c58743f6dc90b69b4df66beca6095"
+  },
+  "r12": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Девять ноль три, сто двадцать восемь, двенадцать, двадцать три.",
+    "bytes": 82799,
+    "sha256": "7bc77e4a52e009e4756844f295057a9852fd369a6a47b47aa8179bd3a1240ff9"
+  },
+  "r13": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Я бывший муж. Мы давно в разводе, но ключи у меня были.",
+    "bytes": 67753,
+    "sha256": "74684106e6ae96e08612e3364cba52c90fa9a153c121c539e05844a3446c1121"
+  },
+  "r14": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Повторите, пожалуйста... я плохо соображаю.",
+    "bytes": 49781,
+    "sha256": "6e2d698939ade92a539e810274fc71ef43f8ea46e5320e078201b7726f35f135"
+  },
+  "r15": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Не знаю. Я выйду на площадку, в квартире тяжело.",
+    "bytes": 63991,
+    "sha256": "a1f01d0ffe5cf09c6f281dd15b05dad2a63d5d3870a34b53d604c75cee6daf06"
+  }
+}

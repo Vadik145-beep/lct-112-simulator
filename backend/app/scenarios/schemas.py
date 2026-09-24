@@ -50,6 +50,7 @@ class ScenarioOptionsOut(BaseModel):
 
 
 class ScenarioListItem(BaseModel):
+    delivered: bool = False
     id: uuid.UUID
     kind: Kind
     title: str
@@ -97,6 +98,8 @@ class ReplyOut(BaseModel):
 
 class ScenarioOut(BaseModel):
     id: uuid.UUID
+    # Delivered with the product (data/seed/scenarios): shown, played, but never edited here.
+    delivered: bool = False
     kind: Kind
     title: str
     ticket_ref: str | None
@@ -117,6 +120,8 @@ class ScenarioOut(BaseModel):
     reference_approved: bool
     fully_approved: bool
     problems: list[str]  # reference checks; approval is refused while non-empty
+    # Remarks on the wording and the card: shown to the teacher, never block anything.
+    quality: list[str]
     services: list[NoiseOut]  # expected services with titles
     versions: list[VersionOut]
     generation: dict[str, Any] | None

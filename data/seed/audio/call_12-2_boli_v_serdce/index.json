@@ -1,0 +1,172 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Господи, у подруги сильные боли в сердце! Мы за городом, на просёлочной дороге, ей очень плохо!",
+    "bytes": 103279,
+    "sha256": "814ed5a447eec90aa0836da46df03fa7ce73dcbf922bfd641e3161728e3f712f"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "У подруги сердце прихватило. Боль сильная, за грудину отдаёт.",
+    "bytes": 76530,
+    "sha256": "0766532cd7bf566363c6b072b55641ef919c2339832f3fa8632a70b00fb4ae42"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Побледнела вся, потом холодным покрылась. Говорит, дышать тяжело.",
+    "bytes": 72768,
+    "sha256": "bc465c1fd3e3b1968892951c55cb76d3577922f3319b9c81b67dc7b390309a80"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мы на просёлочной дороге, от Октябрьского в сторону Троицкого едем.",
+    "bytes": 71515,
+    "sha256": "66934c32d24e26f9b4da0731da73a747895cde2526bbe5a453c8530074e52325"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Дорога грунтовая, домов тут нет. До Октябрьского километра три назад.",
+    "bytes": 80292,
+    "sha256": "da9feaac0cc2b8c5c80059266a0db1b1e21d83a223337650a49feeab0eb34130"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Тульская область, Киреевский район. Мы не в Москве.",
+    "bytes": 63991,
+    "sha256": "9b449a62c8de6ef13dfc6225b1a505372b339a818ea01e72fe007b7354683f6b"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Подруга, Сергеева Наталья Петровна. Пятьдесят пять лет.",
+    "bytes": 58558,
+    "sha256": "f13dbb5ace843a2a4dc928e1adb46d43435fd739f8460cbea60535d9ee6a0221"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "В сознании, разговаривает. Но бледная и за грудь держится.",
+    "bytes": 66499,
+    "sha256": "2a2afd815ace6ec75bfb1f44c96a7c314273b25493a4ca334e45633d46a656e8"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мы в машине сидим. Я таблетку ей под язык дала, ту, что она с собой носит.",
+    "bytes": 82799,
+    "sha256": "1cb20e3a8050d2fcad8a73b6936bf1bff45b0154da16b365396caee0bcc45a93"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Нас двое, я и она. Больше никого на дороге.",
+    "bytes": 72768,
+    "sha256": "5938f297837e82c3c0cbb0a355f7e208ee9c85bd18e535719b886cb655e034cc"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Минут десять назад началось. Сначала думали, отпустит.",
+    "bytes": 56050,
+    "sha256": "5bbcbc23ff325939336ac66ea1662edecb5687f803c09c787ae6bb9c4fed083c"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Петрова Ирина Сергеевна, я подруга её.",
+    "bytes": 52288,
+    "sha256": "a3c6da5eda78bc32668dcee685fcb2100b08f33f19614a2b0fab44ed1e88e96d"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто семь, пятьдесят шесть, двадцать три.",
+    "bytes": 82799,
+    "sha256": "77c6ff6d962e2ce70215ff16dfaf30630665a6d2dddb7023ed92e82fe0122d3d"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Подруга я. Не родственница, но мы вместе ехали.",
+    "bytes": 54796,
+    "sha256": "694e8d9a37c13348914d68d147dc98dcffb5ffec80b16cb7cbbbade801cb11ed"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мы на дороге, в машине. Никаких подъездов.",
+    "bytes": 61066,
+    "sha256": "6212e5f98fe668e42c71eb4793dc9eb88a7ba3369af1b0f18db80fa91eb4c93a"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Повторите, пожалуйста, связь плохая.",
+    "bytes": 43511,
+    "sha256": "fabac0bc263eb01eb8f2f40cb6abc6afb46b1cf665ac6b58af595445231ede16"
+  },
+  "r16": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю. Может, нам навстречу выехать, до посёлка добраться?",
+    "bytes": 67753,
+    "sha256": "08217731afa9fb3eb4ae6ebca3e623d51257576125a6f4ccbed89def771dda02"
+  }
+}

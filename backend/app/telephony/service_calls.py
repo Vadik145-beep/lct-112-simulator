@@ -1,10 +1,12 @@
 """API of the dispatcher's calls to service officers (issue #36, «звено Б → В»).
 
 ``POST /attempts/{id}/service-call`` starts a call to the officer of a service from the card;
-``…/say`` is the text path (also used by the softphone panel as a fallback), ``…/end`` hangs
-up. With telephony on, the start rings the trainee's phones from the officer's number
+``…/answer`` picks up the squad's incoming report in the card (issue #103), ``…/say`` is the
+text path (also used by the softphone panel as a fallback), ``…/end`` hangs up. With
+telephony on, the start rings the trainee's phones from the officer's number
 (``CallManager.dial_service``) and the conversation goes over the SIP leg; without it the
-officer answers at once in the training panel.
+officer answers at once in the training panel. A report is never answered for the trainee:
+it rings in the card until «Ответить» (issue #103).
 """
 
 from __future__ import annotations
@@ -21,6 +23,7 @@ from app.db import SessionLocal
 from app.dialog import officer
 from app.dialog import service as dialog
 from app.domain.evaluation.schemas import CardResponseScenario
+from app.domain.scenarios import caller_back
 from app.errors import ApiError
 from app.events import publish_events
 from app.models import MODE_CARD_RESPONSE, Attempt, Role, TrainingSession, User
@@ -40,6 +43,11 @@ MAX_UTTERANCE_BYTES = 10 * 1024 * 1024
 SILENCE_PEAK = 0.01  # below this the microphone sent nothing but noise floor
 
 
+def caller_number(scenario: CardResponseScenario) -> str:
+    """The phone of the card's caller: the dispatcher calls it back directly."""
+    return (scenario.card.caller.phone or "").strip()
+
+
 def nothing_recognized_message(transcript: Transcript) -> str:
     """Tells a silent microphone from speech the recognizer did not catch."""
     seconds = transcript.duration_seconds
@@ -56,7 +64,7 @@ def nothing_recognized_message(transcript: Transcript) -> str:
     )
 
 
-async def _card_attempt(
+async def card_attempt(
     session: DbSession, attempt_id: uuid.UUID, user: User
 ) -> tuple[Attempt, TrainingSession, training.ScenarioCard, CardResponseScenario]:
     attempt = await training.get_attempt_for(session, attempt_id, user)
@@ -110,15 +118,38 @@ async def start_service_call(
     session: DbSession,
     request: Request,
 ) -> ServiceCallResponse:
-    """«Позвонить» a service from the card: one call at a time, only while the card is open."""
-    attempt, ts, card, scenario = await _card_attempt(session, attempt_id, user)
-    services = await training.load_services(session)
-    service = services.get(body.service)
-    if service is None:
-        raise ApiError(422, "unknown_service", f"Службы «{body.service}» нет в справочнике.")
+    """«Позвонить» from the card: one call at a time, only while the card is open. The target
+    is a service of the strip or the caller of the card himself (``officer.CALLER_TARGET``,
+    ответ заказчика 23.09.2026: «диспетчер ДДС может напрямую выйти на заявителя»)."""
+    attempt, ts, card, scenario = await card_attempt(session, attempt_id, user)
+    to_caller = body.service == officer.CALLER_TARGET
+    if to_caller:
+        code, title = officer.CALLER_TARGET, caller_back.caller_name(scenario)
+        if not caller_number(scenario):
+            raise ApiError(
+                422, "no_caller_phone", "В карточке нет телефона заявителя: звонить некуда."
+            )
+    else:
+        services = await training.load_services(session)
+        service = services.get(body.service)
+        if service is None:
+            raise ApiError(422, "unknown_service", f"Службы «{body.service}» нет в справочнике.")
+        code, title = service.code, service.title
     live = telephony.telephony_active()
+    # В облачном занятии без телефонии трубку снимает браузерный звонок: первую фразу
+    # говорит сам провайдер (см. cloud_router.start_service_web_call).
+    cloud = dialog.cloud_lesson(ts) and not live
     call, events = await officer.start(
-        session, attempt, ts, card.version, scenario, service.code, service.title, telephony=live
+        session,
+        attempt,
+        ts,
+        card.version,
+        scenario,
+        code,
+        title,
+        telephony=live,
+        answer_now=not cloud,
+        kind=officer.KIND_CALLER if to_caller else officer.KIND_OUTGOING,
     )
     await write_audit(
         session,
@@ -127,7 +158,7 @@ async def start_service_call(
         actor_role=user.role,
         entity="attempt",
         entity_id=str(attempt.id),
-        details={"service": service.code, "call_id": call["id"], "telephony": live},
+        details={"service": code, "call_id": call["id"], "telephony": live},
         ip=client_ip(request),
     )
     await session.commit()
@@ -135,7 +166,12 @@ async def start_service_call(
     if live:
         manager = telephony.get_service()
         dialled = manager is not None and await manager.calls.dial_service(
-            attempt.id, call["id"], service.code, service.title
+            attempt.id,
+            call["id"],
+            code,
+            title,
+            kind=call["kind"],
+            number=caller_number(scenario) if to_caller else None,
         )
         if not dialled:
             # The phone could not be rung: fall back to the text path right away.
@@ -161,7 +197,7 @@ async def say_to_officer(
     session: DbSession,
 ) -> ServiceCallResponse:
     """A phrase of the dispatcher typed in the panel (the fallback of the voice path)."""
-    attempt, ts, card, scenario = await _card_attempt(session, attempt_id, user)
+    attempt, ts, card, scenario = await card_attempt(session, attempt_id, user)
     result = await officer.say(
         session, attempt, ts, card.version, scenario, call_id, body.text, action_id=body.action_id
     )
@@ -194,7 +230,7 @@ async def speak_to_officer(
     """A spoken phrase from the browser microphone (no telephony): recognised by the ``stt``
     service with the card's street as a hint, then handled like ``say``. Without the service
     the answer is 503 and the dispatcher types instead — as in the 112 operator's card."""
-    attempt, ts, card, scenario = await _card_attempt(session, attempt_id, user)
+    attempt, ts, card, scenario = await card_attempt(session, attempt_id, user)
     record = officer.find_call(attempt, call_id)
     if record.get("ended_at"):
         raise ApiError(409, "call_ended", "Звонок завершён: дежурному больше не сказать.")
@@ -242,13 +278,40 @@ async def speak_to_officer(
 
 
 @router.post(
+    "/attempts/{attempt_id}/service-call/{call_id}/answer", response_model=ServiceCallResponse
+)
+async def answer_service_call(
+    attempt_id: uuid.UUID, call_id: str, user: ActiveUser, session: DbSession, request: Request
+) -> ServiceCallResponse:
+    """«Ответить» on the squad's incoming report (issue #103). With telephony the trainee
+    answers the phone and Asterisk reports it; this is the path of the card without
+    telephony. Answering twice changes nothing."""
+    attempt, ts, card, scenario = await card_attempt(session, attempt_id, user)
+    call, events = await officer.answer(session, attempt, ts, card.version, scenario, call_id)
+    if events:
+        await write_audit(
+            session,
+            action="service_call.answer",
+            actor_id=user.id,
+            actor_role=user.role,
+            entity="attempt",
+            entity_id=str(attempt.id),
+            details={"service": call["service"], "call_id": call_id, "kind": call.get("kind")},
+            ip=client_ip(request),
+        )
+    await session.commit()
+    await publish_events(events)
+    return await _respond(session, attempt, ts, card.body, call_id)
+
+
+@router.post(
     "/attempts/{attempt_id}/service-call/{call_id}/end", response_model=ServiceCallResponse
 )
 async def end_service_call(
     attempt_id: uuid.UUID, call_id: str, user: ActiveUser, session: DbSession, request: Request
 ) -> ServiceCallResponse:
     """«Завершить»: the dispatcher hangs up; the transcript and the facts stay on the card."""
-    attempt, ts, card, _ = await _card_attempt(session, attempt_id, user)
+    attempt, ts, card, _ = await card_attempt(session, attempt_id, user)
     call, events = await officer.end(session, attempt, call_id, officer.END_HANGUP)
     if events:
         await write_audit(

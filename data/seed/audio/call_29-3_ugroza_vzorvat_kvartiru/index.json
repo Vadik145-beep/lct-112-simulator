@@ -1,0 +1,162 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Ой, мне бывший муж звонит и угрожает взорвать квартиру! Я боюсь, он может прийти.",
+    "bytes": 90741,
+    "sha256": "5c3968ceca9e10f7f4f69275696b24a814282ac34b19f95e18b44a855d33d09c"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Бывший муж угрожает взорвать квартиру. Позвонил и сказал прямым текстом.",
+    "bytes": 82799,
+    "sha256": "c2f1b5503df2fcfac5e725e073f1e83cbc65f529dc262ce7c668e4b7b525f8d2"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Сказал, что придёт и всё взорвёт. Кричал, был явно выпивший.",
+    "bytes": 71515,
+    "sha256": "47f0c38aa890d5defb8b4526dcd4c00efe9925e811e5b194f4a34b881ad38af8"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Проезд Шокальского, дом шестьдесят семь, корпус один. Квартира три.",
+    "bytes": 76530,
+    "sha256": "175d4b586f4f862106eba959c726d68ca54fac635c147481b56a0bea856ad0d8"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Первый подъезд, первый этаж. Код домофона шестьдесят семь.",
+    "bytes": 79038,
+    "sha256": "b4b3a6cd444fd93448b9cbba5c952638fd8f2b56a30104f51e65be586dd5eb20"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Москва, Северное Медведково.",
+    "bytes": 43511,
+    "sha256": "0aff09e1f99961f22f6a284d78e3d295b31d17fe867647b5d82d4032728fcca4"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Нет, никто не пострадал. Пока только угрожает.",
+    "bytes": 54796,
+    "sha256": "bd1bcf956ab405d560746863002cae3deac909ea41865c4e71a2fda4362dcdfa"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я не знаю, где он сейчас. Может, уже едет. Квартира на первом этаже, окна во двор.",
+    "bytes": 98264,
+    "sha256": "de945eae8432722832935fb8ede1a473ad8ef4ec367ca659441ed468c449601a"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Раньше не судим был, но угрожал и прошлый раз. В полицию я тогда не обращалась.",
+    "bytes": 91995,
+    "sha256": "d229f5f87f5b2f6e8f9369facd6b6ea5d274eabc210167cccf263866b47f0496"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я дома одна. Дочь в школе, придёт часа через два.",
+    "bytes": 59812,
+    "sha256": "c853784f7961a26b2de401f8610c3a012ea7ed220c7a2b35d90c854818f256f2"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Звонил минут пятнадцать назад. Я сразу дверь закрыла и вам звоню.",
+    "bytes": 69007,
+    "sha256": "a4ae34319e77b58f010cff51cd7463f77fec0ce741114caee67dd5cbc3033534"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Смирнова Ольга Ивановна.",
+    "bytes": 33062,
+    "sha256": "9c4c8dd6821a1f14bbdf2f9a9c94b2b44b93cb61010b5a3b8ff7d96959ab5e63"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девятьсот три, двести двадцать шесть, тринадцать, восемьдесят три.",
+    "bytes": 74022,
+    "sha256": "bc7064d41ed6abced5db9ed6035da9b6b246e934a8bbb6a07b68f69622b829ef"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Это мне угрожают. Он бывший муж мой, развелись год назад.",
+    "bytes": 65245,
+    "sha256": "1ce5d0b4816168306932b2b4f8701ec21495216c52d671930b146778863e52b2"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Повторите, пожалуйста, я говорю тихо, чтобы не слышно было.",
+    "bytes": 58558,
+    "sha256": "faa2c943540b8ff73492b01b44625695de3a30fe04dd4424a1cadd00c8bf1af4"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю я. Скажите, что мне делать, дверь никому не открывать?",
+    "bytes": 70261,
+    "sha256": "4025e443e2e4f70672e757dcfb68ec002bf0e0032daae9a9e3ca09c382451704"
+  }
+}

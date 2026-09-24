@@ -1,0 +1,167 @@
+{
+  "kind": "call_intake",
+  "title": "Сработала пожарная сигнализация в жилом доме, дыма нет",
+  "ticket_ref": "17-1",
+  "difficulty": 1,
+  "norm_seconds": 60,
+  "caller": {
+    "persona": "calm",
+    "voice": "ru_male_1",
+    "noise": "indoor",
+    "opening": "Здравствуйте. У нас в доме сработала пожарная сигнализация. Дыма и огня не видно, но воет уже минут десять.",
+    "facts": {
+      "what_happened": "в жилом доме сработала пожарная сигнализация, дыма и возгорания нет",
+      "address": "Большой Сухаревский переулок, дом 19, строение 2, подъезд 1, код домофона 2215",
+      "injured": "пострадавших нет",
+      "danger": "запаха гари нет, люди выходят из подъезда",
+      "caller_name": "Сухов Леонид Сергеевич",
+      "callback_phone": "916-123-98-78"
+    },
+    "behaviour": "спокоен, отвечает по делу; строение и код домофона называет по вопросу; сам уточняет, что обошёл этажи и дыма не нашёл",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Сработала пожарная сигнализация. Сирена по всему подъезду.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "what_happened",
+      "text": "Дыма нет, огня нет. Я прошёл по этажам — ничем не пахнет.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "address",
+      "text": "Большой Сухаревский переулок, дом девятнадцать.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "address",
+      "text": "Строение два. Это во дворе, вход со двора.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "entrance_floor_code",
+      "text": "Подъезд первый, код домофона две тысячи двести пятнадцать.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "region",
+      "text": "Москва, центр, Мещанский район.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "injured",
+      "text": "Нет, никто не пострадал. Люди просто вышли на улицу.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "danger",
+      "text": "Гарью не пахнет. Соседи говорят, такое уже было на прошлой неделе.",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "count_people",
+      "text": "В подъезде человек десять вышло. Остальные по квартирам сидят.",
+      "approved": true
+    },
+    {
+      "id": 10,
+      "topic": "time",
+      "text": "Минут десять уже воет. Сначала думали, отключится сама.",
+      "approved": true
+    },
+    {
+      "id": 11,
+      "topic": "caller_name",
+      "text": "Сухов Леонид Сергеевич.",
+      "approved": true
+    },
+    {
+      "id": 12,
+      "topic": "callback_phone",
+      "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+      "approved": true
+    },
+    {
+      "id": 13,
+      "topic": "caller_role",
+      "text": "Жилец я, в этом подъезде живу.",
+      "approved": true
+    },
+    {
+      "id": 14,
+      "topic": "repeat",
+      "text": "Повторите, пожалуйста, сирена заглушает.",
+      "approved": true
+    },
+    {
+      "id": 15,
+      "topic": "unknown",
+      "text": "Этого не знаю. Могу у консьержа спросить.",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "entrance_floor_code",
+    "injured",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "жилой дом",
+      "сигнализация"
+    ],
+    "incident_type": "1.5.16.0",
+    "flags": {
+      "injured": false
+    },
+    "address": {
+      "street": "Большой Сухаревский переулок",
+      "house": "19",
+      "structure": "2",
+      "entrance": "1",
+      "code": "2215",
+      "okrug": "ЦАО",
+      "district": "Мещанский район"
+    },
+    "caller": {
+      "name": "Сухов Леонид Сергеевич",
+      "role": "жилец",
+      "phone": "916-123-98-78"
+    },
+    "description_keywords": [
+      "пожарная сигнализация",
+      "дыма и возгорания нет",
+      "жилом доме"
+    ],
+    "description": "В жилом доме сработала пожарная сигнализация, дыма и возгорания нет.",
+    "expected_services": [
+      "101",
+      "gkh",
+      "mayor_office",
+      "territorial_oiv",
+      "territorial_oiv_tinao",
+      "moszhilinspection",
+      "ntu",
+      "fso",
+      "tourism",
+      "dgp_integration",
+      "dgp_arm112",
+      "cukb_mo"
+    ]
+  }
+}

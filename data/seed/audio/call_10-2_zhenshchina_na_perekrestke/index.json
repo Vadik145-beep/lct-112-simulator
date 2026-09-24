@@ -1,0 +1,172 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. Тут женщина пожилая на перекрёстке машины останавливает, просит скорую вызвать. Говорит, голова сильно болит.",
+    "bytes": 150927,
+    "sha256": "5b86de8d845d5e3aeedf10ebca63c42b76ed0fc7bdb2418e9aa94fd0125106a1"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Женщина пожилая машины останавливает на перекрёстке, просит скорую.",
+    "bytes": 67753,
+    "sha256": "0e78510d535ccb1a118b913b96ad771f9b7915568bbabcc771adc7bdb7c923a4"
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Говорит, голова сильно болит, несколько дней уже. Идти сама не может.",
+    "bytes": 71515,
+    "sha256": "0e5fa1824c84c5f8cd50702ff392a964887bf91c446435e134086ba37a2fbec1"
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Это Люберецкие поля фильтрации, перекрёсток.",
+    "bytes": 56050,
+    "sha256": "cd4432af1d4b1220ced9654b019bdc9d2a43d1d6bf1e35bfb2b5d54b3007a76d"
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Где дорога из Кожухова на Железнодорожный пересекается с дорогой из Некрасовки. Домов тут нет.",
+    "bytes": 104951,
+    "sha256": "d194644ed66a4363afae0ac34a30a61a2587f4bad741d46fedf6a782db97c727"
+  },
+  "r5": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Тут граница, но мы со стороны Москвы стоим, Некрасовка рядом.",
+    "bytes": 70261,
+    "sha256": "84eb6f9ac786a1dbb1229d78e72a0b539356fd35f684aa57efb50513d9407834"
+  },
+  "r6": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Одна женщина, на вид лет семьдесят. В сознании, разговаривает.",
+    "bytes": 74022,
+    "sha256": "6820faf62f17b623fca4892a7d9d46620121d4cf204a27dc1f072739242c3353"
+  },
+  "r7": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Имени не называет, документов при ней нет. Говорит, голова раскалывается.",
+    "bytes": 79038,
+    "sha256": "6429f1d9bda8a8f2868622a0019e4d87f18e7b25c7817c17531c04728c9cf1d0"
+  },
+  "r8": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Она на проезжую часть выходила, машины объезжали. Я её на обочину вывел.",
+    "bytes": 71515,
+    "sha256": "8a69327a4a1b431b582a0e4a5f0b7c7c31d76204e2e68129d5eabe369434c03f"
+  },
+  "r9": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Она одна. Я рядом стою, машину поставил с аварийкой.",
+    "bytes": 54796,
+    "sha256": "28d5affeca75d91c932afa66787d98303bcb26e8c821a49c772cebe8fa9b352f"
+  },
+  "r10": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Минут пять как я остановился. Сколько она там ходила, не знаю.",
+    "bytes": 61066,
+    "sha256": "fa56721abc8b44a5561cf06364c870b52c5d689fa90aa17a1d0f775fdd31b390"
+  },
+  "r11": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Соколов Иван Петрович.",
+    "bytes": 23031,
+    "sha256": "1e8c5439e2b344a6a335610a7c8726515218aed7576540e88b5d8cb7d2d8455b"
+  },
+  "r12": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, восемьсот девяносто семь, пятьдесят шесть, двадцать три.",
+    "bytes": 80292,
+    "sha256": "2b1ae62d57bc0c870d70c0c9969c3666551aa75a28fea1ffea344a39293619c0"
+  },
+  "r13": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я проезжал мимо, остановился. К ней отношения не имею.",
+    "bytes": 61066,
+    "sha256": "e7f0dfc20d0dd2034e64d1f051ce035fbb75018f499b38f7b0974dbe56f99524"
+  },
+  "r14": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Тут дорога, никаких домов и подъездов.",
+    "bytes": 43511,
+    "sha256": "d632e4e611d49a0f3208817c5310a45d87fb2ffa4ef8425b5e17336207024035"
+  },
+  "r15": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Повторите, пожалуйста, машины проезжают, шумно.",
+    "bytes": 40586,
+    "sha256": "4c8ea826c5284353b000c46351b39b9e36815e9d0c88946f6a81ae1df565fe31"
+  },
+  "r16": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Не знаю. Я с ней побуду, пока скорая не приедет.",
+    "bytes": 49781,
+    "sha256": "bbb1d418244ad53f3fe32dbcc67d5f0f03d6dacd19165fdb5a4287eea011caa7"
+  }
+}

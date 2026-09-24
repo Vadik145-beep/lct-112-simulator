@@ -18,14 +18,15 @@ from pydantic import BaseModel
 from app.auth.deps import ActiveUser, DbSession
 from app.config import get_settings
 from app.dialog import call as call_state
+from app.dialog import officer
 from app.dialog import service as dialog
 from app.dialog.router import _turn_out
 from app.dialog.schemas import DialogTurnOut
 from app.errors import ApiError
 from app.events import publish_events
-from app.telephony import cloud_web
+from app.telephony import cloud_web, service_calls
 from app.telephony import service as telephony
-from app.telephony.calls import LoadedAttempt
+from app.telephony.calls import LoadedAttempt, LoadedCardAttempt
 from app.telephony.cloud import CloudCallManager
 from app.telephony.vapi import SECRET_HEADER, WEBHOOK_PATH, VapiError, webhook_secret
 from app.training import service as training
@@ -108,6 +109,52 @@ async def start_web_call(attempt_id: uuid.UUID, user: ActiveUser, session: DbSes
     await publish_events(events)
     try:
         start = await web_calls.start(LoadedAttempt(attempt, ts, version, scenario))
+    except VapiError as exc:
+        await web_calls.failed(attempt.id, f"start: {exc}")
+        raise ApiError(
+            503,
+            "cloud_unavailable",
+            f"Облачный голос недоступен: {exc}. Разговор продолжится локально.",
+        ) from exc
+    return WebCallOut(
+        public_key=start.public_key,
+        api_url=start.api_url,
+        assistant_id=start.assistant_id,
+        token=start.token,
+    )
+
+
+@router.post("/attempts/{attempt_id}/service-call/{call_id}/cloud-call", response_model=WebCallOut)
+async def start_service_web_call(
+    attempt_id: uuid.UUID, call_id: str, user: ActiveUser, session: DbSession
+) -> WebCallOut:
+    """Keys of the browser call for a call on the card (issue #59): the cloud plays the duty
+    officer or the squad leader. 409 when the lesson is not in the cloud mode or the calls
+    go through telephony; 503 when the cloud is unreachable (the panel then keeps the text
+    and microphone path)."""
+    attempt, ts, card, scenario = await service_calls.card_attempt(session, attempt_id, user)
+    if not dialog.cloud_lesson(ts):
+        raise ApiError(
+            409, "not_cloud_lesson", "В этом занятии службу и бригаду играет локальная модель."
+        )
+    if telephony.telephony_active():
+        raise ApiError(409, "telephony_active", "Звонок идёт через телефонию стенда.")
+    web_calls = cloud_web.get_calls()
+    if web_calls is None:
+        raise ApiError(503, "cloud_unavailable", "Облачный голос не запущен.")
+    record = officer.find_call(attempt, call_id)
+    if record.get("ended_at"):
+        raise ApiError(409, "call_ended", "Звонок уже завершён.")
+    # «Ответил» до того, как облако заговорит: первую фразу скажет оно само.
+    _, events = await officer.answer(
+        session, attempt, ts, card.version, scenario, call_id, with_opening=False
+    )
+    await session.commit()
+    await publish_events(events)
+    try:
+        start = await web_calls.start_service_call(
+            LoadedCardAttempt(attempt, ts, card.version, scenario), call_id
+        )
     except VapiError as exc:
         await web_calls.failed(attempt.id, f"start: {exc}")
         raise ApiError(

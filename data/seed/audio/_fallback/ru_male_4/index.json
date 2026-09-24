@@ -1,0 +1,102 @@
+{
+  "repeat": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Что? Повторите, пожалуйста, я не расслышал.",
+    "bytes": 49781,
+    "sha256": "25e204d6cc4809111bd0f21b1be0a885cf639db78581ef23b8a7fe85f5842984"
+  },
+  "not_understood": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Не понял вопроса. Спросите по-другому.",
+    "bytes": 36824,
+    "sha256": "30244da53cbe50f9982dfd878b6c50c4dce9ce8f6fcada7a4386c2207510d6cd"
+  },
+  "already_said": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Я же говорил уже про это. Повторить?",
+    "bytes": 35570,
+    "sha256": "76146e9d79fca160354344ae8fe73a17713d2374a70c83d2ffe9e889e32d7430"
+  },
+  "bad_line": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Плохо слышно, связь рвётся. Говорите громче.",
+    "bytes": 44765,
+    "sha256": "9710478c87a3bc149f45ca93069fd1092473d298673dfa8840f4f72b5fdc63a6"
+  },
+  "dont_know": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Не знаю. Честно, не знаю.",
+    "bytes": 39332,
+    "sha256": "e180ec3b9d30e599c6e3aabee5eefd5026bde11f8101e38175f357df221aa874"
+  },
+  "not_expert": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Откуда мне знать, я не специалист.",
+    "bytes": 34316,
+    "sha256": "ee606618d665b8a57f0429412d1258bb67e9c938607c2a3624a0d009386d7a93"
+  },
+  "wait_moment": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Подождите, сейчас посмотрю.",
+    "bytes": 26793,
+    "sha256": "8542874e4f531f426efb8d922ec502b6ef8cad8a3a205f49886af3c62af81bed"
+  },
+  "hurry": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Это сейчас важно? Вы приезжайте скорее.",
+    "bytes": 48527,
+    "sha256": "98bc54112e8a93f0b798550b7e63c83991958eba3ec7b1e2df192f85cde7236f"
+  },
+  "im_here": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Я на месте, никуда не уйду.",
+    "bytes": 34316,
+    "sha256": "fc2c7555208db2b17306f7a88fa07c4fa89e91516d29cf5eb1d283cf66f4ec49"
+  },
+  "listening": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Да-да, я слушаю.",
+    "bytes": 25539,
+    "sha256": "3cceab2963d7666be9426ae9d5d4133d7ea27526e30e87932776187131d618f8"
+  }
+}

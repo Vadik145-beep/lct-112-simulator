@@ -1,0 +1,162 @@
+{
+  "opening": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Ой, беда! Мужчина нырнул в пруд и ударился головой о камень. Голова рассечена, кровь идёт, он в сознании.",
+    "bytes": 127939,
+    "sha256": "8ba7ea796584fc983c94d6077a6e966775433d5ca23e1aa3039c484173c10e57"
+  },
+  "r1": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Мужчина нырнул и ударился о камень. Головой, прямо об дно.",
+    "bytes": 71515,
+    "sha256": "db7b86a5721b8a9f6501d682d7c2c47c06a1b2d176f0c8369ff4ecb74b1d927e"
+  },
+  "r2": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Голова рассечена, кровь идёт сильно. Его на берег вытащили.",
+    "bytes": 70261,
+    "sha256": "d5d6b52a5a9310d35d42f4f065ad434080a919a6b372264f305da1633b315208"
+  },
+  "r3": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Московская область, Одинцовский район. Деревня Сколково.",
+    "bytes": 79038,
+    "sha256": "6b52516158aa7a6c3805521431499eaffa25f451fb4dfe985ce1b0b42cbcba8f"
+  },
+  "r4": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Дом семнадцать, пруд справа от дома. Мы на берегу.",
+    "bytes": 59812,
+    "sha256": "1b0f9747cb8a4cdf0314e48d7588e693a825f61d5d4e726093de10a352d64307"
+  },
+  "r5": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Пострадавший один. Мужчина, друзья говорят, тридцать лет.",
+    "bytes": 69007,
+    "sha256": "8835538a0438dbabf5f8c5d52c3f522dec277525de5b7403564043e227d5282d"
+  },
+  "r6": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "В сознании, говорит. Рана на затылке, прижимаем полотенцем.",
+    "bytes": 71515,
+    "sha256": "53395e0f528238077230c396f411494fbfb120d7629bc07e041ba5dd1d0d3b53"
+  },
+  "r7": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Кровь не останавливается, полотенце уже мокрое. В воде его больше нет.",
+    "bytes": 77784,
+    "sha256": "ba53ecfff0edc30f4f8893cece9d7672c1b76783c648d44f536ff1685595b97e"
+  },
+  "r8": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "С ним трое друзей. Я четвёртая, рядом стою.",
+    "bytes": 61066,
+    "sha256": "276d3b538f5570c7134e1097de4b91b84e207e5bc7cda8d376bbac2e6872ddb2"
+  },
+  "r9": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Минуты три назад нырнул. Вытащили сразу.",
+    "bytes": 58558,
+    "sha256": "5c7026d9307d1e336042686297f8dea243dd78e0709df7f89f9712eb0c829a24"
+  },
+  "r10": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Петрова Ирина Сергеевна.",
+    "bytes": 36824,
+    "sha256": "18efde4e7318712ffe482496de6b8d69e5e667baa42a5a396029eca20ec8a7d1"
+  },
+  "r11": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Девять один шесть, восемьсот девяносто семь, пятьдесят шесть, двадцать три.",
+    "bytes": 76530,
+    "sha256": "e564e33514546c395bf44aa58f5da1a07a25999e9f4eecfbbba4039ddf618923"
+  },
+  "r12": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Я очевидец. Не родственница, рядом отдыхала.",
+    "bytes": 59812,
+    "sha256": "297a122e90f9bb1329cc00c25224999d5cacacd3b8a66b8dfdc2ca99a2bb77e6"
+  },
+  "r13": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Это пруд, подъездов нет. Подъехать можно к дому семнадцать.",
+    "bytes": 65245,
+    "sha256": "f3a808d83fafa40713f9726d5af25f19b01289bdfe9089d7074ebf02e1055302"
+  },
+  "r14": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Повторите, пожалуйста, тут все шумят.",
+    "bytes": 34316,
+    "sha256": "b1dcef4f08dbfcb7e37c075506754341c1dce1346f5998e54706245ffbbeb522"
+  },
+  "r15": {
+    "voice_id": "hfQ4EBmlnMg0YB8G0ItC",
+    "model": "eleven_v3",
+    "tag": "[shaky voice] [nervous]",
+    "speed": 1.1,
+    "stability": 0.35,
+    "text": "Не знаю. Его можно поворачивать или пусть лежит?",
+    "bytes": 56050,
+    "sha256": "a5093b96380e5e418642677799439d9a9c0e62f912e528b7dda67bf94c87ee96"
+  }
+}

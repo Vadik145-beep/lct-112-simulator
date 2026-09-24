@@ -20,7 +20,9 @@ import {
   attemptKey,
   NetworkError,
   useAttempt,
+  useAnswerServiceCall,
   useEndServiceCall,
+  useServiceCloudCall,
   useFinishAttempt,
   useFlagField,
   useOpenAttempt,
@@ -42,7 +44,8 @@ import {
   type FlagRequest,
 } from "@/emulator/flag-field-model";
 import { ServiceCallPanel } from "@/emulator/service-call";
-import { describeCall } from "@/emulator/service-call-model";
+import { CloudCall } from "@/softphone/cloud-call";
+import { CALLER_TARGET, describeCall } from "@/emulator/service-call-model";
 import {
   acceptanceTimer,
   formatDate,
@@ -79,7 +82,7 @@ const HINTS: Record<string, string> = {
 // the response follow the reports of the squad leader, not the dispatcher's guess.
 const REPORT_HINTS: Record<string, string> = {
   accepted:
-    "Реагирование будет. Позвоните дежурному службы и передайте карточку. Старший наряда будет докладывать по телефону — о выезде, прибытии, работах и их завершении; каждый доклад отражайте статусом с комментарием, а не наперёд.",
+    "Реагирование будет. Позвоните дежурному службы и передайте карточку. Старший группы реагирования будет звонить с докладами — о выезде, прибытии, работах и их завершении; ответьте на звонок и отражайте каждый доклад статусом с комментарием, а не наперёд.",
   response_started:
     "Бригада в пути. Дождитесь доклада «на месте» и поставьте «Прибытие»; можно позвонить дежурному и уточнить ход работ.",
   arrived:
@@ -189,6 +192,58 @@ function CardView({
   const sayToOfficer = useSayToOfficer(attempt.id);
   const speakToOfficer = useSpeakToOfficer(attempt.id);
   const endCall = useEndServiceCall(attempt.id);
+  const answerCall = useAnswerServiceCall(attempt.id);
+  const cloudKeys = useServiceCloudCall(attempt.id);
+  // Занятие с облачным голосом: дежурного службы и старшего группы играет Vapi прямо из
+  // браузера, как заявителя в приёме вызова (plan/track-c-vapi.md).
+  const cloudLesson = attempt.session.dialog_mode === "cloud";
+  const cloudCall = useRef<CloudCall | null>(null);
+  const [cloudState, setCloudState] = useState<"off" | "connecting" | "live" | "failed">("off");
+  const stopCloudCall = useCallback(async () => {
+    const call = cloudCall.current;
+    cloudCall.current = null;
+    setCloudState("off");
+    if (call) await call.stop();
+  }, []);
+  const startCloudCall = useCallback(
+    async (callId: string) => {
+      if (cloudCall.current) return;
+      setCloudState("connecting");
+      let keys;
+      try {
+        keys = await cloudKeys.mutateAsync(callId);
+      } catch {
+        // 503 или 409: облака нет. Звонок нельзя оставить неотвеченным — иначе в панели
+        // ни собеседника, ни поля ввода; отвечаем локально, дальше разговор текстом.
+        setCloudState("failed");
+        answerCall.mutate(callId);
+        return;
+      }
+      const call = new CloudCall();
+      cloudCall.current = call;
+      call
+        .on("started", () => setCloudState("live"))
+        .on("failed", () => {
+          if (cloudCall.current !== call) return;
+          void call.stop();
+          cloudCall.current = null;
+          setCloudState("failed");
+          // Медиа не поднялось: возвращаем разговор в текст, чтобы карточка не зависла.
+          answerCall.mutate(callId);
+        })
+        .on("ended", () => {
+          if (cloudCall.current !== call) return;
+          cloudCall.current = null;
+          setCloudState("off");
+        });
+      try {
+        await call.start(keys);
+      } catch {
+        /* о причине сообщит событие failed */
+      }
+    },
+    [cloudKeys, answerCall],
+  );
   // Whether the stt service answers comes with every service-call response.
   const [sttAvailable, setSttAvailable] = useState(false);
   const openCall =
@@ -200,11 +255,13 @@ function CardView({
     startCall.isPending ||
     sayToOfficer.isPending ||
     speakToOfficer.isPending ||
+    answerCall.isPending ||
     endCall.isPending;
   const callError =
     startCall.error ??
     sayToOfficer.error ??
     speakToOfficer.error ??
+    answerCall.error ??
     endCall.error;
   const callsByService = useMemo(() => {
     const map = new Map<string, AttemptOut["service_calls"]>();
@@ -218,11 +275,33 @@ function CardView({
       onSuccess: (data) => {
         setShownCallId(data.call.id);
         setSttAvailable(data.stt_available);
+        if (cloudLesson && !data.call.telephony) void startCloudCall(data.call.id);
       },
+    });
+  };
+  // Звонок самому заявителю по номеру из карточки (ответ заказчика 23.09.2026): тот же
+  // разговор, что и со службой, только на другом конце — заявитель.
+  const callDisabled = finished || Boolean(openCall) || callBusy;
+  const callerBack = () => dial(CALLER_TARGET);
+  // The squad's report is an incoming call (issue #103): the trainee answers it. The phone
+  // carries the voice when it is the one ringing; otherwise the card answers over the API.
+  const answerReport = () => {
+    if (!openCall || callBusy) return;
+    if (softphone?.serviceCallId === openCall.id) {
+      void softphone.answer();
+      return;
+    }
+    if (cloudLesson && !openCall.telephony) {
+      void startCloudCall(openCall.id);
+      return;
+    }
+    answerCall.mutate(openCall.id, {
+      onSuccess: (data) => setSttAvailable(data.stt_available),
     });
   };
   const hangUpService = () => {
     if (!openCall) return;
+    void stopCloudCall();
     endCall.mutate(openCall.id, {
       onSuccess: () => {
         // The SIP leg of the officer's call goes down with the record.
@@ -430,14 +509,23 @@ function CardView({
               </div>
             </div>
           </div>
-          <PhoneBox label="АОН" value={card.phones.aon ?? ""} />
+          <PhoneBox
+            label="АОН"
+            value={card.phones.aon ?? ""}
+            onCall={callerBack}
+            busy={callDisabled}
+          />
           <PhoneBox
             label="предоставленный"
             value={card.phones.provided ?? ""}
+            onCall={callerBack}
+            busy={callDisabled}
           />
           <PhoneBox
             label="телефон на месте"
             value={card.phones.on_site ?? ""}
+            onCall={callerBack}
+            busy={callDisabled}
           />
           <div className="flex min-w-0 flex-1 flex-col justify-center bg-[var(--arm-panel)] px-3 py-1 text-[11px] leading-tight">
             <span className="text-sm font-semibold">
@@ -1080,6 +1168,8 @@ function CardView({
             onSpeak={(blob, actionId) =>
               speakToOfficer.mutate({ callId: shownCall.id, blob, actionId })
             }
+            onAnswer={answerReport}
+            cloud={cloudLesson ? cloudState : "off"}
             onEnd={hangUpService}
           />
         )}
@@ -1249,10 +1339,52 @@ function CallButton({
   );
 }
 
-function PhoneBox({ label, value }: { label: string; value: string }) {
+/**
+ * A phone of the card with the handset of the live АРМ made to work: the dispatcher calls the
+ * number back himself (ответ заказчика 23.09.2026). Without a number, and while another call
+ * is on, the handset stays dead — exactly as the customer put it: «если номера нет, то только
+ * просто видит».
+ */
+function PhoneBox({
+  label,
+  value,
+  onCall,
+  busy,
+}: {
+  label: string;
+  value: string;
+  onCall?: () => void;
+  busy?: boolean;
+}) {
+  const canCall = Boolean(onCall) && value.trim().length > 0 && !busy;
   return (
     <div className="flex items-center gap-1.5 bg-[var(--arm-panel)] px-2 py-1">
-      <Phone className="size-4 text-[var(--arm-text-muted)]" aria-hidden />
+      {onCall ? (
+        <button
+          type="button"
+          aria-label={`Позвонить заявителю: ${label}`}
+          title={
+            value.trim()
+              ? busy
+                ? "Идёт разговор"
+                : `Позвонить заявителю: ${value}`
+              : "Номера нет: звонить некуда"
+          }
+          disabled={!canCall}
+          onClick={onCall}
+          data-testid={`call-${label === "АОН" ? "aon" : "phone"}`}
+          className={cn(
+            "flex size-6 items-center justify-center rounded-sm border",
+            canCall
+              ? "border-[var(--arm-green)] text-[var(--arm-green)] hover:bg-[var(--arm-green)] hover:text-white"
+              : "border-transparent text-[var(--arm-text-muted)] opacity-50",
+          )}
+        >
+          <Phone className="size-4" aria-hidden />
+        </button>
+      ) : (
+        <Phone className="size-4 text-[var(--arm-text-muted)]" aria-hidden />
+      )}
       <div className="flex w-[7.5rem] flex-col">
         <span className="text-[9px] text-[var(--arm-text-muted)]">{label}</span>
         <span className="border-b border-[#a9adb2] text-sm tabular-nums">

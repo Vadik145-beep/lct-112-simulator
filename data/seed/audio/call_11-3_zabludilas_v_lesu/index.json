@@ -1,0 +1,182 @@
+{
+  "opening": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Алло, девушка... я в лесу заблудилась. Грибы собирала и не пойму, куда идти.",
+    "bytes": 132955,
+    "sha256": "079dd7ccb6e81916a90dcf6857cbbfb653bd1540a8918b91eca7cea4abc2f8c4"
+  },
+  "r1": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Заблудилась я. Пошла за грибами и вышла не туда, всё лес да лес кругом.",
+    "bytes": 106205,
+    "sha256": "43b2ad3d8672fd8c41537d5a994ec1757aa8315cb08b5af9c911568b082accb2"
+  },
+  "r2": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Хожу уже часа полтора, дороги не вижу. Кричала — никто не отзывается.",
+    "bytes": 93248,
+    "sha256": "309c44d6088e891b47ae70c1668db8f67fafab756f37229a94ac285cd5d1601d"
+  },
+  "r3": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Так лес за деревней Барыкино. Я оттуда и заходила, от крайних домов.",
+    "bytes": 82799,
+    "sha256": "fde21c4193c4212fb9cb826650fe72a4ca86bd6b9871fde229b58ca499edccc9"
+  },
+  "r4": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Сейчас, сейчас... Кольчугинский район это. Не доезжая до Бавлен, если от трассы ехать.",
+    "bytes": 116236,
+    "sha256": "84349560a9cbff9ccc877e2e337b074cb7794c50dcd1cdd1ed6b8aa3f76081ea"
+  },
+  "r5": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Владимирская область, милая. Какая же Москва, я тут живу.",
+    "bytes": 79038,
+    "sha256": "172cc16cfdd20b8c3ad8141cd77f18db65bf85199fd684d5d9a79c7c7c296681"
+  },
+  "r6": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Нет-нет, я цела. Ноги устали, а так ничего не болит.",
+    "bytes": 76530,
+    "sha256": "6ee82c8cc59a30c2356b1de181f9683d36d62e06fef27360c34b2d3666984d6e"
+  },
+  "r7": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Скорую не надо, что вы. Мне бы выйти отсюда.",
+    "bytes": 63991,
+    "sha256": "704b140c8b5593f63f0e932cb4bed765a8a9d0f71d1b11daa17c9ae2dcd6d77e"
+  },
+  "r8": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Телефон садится, десять процентов осталось. Боюсь, отключится и всё.",
+    "bytes": 95756,
+    "sha256": "eb421b9f159111b26b7156ba73382fe58827795fb0cc8ee7f446d0e83babdec1"
+  },
+  "r9": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Темнеть начнёт часа через три. Куртка на мне есть, но холодно будет.",
+    "bytes": 82799,
+    "sha256": "9a739cb1786e998230ffb4fb4d73684c20725b08f711d57b9911fd9d0170cd3a"
+  },
+  "r10": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Одна я. Соседка со мной шла, да разошлись мы, она раньше повернула.",
+    "bytes": 95756,
+    "sha256": "d4f002642ab43f2947d1fb6d408743563efacaba188a2224b8381d4bb87c2d4a"
+  },
+  "r11": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Зашла часов в десять утра. Сейчас, наверное, полдень уже.",
+    "bytes": 75276,
+    "sha256": "d64514de0bfb26bdfb76ef0b7feef7c5357853c8c57d05287fe486ba6956595f"
+  },
+  "r12": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Тимофеева Маргарита Михайловна. Шестьдесят три года мне.",
+    "bytes": 82799,
+    "sha256": "0638abf0866ed5748d7bba93365d00c7cf6e73ddcdc00bec38b37fb7e82fb1b9"
+  },
+  "r13": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре. Только он садится, вы уж быстрее.",
+    "bytes": 164719,
+    "sha256": "3b4b7accf3d97462d3ca5aa7304ec3f763bbbc101683aec3d4748a5220bcd63a"
+  },
+  "r14": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Так я сама и есть, кто же ещё. Сама звоню, сама заблудилась.",
+    "bytes": 85725,
+    "sha256": "8c108c0c3f3ad0a16b3d1839b6b2d65bd169d24bbe2d56c79ab56324352f3038"
+  },
+  "r15": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Какой подъезд, деточка, я в лесу стою.",
+    "bytes": 47273,
+    "sha256": "9646b82113afaf82957239b57eee099547ed61fba6144b8200436a5763ad4fa6"
+  },
+  "r16": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Что? Говорите погромче, я плохо слышу.",
+    "bytes": 56050,
+    "sha256": "dbd6e95f67143182d55416d1b020a14e54d9c86c4d559b0818eebc41b3ce7dee"
+  },
+  "r17": {
+    "voice_id": "q22qntNqQAvTaBoqE089",
+    "model": "eleven_v3",
+    "tag": "[calm] [slowly]",
+    "speed": 0.85,
+    "stability": 0.6,
+    "text": "Не знаю я. Вы скажите, что делать, я сделаю.",
+    "bytes": 56050,
+    "sha256": "42d8bb4cd71836149dc04716bbaa0592fb2bf6da14ef183963440e49379603c0"
+  }
+}

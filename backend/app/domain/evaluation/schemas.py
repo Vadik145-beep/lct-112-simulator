@@ -97,8 +97,11 @@ class ServiceCallRef(BaseModel):
     model_config = SCENARIO
 
     service: str
-    required_facts: list[str] = Field(default_factory=lambda: list(SERVICE_CALL_FACTS[:4]))
+    required_facts: list[str] = Field(default_factory=lambda: list(SERVICE_CALL_FACTS[:3]))
     norm_seconds: int = DEFAULT_SERVICE_CALL_NORM_SECONDS
+    # Наряд службы: его называет дежурный, диспетчер записывает в статус «Начало
+    # реагирования». Пустой — номер соберётся из сценария сам (officers.order_number).
+    order_number: str | None = None
 
 
 DEFAULT_REPORT_AFTER_SECONDS = 45
@@ -116,6 +119,8 @@ class BrigadeReport(BaseModel):
     status: str  # progress status the report stands for (response_started, arrived, …)
     text: str  # what the squad leader says when the dispatcher picks up
     after_seconds: int = DEFAULT_REPORT_AFTER_SECONDS
+    # Recording of the text, as a reply has one; empty means the stand voices it itself.
+    audio: str | None = None
 
 
 class CardResponseReference(BaseModel):
@@ -195,16 +200,18 @@ class FlaggedField(BaseModel):
 
 class ServiceCallLog(BaseModel):
     """One call on the card (``attempts.service_calls[]``): the dispatcher's call to a service
-    officer (``outgoing``) or the squad leader's report to the dispatcher (``report``)."""
+    officer (``outgoing``), the squad leader's report to the dispatcher (``report``) or the
+    dispatcher's call back to the person who reported the incident (``caller``)."""
 
     model_config = STRICT
 
     service: str
     started_at: datetime
-    kind: Literal["outgoing", "report"] = "outgoing"
+    kind: Literal["outgoing", "report", "caller"] = "outgoing"
     report_status: str | None = None  # the status a report stands for
     answered: bool = False
     ended_at: datetime | None = None
+    end_reason: str | None = None  # hangup, no_answer, not_taken, card_closed…
     dialog: list[DialogTurn] = Field(default_factory=list)
     # Facts the live dialog counted as passed; the engine recomputes them from the turns.
     facts_passed: list[str] = Field(default_factory=list)
@@ -235,6 +242,9 @@ class CallerProfile(BaseModel):
     behaviour: str | None = None
     drops_call: bool = False  # the caller hangs up before the operator finishes
     no_contact: bool = False  # nobody answers the call back
+    # Разговор идёт в обратную сторону: заявителю перезвонил диспетчер ДДС по номеру из
+    # карточки (ответ заказчика 23.09.2026). Меняет роль в промптах, но не персону и голос.
+    calls_back: bool = False
 
 
 class ReplyVariant(BaseModel):

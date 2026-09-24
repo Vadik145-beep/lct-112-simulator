@@ -1,0 +1,172 @@
+{
+  "opening": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Здравствуйте, сыну плохо. Голова кружится, оседает, я его держу. Мы во дворе, на дороге.",
+    "bytes": 94502,
+    "sha256": "57d16800bd8ff8bddf79d701b61d0fe8bd061296e00ade8932185beec10a1e70"
+  },
+  "r1": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Сыну плохо. Голова закружилась, стал оседать, я подхватил.",
+    "bytes": 61066,
+    "sha256": "c2ef5e2a7bac5c1871c71443de4db667c7c893889510179bb65f9dbc606bf1b6"
+  },
+  "r2": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Пару раз уже отключался на секунду, потом приходит в себя. Бледный весь.",
+    "bytes": 72768,
+    "sha256": "dfe3434f5a1b6e6d8bc4d570f56a7521b7b8837b06bbf6e89b956159bcd5bc6d"
+  },
+  "r3": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Улица Беломорская, дом десять. Мы во дворе, на дороге.",
+    "bytes": 48527,
+    "sha256": "bed5f706379958d9f0bc28c6cd289853a95423fd93695d726be607324ee97455"
+  },
+  "r4": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Корпус второй. Дворовая дорога между домами, там шлагбаум открыт.",
+    "bytes": 59812,
+    "sha256": "f83a31b364bde1ab2bc8ec1448f210d303aed9ec8d6d503f1bf4e1a06246da13"
+  },
+  "r5": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Москва, Левобережный.",
+    "bytes": 31808,
+    "sha256": "171f5609e7246ae2bd68c012a86822a779fd556356d4783b76c7da1db1bea600"
+  },
+  "r6": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Сын, Легкодушев Дмитрий Константинович. Пятнадцать лет.",
+    "bytes": 59812,
+    "sha256": "56edb9a412a3c90deffc78aeffecde693f4decc918f55c5eb0124abac5f863d6"
+  },
+  "r7": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Сейчас в сознании, отвечает. Но глаза закатывались.",
+    "bytes": 71515,
+    "sha256": "04e2c51facbfa804746d68bf0801458c66065595dba994d974a9513615c5daf5"
+  },
+  "r8": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Мы на проезжей части двора сидим. Машины объезжают.",
+    "bytes": 56050,
+    "sha256": "85d2817fa059f3efabfc22db3e0c5323f8f30d32ebbf69e61f1f2c9695b73274"
+  },
+  "r9": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Мы вдвоём, я и он.",
+    "bytes": 39332,
+    "sha256": "6b5462bbb96ab0ce8821fbba3618d2191699ced01e7b98e14192437a3afb5acc"
+  },
+  "r10": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Минут пять назад закружилась голова. С утра он ничего не ел.",
+    "bytes": 70261,
+    "sha256": "0b3e4016d9f4d487daa4d890a3088194d8c5ad9513dce2cd35cf893d7f3b133f"
+  },
+  "r11": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Я отец его. Сына зовут Легкодушев Дмитрий Константинович.",
+    "bytes": 72768,
+    "sha256": "d3efc2a9141b163b989612211aeba6d441e9e88ec0caa0f08e7c23d2b6c7b7ec"
+  },
+  "r12": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Девять один шесть, восемьсот девяносто семь, пятьдесят шесть, двадцать три.",
+    "bytes": 70261,
+    "sha256": "4ffc8a91a90d1062d5e6e97e73c9a079e240473905a0de9c841c905d4fc9a8a2"
+  },
+  "r13": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Отец. Мы вместе шли, я рядом.",
+    "bytes": 36824,
+    "sha256": "29c0b91f7f960dffc3862086d911119844c2601a91cc8a9f03aa67b149b37511"
+  },
+  "r14": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Мы на улице, во дворе. Не в подъезде.",
+    "bytes": 40586,
+    "sha256": "45b4fb9717b599a7307902d3d01354a1ad63897946a2f01bd6666f5d5335aca1"
+  },
+  "r15": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Повторите, я его придерживаю, отвлёкся.",
+    "bytes": 44765,
+    "sha256": "b0478908dea44a5973a7cfb57d8961908c6b387c3fd5c1d21876d87d3722b6ff"
+  },
+  "r16": {
+    "voice_id": "drOVtcvHhJKNEXv5h1l5",
+    "model": "eleven_v3",
+    "tag": "[anxious] [fast]",
+    "speed": 1.1,
+    "stability": 0.4,
+    "text": "Не знаю. Его положить или пусть сидит?",
+    "bytes": 48527,
+    "sha256": "2a81df8f8ce31bf4cc2303a3e2aafa53476a20cb676bc6750886e235aef5b6f0"
+  }
+}

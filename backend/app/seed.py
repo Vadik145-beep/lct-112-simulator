@@ -15,6 +15,7 @@ import asyncio
 import json
 import shutil
 import uuid
+from collections.abc import Callable
 from pathlib import Path
 
 from sqlalchemy import select
@@ -59,6 +60,12 @@ SCENARIOS_DIR = "seed/scenarios"
 # ``STORAGE_DIR/tts/seed/<key>/`` and linked from the body, so calls play them instead of Piper.
 AUDIO_DIR = "seed/audio"
 AUDIO_STORAGE = "tts/seed"
+# Recordings of the officers' built-in bank: one folder per service, not per scenario
+# (app.dialog.officer.studio_audio, issue #59).
+OFFICERS_AUDIO_KEY = "_officers"
+# The caller's universal replies (data/seed/fallback_phrases.json): one folder per voice, used
+# when the scenario has no reply of the topic left (app.domain.scenarios.fallback).
+FALLBACK_AUDIO_KEY = "_fallback"
 DEMO_SESSION_KEY = "demo-card-response-1"
 DEMO_CALL_SESSION_KEY = "demo-call-intake-1"
 # student1 works as a district administration dispatcher (see _STUDENT_SERVICES).
@@ -144,14 +151,14 @@ def _scenario_files(data_dir: Path) -> list[Path]:
 
 
 def _attach_audio(body: dict, key: str, data_dir: Path, storage_dir: Path) -> int:
-    """Links the recordings of ``data/seed/audio/<key>/`` to the opening and the approved
-    replies of a call-intake body, copying them into storage; returns how many. Deterministic
-    for the same files, so it does not create scenario versions by itself."""
+    """Links the recordings of ``data/seed/audio/<key>/`` to the phrases of a body, copying
+    them into storage; returns how many. A call-intake body gets the opening and the approved
+    replies, a card-response one the squad's reports (issue #67). Deterministic for the same
+    files, so it does not create scenario versions by itself."""
     source = data_dir / AUDIO_DIR / key
-    if body.get("kind") != MODE_CALL_INTAKE or not source.is_dir():
+    if not source.is_dir():
         return 0
     target = storage_dir / AUDIO_STORAGE / key
-    linked = 0
 
     def link(stem: str) -> str | None:
         for suffix in (".mp3", ".wav"):
@@ -163,6 +170,12 @@ def _attach_audio(body: dict, key: str, data_dir: Path, storage_dir: Path) -> in
                     shutil.copyfile(file, copy)
                 return f"{AUDIO_STORAGE}/{key}/{file.name}"
         return None
+
+    if body.get("kind") == MODE_CARD_RESPONSE:
+        return _attach_report_audio(body, link)
+    if body.get("kind") != MODE_CALL_INTAKE:
+        return 0
+    linked = 0
 
     caller = dict(body.get("caller") or {})
     opening = link("opening")
@@ -191,6 +204,47 @@ def _attach_audio(body: dict, key: str, data_dir: Path, storage_dir: Path) -> in
     return linked
 
 
+def _attach_report_audio(body: dict, link: Callable[[str], str | None]) -> int:
+    """Recordings of the squad's reports (``report-<status>``) on a card-response body: the
+    squad leader speaks the studio voice instead of the stand's synthesizer (issue #67)."""
+    reference = dict(body.get("reference") or {})
+    reports = []
+    linked = 0
+    for report in reference.get("reports") or []:
+        audio = link(f"report-{report.get('status')}")
+        if audio:
+            report = {**report, "audio": audio}
+            linked += 1
+        reports.append(report)
+    if reports:
+        reference["reports"] = reports
+        body["reference"] = reference
+    return linked
+
+
+def copy_bank_audio(data_dir: Path, storage_dir: Path, key: str) -> int:
+    """Copies a bank of recordings that belongs to no single scenario into storage as it is:
+    the officers' phrases per service (issue #59) and the caller's universal replies per voice.
+    The dialog looks them up by path. Returns how many files are in place."""
+    source = data_dir / AUDIO_DIR / key
+    if not source.is_dir():
+        return 0
+    copied = 0
+    for file in sorted(source.rglob("*")):
+        if not file.is_file() or file.suffix not in (".mp3", ".wav"):
+            continue
+        target = storage_dir / AUDIO_STORAGE / key / file.relative_to(source)
+        if not target.exists() or target.stat().st_size != file.stat().st_size:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(file, target)
+        copied += 1
+    return copied
+
+
+def copy_officer_audio(data_dir: Path, storage_dir: Path) -> int:
+    return copy_bank_audio(data_dir, storage_dir, OFFICERS_AUDIO_KEY)
+
+
 async def _ticket_id(session: AsyncSession, ticket_ref: str | None) -> uuid.UUID | None:
     if not ticket_ref or "-" not in ticket_ref:
         return None
@@ -208,6 +262,8 @@ async def seed_scenarios(session: AsyncSession, data_dir: Path) -> tuple[int, in
     created = updated = 0
     keys: list[str] = []
     storage_dir = Path(get_settings().storage_dir)
+    copy_officer_audio(data_dir, storage_dir)
+    copy_bank_audio(data_dir, storage_dir, FALLBACK_AUDIO_KEY)
     for path in _scenario_files(data_dir):
         body = json.loads(path.read_text(encoding="utf-8"))
         key = path.stem

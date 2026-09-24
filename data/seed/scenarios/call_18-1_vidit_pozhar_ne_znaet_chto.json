@@ -1,0 +1,168 @@
+{
+  "kind": "call_intake",
+  "title": "Видит пожар с дороги, что горит — не знает",
+  "ticket_ref": "18-1",
+  "difficulty": 3,
+  "norm_seconds": 60,
+  "caller": {
+    "persona": "calm",
+    "voice": "ru_male_1",
+    "noise": "street",
+    "opening": "Здравствуйте. Я с дороги вижу пожар. Что именно горит, сказать не могу, далеко. Огонь большой.",
+    "facts": {
+      "what_happened": "заявитель видит пожар с дороги, объект горения неизвестен",
+      "address": "дорога от Киевского шоссе в сторону Минского шоссе через Крекшино, примерно полтора километра от железнодорожного переезда, напротив пруда",
+      "injured": "о пострадавших ничего не известно",
+      "danger": "огонь открытый, высокий, рядом деревья",
+      "caller_name": "Слобода Юрий Петрович",
+      "callback_phone": "916-123-98-78"
+    },
+    "behaviour": "спокоен, не выдумывает деталей; на все уточнения про объект отвечает, что не знает; привязку по переезду и пруду даёт по вопросу",
+    "drops_call": false
+  },
+  "replies": [
+    {
+      "id": 1,
+      "topic": "what_happened",
+      "text": "Вижу пожар. Что горит, не знаю, я с дороги смотрю.",
+      "approved": true
+    },
+    {
+      "id": 2,
+      "topic": "what_happened",
+      "text": "Пламя высокое, выше деревьев. Дым серый, тянет вдоль дороги.",
+      "approved": true
+    },
+    {
+      "id": 3,
+      "topic": "address",
+      "text": "Дорога от Киевского шоссе в сторону Минского, через Крекшино.",
+      "approved": true
+    },
+    {
+      "id": 4,
+      "topic": "address",
+      "text": "Примерно полтора километра от железнодорожного переезда, напротив пруда.",
+      "approved": true
+    },
+    {
+      "id": 5,
+      "topic": "region",
+      "text": "Это Москва, Новомосковский округ. Крекшино уже московское.",
+      "approved": true
+    },
+    {
+      "id": 6,
+      "topic": "injured",
+      "text": "Про пострадавших не скажу. Людей я отсюда не вижу.",
+      "approved": true
+    },
+    {
+      "id": 7,
+      "topic": "danger",
+      "text": "Рядом деревья, может перекинуться. Строений поблизости не вижу.",
+      "approved": true
+    },
+    {
+      "id": 8,
+      "topic": "count_people",
+      "text": "Я один остановился. Другие машины проезжают мимо.",
+      "approved": true
+    },
+    {
+      "id": 9,
+      "topic": "time",
+      "text": "Минуты две назад заметил. Сразу съехал на обочину.",
+      "approved": true
+    },
+    {
+      "id": 10,
+      "topic": "caller_name",
+      "text": "Слобода Юрий Петрович.",
+      "approved": true
+    },
+    {
+      "id": 11,
+      "topic": "callback_phone",
+      "text": "Девять один шесть, сто двадцать три, девяносто восемь, семьдесят восемь.",
+      "approved": true
+    },
+    {
+      "id": 12,
+      "topic": "caller_role",
+      "text": "Я очевидец, проезжал мимо. К этому месту отношения не имею.",
+      "approved": true
+    },
+    {
+      "id": 13,
+      "topic": "entrance_floor_code",
+      "text": "Тут дорога, никаких подъездов.",
+      "approved": true
+    },
+    {
+      "id": 14,
+      "topic": "repeat",
+      "text": "Повторите, пожалуйста, связь рвётся.",
+      "approved": true
+    },
+    {
+      "id": 15,
+      "topic": "unknown",
+      "text": "Не знаю. Ближе подъехать и посмотреть?",
+      "approved": true
+    }
+  ],
+  "required_topics": [
+    "what_happened",
+    "address",
+    "danger",
+    "caller_name",
+    "callback_phone"
+  ],
+  "reference_card": {
+    "signs_path": [
+      "объект",
+      "прочие объекты",
+      "открытое пламя"
+    ],
+    "incident_type": "1.6.16.1",
+    "flags": {
+      "injured": false
+    },
+    "address": {
+      "okrug": "НАО",
+      "descriptive": "дорога от Киевского шоссе в сторону Минского через Крекшино, полтора километра от железнодорожного переезда, напротив пруда"
+    },
+    "caller": {
+      "name": "Слобода Юрий Петрович",
+      "role": "очевидец",
+      "phone": "916-123-98-78"
+    },
+    "description_keywords": [
+      "видит пожар",
+      "что горит неизвестно",
+      "открытое пламя"
+    ],
+    "description": "Заявитель видит пожар с дороги, что горит неизвестно, открытое пламя высокое.",
+    "expected_services": [
+      "101",
+      "102",
+      "fsb",
+      "gkh",
+      "codd",
+      "duty_arm112",
+      "mkp_analytics",
+      "mayor_office",
+      "territorial_oiv",
+      "territorial_oiv_tinao",
+      "ntu",
+      "fso",
+      "msr_fires",
+      "dgp_integration",
+      "dgp_arm112",
+      "cukb_mo",
+      "cityenergo",
+      "dep_civil_construction"
+    ]
+  }
+}

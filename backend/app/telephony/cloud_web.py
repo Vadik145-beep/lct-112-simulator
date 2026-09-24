@@ -22,10 +22,17 @@ from typing import Any
 from app.config import get_settings
 from app.db import SessionLocal
 from app.dialog import call as call_state
+from app.domain.evaluation.schemas import CallIntakeScenario
 from app.events import publish_events
 from app.logging import get_logger
 from app.models import CALL_END_FAILED, CALL_ENDED
-from app.telephony.calls import RECORDINGS_SUBDIR, LoadedAttempt, load_attempt
+from app.telephony.calls import (
+    RECORDINGS_SUBDIR,
+    LoadedAttempt,
+    LoadedCardAttempt,
+    load_attempt,
+    load_card_attempt,
+)
 from app.telephony.cloud import (
     ENDED_STATUS,
     apply_report,
@@ -50,6 +57,9 @@ class WebCall:
     session_id: uuid.UUID
     student_id: uuid.UUID
     assistant_id: str
+    # Set for a call on the card of a dispatcher (issue #59): the cloud plays the duty
+    # officer or the squad leader, and the phrases belong to that call, not to the card.
+    service_call_id: str | None = None
     token: str = field(default_factory=new_token)
     vapi_call_id: str | None = None
     vapi_ended: bool = False
@@ -83,28 +93,68 @@ class CloudWebCalls:
     async def start(self, loaded: LoadedAttempt) -> WebCallStart:
         """An assistant of the attempt's scenario in the Vapi account and the keys of the
         browser call. ``VapiError`` when the cloud is unreachable or not configured."""
+        return await self._prepare(
+            loaded.attempt.id,
+            loaded.attempt.session_id,
+            loaded.attempt.student_id,
+            loaded.scenario,
+            key=loaded.attempt.id.hex,
+        )
+
+    async def start_service_call(self, loaded: LoadedCardAttempt, call_id: str) -> WebCallStart:
+        """The same for a call on the card (issue #59): the cloud plays the other side of
+        that call — the duty officer of a service or the leader of the squad — and the
+        phrases go into its own transcript."""
+        from app.dialog import officer
+
+        record = officer.find_call(loaded.attempt, call_id)
+        scenario = officer.call_scenario(loaded.scenario, record, loaded.attempt)
+        return await self._prepare(
+            loaded.attempt.id,
+            loaded.attempt.session_id,
+            loaded.attempt.student_id,
+            scenario,
+            key=call_id,
+            service_call_id=call_id,
+        )
+
+    async def _prepare(
+        self,
+        attempt_id: uuid.UUID,
+        session_id: uuid.UUID,
+        student_id: uuid.UUID,
+        scenario: CallIntakeScenario,
+        *,
+        key: str,
+        service_call_id: str | None = None,
+    ) -> WebCallStart:
         s = get_settings()
         if self.vapi is None or not s.vapi_public_key:
             raise VapiError("VAPI_API_KEY или VAPI_PUBLIC_KEY не заданы")
         if not s.cloud_voice_public_url:
             raise VapiError("CLOUD_VOICE_PUBLIC_URL не задан: Vapi некуда слать вебхуки")
-        attempt = loaded.attempt
-        existing = self.calls.get(attempt.id.hex)
+        existing = self.calls.get(key)
         if existing is not None and not existing.ended:
             return self._start_of(existing, s)
-        assistant = build_assistant(loaded.scenario, s, recording=True)
-        assistant["name"] = f"web-{attempt.id.hex[:12]}"
+        assistant = build_assistant(scenario, s, recording=True)
+        assistant["name"] = f"web-{key[:12]}"
         assistant_id = await self.vapi.create_assistant(assistant)
         call = WebCall(
-            attempt_id=attempt.id,
-            session_id=attempt.session_id,
-            student_id=attempt.student_id,
+            attempt_id=attempt_id,
+            session_id=session_id,
+            student_id=student_id,
             assistant_id=assistant_id,
+            service_call_id=service_call_id,
         )
-        self.calls[call.attempt_id.hex] = call
+        self.calls[key] = call
         self._by_token[call.token] = call
         self._by_assistant[assistant_id] = call
-        log.info("web call prepared", attempt=str(attempt.id), assistant=assistant_id)
+        log.info(
+            "web call prepared",
+            attempt=str(attempt_id),
+            call=service_call_id,
+            assistant=assistant_id,
+        )
         return self._start_of(call, s)
 
     def _start_of(self, call: WebCall, s) -> WebCallStart:
@@ -136,6 +186,10 @@ class CloudWebCalls:
         await log_fallback(stub, reason, session_id=stub.session_id, student_id=stub.student_id)
 
     # ------------------------------------------------------------ lookup
+
+    @staticmethod
+    def key_of(call: WebCall) -> str:
+        return call.service_call_id or call.attempt_id.hex
 
     def call_for_attempt(self, attempt_id: uuid.UUID) -> WebCall | None:
         return self.calls.get(attempt_id.hex)
@@ -194,23 +248,32 @@ class CloudWebCalls:
                 "web call recording not fetched", attempt=str(call.attempt_id), error=str(exc)
             )
             return
-        relative = f"{RECORDINGS_SUBDIR}/{RECORDING_PREFIX}{call.attempt_id.hex}.wav"
+        key = self.key_of(call)
+        relative = f"{RECORDINGS_SUBDIR}/{RECORDING_PREFIX}{key}.wav"
         path = dialog.storage_root() / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         await asyncio.to_thread(path.write_bytes, data)
         async with SessionLocal() as session:
-            loaded = await load_attempt(session, call.attempt_id)
-            if loaded is None:
-                return
-            loaded.attempt.recording_path = relative
+            if call.service_call_id:
+                from app.dialog import officer
+
+                card = await load_card_attempt(session, call.attempt_id)
+                if card is None:
+                    return
+                officer.set_recording(card.attempt, call.service_call_id, relative)
+            else:
+                loaded = await load_attempt(session, call.attempt_id)
+                if loaded is None:
+                    return
+                loaded.attempt.recording_path = relative
             await session.commit()
         log.info("web call recorded", attempt=str(call.attempt_id), bytes=len(data))
 
     # ------------------------------------------------------------ ending
 
-    async def hangup(self, attempt_id: uuid.UUID) -> bool:
+    async def hangup(self, attempt_id: uuid.UUID, service_call_id: str | None = None) -> bool:
         """The trainee ended the call in the panel (the SDK stops the media itself)."""
-        call = self.calls.get(attempt_id.hex)
+        call = self.calls.get(service_call_id or attempt_id.hex)
         if call is None:
             return False
         await self._forget(call)
@@ -222,11 +285,21 @@ class CloudWebCalls:
                 return
             call.ended = True
         async with SessionLocal() as session:
-            loaded = await load_attempt(session, call.attempt_id)
             events = []
-            if loaded is not None and loaded.attempt.call_state != CALL_ENDED:
-                events = await call_state.end(session, loaded.attempt, reason)
-                await session.commit()
+            if call.service_call_id:
+                from app.dialog import officer
+
+                card = await load_card_attempt(session, call.attempt_id)
+                if card is not None:
+                    _, events = await officer.end(
+                        session, card.attempt, call.service_call_id, reason
+                    )
+                    await session.commit()
+            else:
+                loaded = await load_attempt(session, call.attempt_id)
+                if loaded is not None and loaded.attempt.call_state != CALL_ENDED:
+                    events = await call_state.end(session, loaded.attempt, reason)
+                    await session.commit()
         await publish_events(events)
         if call.latencies_ms:
             ordered = sorted(call.latencies_ms)
@@ -242,7 +315,7 @@ class CloudWebCalls:
 
     async def _forget(self, call: WebCall) -> None:
         call.ended = True
-        self.calls.pop(call.attempt_id.hex, None)
+        self.calls.pop(self.key_of(call), None)
         self._by_token.pop(call.token, None)
         self._by_assistant.pop(call.assistant_id, None)
         if call.vapi_call_id:

@@ -194,7 +194,7 @@ export function SignButton({
       type="button"
       aria-pressed={active}
       className={cn(
-        "inline-flex min-h-7 items-center rounded-sm border px-2 py-0.5 text-left text-xs leading-tight transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--arm-blue)] disabled:cursor-not-allowed disabled:opacity-60",
+        "inline-flex min-h-8 items-center rounded-sm border px-3 py-1 text-left text-sm leading-tight transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--arm-blue)] disabled:cursor-not-allowed disabled:opacity-60",
         active
           ? "border-[var(--arm-blue)] bg-[var(--arm-blue)] font-semibold text-white"
           : "border-[#a9adb2] bg-white text-[var(--arm-text)] hover:border-[var(--arm-blue)]",

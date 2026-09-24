@@ -1,0 +1,172 @@
+{
+  "opening": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Здравствуйте. Тут женщине плохо, на остановке. Говорит непонятно, лицо перекошено на одну сторону.",
+    "bytes": 118744,
+    "sha256": "d7ee0d772a6ac9a16cf5a4a9614cafe64fb81dd60c9a393d281819e9c920dcdc"
+  },
+  "r1": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Женщине плохо. Речь невнятная, лицо на одну сторону перекосило.",
+    "bytes": 81546,
+    "sha256": "6161a9cf071c50e35f82d77ba15175db9c5ddf8facaa160f4c2a23b882b30913"
+  },
+  "r2": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Стоит, держится за столб. Меня попросила вызвать скорую, но слова еле выговаривает.",
+    "bytes": 85725,
+    "sha256": "2ed5f8fdced68760dc9581f8db638a854c12d9fa945f75c47059b08f47d3836f"
+  },
+  "r3": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Мы на дороге от Каширского шоссе в сторону Истомихи, автобусная остановка Домодедовское кладбище.",
+    "bytes": 118744,
+    "sha256": "ed808503285fa0d7cacc7084f4a93e1eefac5875327844ee809b5bba91b627a9"
+  },
+  "r4": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Рядом контрольно-пропускной пункт, его от дороги видно. Дома тут нет, адреса не скажу.",
+    "bytes": 88233,
+    "sha256": "c711f2116b8c04f5f7b15c598f1caf51cbb75eaf62bcb65023e56368947a671b"
+  },
+  "r5": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Это Московская область, Домодедово. Не Москва, нет.",
+    "bytes": 58558,
+    "sha256": "88372455b21a77850751a0deded4c0c710fa4e8c7d0ef7ac5f1dc746cc3a35a6"
+  },
+  "r6": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Одна женщина. На вид лет семьдесят. В сознании, но говорит плохо.",
+    "bytes": 81546,
+    "sha256": "af655327bd1bf25107d4ab82e6e779e0a59cd8c614d8ffd09b0ff43d50524b24"
+  },
+  "r7": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Имени не знаю, спросил — не поняла меня. Документов не смотрел.",
+    "bytes": 76530,
+    "sha256": "eab7b621b0e6343aaa26989352d149f28c45c96d88c49772bd0caeebb1427b1e"
+  },
+  "r8": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Ничего не угрожает, стоим на тротуаре в стороне от проезжей части.",
+    "bytes": 71515,
+    "sha256": "8d6e54f6547cf0eee2c0fb3621c2aaeb5abe5a0b516dde1908f5372f00119603"
+  },
+  "r9": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я и она. Люди мимо идут, но никто больше не подходил.",
+    "bytes": 93248,
+    "sha256": "f2dc10ebb0975c0489b70c44ce102ae0fa885993c02e796655b8421cf0f34dcb"
+  },
+  "r10": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Минут пять назад заметил. Она сначала просто стояла, потом стала оседать.",
+    "bytes": 74022,
+    "sha256": "c7724224a9fe0bd7ba45794510a20c56ed8a7b588171bcbc78322eeff8819689"
+  },
+  "r11": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Титов Олег Иванович.",
+    "bytes": 25539,
+    "sha256": "857745dfcd9b4616fcb45955868658f2975aa17f463d2dc511cbc7e11d42b523"
+  },
+  "r12": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Девять один шесть, восемьсот девяносто шесть, тридцать два, пятьдесят четыре.",
+    "bytes": 65245,
+    "sha256": "e0faf9fde9681d444d1ea13936c2a2d0262e8fd94a38afdf4b69602935911548"
+  },
+  "r13": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Я просто мимо проходил, к ней отношения не имею.",
+    "bytes": 47273,
+    "sha256": "193d219d5df8455149d4bcba4f5120b80ca5a4730dfb8c6d4564f67d137469b9"
+  },
+  "r14": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Никакого подъезда, мы на улице, на остановке.",
+    "bytes": 57304,
+    "sha256": "41a273b15605cab1e6b84dff8181d4b2cacbc1f262f9bc3638bc839e47db93cc"
+  },
+  "r15": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Извините, не расслышал, машины шумят. Повторите.",
+    "bytes": 46019,
+    "sha256": "3ffc4e5530e51be47b7e100794114fe5f20a4559c7071f9c3db678169bebb327"
+  },
+  "r16": {
+    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "speed": 1.0,
+    "stability": 0.5,
+    "text": "Этого я не знаю. Могу подождать с ней, пока приедут.",
+    "bytes": 51035,
+    "sha256": "a647b152d411a1fc50ada36d302fed781bb4bc57ac4c61b819084dd87dcc439f"
+  }
+}
