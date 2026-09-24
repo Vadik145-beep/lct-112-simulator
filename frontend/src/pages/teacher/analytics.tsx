@@ -16,6 +16,9 @@ import { cn } from "@/lib/utils";
 import { MODE_TITLES, plural } from "@/teacher/labels";
 
 const PERIODS = [7, 14, 28, 90];
+// Пределы бэкенда (app.analytics.service): всё, что вне их, он отвергает с 422.
+const MIN_DAYS = 1;
+const MAX_DAYS = 365;
 // The pass threshold the heat map and the score line mark; sessions may set their own.
 const THRESHOLD = 70;
 
@@ -32,7 +35,12 @@ export function TeacherAnalyticsPage() {
   const groups = useGroups();
   const [params, setParams] = useSearchParams();
   const groupId = params.get("group") ?? groups.data?.[0]?.id;
-  const days = Number(params.get("days") ?? 28) || 28;
+  // Период из адреса может быть любым: держим его в пределах бэкенда, иначе страница вместо
+  // аналитики показывает техническую ошибку про поле days.
+  const days = Math.min(MAX_DAYS, Math.max(MIN_DAYS, Math.round(Number(params.get("days") ?? 28) || 28)));
+  // Значение не из списка (пришло по ссылке) добавляем отдельным пунктом: иначе браузер
+  // показывает первый вариант, и подпись «7 дней» стоит над данными за другой период.
+  const periods = useMemo(() => (PERIODS.includes(days) ? PERIODS : [...PERIODS, days].sort((a, b) => a - b)), [days]);
 
   function update(next: { group?: string; days?: number }) {
     const merged = new URLSearchParams(params);
@@ -65,7 +73,7 @@ export function TeacherAnalyticsPage() {
           <div className="space-y-1">
             <Label htmlFor="days">Период</Label>
             <select id="days" className="h-9 rounded-md border bg-background px-2 text-sm" value={days} onChange={(e) => update({ days: Number(e.target.value) })}>
-              {PERIODS.map((d) => (
+              {periods.map((d) => (
                 <option key={d} value={d}>
                   {d} {plural(d, "день", "дня", "дней")}
                 </option>

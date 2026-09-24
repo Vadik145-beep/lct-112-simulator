@@ -3,8 +3,9 @@
 from datetime import UTC, datetime, timedelta
 
 from app.domain.analytics import insights
+from app.domain.analytics.features import compute_features
 from app.domain.analytics.rating import RatingState
-from app.domain.analytics.records import AttemptRecord
+from app.domain.analytics.records import MAX_TIME_RATIO, NO_TIME_RATIO, AttemptRecord
 
 SINCE = datetime(2026, 9, 1, tzinfo=UTC)
 
@@ -63,12 +64,33 @@ def test_summary_and_recommendations() -> None:
         students=3,
         attempts=12,
         mean_score=66.4,
-        weakest_group=("Утечка газа", 51.0),
+        weakest_group=("Утечка газа", "call_intake", 51.0),
         errors=insights.top_errors({"a": [record(0, 50, errors=("x",))]}, {"x": "Ошибка X"}),
         at_risk=2,
     )
-    assert "12 оценённых попыток" in text and "Утечка газа" in text and "Ошибка X" in text
+    assert "12 оценённых попыток" in text and "Ошибка X" in text
+    # The weakest cell is named with its mode, so the number matches the heat map.
+    assert "«Утечка газа» в приёме вызова" in text
     assert "риском" in text
+
+
+def test_summary_declines_numbers() -> None:
+    """The summary is read by a teacher, not by a log: «у 1 обучающегося», not «у 1
+    обучающихся»."""
+    one = insights.group_summary(
+        students=1,
+        attempts=1,
+        mean_score=45.0,
+        weakest_group=None,
+        errors=insights.top_errors({"a": [record(0, 50, errors=("x",))]}, {"x": "Ошибка X"}),
+        at_risk=0,
+    )
+    assert "1 оценённая попытка у 1 обучающегося" in one
+    assert "1 раз у 1 из 1 обучающегося" in one
+    two = insights.group_summary(
+        students=2, attempts=2, mean_score=45.0, weakest_group=None, errors=[], at_risk=0
+    )
+    assert "2 оценённые попытки у 2 обучающихся" in two
 
     state = RatingState()
     state.apply("13", "card_response", 2, 10)
@@ -77,3 +99,28 @@ def test_summary_and_recommendations() -> None:
     assert len(advice) == 3
     assert "Утечка газа" in advice[0] and "норматива" in advice[1] and "«П»" in advice[2]
     assert insights.recommendations([], RatingState(), {}, {})[0].startswith("Пройдите")
+
+
+def test_abandoned_attempt_does_not_move_the_week() -> None:
+    """An attempt left open overnight counts as MAX_TIME_RATIO norms, not as 2500 of them:
+    otherwise one card drags the whole «Время, % от норматива» line of the group."""
+    normal = [record(0, 60, seconds=30.0), record(0, 60, seconds=45.0)]
+    abandoned = record(0, 21, seconds=75_547.0, norm_seconds=90)
+    assert abandoned.time_ratio == MAX_TIME_RATIO
+
+    week = insights.dynamics([*normal, abandoned], since=SINCE)[0]
+    assert week.count == 3
+    # (1.0 + 1.5 + 2.5) / 3 — readable, not 280.
+    assert week.mean_time_ratio == 1.67
+
+
+def test_missing_time_counts_as_twice_the_norm() -> None:
+    assert record(0, 40, seconds=None).time_ratio == NO_TIME_RATIO
+
+
+def test_forecast_features_survive_an_abandoned_attempt() -> None:
+    """The time feature of the forecast stays inside the range the model was trained on, so a
+    single abandoned attempt cannot pin a trainee at zero probability."""
+    records = [record(i, 60, seconds=30.0) for i in range(9)]
+    records.append(record(9, 21, seconds=75_547.0, norm_seconds=90))
+    assert compute_features(records).values["time_ratio"] <= MAX_TIME_RATIO

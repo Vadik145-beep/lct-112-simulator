@@ -9,6 +9,16 @@ from typing import Any
 
 from app.domain.analytics.rating import incident_group
 
+# Upper bound of the time a single attempt may contribute to the charts and to the forecast.
+# The score for time is already zero at twice the norm (``evaluation.timing.time_fraction``),
+# so everything above is equally bad; and this is the widest the simulated cohort the forecast
+# was trained on ever goes (``simulate.attempt``). Without the bound one attempt left open
+# overnight moves a whole week of the group («время 7085 % от норматива») and pins the
+# forecast at zero while it stays in the recent window.
+MAX_TIME_RATIO = 2.5
+# The share of the norm a missing time counts as: not reached is not better than the worst.
+NO_TIME_RATIO = 2.0
+
 
 @dataclass(frozen=True)
 class AttemptRecord:
@@ -31,13 +41,13 @@ class AttemptRecord:
 
     @property
     def time_ratio(self) -> float:
-        """Time as a share of the norm; a missing time counts as twice the norm (zero points
-        in the evaluation)."""
+        """Time as a share of the norm, never above ``MAX_TIME_RATIO``; a missing time counts
+        as twice the norm (zero points in the evaluation)."""
         if self.norm_seconds <= 0:
             return 1.0
         if self.seconds is None:
-            return 2.0
-        return self.seconds / self.norm_seconds
+            return NO_TIME_RATIO
+        return min(self.seconds / self.norm_seconds, MAX_TIME_RATIO)
 
 
 def from_result(
