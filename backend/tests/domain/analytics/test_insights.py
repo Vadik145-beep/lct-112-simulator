@@ -64,12 +64,33 @@ def test_summary_and_recommendations() -> None:
         students=3,
         attempts=12,
         mean_score=66.4,
-        weakest_group=("Утечка газа", 51.0),
+        weakest_group=("Утечка газа", "call_intake", 51.0),
         errors=insights.top_errors({"a": [record(0, 50, errors=("x",))]}, {"x": "Ошибка X"}),
         at_risk=2,
     )
-    assert "12 оценённых попыток" in text and "Утечка газа" in text and "Ошибка X" in text
+    assert "12 оценённых попыток" in text and "Ошибка X" in text
+    # The weakest cell is named with its mode, so the number matches the heat map.
+    assert "«Утечка газа» в приёме вызова" in text
     assert "риском" in text
+
+
+def test_summary_declines_numbers() -> None:
+    """The summary is read by a teacher, not by a log: «у 1 обучающегося», not «у 1
+    обучающихся»."""
+    one = insights.group_summary(
+        students=1,
+        attempts=1,
+        mean_score=45.0,
+        weakest_group=None,
+        errors=insights.top_errors({"a": [record(0, 50, errors=("x",))]}, {"x": "Ошибка X"}),
+        at_risk=0,
+    )
+    assert "1 оценённая попытка у 1 обучающегося" in one
+    assert "1 раз у 1 из 1 обучающегося" in one
+    two = insights.group_summary(
+        students=2, attempts=2, mean_score=45.0, weakest_group=None, errors=[], at_risk=0
+    )
+    assert "2 оценённые попытки у 2 обучающихся" in two
 
     state = RatingState()
     state.apply("13", "card_response", 2, 10)
