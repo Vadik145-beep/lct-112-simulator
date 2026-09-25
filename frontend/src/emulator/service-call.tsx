@@ -402,6 +402,10 @@ export function ServiceCallPanel({
           disabled={pending}
           onPointerDown={(e) => {
             e.preventDefault();
+            // The button holds the pointer while pressed: when the panel shifts (the
+            // recording line appears, the microphone list fills in) the button may move away
+            // from the cursor, and the recording must go on until the button is released.
+            e.currentTarget.setPointerCapture(e.pointerId);
             void startRecording();
           }}
           onPointerUp={stopRecording}
