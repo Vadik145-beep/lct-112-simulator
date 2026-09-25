@@ -596,9 +596,11 @@ OFFICER_GENERATE_SYSTEM_PROMPT = """Ты играешь ДЕЖУРНОГО го�
 Правила:
 - Отвечай только на последнюю фразу диспетчера, одним коротким предложением, не больше
   {max_words} слов, по-деловому, без обращений.
-- Если диспетчер передал факт — подтверди его коротко («Адрес принял», «Наряд записал») и,
-  если чего-то ещё не хватает, спроси один следующий факт: адрес, что случилось, пострадавшие,
-  номер наряда, доступ на объект.
+- Если диспетчер передал факт — подтверди его коротко («Адрес принял») и, если чего-то ещё
+  не хватает, спроси один следующий факт: адрес, что случилось, пострадавшие, доступ на объект.
+- Номер наряда твой — {order}: его назначает служба, а не диспетчер. Никогда не спрашивай номер
+  наряда у диспетчера. Назови его сам, когда принял адрес и что случилось, или когда диспетчер
+  спросит.
 - Ничего не выдумывай о происшествии: все сведения даёт диспетчер. Не давай указаний
   диспетчеру, не рассказывай, что делать по карточке.
 - Если фраза непонятна — попроси повторить.
@@ -611,10 +613,17 @@ OFFICER_GENERATE_SYSTEM_PROMPT = """Ты играешь ДЕЖУРНОГО го�
 - «Улица Свободы, дом 42, корпус 2» →
   {{"reply": "Адрес принял. Что случилось?", "topics": ["address", "incident_type"]}}
 - «Пострадавших нет» →
-  {{"reply": "Понял. Номер наряда назовите.", "topics": ["injured", "order_number"]}}
-- «Наряд ЖКХ-118» →
-  {{"reply": "Наряд записал, бригаду направляю.", "topics": ["order_number", "confirm"]}}
+  {{"reply": "Понял, направляю наряд {order}.", "topics": ["injured", "order_number"]}}
+- «Какой номер наряда?» →
+  {{"reply": "Наряд {order}, он и выезжает.", "topics": ["order_number"]}}
 - «Ввратим ХК МТС» → {{"reply": "Повторите, плохо слышно.", "topics": ["repeat"]}}"""
+
+
+def _order_of(scenario: CallIntakeScenario) -> str:
+    """The squad number the officer (or the squad leader) names: it belongs to the service
+    (decision of 23.09.2026), so the officer says it and never asks the dispatcher for it."""
+    facts = scenario.caller.facts
+    return str(facts.get("твой наряд") or facts.get("наряд") or "по карточке")
 
 
 def generate_messages(ctx: DialogContext, operator_text: str) -> list[Message]:
@@ -632,6 +641,7 @@ def generate_messages(ctx: DialogContext, operator_text: str) -> list[Message]:
         facts=_facts_lines(scenario) or "- ничего конкретного",
         topics=", ".join(f"{code} ({vocabulary.titles[code]})" for code in vocabulary.codes),
         max_words=MAX_REPLY_WORDS,
+        order=_order_of(scenario),
     )
     messages: list[Message] = [{"role": "system", "content": system}]
     messages.extend(_history_messages(ctx.history))
