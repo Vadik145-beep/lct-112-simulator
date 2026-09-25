@@ -1073,7 +1073,7 @@ function CardView({
           </button>
         }
       >
-        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto *:shrink-0">
         <div>
           <div className="text-xs text-[var(--arm-text-muted)]">
             Карточка {card.number}
