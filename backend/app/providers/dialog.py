@@ -809,6 +809,11 @@ GENERATE_SCHEMA: dict[str, Any] = {
 }
 
 
+# Stands in for the operator's first phrase when the prompt is warmed up: only the part before
+# it is cached, so its wording does not matter.
+WARM_UP_PHRASE = "Алло."
+
+
 class GenerateDialog:
     mode = "generate"
 
@@ -880,6 +885,19 @@ class GenerateDialog:
                 last_error = exc
         assert last_error is not None
         raise last_error
+
+    async def warm(self, ctx: DialogContext) -> None:
+        """Reads the call's prompt into the model's cache while the caller's opening plays.
+
+        The first reply of a call otherwise waits for the whole system prompt to be read
+        (9-13 s on the stand's CPU against ~2.5 s for the next ones). The same slot and the
+        same messages up to the operator's phrase are sent, so the first reply finds them
+        cached; one token is generated and thrown away."""
+        messages = generate_messages(ctx, WARM_UP_PHRASE)
+        try:
+            await self._model.complete_text(messages, max_tokens=1, slot_key=ctx.conversation_id)
+        except (ModelUnavailableError, ModelOutputError) as exc:
+            log.info("generation warm-up skipped", error=str(exc))
 
 
 # --- hybrid: select, generate when nothing fits ------------------------------------------------
