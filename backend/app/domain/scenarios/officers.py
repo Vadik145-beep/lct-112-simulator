@@ -303,12 +303,15 @@ def officer_scenario(
 
 
 def report_replies(report: BrigadeReport, order: str = "") -> list[Reply]:
-    """Replies of the squad leader in a report call: confirmations, the report again."""
+    """Replies of the squad leader in a report call: confirmations, the report again. The report
+    said again («{report}», «Повторяю: {report}») plays the report's own recording when the
+    card has one, instead of a synthesis of the same words."""
     return [
         Reply(
             id=BUILTIN_REPLY_ID_BASE + i,
             topic=topic,
             text=text.format(report=report.text, order=order or "наш"),
+            audio=report.audio if "{report}" in text else None,
             approved=True,
         )
         for i, (topic, text) in enumerate(REPORT_REPLIES)
