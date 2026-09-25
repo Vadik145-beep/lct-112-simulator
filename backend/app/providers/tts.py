@@ -1,8 +1,8 @@
 """TTSProvider: the caller's voice.
 
 Main implementation: Silero TTS v4 (PyTorch, CPU, ``models/tts/silero_v4_ru.pt``): five native
-Russian speakers plus SSML prosody, so the elderly and the child callers get their own pitch and
-pace instead of a slowed-down adult. Piper (ONNX, three Russian voices) stays as the second
+Russian speakers, each at its own pace and pitch (SSML prosody stays available but neutral:
+shifted voices sounded artificial). Piper (ONNX, three Russian voices) stays as the second
 engine (``TTS_PROVIDER=piper``) and as the fallback when the Silero model or torch is missing.
 A scenario names a voice as ``ru_male_1``, ``ru_female_1``…; ``VOICES`` lists those ids (shown
 in the teacher's form), ``SILERO_VOICES`` / ``VoiceSpec`` map them to an engine voice, so the
@@ -76,17 +76,19 @@ class SileroVoiceSpec:
     pitch: str = "medium"  # SSML prosody pitch: x-low … x-high
 
 
-# Scenario voice ids → Silero speakers with prosody. The elderly speak slower and lower, the
-# child gets a raised pitch on the lightest female voice; tuned by ear (22.09.2026).
+# Scenario voice ids → Silero speakers at their own pace and pitch. The slowed, lowered and
+# raised variants of 22.09.2026 sounded artificial on the stand and were dropped (25.09.2026):
+# the three female ids get the three female speakers, the child the lightest of them, and the
+# two male speakers serve the four male ids.
 SILERO_VOICES: dict[str, SileroVoiceSpec] = {
     "ru_male_1": SileroVoiceSpec("aidar"),
     "ru_male_2": SileroVoiceSpec("eugene"),
-    "ru_male_3": SileroVoiceSpec("eugene", "slow", "x-low"),
-    "ru_male_4": SileroVoiceSpec("aidar", "fast"),
+    "ru_male_3": SileroVoiceSpec("eugene"),
+    "ru_male_4": SileroVoiceSpec("aidar"),
     "ru_female_1": SileroVoiceSpec("kseniya"),
-    "ru_female_2": SileroVoiceSpec("baya", "slow", "low"),
-    "ru_female_3": SileroVoiceSpec("xenia", "fast"),
-    "ru_child_1": SileroVoiceSpec("kseniya", "medium", "x-high"),
+    "ru_female_2": SileroVoiceSpec("baya"),
+    "ru_female_3": SileroVoiceSpec("xenia"),
+    "ru_child_1": SileroVoiceSpec("xenia"),
 }
 assert set(SILERO_VOICES) == set(VOICES)
 
