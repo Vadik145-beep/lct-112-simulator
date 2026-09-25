@@ -1165,6 +1165,7 @@ function CardView({
             onMicDevice={(id) => softphone?.setMicDevice(id)}
             onMicOpened={() => void softphone?.refreshDevices()}
             pending={callBusy}
+            replying={sayToOfficer.isPending || speakToOfficer.isPending}
             error={callError ? callError.message : null}
             onSay={(text, actionId) =>
               sayToOfficer.mutate({ callId: shownCall.id, text, actionId })
