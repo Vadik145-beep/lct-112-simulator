@@ -91,6 +91,10 @@ const REPORT_HINTS: Record<string, string> = {
     "Работы идут. По докладу о завершении — «Работы завершены» с результатом из доклада: статус закрывает карточку.",
 };
 
+// Statuses after which the squad leader still calls with reports (sweep_reports on the
+// server): from «Принята» until «Работы завершены».
+const REPORTING_STATUSES = new Set(["accepted", "response_started", "arrived", "works_started"]);
+
 function hintFor(attempt: AttemptOut): string {
   const table = attempt.reports_expected ? REPORT_HINTS : HINTS;
   return (
@@ -1166,6 +1170,13 @@ function CardView({
             onMicOpened={() => void softphone?.refreshDevices()}
             pending={callBusy}
             replying={sayToOfficer.isPending || speakToOfficer.isPending}
+            awaitingReport={
+              !finished &&
+              attempt.reports_expected &&
+              REPORTING_STATUSES.has(attempt.response_status) &&
+              shownCall.kind === "outgoing" &&
+              shownCall.service === ownService?.code
+            }
             error={callError ? callError.message : null}
             onSay={(text, actionId) =>
               sayToOfficer.mutate({ callId: shownCall.id, text, actionId })
