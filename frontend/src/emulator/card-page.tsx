@@ -1378,7 +1378,10 @@ function PhoneBox({
             "flex size-6 items-center justify-center rounded-sm border",
             canCall
               ? "border-[var(--arm-green)] bg-[var(--arm-green)] text-white hover:brightness-110"
-              : "border-transparent text-[var(--arm-text-muted)] opacity-50",
+              : value.trim()
+                ? // A number while another call is on: dimmed like the call buttons of the strip.
+                  "cursor-not-allowed border-[var(--arm-green)] bg-[var(--arm-green)] text-white opacity-40"
+                : "border-transparent text-[var(--arm-text-muted)] opacity-50",
           )}
         >
           <Phone className="size-4" aria-hidden />
