@@ -33,10 +33,16 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
-from app.domain.evaluation.schemas import CallIntakeScenario, DialogTurn, Reply
+from app.domain.evaluation.schemas import (
+    SERVICE_CALL_FACTS,
+    CallIntakeScenario,
+    DialogTurn,
+    Reply,
+)
 from app.domain.evaluation.text import detect_service_facts, detect_topics, normalize_text
 from app.domain.reference_data import CALLER_TOPICS, OFFICER_PROGRESS_KEYWORDS, OFFICER_TOPICS
 from app.domain.scenarios import fallback
+from app.domain.scenarios.officers import FACT_REQUESTS
 from app.logging import get_logger
 from app.providers.llm import ChatModel, Message, ModelOutputError, ModelUnavailableError
 
@@ -65,6 +71,7 @@ class Vocabulary:
 
 
 TOPIC_PROGRESS = "progress"
+TOPIC_CONFIRM = "confirm"  # the officer's «информацию принял, направляю наряд»
 
 
 def detect_officer_topics(text: str) -> list[str]:
@@ -94,7 +101,11 @@ def vocabulary_for(role: str) -> Vocabulary:
 
 HISTORY_TURNS = 6  # last turns shown to the model besides the cached system prompt
 SELECT_MAX_TOKENS = 12  # {"reply_id": 12}
-GENERATE_MAX_TOKENS = 40  # the caller's phrase itself (plan, wave 5)
+# The caller's phrase itself. The prompt keeps it within MAX_REPLY_WORDS; the limit only has to
+# let such a phrase finish: a Russian word costs the model 2-3 tokens, and a phrase cut mid-way
+# is broken JSON that sends the turn to the keyword fallback (40 did cut replies on the stand).
+GENERATE_MAX_TOKENS = 96
+MAX_REPLY_WORDS = 15
 JSON_OVERHEAD_TOKENS = 24  # {"reply": "…", "topics": ["…"]} around it
 JSON_RETRIES = 1  # a second try on broken JSON, then the fallback
 
@@ -216,7 +227,8 @@ def canned_reply(
         return _from_reply(fresh[0], operator_topics, method)
     voice = ctx.scenario.caller.voice
     said = {t.text for t in ctx.history if t.role == "caller"}
-    phrase = fallback.pick(topic, voice, said)
+    # The bank speaks as a caller («Вы приезжайте скорее»): an officer repeats his own line.
+    phrase = None if ctx.role == ROLE_OFFICER else fallback.pick(topic, voice, said)
     if phrase is not None:
         return CallerReply(
             text=phrase.text(voice),
@@ -467,6 +479,11 @@ class SelectDialog:
         the caller asks to repeat; without keywords the model is trusted. A ``null`` with no
         keyword topic means the phrase is off the scenario: the «Вне темы» reply when the
         scenario has one, otherwise ``None`` (the caller asks to repeat).
+
+        A duty officer is the exception to «several topics → repeat»: the dispatcher is
+        expected to pass the address and the incident in one phrase, so the officer takes the
+        facts and asks the next one missing (``officer_takes_facts``); a few more officer
+        rules come first (``officer_reply``).
         """
         if not approved_replies(ctx.scenario):
             return None
@@ -485,6 +502,10 @@ class SelectDialog:
         with_reply = [t for t in keyword_topics if replies_of_topic(ctx.scenario, t)]
         asked_to_repeat = TOPIC_REPEAT in operator_topics
 
+        if ctx.role == ROLE_OFFICER:
+            ruled = officer_reply(ctx, operator_text, chosen, keyword_topics, operator_topics)
+            if ruled is not None:
+                return ruled
         if asked_to_repeat and not keyword_topics:
             # «Повторите», «громче», «не расслышал» with nothing else: repeat, whatever the
             # model picked (small models like to answer such phrases with a content reply).
@@ -493,6 +514,10 @@ class SelectDialog:
             return canned_reply(ctx, TOPIC_REPEAT, operator_topics, "select+keywords")
         if chosen is not None and (not keyword_topics or chosen.topic in keyword_topics):
             return _from_reply(chosen, _merge(operator_topics, chosen.topic), "select")
+        if ctx.role == ROLE_OFFICER and len(_facts_of(ctx, keyword_topics)) > 1:
+            taken = officer_takes_facts(ctx, chosen, keyword_topics, operator_topics)
+            if taken is not None:
+                return taken
         if chosen is not None and chosen.topic in SERVICE_TOPICS and asked_to_repeat:
             return _from_reply(chosen, operator_topics, "select")
         if len(with_reply) == 1:
@@ -531,6 +556,133 @@ class SelectDialog:
         raise last_error
 
 
+def officer_takes_facts(
+    ctx: DialogContext,
+    chosen: Reply | None,
+    keyword_topics: list[str],
+    operator_topics: list[str],
+) -> CallerReply | None:
+    """The officer's answer to a phrase that passes several facts at once: the model's reply
+    when it asks for a fact not passed yet, otherwise the question about the first missing
+    required fact, and «информацию принял» when nothing is missing. ``None`` for a call with
+    no required facts (a squad's report) or a bank without such replies: the general rules
+    decide then."""
+    required = ctx.scenario.required_topics
+    if not required:
+        return None
+    passed = _passed_facts(ctx, keyword_topics)
+    missing = [t for t in ctx.vocabulary.codes if t in required and t not in passed]
+    if chosen is not None and chosen.topic in missing and _asks(chosen):
+        return _from_reply(chosen, operator_topics, "select")
+    if missing:
+        question = _question_of_topic(ctx, missing[0])
+        if question is not None:
+            return _from_reply(question, operator_topics, "select+facts")
+        return None
+    confirm = pick_reply(ctx, TOPIC_CONFIRM)
+    if confirm is None:
+        return None
+    return _from_reply(confirm, operator_topics, "select+facts")
+
+
+# Each fact of the officer's bank has a confirmation («Адрес принял. Подъезд, этаж
+# известны?», «Понял, доступ есть.») and a request or a question («Назовите адрес…»,
+# «Пострадавшие есть?»). A confirmation opens with «принял / принято / понял».
+_CONFIRMATION = re.compile(r"^(адрес |наряд )?(принял|принято|понял)")
+# The dispatcher asks the squad's number («Какой наряд выезжает?», «Назовите номер наряда»).
+# «Где наряд?», «Наряд выехал?» ask about the progress and are left to the general rules.
+_ORDER_QUESTION = re.compile(r"\b(какой|каков|назовите|скажите)\b.*\bнаряд|\bномер\w* наряд")
+# Thanks and goodbye at the end of the call: the officer confirms, the call is not «вне темы».
+_CLOSING = re.compile(r"\b(спасибо|до свидания|всего доброго|всего хорошего)\b")
+
+
+def _asks(reply: Reply) -> bool:
+    """The reply asks for its fact or about it, not confirms it."""
+    return not _CONFIRMATION.match(normalize_text(reply.text))
+
+
+def _passed_facts(ctx: DialogContext, keyword_topics: list[str]) -> set[str]:
+    passed = set(keyword_topics)
+    for turn in ctx.history:
+        if turn.role == "operator":
+            passed.update(turn.topics)
+    return passed
+
+
+def officer_reply(
+    ctx: DialogContext,
+    operator_text: str,
+    chosen: Reply | None,
+    keyword_topics: list[str],
+    operator_topics: list[str],
+) -> CallerReply | None:
+    """Officer rules checked before the general ones; ``None`` leaves the phrase to them.
+
+    * a question about the squad's number is answered with the number;
+    * thanks or goodbye with no fact in it get «принято», not «это не ко мне»;
+    * a request for a fact the dispatcher has already passed is replaced: several facts in
+      the phrase → ``officer_takes_facts``, one → the confirmation of that fact.
+    """
+    text = normalize_text(operator_text)
+    if _ORDER_QUESTION.search(text):
+        order = _order_reply(ctx)
+        if order is not None:
+            return _from_reply(order, operator_topics, "select+officer")
+    others = set(keyword_topics) - {TOPIC_PROGRESS, "order_number"}
+    if TOPIC_PROGRESS in keyword_topics and not others:
+        # «Где наряд?», «Бригада выехала?»: the squad's state, not its number.
+        progress = pick_reply(ctx, TOPIC_PROGRESS)
+        if progress is not None:
+            return _from_reply(progress, operator_topics, "select+officer")
+    if not keyword_topics and _CLOSING.search(text):
+        if chosen is None or chosen.topic in SERVICE_TOPICS:
+            confirm = pick_reply(ctx, TOPIC_CONFIRM)
+            if confirm is not None:
+                return _from_reply(confirm, operator_topics, "select+officer")
+        return None
+    if chosen is None or chosen.text not in FACT_REQUESTS:
+        return None
+    if chosen.topic not in _passed_facts(ctx, keyword_topics):
+        return None
+    facts_now = _facts_of(ctx, keyword_topics)
+    if len(facts_now) != 1:
+        # Several facts, or none named: take what was passed and ask what is missing.
+        return officer_takes_facts(ctx, None, keyword_topics, operator_topics)
+    # One fact in the phrase: confirm that one (not the fact the model asked about).
+    confirmation = _confirmation_of_topic(ctx, facts_now[0])
+    if confirmation is None:
+        return None
+    return _from_reply(confirmation, operator_topics, "select+officer")
+
+
+def _facts_of(ctx: DialogContext, keyword_topics: list[str]) -> list[str]:
+    """Facts of a service call the phrase names and the officer has a reply for."""
+    return [
+        t for t in keyword_topics if t in SERVICE_CALL_FACTS and replies_of_topic(ctx.scenario, t)
+    ]
+
+
+def _order_reply(ctx: DialogContext) -> Reply | None:
+    """The officer's line that names the squad («Наряд 4864, он и выезжает.»)."""
+    replies = replies_of_topic(ctx.scenario, "order_number")
+    return next(iter([r for r in replies if _asks(r)] or replies), None)
+
+
+def _confirmation_of_topic(ctx: DialogContext, topic: str) -> Reply | None:
+    confirmations = [r for r in replies_of_topic(ctx.scenario, topic) if not _asks(r)]
+    fresh = [r for r in confirmations if r.id not in ctx.used_reply_ids]
+    return next(iter(fresh or confirmations), None)
+
+
+def _question_of_topic(ctx: DialogContext, topic: str) -> Reply | None:
+    """The officer's question about a fact, preferring one not asked yet in this call."""
+    replies = replies_of_topic(ctx.scenario, topic)
+    requests = [r for r in replies if r.text in FACT_REQUESTS]
+    questions = requests or [r for r in replies if _asks(r)]
+    fresh = [r for r in questions if r.id not in ctx.used_reply_ids]
+    return next(iter(fresh or questions), None)
+
+
 def _merge(operator_topics: list[str], topic: str) -> list[str]:
     if topic in SERVICE_TOPICS or topic in operator_topics:
         return list(operator_topics)
@@ -557,8 +709,9 @@ GENERATE_SYSTEM_PROMPT = """Ты играешь ЗАЯВИТЕЛЯ, которы
 {facts}
 
 Правила:
-- Отвечай только на последнюю фразу оператора, одним-двумя короткими предложениями, разговорно,
-  как говорит взволнованный человек по телефону.
+- Отвечай только на последнюю фразу оператора, одним-двумя короткими предложениями, не больше
+  {max_words} слов, разговорно, как говорит взволнованный человек по телефону. Без обращений
+  («уважаемый оператор», «девушка») и без вежливых вступлений.
 - Отвечай именно на то, что спросили. Про происшествие и адрес говори только по фактам выше и
   не выдумывай новых обстоятельств происшествия. Не перечисляй адрес и подробности, о которых
   сейчас не спрашивали, и не повторяй то, что уже сказал раньше в разговоре.
@@ -589,10 +742,13 @@ OFFICER_GENERATE_SYSTEM_PROMPT = """Ты играешь ДЕЖУРНОГО го�
 {facts}
 
 Правила:
-- Отвечай только на последнюю фразу диспетчера, одним коротким предложением, по-деловому.
-- Если диспетчер передал факт — подтверди его коротко («Адрес принял», «Наряд записал») и,
-  если чего-то ещё не хватает, спроси один следующий факт: адрес, что случилось, пострадавшие,
-  номер наряда, доступ на объект.
+- Отвечай только на последнюю фразу диспетчера, одним коротким предложением, не больше
+  {max_words} слов, по-деловому, без обращений.
+- Если диспетчер передал факт — подтверди его коротко («Адрес принял») и, если чего-то ещё
+  не хватает, спроси один следующий факт: адрес, что случилось, пострадавшие, доступ на объект.
+- Номер наряда твой — {order}: его назначает служба, а не диспетчер. Никогда не спрашивай номер
+  наряда у диспетчера. Назови его сам, когда принял адрес и что случилось, или когда диспетчер
+  спросит.
 - Ничего не выдумывай о происшествии: все сведения даёт диспетчер. Не давай указаний
   диспетчеру, не рассказывай, что делать по карточке.
 - Если фраза непонятна — попроси повторить.
@@ -605,10 +761,17 @@ OFFICER_GENERATE_SYSTEM_PROMPT = """Ты играешь ДЕЖУРНОГО го�
 - «Улица Свободы, дом 42, корпус 2» →
   {{"reply": "Адрес принял. Что случилось?", "topics": ["address", "incident_type"]}}
 - «Пострадавших нет» →
-  {{"reply": "Понял. Номер наряда назовите.", "topics": ["injured", "order_number"]}}
-- «Наряд ЖКХ-118» →
-  {{"reply": "Наряд записал, бригаду направляю.", "topics": ["order_number", "confirm"]}}
+  {{"reply": "Понял, направляю наряд {order}.", "topics": ["injured", "order_number"]}}
+- «Какой номер наряда?» →
+  {{"reply": "Наряд {order}, он и выезжает.", "topics": ["order_number"]}}
 - «Ввратим ХК МТС» → {{"reply": "Повторите, плохо слышно.", "topics": ["repeat"]}}"""
+
+
+def _order_of(scenario: CallIntakeScenario) -> str:
+    """The squad number the officer (or the squad leader) names: it belongs to the service
+    (decision of 23.09.2026), so the officer says it and never asks the dispatcher for it."""
+    facts = scenario.caller.facts
+    return str(facts.get("твой наряд") or facts.get("наряд") or "по карточке")
 
 
 def generate_messages(ctx: DialogContext, operator_text: str) -> list[Message]:
@@ -625,6 +788,8 @@ def generate_messages(ctx: DialogContext, operator_text: str) -> list[Message]:
         title=scenario.title,
         facts=_facts_lines(scenario) or "- ничего конкретного",
         topics=", ".join(f"{code} ({vocabulary.titles[code]})" for code in vocabulary.codes),
+        max_words=MAX_REPLY_WORDS,
+        order=_order_of(scenario),
     )
     messages: list[Message] = [{"role": "system", "content": system}]
     messages.extend(_history_messages(ctx.history))
@@ -652,6 +817,11 @@ GENERATE_SCHEMA: dict[str, Any] = {
     },
     "required": ["reply", "topics"],
 }
+
+
+# Stands in for the operator's first phrase when the prompt is warmed up: only the part before
+# it is cached, so its wording does not matter.
+WARM_UP_PHRASE = "Алло."
 
 
 class GenerateDialog:
@@ -725,6 +895,19 @@ class GenerateDialog:
                 last_error = exc
         assert last_error is not None
         raise last_error
+
+    async def warm(self, ctx: DialogContext) -> None:
+        """Reads the call's prompt into the model's cache while the caller's opening plays.
+
+        The first reply of a call otherwise waits for the whole system prompt to be read
+        (9-13 s on the stand's CPU against ~2.5 s for the next ones). The same slot and the
+        same messages up to the operator's phrase are sent, so the first reply finds them
+        cached; one token is generated and thrown away."""
+        messages = generate_messages(ctx, WARM_UP_PHRASE)
+        try:
+            await self._model.complete_text(messages, max_tokens=1, slot_key=ctx.conversation_id)
+        except (ModelUnavailableError, ModelOutputError) as exc:
+            log.info("generation warm-up skipped", error=str(exc))
 
 
 # --- hybrid: select, generate when nothing fits ------------------------------------------------

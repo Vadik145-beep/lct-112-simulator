@@ -22,6 +22,8 @@ class ModelsOut(BaseModel):
     tts: bool
     # The cloud voice (plan/track-c-vapi.md) may be chosen as the dialog mode of a lesson.
     cloud: bool = False
+    # Calls may ring the trainees' own phones through MultiFon (docs/MULTIFON.md).
+    phone: bool = False
 
 
 class StudentOut(BaseModel):
@@ -79,6 +81,8 @@ class SessionIn(BaseModel):
     # Adaptive selection (PRD 9.7): each trainee's next card comes from the weakest incident
     # group at a difficulty near the skill rating, unseen scenarios first.
     adaptive: bool = False
+    # Calls ring the trainees' own phones too (docs/MULTIFON.md).
+    phone_calls: bool = False
 
 
 class SessionPatch(BaseModel):
@@ -99,6 +103,7 @@ class SessionPatch(BaseModel):
     voice_enabled: bool | None = None
     dialog_mode: str | None = None
     adaptive: bool | None = None
+    phone_calls: bool | None = None
 
 
 class QueueScenarioOut(BaseModel):
@@ -172,6 +177,7 @@ class SessionOut(SessionListItem):
     voice_enabled: bool
     dialog_mode: str
     adaptive: bool
+    phone_calls: bool = False
     members: list[StudentOut]
     # The queue: fixed once the session starts, a preview of the current filters before.
     queue: list[QueueScenarioOut]

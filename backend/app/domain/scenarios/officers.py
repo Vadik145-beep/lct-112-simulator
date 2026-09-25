@@ -77,6 +77,19 @@ GENERIC_REPLIES: list[tuple[str, str]] = [
     ("repeat", "Повторите, пожалуйста, плохо слышно."),
     ("unknown", "Это не ко мне, давайте по происшествию."),
 ]
+# The officer's requests for a fact itself. Said after the dispatcher has passed that fact they
+# sound deaf, so the dialog engine answers with the confirmation instead. The clarifying
+# questions of a service («Запах газа где: в квартире, в подъезде, на улице?») are not here:
+# they ask more than the dispatcher said.
+FACT_REQUESTS: frozenset[str] = frozenset(
+    {
+        "Назовите адрес: улица, дом, корпус.",
+        "Что именно произошло? Какой тип происшествия по карточке?",
+        "Пострадавшие есть?",
+        "Доступ на объект есть? Кто встретит бригаду?",
+    }
+)
+assert FACT_REQUESTS <= {text for _, text in GENERIC_REPLIES}
 
 # What the officer says about the response when the dispatcher asks before the squad
 # reported itself (topic «progress»), by the squad's state. The state is the last report
@@ -303,12 +316,15 @@ def officer_scenario(
 
 
 def report_replies(report: BrigadeReport, order: str = "") -> list[Reply]:
-    """Replies of the squad leader in a report call: confirmations, the report again."""
+    """Replies of the squad leader in a report call: confirmations, the report again. The report
+    said again («{report}», «Повторяю: {report}») plays the report's own recording when the
+    card has one, instead of a synthesis of the same words."""
     return [
         Reply(
             id=BUILTIN_REPLY_ID_BASE + i,
             topic=topic,
             text=text.format(report=report.text, order=order or "наш"),
+            audio=report.audio if "{report}" in text else None,
             approved=True,
         )
         for i, (topic, text) in enumerate(REPORT_REPLIES)

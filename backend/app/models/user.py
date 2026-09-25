@@ -37,3 +37,5 @@ class User(Base):
     # SIP password of the trainee's softphone, encrypted (app.telephony.sip); None until the
     # account is first requested.
     sip_password_enc: Mapped[str | None] = mapped_column(String(255))
+    # The trainee's own phone (7XXXXXXXXXX) for lessons with calls to the phone (docs/MULTIFON.md).
+    phone: Mapped[str | None] = mapped_column(String(20))

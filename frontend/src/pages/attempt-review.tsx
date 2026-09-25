@@ -22,6 +22,7 @@ import {
   TokenAudio,
   type CallEvaluation,
 } from "@/intake/call-review";
+import { REFERENCE_PATH } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 import { ReviewNotes, ScoreBox } from "@/review/teacher-panel";
 
@@ -567,7 +568,7 @@ function ReviewView({
                     </p>
                     {e.memo_ref && (
                       <Link
-                        to={`/student/reference?q=${encodeURIComponent(e.title)}`}
+                        to={`${teacher ? REFERENCE_PATH.teacher : REFERENCE_PATH.student}?q=${encodeURIComponent(e.title)}`}
                         className="mt-1 inline-flex items-center gap-1 text-xs text-primary underline-offset-2 hover:underline"
                       >
                         <BookOpen className="size-3" aria-hidden /> Памятка,{" "}

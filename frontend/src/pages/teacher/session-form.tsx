@@ -39,6 +39,7 @@ const DEFAULTS: Omit<SessionIn, "group_id"> = {
   voice_enabled: true,
   dialog_mode: "select",
   adaptive: false,
+  phone_calls: false,
 };
 
 // PRD 9.3: the caller answers with an approved reply (select), may improvise with the
@@ -72,8 +73,15 @@ const DIALOG_MODES: { code: string; title: string; hint: string; dds?: string }[
     hint: "модель сочиняет каждую реплику; медленнее и менее предсказуемо",
     dds: "дежурный и старший группы отвечают свободно; медленнее и менее предсказуемо",
   },
-  { code: "buttons", title: "Кнопки тем", hint: "без модели", dds: "без модели, по ключевым словам" },
 ];
+// Not offered for new lessons any more; kept in the list of a lesson that already has it, so its
+// form shows the mode it runs in. The engine stays: every mode falls back to it without a model.
+const BUTTONS_MODE: (typeof DIALOG_MODES)[number] = {
+  code: "buttons",
+  title: "Кнопки тем",
+  hint: "без модели",
+  dds: "без модели, по ключевым словам",
+};
 // plan/track-c-vapi.md: the caller lives in Vapi; offered only where the stand enables it
 // (ALLOW_EXTERNAL_AI=true, outside the closed contour).
 const CLOUD_MODE: (typeof DIALOG_MODES)[number] = {
@@ -120,6 +128,7 @@ function toInput(s: SessionOut): SessionIn {
     voice_enabled: s.voice_enabled,
     dialog_mode: s.dialog_mode,
     adaptive: s.adaptive,
+    phone_calls: s.phone_calls ?? false,
   };
 }
 
@@ -224,6 +233,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                 <select id="dialog-mode" className={selectClass} value={form.dialog_mode} onChange={(e) => patch({ dialog_mode: e.target.value })}>
                   {[
                     ...DIALOG_MODES,
+                    ...(form.dialog_mode === "buttons" ? [BUTTONS_MODE] : []),
                     // Облачный голос играет только заявителя: служебные звонки ДДС идут
                     // через локальный конвейер (plan/track-c-vapi.md).
                     ...(models.data?.cloud || form.dialog_mode === "cloud"
@@ -251,10 +261,28 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                 {models.data && !models.data.dialog && form.dialog_mode !== "buttons" && form.dialog_mode !== "cloud" && (
                   <p className="text-xs text-destructive" role="alert" data-testid="dialog-model-warning">
                     Модель диалога сейчас недоступна: {isCall ? "заявитель" : "служба и бригада"} будет
-                    отвечать по ключевым словам, как в режиме «Кнопки тем».
+                    отвечать по ключевым словам.
                   </p>
                 )}
               </div>
+              {(models.data?.phone || form.phone_calls) && (
+                <div className="space-y-1">
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={form.phone_calls ?? false}
+                      onChange={(e) => patch({ phone_calls: e.target.checked })}
+                      data-testid="phone-calls"
+                    />
+                    Звонки на телефон обучающегося (МультиФон)
+                  </label>
+                  <p className="text-xs text-muted-foreground" data-testid="phone-calls-note">
+                    Вызовы звонят ещё и на мобильный, который обучающийся укажет при входе в занятие. Звонки в
+                    службу и заявителю из карточки тоже приходят ему на телефон: он берёт трубку и слышит гудки,
+                    как при наборе.
+                  </p>
+                </div>
+              )}
               {/* Голос не переключают: занятие всегда идёт голосом, когда озвучка и
                   распознавание подняты, и само переходит в текст, когда их нет. */}
               <p className="text-xs text-muted-foreground">

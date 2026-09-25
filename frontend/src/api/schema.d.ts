@@ -181,6 +181,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/me/phone": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set My Phone
+         * @description The trainee's own phone: lessons with calls to the phone ring it (docs/MULTIFON.md).
+         */
+        put: operations["set_my_phone_api_me_phone_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/me/progress": {
         parameters: {
             query?: never;
@@ -2372,6 +2392,11 @@ export interface components {
             hints_enabled: boolean;
             /** Dialog Mode */
             dialog_mode: string;
+            /**
+             * Phone Calls
+             * @default false
+             */
+            phone_calls: boolean;
             /** Started At */
             started_at: string | null;
             /** Finished At */
@@ -3457,6 +3482,11 @@ export interface components {
              * @default false
              */
             cloud: boolean;
+            /**
+             * Phone
+             * @default false
+             */
+            phone: boolean;
         };
         /** MonitorCard */
         MonitorCard: {
@@ -3636,6 +3666,14 @@ export interface components {
             voice: string;
             /** Style */
             style: string;
+        };
+        /** PhoneIn */
+        PhoneIn: {
+            /**
+             * Phone
+             * @default
+             */
+            phone: string;
         };
         /** PreviewIn */
         PreviewIn: {
@@ -4664,6 +4702,11 @@ export interface components {
              * @default false
              */
             adaptive: boolean;
+            /**
+             * Phone Calls
+             * @default false
+             */
+            phone_calls: boolean;
         };
         /** SessionInfo */
         SessionInfo: {
@@ -4686,6 +4729,11 @@ export interface components {
             hints_enabled: boolean;
             /** Dialog Mode */
             dialog_mode: string;
+            /**
+             * Phone Calls
+             * @default false
+             */
+            phone_calls: boolean;
             /** Started At */
             started_at: string | null;
             /** Finished At */
@@ -4789,6 +4837,11 @@ export interface components {
             dialog_mode: string;
             /** Adaptive */
             adaptive: boolean;
+            /**
+             * Phone Calls
+             * @default false
+             */
+            phone_calls: boolean;
             /** Members */
             members: components["schemas"]["StudentOut"][];
             /** Queue */
@@ -4834,6 +4887,8 @@ export interface components {
             dialog_mode?: string | null;
             /** Adaptive */
             adaptive?: boolean | null;
+            /** Phone Calls */
+            phone_calls?: boolean | null;
         };
         /** SipAccountAdminOut */
         SipAccountAdminOut: {
@@ -4990,6 +5045,10 @@ export interface components {
             phone_codecs: string[];
             /** Sip Domain */
             sip_domain: string;
+            /** Trainee Phones */
+            trainee_phones?: {
+                [key: string]: string;
+            };
         };
         /** TelephonySettingsPatch */
         TelephonySettingsPatch: {
@@ -5003,6 +5062,10 @@ export interface components {
             phone_codecs?: string[] | null;
             /** Ari Url */
             ari_url?: string | null;
+            /** Trainee Phones */
+            trainee_phones?: {
+                [key: string]: string;
+            } | null;
         };
         /** TicketOut */
         TicketOut: {
@@ -5139,6 +5202,8 @@ export interface components {
             service_code: string | null;
             /** Must Change Password */
             must_change_password: boolean;
+            /** Phone */
+            phone?: string | null;
         };
         /** ValidationError */
         ValidationError: {
@@ -5502,6 +5567,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserOut"];
+                };
+            };
+        };
+    };
+    set_my_phone_api_me_phone_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PhoneIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

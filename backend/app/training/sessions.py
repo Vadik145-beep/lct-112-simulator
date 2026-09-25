@@ -38,6 +38,7 @@ from app.models import (
     TrainingSession,
     User,
 )
+from app.telephony import settings as telephony_settings
 from app.training import service as training
 
 # Where the cards of a session come from (PRD 9.6 item 6, «источник карточек» of the ТЗ):
@@ -165,6 +166,7 @@ class SessionSettings:
     voice_enabled: bool = False
     dialog_mode: str = "select"
     adaptive: bool = False
+    phone_calls: bool = False
 
 
 async def validate_settings(session: AsyncSession, spec: SessionSettings, teacher: User) -> None:
@@ -179,6 +181,12 @@ async def validate_settings(session: AsyncSession, spec: SessionSettings, teache
             "cloud_voice_disabled",
             "Облачный голос выключен на этой установке (CLOUD_VOICE_ENABLED): "
             "выберите другой режим диалога.",
+        )
+    if spec.phone_calls and not telephony_settings.phone_calls_available():
+        raise ApiError(
+            422,
+            "phone_calls_unavailable",
+            "Звонки на телефон недоступны: на этой установке не включены телефония и МультиФон.",
         )
     if spec.card_source not in CARD_SOURCES:
         raise ApiError(
@@ -265,6 +273,7 @@ def apply_settings(ts: TrainingSession, spec: SessionSettings) -> None:
     ts.voice_enabled = spec.voice_enabled
     ts.dialog_mode = spec.dialog_mode
     ts.adaptive = spec.adaptive
+    ts.phone_calls = spec.phone_calls
 
 
 async def pick_scenarios(session: AsyncSession, ts: TrainingSession) -> list[Scenario]:

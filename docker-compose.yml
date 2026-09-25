@@ -67,6 +67,10 @@ x-backend-env: &backend-env
   CLOUD_VOICE_TRANSCRIBER_MODEL: ${CLOUD_VOICE_TRANSCRIBER_MODEL:-stt-rt-v5}
   CLOUD_VOICE_LANGUAGE: ${CLOUD_VOICE_LANGUAGE:-ru}
   CLOUD_VOICE_ANSWER_SECONDS: ${CLOUD_VOICE_ANSWER_SECONDS:-15}
+  # Own phones of trainees rung through MultiFon (docs/MULTIFON.md): «login=phone,…».
+  TELEPHONY_TRAINEE_PHONES: ${TELEPHONY_TRAINEE_PHONES:-}
+  # Configured MultiFon account = lessons may ring the trainees' phones.
+  MULTIFON_USER: ${MULTIFON_USER:-}
 
 services:
   nginx:
@@ -161,7 +165,7 @@ services:
       TZ: ${TZ:-Europe/Moscow}
     ports:
       # Exposed for local tests and tools; not needed by the containers themselves.
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${INTERNAL_BIND:-127.0.0.1}:${POSTGRES_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./deploy/postgres/init-app-role.sh:/docker-entrypoint-initdb.d/10-init-app-role.sh:ro
@@ -176,7 +180,7 @@ services:
     restart: unless-stopped
     command: ["redis-server", "--save", "60", "1", "--appendonly", "yes"]
     ports:
-      - "${REDIS_PORT:-6379}:6379"
+      - "${INTERNAL_BIND:-127.0.0.1}:${REDIS_PORT:-6379}:6379"
     volumes:
       - redisdata:/data
     healthcheck:
@@ -249,7 +253,7 @@ services:
       - ${LLM_LOAD_MODE:-auto}
     ports:
       # Exposed for scripts/bench_dialog_latency.py run from the host.
-      - "${LLM_DIALOG_PORT:-8081}:8080"
+      - "${INTERNAL_BIND:-127.0.0.1}:${LLM_DIALOG_PORT:-8081}:8080"
     volumes:
       - ${MODELS_DIR:-./models}:/models:ro
     healthcheck:
@@ -281,7 +285,7 @@ services:
       - --load-mode
       - ${LLM_LOAD_MODE:-auto}
     ports:
-      - "${LLM_GEN_PORT:-8082}:8080"
+      - "${INTERNAL_BIND:-127.0.0.1}:${LLM_GEN_PORT:-8082}:8080"
     volumes:
       - ${MODELS_DIR:-./models}:/models:ro
     healthcheck:
@@ -302,7 +306,7 @@ services:
       STT_COMPUTE_TYPE: ${STT_COMPUTE_TYPE:-int8}
       STT_THREADS: ${LLM_THREADS:-4}
     ports:
-      - "${STT_PORT:-9000}:9000"
+      - "${INTERNAL_BIND:-127.0.0.1}:${STT_PORT:-9000}:9000"
     volumes:
       - ${MODELS_DIR:-./models}:/models:ro
 
@@ -330,7 +334,7 @@ services:
       - "${SIP_PORT:-5060}:5060/udp"
       - "${SIP_PORT:-5060}:5060/tcp"
       # ARI on the host only for scripts/bench_call.py; the backend uses the internal address.
-      - "${ARI_PORT:-8088}:8088"
+      - "${INTERNAL_BIND:-127.0.0.1}:${ARI_PORT:-8088}:8088"
       - "${TELEPHONY_RTP_START:-10000}-${TELEPHONY_RTP_END:-10100}:${TELEPHONY_RTP_START:-10000}-${TELEPHONY_RTP_END:-10100}/udp"
     volumes:
       - asterisk-conf:/etc/asterisk/generated
@@ -371,11 +375,15 @@ services:
       CLOUD_RTP_START: ${CLOUD_RTP_START:-10200}
       CLOUD_RTP_END: ${CLOUD_RTP_END:-10300}
       VAPI_SIP_HOST: ${VAPI_SIP_HOST:-sip.vapi.ai}
+      # МультиФон Бизнес (docs/MULTIFON.md): empty user = no trunk.
+      MULTIFON_USER: ${MULTIFON_USER:-}
+      MULTIFON_PASSWORD: ${MULTIFON_PASSWORD:-}
+      MULTIFON_PROXY: ${MULTIFON_PROXY:-sbc.megafon.ru}
       TZ: ${TZ:-Europe/Moscow}
     ports:
       - "${CLOUD_SIP_PORT:-5061}:${CLOUD_SIP_PORT:-5061}/udp"
       - "${CLOUD_SIP_PORT:-5061}:${CLOUD_SIP_PORT:-5061}/tcp"
-      - "${CLOUD_ARI_PORT:-8089}:8088"
+      - "${INTERNAL_BIND:-127.0.0.1}:${CLOUD_ARI_PORT:-8089}:8088"
       - "${CLOUD_RTP_START:-10200}-${CLOUD_RTP_END:-10300}:${CLOUD_RTP_START:-10200}-${CLOUD_RTP_END:-10300}/udp"
     volumes:
       - asterisk-conf:/etc/asterisk/generated

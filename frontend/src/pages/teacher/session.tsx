@@ -28,7 +28,7 @@ import { acceptanceTimer, formatDateTime, formatSeconds, useNow } from "@/emulat
 import { useSessionEvents, type SessionEvent } from "@/emulator/ws";
 import { cn } from "@/lib/utils";
 import { CARDS_AT_ONCE, DIFFICULTY_TITLES, MODE_TITLES, RESPONSE_STATUS_TITLES, SESSION_STATUS_TITLES, formatScore, plural } from "@/teacher/labels";
-import { STAGE_TITLES, applyEvent, initialState, summarize, type MonitorState } from "@/teacher/monitor";
+import { STAGE_TITLES, applyEvent, summarize, withSnapshot, type MonitorState } from "@/teacher/monitor";
 
 const STATUS_TONES: Record<string, BadgeTone> = { draft: "neutral", running: "success", finished: "primary" };
 // How long after an `attempt.issued` event the snapshot is refetched for the card titles.
@@ -291,9 +291,11 @@ function Monitoring({ session }: { session: SessionOut }) {
   const [state, setState] = useState<MonitorState | null>(null);
   const titleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // A fresh snapshot replaces the event-driven state (it already includes those events).
+  // A fresh snapshot replaces the event-driven state (it already includes those events), but
+  // not what the trainees are doing: that lives only in the events (docs/BUGS.md).
   useEffect(() => {
-    if (query.data) setState(initialState(query.data));
+    const snapshot = query.data;
+    if (snapshot) setState((prev) => withSnapshot(prev, snapshot));
   }, [query.data]);
 
   const onEvent = useCallback(

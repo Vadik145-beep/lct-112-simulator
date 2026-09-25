@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatSeconds, formatTime } from "@/emulator/time";
 import { EMPTY_ADDRESS } from "@/intake/draft";
+import { REFERENCE_PATH } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 import { ScoreBox } from "@/review/teacher-panel";
 import { END_REASON_LABELS } from "@/softphone/context";
@@ -264,7 +265,7 @@ export function CallReview({ attempt, evaluation, teacher }: { attempt: AttemptO
                     </div>
                     <p className="mt-1 text-muted-foreground">{e.explanation}</p>
                     {e.memo_ref && (
-                      <Link to={`/student/reference?q=${encodeURIComponent(e.title)}`} className="mt-1 inline-flex items-center gap-1 text-xs text-primary underline-offset-2 hover:underline">
+                      <Link to={`${teacher ? REFERENCE_PATH.teacher : REFERENCE_PATH.student}?q=${encodeURIComponent(e.title)}`} className="mt-1 inline-flex items-center gap-1 text-xs text-primary underline-offset-2 hover:underline">
                         <BookOpen className="size-3" aria-hidden /> Памятка, {e.memo_ref}
                       </Link>
                     )}

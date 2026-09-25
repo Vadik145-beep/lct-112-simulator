@@ -9,6 +9,9 @@
 ИИ, и заполняет карточку). Преподаватель ведёт занятия и получает отчёты, администратор
 управляет пользователями. Система работает в закрытом контуре без доступа в интернет.
 
+**Проверяющему:** короткий маршрут «что открыть и на что смотреть» —
+[docs/EXPERT_GUIDE.md](docs/EXPERT_GUIDE.md).
+
 Продукт описан в [PRD.md](PRD.md), порядок разработки в [plan/](plan/README.md),
 текущее состояние в [docs/PROGRESS.md](docs/PROGRESS.md).
 
@@ -131,6 +134,19 @@ cd ../frontend && npm ci && npm run dev  # интерфейс на http://localh
 
 ## Документация
 
+- [docs/EXPLANATORY_NOTE.md](docs/EXPLANATORY_NOTE.md) — пояснительная записка: назначение,
+  состав решения, ход занятия, проверенные результаты, границы.
+- [docs/EXPERT_GUIDE.md](docs/EXPERT_GUIDE.md) — проверка решения за 10 минут: маршрут и где
+  ответ по каждому критерию оценки.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — функциональная и компонентная архитектура.
+- [docs/METHODS.md](docs/METHODS.md) — методы обработки данных, формулы оценки, прогноз.
+- [docs/INSTALL.md](docs/INSTALL.md) — установка, настройка, резервные копии и восстановление.
+- [docs/USER_GUIDE.md](docs/USER_GUIDE.md) — руководство преподавателя, обучающегося, администратора.
+- [docs/REQUIREMENTS_MATRIX.md](docs/REQUIREMENTS_MATRIX.md) — соответствие техническому заданию.
+- [docs/PERFORMANCE.md](docs/PERFORMANCE.md) — замеры скорости и нагрузки.
+- [docs/VOICE_TESTS.md](docs/VOICE_TESTS.md) — проверка подсчёта баллов на живых звонках.
+- [docs/LIMITATIONS.md](docs/LIMITATIONS.md) — границы решения.
+- [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) — сценарий демонстрации.
 - [PRD.md](PRD.md) — продукт, архитектура, требования.
 - [plan/README.md](plan/README.md) — план по волнам.
 - [docs/PROGRESS.md](docs/PROGRESS.md) — что сделано и что дальше.

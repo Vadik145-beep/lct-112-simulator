@@ -15,6 +15,12 @@ stand-by provider (``select``); the session log gets ``call.cloud_fallback``.
 The call ends when the trainee hangs up (Asterisk event), when Vapi ends it (assistant hung
 up, silence, maximum duration: ``status-update``) or when nothing can play the caller.
 
+The calls of the card (a service officer, a squad's report, a call back to the caller) go
+the same way in a cloud lesson: the trainee's phone rings from the other side's number, and
+after the answer the Vapi leg plays the officer, the squad leader or the caller
+(``officer.call_scenario``); the phrases go into that call's own transcript. When the cloud
+fails, the local officer pipeline takes the call over with its greeting.
+
 ``CloudTurns`` — the part shared with the browser calls (``app.telephony.cloud_web``): the
 transcript, the reply latency from ``speech-update`` and the final report.
 """
@@ -47,6 +53,7 @@ from app.telephony import settings as telephony_settings
 from app.telephony.ari import AriError
 from app.telephony.calls import (
     CHANNEL_FORMAT,
+    RECORDING_FORMAT,
     VAR_ATTEMPT,
     Call,
     CallManager,
@@ -60,6 +67,9 @@ log = get_logger(__name__)
 # Dialplan entry point of the Vapi leg and its channel variables
 # (deploy/asterisk-cloud/extensions.conf).
 VAPI_DIAL_ENDPOINT = "Local/s@vapi-out/n"
+# Of the ring-back of the dispatcher's own call, seconds before Vapi is dialled (it answers in
+# about a second; the tone goes on until its leg joins the bridge).
+RINGBACK_BEFORE_VAPI_SECONDS = 2.0
 VAR_TOKEN = "__CALL_TOKEN"  # noqa: S105 - channel variable name, not a secret
 VAR_VAPI_USER = "__VAPI_USER"
 TOKEN_DIGITS = 10
@@ -359,6 +369,10 @@ class CloudCallManager(CallManager):
             self._by_token[call.token] = call
         return call
 
+    def _dialled(self, call: Call) -> None:
+        if isinstance(call, CloudCall):
+            self._by_token[call.token] = call
+
     def call_for_token(self, token: str) -> CloudCall | None:
         return self._by_token.get(token)
 
@@ -412,19 +426,27 @@ class CloudCallManager(CallManager):
             call.answered = True
         async with SessionLocal() as session:
             config = await telephony_settings.load(session)
-            loaded = await load_attempt(session, call.attempt_id)
+            if call.to_officer:
+                loaded = await load_card_attempt(session, call.attempt_id)
+            else:
+                loaded = await load_attempt(session, call.attempt_id)
             cloud = loaded is not None and dialog.cloud_lesson(loaded.ts)
         if not cloud:
-            log.info("answered", attempt=str(call.attempt_id))
+            log.info("answered", attempt=str(call.attempt_id), call=call.service_call_id)
             await self._run_local(call, config)
             return
-        log.info("answered", attempt=str(call.attempt_id), cloud=True)
+        log.info("answered", attempt=str(call.attempt_id), call=call.service_call_id, cloud=True)
         try:
             await self._open_bridge(call, config)
         except (AriError, OSError, RuntimeError) as exc:
             log.warning("cloud call setup failed", attempt=str(call.attempt_id), error=str(exc))
             await self._end(call, CALL_END_FAILED)
             return
+        if call.ringback:
+            await self._start_ringback(call)
+            await asyncio.sleep(RINGBACK_BEFORE_VAPI_SECONDS)
+            if call.ended:
+                return
         try:
             if not self.sip_user:
                 raise RuntimeError("Vapi number is not configured")
@@ -448,6 +470,10 @@ class CloudCallManager(CallManager):
             log.warning("vapi leg not dialled", attempt=str(call.attempt_id), error=str(exc))
             await self._fallback(call, str(exc))
             return
+        if call.to_officer:
+            # The record is answered when Vapi picks up: a failed leg still gets the local
+            # officer's greeting.
+            return
         # The state «в разговоре»; the opening is Vapi's first message, nothing to play.
         await self._speak_opening(call, play=False)
 
@@ -458,13 +484,44 @@ class CloudCallManager(CallManager):
             call.vapi_answered = True
         if not call.bridge_id or not call.vapi_channel_id:
             return
+        await self._stop_ringback(call)
         try:
             await self.ari.add_channel(call.bridge_id, call.vapi_channel_id)
         except AriError as exc:
             log.warning("vapi leg not bridged", attempt=str(call.attempt_id), error=str(exc))
             await self._fallback(call, "vapi leg not bridged")
             return
-        log.info("vapi leg bridged", attempt=str(call.attempt_id))
+        log.info("vapi leg bridged", attempt=str(call.attempt_id), call=call.service_call_id)
+        if call.to_officer:
+            await self._service_answered_by_cloud(call)
+
+    async def _service_answered_by_cloud(self, call: CloudCall) -> None:
+        """The other side of a call of the card picked up in the cloud: the record is answered
+        without our greeting (Vapi says the first phrase) and gets the recording."""
+        from app.dialog import officer
+
+        assert call.service_call_id is not None
+        async with SessionLocal() as session:
+            loaded = await load_card_attempt(session, call.attempt_id)
+            if loaded is None:
+                return
+            _, events = await officer.answer(
+                session,
+                loaded.attempt,
+                loaded.ts,
+                loaded.version,
+                loaded.scenario,
+                call.service_call_id,
+                with_opening=False,
+            )
+            if call.recording_name:
+                officer.set_recording(
+                    loaded.attempt,
+                    call.service_call_id,
+                    f"{call.recording_name}.{RECORDING_FORMAT}",
+                )
+            await session.commit()
+        await publish_events(events)
 
     async def _on_vapi_leg_gone(self, call: CloudCall) -> None:
         """The SIP leg to Vapi is over. Vapi ending the call reports itself (``status-update``)
@@ -502,6 +559,9 @@ class CloudCallManager(CallManager):
         )
         heard_opening = call.vapi_answered
         await self._drop_vapi_leg(call)
+        await self._stop_ringback(call)
+        # The dispatcher has heard the ring-back already: the local officer answers at once.
+        call.ringback = False
         if not call.bridge_id:
             await self._end(call, CALL_END_FAILED)
             return
@@ -512,6 +572,12 @@ class CloudCallManager(CallManager):
             await self._end(call, CALL_END_FAILED)
             return
         await log_fallback(call, reason, session_id=call.session_id, student_id=call.student_id)
+        if call.to_officer:
+            # Vapi never answered: the local officer greets. It did: the record is answered
+            # already, the conversation just goes on locally.
+            if not heard_opening:
+                await self._officer_answered(call)
+            return
         await self._speak_opening(call, play=not heard_opening)
 
     async def _drop_vapi_leg(self, call: CloudCall) -> None:
@@ -559,12 +625,36 @@ class CloudCallManager(CallManager):
     async def _assistant_request(self, call: CloudCall | None) -> dict[str, Any]:
         if call is None:
             return {"error": "Учебный вызов не найден. Положите трубку и дождитесь нового звонка."}
+        if call.service_call_id:
+            return await self._service_assistant(call)
         async with SessionLocal() as session:
             loaded = await load_attempt(session, call.attempt_id)
         if loaded is None:
             return {"error": "Учебный вызов уже закрыт."}
         log.info("assistant for call", attempt=str(call.attempt_id), vapi_call=call.vapi_call_id)
         return {"assistant": build_assistant(loaded.scenario)}
+
+    async def _service_assistant(self, call: CloudCall) -> dict[str, Any]:
+        """The other side of a call of the card: the officer, the squad leader or the caller
+        rung back, built as the browser call builds it (``cloud_web.start_service_call``)."""
+        from app.dialog import officer
+
+        assert call.service_call_id is not None
+        async with SessionLocal() as session:
+            loaded = await load_card_attempt(session, call.attempt_id)
+        if loaded is None:
+            return {"error": "Карточка уже закрыта."}
+        record = officer.find_call(loaded.attempt, call.service_call_id)
+        if record.get("ended_at"):
+            return {"error": "Звонок уже завершён."}
+        scenario = officer.call_scenario(loaded.scenario, record, loaded.attempt)
+        log.info(
+            "assistant for call",
+            attempt=str(call.attempt_id),
+            call=call.service_call_id,
+            vapi_call=call.vapi_call_id,
+        )
+        return {"assistant": build_assistant(scenario)}
 
     # ------------------------------------------------------------ teardown
 

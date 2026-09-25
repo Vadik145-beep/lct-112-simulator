@@ -96,6 +96,7 @@ async def answer(
     if not was_answered:
         attempt.call_state = CALL_ANSWERED
         events.append(await _event(session, attempt, EVENT_CALL_ANSWERED, telephony=telephony))
+        dialog.warm_generation(ts, attempt, scenario)
     await session.flush()
     return opening, events
 

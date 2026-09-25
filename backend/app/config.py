@@ -91,6 +91,12 @@ class Settings(BaseSettings):
     sip_domain: str = "trainer"
     # Seconds the softphone rings before the call is given up.
     call_ring_timeout_seconds: int = 45
+    # Own phones of trainees rung through MultiFon next to the softphone (asterisk-cloud with
+    # MULTIFON_USER): «login=phone» pairs separated by commas; the administrator can change them.
+    telephony_trainee_phones: str = ""
+    # The MultiFon account of asterisk-cloud (the backend only needs to know it is configured:
+    # lessons may then ring the trainees' phones).
+    multifon_user: str = ""
     # Silero VAD model (ONNX); missing file = energy-based detector.
     vad_model_path: str | None = None
 

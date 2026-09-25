@@ -1,4 +1,4 @@
-import { Circle, Mic, Phone, PhoneOff, Send } from "lucide-react";
+import { Circle, Loader2, Mic, Phone, PhoneOff, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { getAccessToken } from "@/api/token";
@@ -51,6 +51,8 @@ export function ServiceCallPanel({
   onMicDevice,
   onMicOpened,
   pending,
+  replying = false,
+  awaitingReport = false,
   error,
   onSay,
   onSpeak,
@@ -70,6 +72,10 @@ export function ServiceCallPanel({
   onMicDevice: (deviceId: string | null) => void;
   onMicOpened: () => void;
   pending: boolean;
+  /** The dispatcher's phrase is on its way and the other side's answer is awaited. */
+  replying?: boolean;
+  /** The call to the own service is over and the squad leader will call with a report. */
+  awaitingReport?: boolean;
   error: string | null;
   onSay: (text: string, actionId: string) => void;
   onSpeak: (blob: Blob, actionId: string) => void;
@@ -91,7 +97,9 @@ export function ServiceCallPanel({
   const audio = useRef<HTMLAudioElement | null>(null);
   const recorder = useRef<MediaRecorder | null>(null);
   const chunks = useRef<Blob[]>([]);
-  const played = useRef(-1);
+  // The last reply played, per call: the panel stays mounted from one call of the card to the
+  // next, and every call numbers its turns from zero again.
+  const played = useRef(new Map<string, number>());
   const log = useRef<HTMLOListElement>(null);
   const actionId = useRef<string | null>(null);
   const open = call.ended_at === null;
@@ -121,15 +129,19 @@ export function ServiceCallPanel({
   // The officer's newest reply plays once (browser mode only).
   useEffect(() => {
     const last = call.turns[call.turns.length - 1];
-    if (!last || last.role !== "caller" || last.index <= played.current) return;
-    played.current = last.index;
+    if (!last || last.role !== "caller") return;
+    if (last.index <= (played.current.get(call.id) ?? -1)) return;
+    played.current.set(call.id, last.index);
     if (!last.audio_url || telephony) return;
     void play(last.audio_url);
-  }, [call.turns, telephony]);
+  }, [call.id, call.turns, telephony]);
 
+  // Only the transcript scrolls: scrollIntoView moved the whole page as well and pushed the
+  // services strip off the screen.
   useEffect(() => {
-    log.current?.lastElementChild?.scrollIntoView({ block: "nearest" });
-  }, [call.turns.length]);
+    const transcript = log.current;
+    if (transcript) transcript.scrollTop = transcript.scrollHeight;
+  }, [call.turns.length, replying]);
 
   useEffect(() => {
     if (!pending) actionId.current = null;
@@ -223,7 +235,10 @@ export function ServiceCallPanel({
   return (
     <section
       className={cn(
-        "flex flex-col gap-2 rounded-sm border p-2 text-xs",
+        // The panel takes the room left in the trainer panel; of that room only the
+        // transcript grows (from three lines up), the buttons and the input keep their
+        // size, and a longer conversation scrolls inside the transcript.
+        "flex grow flex-col gap-2 rounded-sm border p-2 text-xs *:shrink-0",
         open
           ? "border-[var(--arm-blue)] bg-[#eef3fb]"
           : "border-[#a9adb2] bg-[var(--arm-field)]",
@@ -258,7 +273,7 @@ export function ServiceCallPanel({
       </div>
       <ol
         ref={log}
-        className="flex max-h-48 flex-col gap-1 overflow-y-auto"
+        className="flex min-h-16 grow basis-16 flex-col gap-1 overflow-y-auto"
         aria-label="Стенограмма звонка"
       >
         {call.turns.map((t) => (
@@ -279,6 +294,17 @@ export function ServiceCallPanel({
             {t.text}
           </li>
         ))}
+        {/* Our model is answering; a cloud call speaks for itself (Vapi). */}
+        {open && replying && cloud === "off" && (
+          <li
+            className="flex items-center gap-1.5 rounded-sm bg-white px-2 py-1 text-[var(--arm-text-muted)]"
+            role="status"
+            data-testid="service-call-replying"
+          >
+            <Loader2 className="size-3.5 animate-spin" aria-hidden />
+            {otherSide(call)} отвечает…
+          </li>
+        )}
         {call.turns.length === 0 && (
           <li className="text-[var(--arm-text-muted)]">
             {isReport(call)
@@ -379,6 +405,10 @@ export function ServiceCallPanel({
           disabled={pending}
           onPointerDown={(e) => {
             e.preventDefault();
+            // The button holds the pointer while pressed: when the panel shifts (the
+            // recording line appears, the microphone list fills in) the button may move away
+            // from the cursor, and the recording must go on until the button is released.
+            e.currentTarget.setPointerCapture(e.pointerId);
             void startRecording();
           }}
           onPointerUp={stopRecording}
@@ -459,6 +489,11 @@ export function ServiceCallPanel({
       {!open && call.end_reason && (
         <span className="text-[var(--arm-text-muted)]">
           {END_REASON_TITLES[call.end_reason] ?? call.end_reason}
+        </span>
+      )}
+      {!open && awaitingReport && call.end_reason === "hangup" && (
+        <span className="font-semibold text-[var(--arm-blue-dark)]" data-testid="await-report">
+          Ожидайте доклад: старший группы позвонит сам.
         </span>
       )}
       {error && !recording && (

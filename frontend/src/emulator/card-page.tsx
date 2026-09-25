@@ -91,6 +91,10 @@ const REPORT_HINTS: Record<string, string> = {
     "Работы идут. По докладу о завершении — «Работы завершены» с результатом из доклада: статус закрывает карточку.",
 };
 
+// Statuses after which the squad leader still calls with reports (sweep_reports on the
+// server): from «Принята» until «Работы завершены».
+const REPORTING_STATUSES = new Set(["accepted", "response_started", "arrived", "works_started"]);
+
 function hintFor(attempt: AttemptOut): string {
   const table = attempt.reports_expected ? REPORT_HINTS : HINTS;
   return (
@@ -974,7 +978,7 @@ function CardView({
                     title={finished ? "Карточка закрыта" : "Проставить статус"}
                     disabled={finished || transitions.length === 0}
                     onClick={() => openEditor()}
-                    className="flex size-6 items-center justify-center rounded-sm border border-[var(--arm-orange)] text-[var(--arm-orange)] hover:bg-[var(--arm-orange)] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                    className="flex size-6 items-center justify-center rounded-sm border border-[var(--arm-orange)] bg-[var(--arm-orange)] text-white hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     <Pencil className="size-3.5" />
                   </button>
@@ -1058,6 +1062,9 @@ function CardView({
         </div>
       </div>
 
+      {/* The trainer panel is as tall as the screen and scrolls inside: grown by the call panel
+          it used to stretch the page and push the services strip off the screen. */}
+      <div className="sticky top-0 flex h-dvh shrink-0">
       <TrainerPanel
         connection={connection}
         footer={
@@ -1070,6 +1077,7 @@ function CardView({
           </button>
         }
       >
+        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto *:shrink-0">
         <div>
           <div className="text-xs text-[var(--arm-text-muted)]">
             Карточка {card.number}
@@ -1161,6 +1169,14 @@ function CardView({
             onMicDevice={(id) => softphone?.setMicDevice(id)}
             onMicOpened={() => void softphone?.refreshDevices()}
             pending={callBusy}
+            replying={sayToOfficer.isPending || speakToOfficer.isPending}
+            awaitingReport={
+              !finished &&
+              attempt.reports_expected &&
+              REPORTING_STATUSES.has(attempt.response_status) &&
+              shownCall.kind === "outgoing" &&
+              shownCall.service === ownService?.code
+            }
             error={callError ? callError.message : null}
             onSay={(text, actionId) =>
               sayToOfficer.mutate({ callId: shownCall.id, text, actionId })
@@ -1294,7 +1310,9 @@ function CardView({
             {finish.error.message}
           </p>
         )}
+        </div>
       </TrainerPanel>
+      </div>
 
       {showHelp && <HotkeysHelp onClose={() => setShowHelp(false)} />}
     </div>
@@ -1324,9 +1342,10 @@ function CallButton({
       data-service={service.code}
       className={cn(
         "relative flex size-6 items-center justify-center rounded-sm border text-white disabled:cursor-not-allowed disabled:opacity-40",
-        open
-          ? "border-[var(--arm-green)] bg-[var(--arm-green)]"
-          : "border-[var(--arm-green)] text-[var(--arm-green)] hover:bg-[var(--arm-green)] hover:text-white",
+        // Filled, not outlined: an outline disappears on the blue tile of the own service.
+        // A call in progress gets a white ring.
+        "border-[var(--arm-green)] bg-[var(--arm-green)] hover:brightness-110",
+        open && "ring-2 ring-white",
       )}
     >
       <Phone className="size-3.5" aria-hidden />
@@ -1376,8 +1395,11 @@ function PhoneBox({
           className={cn(
             "flex size-6 items-center justify-center rounded-sm border",
             canCall
-              ? "border-[var(--arm-green)] text-[var(--arm-green)] hover:bg-[var(--arm-green)] hover:text-white"
-              : "border-transparent text-[var(--arm-text-muted)] opacity-50",
+              ? "border-[var(--arm-green)] bg-[var(--arm-green)] text-white hover:brightness-110"
+              : value.trim()
+                ? // A number while another call is on: dimmed like the call buttons of the strip.
+                  "cursor-not-allowed border-[var(--arm-green)] bg-[var(--arm-green)] text-white opacity-40"
+                : "border-transparent text-[var(--arm-text-muted)] opacity-50",
           )}
         >
           <Phone className="size-4" aria-hidden />
