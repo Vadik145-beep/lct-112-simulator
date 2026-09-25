@@ -91,7 +91,9 @@ export function ServiceCallPanel({
   const audio = useRef<HTMLAudioElement | null>(null);
   const recorder = useRef<MediaRecorder | null>(null);
   const chunks = useRef<Blob[]>([]);
-  const played = useRef(-1);
+  // The last reply played, per call: the panel stays mounted from one call of the card to the
+  // next, and every call numbers its turns from zero again.
+  const played = useRef(new Map<string, number>());
   const log = useRef<HTMLOListElement>(null);
   const actionId = useRef<string | null>(null);
   const open = call.ended_at === null;
@@ -121,11 +123,12 @@ export function ServiceCallPanel({
   // The officer's newest reply plays once (browser mode only).
   useEffect(() => {
     const last = call.turns[call.turns.length - 1];
-    if (!last || last.role !== "caller" || last.index <= played.current) return;
-    played.current = last.index;
+    if (!last || last.role !== "caller") return;
+    if (last.index <= (played.current.get(call.id) ?? -1)) return;
+    played.current.set(call.id, last.index);
     if (!last.audio_url || telephony) return;
     void play(last.audio_url);
-  }, [call.turns, telephony]);
+  }, [call.id, call.turns, telephony]);
 
   useEffect(() => {
     log.current?.lastElementChild?.scrollIntoView({ block: "nearest" });
