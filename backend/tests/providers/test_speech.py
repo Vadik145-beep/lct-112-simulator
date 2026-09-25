@@ -190,8 +190,10 @@ def test_spell_numbers_for_silero() -> None:
 
 def test_silero_voice_ids_match_scenario_voices() -> None:
     assert set(SILERO_VOICES) == set(VOICES)
-    assert SILERO_VOICES["ru_female_2"].rate == "slow"  # the elderly speak slower
-    assert SILERO_VOICES["ru_child_1"].pitch == "x-high"
+    # Speakers at their own pace and pitch: the shifted variants sounded artificial.
+    assert all(s.rate == "medium" and s.pitch == "medium" for s in SILERO_VOICES.values())
+    female = ("ru_female_1", "ru_female_2", "ru_female_3")
+    assert len({SILERO_VOICES[v].speaker for v in female}) == 3
 
 
 def test_engine_choice_without_models_is_text(tmp_path: Path) -> None:
