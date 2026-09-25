@@ -22,6 +22,8 @@ class UserOut(BaseModel):
     role: Role
     service_code: str | None
     must_change_password: bool
+    # The trainee's own phone for lessons with calls to the phone (docs/MULTIFON.md).
+    phone: str | None = None
 
 
 class TokenResponse(BaseModel):

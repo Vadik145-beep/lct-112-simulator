@@ -67,6 +67,9 @@ log = get_logger(__name__)
 # Dialplan entry point of the Vapi leg and its channel variables
 # (deploy/asterisk-cloud/extensions.conf).
 VAPI_DIAL_ENDPOINT = "Local/s@vapi-out/n"
+# Of the ring-back of the dispatcher's own call, seconds before Vapi is dialled (it answers in
+# about a second; the tone goes on until its leg joins the bridge).
+RINGBACK_BEFORE_VAPI_SECONDS = 2.0
 VAR_TOKEN = "__CALL_TOKEN"  # noqa: S105 - channel variable name, not a secret
 VAR_VAPI_USER = "__VAPI_USER"
 TOKEN_DIGITS = 10
@@ -439,6 +442,11 @@ class CloudCallManager(CallManager):
             log.warning("cloud call setup failed", attempt=str(call.attempt_id), error=str(exc))
             await self._end(call, CALL_END_FAILED)
             return
+        if call.ringback:
+            await self._start_ringback(call)
+            await asyncio.sleep(RINGBACK_BEFORE_VAPI_SECONDS)
+            if call.ended:
+                return
         try:
             if not self.sip_user:
                 raise RuntimeError("Vapi number is not configured")
@@ -476,6 +484,7 @@ class CloudCallManager(CallManager):
             call.vapi_answered = True
         if not call.bridge_id or not call.vapi_channel_id:
             return
+        await self._stop_ringback(call)
         try:
             await self.ari.add_channel(call.bridge_id, call.vapi_channel_id)
         except AriError as exc:
@@ -550,6 +559,9 @@ class CloudCallManager(CallManager):
         )
         heard_opening = call.vapi_answered
         await self._drop_vapi_leg(call)
+        await self._stop_ringback(call)
+        # The dispatcher has heard the ring-back already: the local officer answers at once.
+        call.ringback = False
         if not call.bridge_id:
             await self._end(call, CALL_END_FAILED)
             return

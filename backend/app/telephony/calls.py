@@ -22,10 +22,13 @@ header ``X-Service-Call``), and after the answer the officer greets and the same
 incoming: ``X-Service-Call-Kind`` tells the softphone to let the trainee answer instead of
 picking up by itself, and a report nobody answered ends as «не принят».
 
-MultiFon (``deploy/asterisk-cloud``, docs/MULTIFON.md): every call above also rings the
-trainee's own phone (``MOBILE``, from ``trainee_phones`` of the settings). The trainee can
-instead call the MultiFon number himself: the incoming channel (``inbound`` in Stasis) takes
-over the call ringing for him right now, whatever its kind, and the ringing legs are dropped.
+MultiFon (``deploy/asterisk-cloud``, docs/MULTIFON.md): in a lesson with calls to the phone
+every call above also rings the trainee's own phone (``MOBILE``: the number he entered, else
+the administrator's table). A call the dispatcher makes from the card rings his phone first,
+so after the pick-up he hears a ring-back tone for a moment before the other side answers:
+he «dials» them. The trainee can instead call the MultiFon number himself: the incoming
+channel (``inbound`` in Stasis) takes over the call ringing for him right now, whatever its
+kind, and the ringing legs are dropped.
 """
 
 from __future__ import annotations
@@ -86,6 +89,10 @@ VAR_CALLER_NUM = "__CALLER_NUM"
 VAR_MOBILE = "__MOBILE"
 # Stasis arguments of a call to the MultiFon number (deploy/asterisk-cloud/extensions.conf).
 INBOUND_ARG = "inbound"
+# Ring-back of a call the dispatcher makes from the card on his own phone: the tone of the
+# Russian network, seconds before the other side answers.
+RINGBACK_MEDIA = "tone:ring;tonezone=ru"
+RINGBACK_SECONDS = 3.0
 DEFAULT_CALLER_NUMBER = "112"
 CHANNEL_FORMAT = "slin16"
 RECORDINGS_SUBDIR = "recordings"
@@ -134,6 +141,9 @@ class Call:
     service_title: str = ""
     # The trainee's own phone rung through MultiFon; a call from it takes this call over.
     phone: str = ""
+    # The dispatcher's own call on his phone: a ring-back before the other side answers.
+    ringback: bool = False
+    ringback_id: str | None = None
 
     @property
     def key(self) -> str:
@@ -271,7 +281,7 @@ class CallManager:
             await session.commit()
             caller_name, caller_num = _caller_id(loaded.scenario)
             timeout = config.ring_timeout_seconds
-            phone = telephony_settings.trainee_phone(config, account.login)
+            phone = lesson_phone(loaded.ts, user, account.login, config)
         if created and self.sync_endpoints is not None:
             await self.sync_endpoints()
         call = self.call_class(
@@ -351,7 +361,7 @@ class CallManager:
             config = await telephony_settings.load(session)
             await session.commit()
             timeout = config.ring_timeout_seconds
-            phone = telephony_settings.trainee_phone(config, account.login)
+            phone = lesson_phone(loaded.ts, user, account.login, config)
         if created and self.sync_endpoints is not None:
             await self.sync_endpoints()
         call = self.call_class(
@@ -365,6 +375,7 @@ class CallManager:
             service=service,
             service_title=service_title,
             phone=phone,
+            ringback=bool(phone) and kind in (officer.KIND_OUTGOING, officer.KIND_CALLER),
         )
         self.calls[call.key] = call
         self._by_channel[call.channel_id] = call
@@ -587,6 +598,10 @@ class CallManager:
     async def _officer_answered(self, call: Call) -> None:
         """The trainee picked up the service call: the officer greets (issue #36)."""
         assert call.service_call_id is not None
+        if call.ringback:
+            await self._start_ringback(call)
+            await asyncio.sleep(RINGBACK_SECONDS)
+            await self._stop_ringback(call)
         async with SessionLocal() as session:
             loaded = await load_card_attempt(session, call.attempt_id)
             if loaded is None:
@@ -716,6 +731,23 @@ class CallManager:
             call.reply_latencies.append(time.monotonic() - heard_at)
             await self._play_reply(call, audio)
 
+    async def _start_ringback(self, call: Call) -> None:
+        """The ring-back tone in the bridge (the dispatcher «dials» the other side)."""
+        if not call.bridge_id or call.ringback_id:
+            return
+        call.ringback_id = f"rb-{call.key}"
+        try:
+            await self.ari.play_bridge(call.bridge_id, RINGBACK_MEDIA, call.ringback_id)
+        except AriError as exc:
+            call.ringback_id = None
+            log.warning("ringback failed", key=call.key, error=str(exc))
+
+    async def _stop_ringback(self, call: Call) -> None:
+        playback, call.ringback_id = call.ringback_id, None
+        if playback:
+            with contextlib.suppress(AriError):
+                await self.ari.stop_playback(playback)
+
     async def _play_reply(self, call: Call, relative: str) -> None:
         source = dialog.audio_source_file(relative)
         if source is None:
@@ -821,6 +853,18 @@ def _end_reason(call: Call, cause: int | None) -> str:
     if cause in _CAUSE_UNREACHABLE:
         return CALL_END_FAILED
     return CALL_END_NO_ANSWER
+
+
+def lesson_phone(
+    ts: TrainingSession | None,
+    user: User,
+    login: str,
+    config: telephony_settings.TelephonySettings,
+) -> str:
+    """The trainee's own phone when the lesson rings phones (``phone_calls``), else empty."""
+    if ts is None or not ts.phone_calls:
+        return ""
+    return telephony_settings.trainee_phone(config, login, user.phone)
 
 
 def dialled_digits(phone: str | None) -> str:

@@ -89,9 +89,16 @@ def clean_phones(phones: dict[str, str]) -> dict[str, str]:
     return cleaned
 
 
-def trainee_phone(config: TelephonySettings, login: str) -> str:
-    """The trainee's own phone for MultiFon, empty when he has none."""
-    return config.trainee_phones.get(login.lower(), "")
+def trainee_phone(config: TelephonySettings, login: str, own: str | None = None) -> str:
+    """The trainee's own phone for MultiFon: the one he entered himself, else the
+    administrator's table; empty when he has none."""
+    return normalize_phone(own) or config.trainee_phones.get(login.lower(), "")
+
+
+def phone_calls_available() -> bool:
+    """Lessons may ring the trainees' phones: telephony is on and MultiFon is configured."""
+    s = get_settings()
+    return bool(s.telephony_enabled and s.cloud_voice_enabled and s.multifon_user)
 
 
 def defaults() -> TelephonySettings:

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "@/api/client";
 import type { components } from "@/api/schema";
@@ -12,6 +12,26 @@ export type TurnResponse = components["schemas"]["TurnResponse"];
 export type AnswerResponse = components["schemas"]["AnswerResponse"];
 export type CallResponse = components["schemas"]["CallResponse"];
 export type WebCallOut = components["schemas"]["WebCallOut"];
+
+export type UserOut = components["schemas"]["UserOut"];
+
+/** The trainee's profile with his own phone (docs/MULTIFON.md). */
+export function useMyProfile(enabled = true) {
+  return useQuery({
+    queryKey: ["me", "profile"],
+    queryFn: () => unwrap(api.GET("/api/me")),
+    enabled,
+  });
+}
+
+/** Saves the trainee's own phone for lessons with calls to the phone; "" removes it. */
+export function useSetMyPhone() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (phone: string) => unwrap(api.PUT("/api/me/phone", { body: { phone } })),
+    onSuccess: (data) => client.setQueryData(["me", "profile"], data),
+  });
+}
 
 /** Credentials of the softphone (PRD 9.5); `enabled: false` = no Asterisk on this stand. */
 export function useSipAccount(enabled: boolean) {

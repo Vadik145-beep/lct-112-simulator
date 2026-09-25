@@ -26,6 +26,8 @@ class SessionInfo(BaseModel):
     hints_enabled: bool
     # Режим диалога занятия: карточке он нужен, чтобы вести служебный звонок через облако.
     dialog_mode: str
+    # Calls ring the trainee's own phone too: the page asks for the number (docs/MULTIFON.md).
+    phone_calls: bool = False
     started_at: datetime | None
     finished_at: datetime | None
     service: ServiceInfo | None

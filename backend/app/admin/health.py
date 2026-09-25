@@ -223,6 +223,9 @@ async def model_availability() -> dict[str, bool]:
     out = dict(zip(probes, results, strict=True))
     out["tts"] = tts_available()
     out["cloud"] = s.cloud_voice_enabled
+    from app.telephony.settings import phone_calls_available
+
+    out["phone"] = phone_calls_available()
     return out
 
 
