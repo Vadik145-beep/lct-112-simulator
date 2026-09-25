@@ -94,7 +94,11 @@ def vocabulary_for(role: str) -> Vocabulary:
 
 HISTORY_TURNS = 6  # last turns shown to the model besides the cached system prompt
 SELECT_MAX_TOKENS = 12  # {"reply_id": 12}
-GENERATE_MAX_TOKENS = 40  # the caller's phrase itself (plan, wave 5)
+# The caller's phrase itself. The prompt keeps it within MAX_REPLY_WORDS; the limit only has to
+# let such a phrase finish: a Russian word costs the model 2-3 tokens, and a phrase cut mid-way
+# is broken JSON that sends the turn to the keyword fallback (40 did cut replies on the stand).
+GENERATE_MAX_TOKENS = 96
+MAX_REPLY_WORDS = 15
 JSON_OVERHEAD_TOKENS = 24  # {"reply": "…", "topics": ["…"]} around it
 JSON_RETRIES = 1  # a second try on broken JSON, then the fallback
 
@@ -557,8 +561,9 @@ GENERATE_SYSTEM_PROMPT = """Ты играешь ЗАЯВИТЕЛЯ, которы
 {facts}
 
 Правила:
-- Отвечай только на последнюю фразу оператора, одним-двумя короткими предложениями, разговорно,
-  как говорит взволнованный человек по телефону.
+- Отвечай только на последнюю фразу оператора, одним-двумя короткими предложениями, не больше
+  {max_words} слов, разговорно, как говорит взволнованный человек по телефону. Без обращений
+  («уважаемый оператор», «девушка») и без вежливых вступлений.
 - Отвечай именно на то, что спросили. Про происшествие и адрес говори только по фактам выше и
   не выдумывай новых обстоятельств происшествия. Не перечисляй адрес и подробности, о которых
   сейчас не спрашивали, и не повторяй то, что уже сказал раньше в разговоре.
@@ -589,7 +594,8 @@ OFFICER_GENERATE_SYSTEM_PROMPT = """Ты играешь ДЕЖУРНОГО го�
 {facts}
 
 Правила:
-- Отвечай только на последнюю фразу диспетчера, одним коротким предложением, по-деловому.
+- Отвечай только на последнюю фразу диспетчера, одним коротким предложением, не больше
+  {max_words} слов, по-деловому, без обращений.
 - Если диспетчер передал факт — подтверди его коротко («Адрес принял», «Наряд записал») и,
   если чего-то ещё не хватает, спроси один следующий факт: адрес, что случилось, пострадавшие,
   номер наряда, доступ на объект.
@@ -625,6 +631,7 @@ def generate_messages(ctx: DialogContext, operator_text: str) -> list[Message]:
         title=scenario.title,
         facts=_facts_lines(scenario) or "- ничего конкретного",
         topics=", ".join(f"{code} ({vocabulary.titles[code]})" for code in vocabulary.codes),
+        max_words=MAX_REPLY_WORDS,
     )
     messages: list[Message] = [{"role": "system", "content": system}]
     messages.extend(_history_messages(ctx.history))
