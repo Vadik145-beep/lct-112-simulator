@@ -31,6 +31,10 @@ const call: ServiceCallOut = {
   ],
 };
 
+function ended(call: ServiceCallOut, reason: string): ServiceCallOut {
+  return { ...call, ended_at: "2026-09-25T08:41:00Z", end_reason: reason };
+}
+
 function panel(
   replying: boolean,
   cloud: "off" | "live" | "failed" = "off",
@@ -77,5 +81,45 @@ describe("ServiceCallPanel while the answer is awaited", () => {
     expect(
       screen.queryByTestId("service-call-replying"),
     ).not.toBeInTheDocument();
+  });
+});
+
+describe("ServiceCallPanel after the call to the own service", () => {
+  function after(target: ServiceCallOut, awaitingReport: boolean) {
+    return (
+      <ServiceCallPanel
+        call={target}
+        telephony={false}
+        sttAvailable={false}
+        micDeviceId={null}
+        devices={[]}
+        onMicDevice={() => {}}
+        onMicOpened={() => {}}
+        pending={false}
+        awaitingReport={awaitingReport}
+        error={null}
+        onSay={() => {}}
+        onSpeak={() => {}}
+        onAnswer={() => {}}
+        cloud="off"
+        onEnd={() => {}}
+      />
+    );
+  }
+
+  it("asks to wait for the report once the dispatcher hung up", () => {
+    render(after(ended(call, "hangup"), true));
+    expect(screen.getByTestId("await-report")).toHaveTextContent(
+      "Ожидайте доклад",
+    );
+  });
+
+  it("says nothing of a report when none is coming or the call did not end that way", () => {
+    const { rerender } = render(after(ended(call, "hangup"), false));
+    expect(screen.queryByTestId("await-report")).not.toBeInTheDocument();
+    rerender(after(ended(call, "no_answer"), true));
+    expect(screen.queryByTestId("await-report")).not.toBeInTheDocument();
+    rerender(after(call, true));
+    expect(screen.queryByTestId("await-report")).not.toBeInTheDocument();
   });
 });

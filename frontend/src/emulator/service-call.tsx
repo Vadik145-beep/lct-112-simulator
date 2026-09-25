@@ -52,6 +52,7 @@ export function ServiceCallPanel({
   onMicOpened,
   pending,
   replying = false,
+  awaitingReport = false,
   error,
   onSay,
   onSpeak,
@@ -73,6 +74,8 @@ export function ServiceCallPanel({
   pending: boolean;
   /** The dispatcher's phrase is on its way and the other side's answer is awaited. */
   replying?: boolean;
+  /** The call to the own service is over and the squad leader will call with a report. */
+  awaitingReport?: boolean;
   error: string | null;
   onSay: (text: string, actionId: string) => void;
   onSpeak: (blob: Blob, actionId: string) => void;
@@ -482,6 +485,11 @@ export function ServiceCallPanel({
       {!open && call.end_reason && (
         <span className="text-[var(--arm-text-muted)]">
           {END_REASON_TITLES[call.end_reason] ?? call.end_reason}
+        </span>
+      )}
+      {!open && awaitingReport && call.end_reason === "hangup" && (
+        <span className="font-semibold text-[var(--arm-blue-dark)]" data-testid="await-report">
+          Ожидайте доклад: старший группы позвонит сам.
         </span>
       )}
       {error && !recording && (
