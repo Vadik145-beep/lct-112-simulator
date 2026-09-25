@@ -69,6 +69,8 @@ x-backend-env: &backend-env
   CLOUD_VOICE_ANSWER_SECONDS: ${CLOUD_VOICE_ANSWER_SECONDS:-15}
   # Own phones of trainees rung through MultiFon (docs/MULTIFON.md): «login=phone,…».
   TELEPHONY_TRAINEE_PHONES: ${TELEPHONY_TRAINEE_PHONES:-}
+  # Configured MultiFon account = lessons may ring the trainees' phones.
+  MULTIFON_USER: ${MULTIFON_USER:-}
 
 services:
   nginx:

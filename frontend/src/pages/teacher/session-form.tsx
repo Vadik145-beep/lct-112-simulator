@@ -39,6 +39,7 @@ const DEFAULTS: Omit<SessionIn, "group_id"> = {
   voice_enabled: true,
   dialog_mode: "select",
   adaptive: false,
+  phone_calls: false,
 };
 
 // PRD 9.3: the caller answers with an approved reply (select), may improvise with the
@@ -120,6 +121,7 @@ function toInput(s: SessionOut): SessionIn {
     voice_enabled: s.voice_enabled,
     dialog_mode: s.dialog_mode,
     adaptive: s.adaptive,
+    phone_calls: s.phone_calls ?? false,
   };
 }
 
@@ -255,6 +257,24 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                   </p>
                 )}
               </div>
+              {(models.data?.phone || form.phone_calls) && (
+                <div className="space-y-1">
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={form.phone_calls ?? false}
+                      onChange={(e) => patch({ phone_calls: e.target.checked })}
+                      data-testid="phone-calls"
+                    />
+                    Звонки на телефон обучающегося (МультиФон)
+                  </label>
+                  <p className="text-xs text-muted-foreground" data-testid="phone-calls-note">
+                    Вызовы звонят ещё и на мобильный, который обучающийся укажет при входе в занятие. Звонки в
+                    службу и заявителю из карточки тоже приходят ему на телефон: он берёт трубку и слышит гудки,
+                    как при наборе.
+                  </p>
+                </div>
+              )}
               {/* Голос не переключают: занятие всегда идёт голосом, когда озвучка и
                   распознавание подняты, и само переходит в текст, когда их нет. */}
               <p className="text-xs text-muted-foreground">

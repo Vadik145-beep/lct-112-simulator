@@ -12,10 +12,18 @@ from collections.abc import AsyncIterator
 import pytest
 
 from app.config import get_settings
-from app.models import CALL_ANSWERED, CALL_END_HANGUP, MODE_CARD_RESPONSE
+from app.db import SessionLocal
+from app.models import (
+    CALL_ANSWERED,
+    CALL_END_HANGUP,
+    MODE_CARD_RESPONSE,
+    Attempt,
+    TrainingSession,
+    User,
+)
 from app.telephony import settings as telephony_settings
 from app.telephony.ari import AriClient
-from app.telephony.calls import VAR_MOBILE, CallManager
+from app.telephony.calls import RINGBACK_MEDIA, VAR_MOBILE, CallManager
 from app.telephony.cloud import VAPI_DIAL_ENDPOINT, CloudCall, CloudCallManager
 from tests.api.conftest import DATA_DIR
 from tests.api.test_dialog import make_attempt
@@ -58,6 +66,26 @@ def trainee_phone(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(get_settings(), "telephony_trainee_phones", "Student1=8 (922) 000-00-01")
 
 
+async def phone_attempt(*args, **kwargs) -> uuid.UUID:
+    """An attempt of a lesson with calls to the phone (the teacher's checkbox)."""
+    attempt_id = await make_attempt(*args, **kwargs)
+    async with SessionLocal() as session:
+        attempt = await session.get(Attempt, attempt_id)
+        ts = await session.get(TrainingSession, attempt.session_id)
+        ts.phone_calls = True
+        await session.commit()
+    return attempt_id
+
+
+async def set_own_phone(login: str, phone: str | None) -> None:
+    from sqlalchemy import select
+
+    async with SessionLocal() as session:
+        user = await session.scalar(select(User).where(User.login == login))
+        user.phone = phone
+        await session.commit()
+
+
 # ---------------------------------------------------------------- phones
 
 
@@ -86,7 +114,7 @@ def test_administrator_phones_are_checked():
 async def test_dial_rings_the_trainee_phone_too(
     manager: CallManager, fake_ari: FakeAri, trainee_phone: None
 ):
-    attempt_id = await make_attempt()
+    attempt_id = await phone_attempt()
     call = await manager.dial(attempt_id)
     assert call is not None and call.phone == PHONE
     create = fake_ari.calls("POST", "/channels/create")[-1]
@@ -94,7 +122,7 @@ async def test_dial_rings_the_trainee_phone_too(
 
 
 async def test_without_a_phone_the_mobile_is_empty(manager: CallManager, fake_ari: FakeAri):
-    attempt_id = await make_attempt()
+    attempt_id = await phone_attempt()
     call = await manager.dial(attempt_id)
     assert call is not None and call.phone == ""
     create = fake_ari.calls("POST", "/channels/create")[-1]
@@ -104,7 +132,7 @@ async def test_without_a_phone_the_mobile_is_empty(manager: CallManager, fake_ar
 async def test_call_from_the_trainee_phone_takes_over_the_ringing_call(
     manager: CallManager, fake_ari: FakeAri, trainee_phone: None
 ):
-    attempt_id = await make_attempt()
+    attempt_id = await phone_attempt()
     call = await manager.dial(attempt_id)
     assert call is not None
     ringing = call.channel_id
@@ -133,7 +161,7 @@ async def test_call_from_the_trainee_phone_takes_over_the_ringing_call(
 async def test_call_from_an_unknown_phone_is_refused(
     manager: CallManager, fake_ari: FakeAri, trainee_phone: None
 ):
-    attempt_id = await make_attempt()
+    attempt_id = await phone_attempt()
     call = await manager.dial(attempt_id)
     assert call is not None
     await fake_ari.emit(
@@ -148,7 +176,7 @@ async def test_call_from_an_unknown_phone_is_refused(
 async def test_call_from_the_phone_picks_up_a_service_call(
     manager: CallManager, fake_ari: FakeAri, trainee_phone: None
 ):
-    attempt_id = await make_attempt(CARD, mode=MODE_CARD_RESPONSE, dialog_mode="buttons")
+    attempt_id = await phone_attempt(CARD, mode=MODE_CARD_RESPONSE, dialog_mode="buttons")
     call_id = await start_call(attempt_id)
     assert await manager.dial_service(attempt_id, call_id, "moek", "МОЭК") is True
     create = fake_ari.calls("POST", "/channels/create")[-1]
@@ -160,11 +188,69 @@ async def test_call_from_the_phone_picks_up_a_service_call(
     await wait_until(lambda: _service_answered(attempt_id, call_id))
 
 
+async def test_lesson_without_phone_calls_does_not_ring_the_phone(
+    manager: CallManager, fake_ari: FakeAri, trainee_phone: None
+):
+    """The number alone is not enough: the teacher turns the phone on per lesson."""
+    attempt_id = await make_attempt()
+    call = await manager.dial(attempt_id)
+    assert call is not None and call.phone == ""
+    create = fake_ari.calls("POST", "/channels/create")[-1]
+    assert create.body["variables"][VAR_MOBILE] == ""
+
+
+async def test_own_number_comes_before_the_administrator_table(
+    manager: CallManager, fake_ari: FakeAri, trainee_phone: None
+):
+    await set_own_phone("student1", "79220000009")
+    try:
+        attempt_id = await phone_attempt()
+        call = await manager.dial(attempt_id)
+        assert call is not None and call.phone == "79220000009"
+    finally:
+        await set_own_phone("student1", None)
+
+
+async def test_dispatcher_call_on_the_phone_rings_back_before_the_officer(
+    manager: CallManager, fake_ari: FakeAri, trainee_phone: None, monkeypatch: pytest.MonkeyPatch
+):
+    """«Позвонить» on the phone: after the pick-up the dispatcher hears the ring-back, then
+    the officer greets. A squad's report (incoming) has no ring-back."""
+    from app.telephony import calls as calls_module
+
+    monkeypatch.setattr(calls_module, "RINGBACK_SECONDS", 0.2)
+    attempt_id = await phone_attempt(CARD, mode=MODE_CARD_RESPONSE, dialog_mode="buttons")
+    call_id = await start_call(attempt_id)
+    assert await manager.dial_service(attempt_id, call_id, "moek", "МОЭК") is True
+    call = manager.call_for_service_call(call_id)
+    assert call is not None and call.ringback
+    await fake_ari.emit(
+        {"type": "ChannelStateChange", "channel": {"id": call.channel_id, "state": "Up"}}
+    )
+    first = await fake_ari.wait_for("POST", "/play")
+    assert first.params["media"] == RINGBACK_MEDIA
+    await fake_ari.wait_for("DELETE", f"/playbacks/rb-{call.key}")
+    await wait_until(lambda: _service_answered(attempt_id, call_id))
+
+    # «Завершить» in the card: the record is closed, then the leg is hung up.
+    from app.dialog import officer
+
+    async with SessionLocal() as session:
+        attempt = await session.get(Attempt, attempt_id)
+        await officer.end(session, attempt, call_id, officer.END_HANGUP)
+        await session.commit()
+    assert await manager.hangup_service_call(call_id)
+    report_id = await start_call(attempt_id)
+    assert await manager.dial_service(attempt_id, report_id, "moek", "МОЭК", kind="report")
+    report = manager.call_for_service_call(report_id)
+    assert report is not None and report.phone == PHONE and not report.ringback
+
+
 # ---------------------------------------------------------------- calls of the card in the cloud
 
 
 async def cloud_service_call(manager: CloudCallManager, fake_ari: FakeAri):
-    attempt_id = await make_attempt(CARD, mode=MODE_CARD_RESPONSE, dialog_mode="cloud")
+    attempt_id = await phone_attempt(CARD, mode=MODE_CARD_RESPONSE, dialog_mode="cloud")
     call_id = await start_call(attempt_id)
     assert await manager.dial_service(attempt_id, call_id, "moek", "МОЭК") is True
     call = manager.call_for_service_call(call_id)
@@ -266,13 +352,50 @@ async def test_service_call_falls_back_to_the_local_officer(
     assert call.local and not call.ended
 
 
+async def test_cloud_call_on_the_phone_rings_back_until_vapi_answers(
+    cloud_manager: CloudCallManager,
+    fake_ari: FakeAri,
+    trainee_phone: None,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    from app.telephony import cloud as cloud_module
+
+    monkeypatch.setattr(cloud_module, "RINGBACK_BEFORE_VAPI_SECONDS", 0.2)
+    manager = cloud_manager
+    attempt_id = await phone_attempt(CARD, mode=MODE_CARD_RESPONSE, dialog_mode="cloud")
+    call_id = await start_call(attempt_id)
+    assert await manager.dial_service(attempt_id, call_id, "moek", "МОЭК") is True
+    call = manager.call_for_service_call(call_id)
+    assert isinstance(call, CloudCall) and call.ringback
+    await fake_ari.emit(
+        {"type": "ChannelStateChange", "channel": {"id": call.channel_id, "state": "Up"}}
+    )
+    ring = await fake_ari.wait_for("POST", "/play")
+    assert ring.params["media"] == RINGBACK_MEDIA
+
+    async def vapi_leg_dialled() -> bool:
+        return any(
+            r.params.get("endpoint") == VAPI_DIAL_ENDPOINT
+            for r in fake_ari.calls("POST", "/channels/create")
+        )
+
+    await wait_until(vapi_leg_dialled)
+    # Vapi picks up: the ring-back stops and its leg joins the bridge.
+    await fake_ari.emit(
+        {"type": "ChannelStateChange", "channel": {"id": call.vapi_channel_id, "state": "Up"}}
+    )
+    await fake_ari.wait_for("DELETE", f"/playbacks/rb-{call.key}")
+    await wait_until(lambda: _service_answered(attempt_id, call_id))
+    assert call.ringback_id is None
+
+
 async def test_inbound_call_takes_over_a_cloud_112_call(
     cloud_manager: CloudCallManager,
     fake_ari: FakeAri,
     trainee_phone: None,
 ):
     manager = cloud_manager
-    attempt_id = await make_attempt(dialog_mode="cloud")
+    attempt_id = await phone_attempt(dialog_mode="cloud")
     call = await manager.dial(attempt_id)
     assert isinstance(call, CloudCall) and call.phone == PHONE
     await fake_ari.emit(

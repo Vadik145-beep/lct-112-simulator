@@ -249,7 +249,7 @@ async def test_models_availability_for_the_teacher(client: AsyncClient) -> None:
     r = await client.get("/api/models", headers=bearer(teacher))
     assert r.status_code == 200, r.text
     body = r.json()
-    assert set(body) == {"dialog", "generation", "stt", "tts", "cloud"}
+    assert set(body) == {"dialog", "generation", "stt", "tts", "cloud", "phone"}
     assert all(isinstance(v, bool) for v in body.values())
     assert body["dialog"] is False  # no model server in tests
     student = await login(client, "student1")
