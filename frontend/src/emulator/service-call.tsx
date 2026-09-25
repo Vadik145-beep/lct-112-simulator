@@ -226,7 +226,9 @@ export function ServiceCallPanel({
   return (
     <section
       className={cn(
-        "flex flex-col gap-2 rounded-sm border p-2 text-xs",
+        // min-h-0: the panel gives way on a short screen (the transcript shrinks), so the
+        // trainer panel fits the screen without scrolling.
+        "flex min-h-0 flex-col gap-2 rounded-sm border p-2 text-xs",
         open
           ? "border-[var(--arm-blue)] bg-[#eef3fb]"
           : "border-[#a9adb2] bg-[var(--arm-field)]",
@@ -261,7 +263,7 @@ export function ServiceCallPanel({
       </div>
       <ol
         ref={log}
-        className="flex max-h-48 flex-col gap-1 overflow-y-auto"
+        className="flex max-h-48 min-h-24 shrink flex-col gap-1 overflow-y-auto"
         aria-label="Стенограмма звонка"
       >
         {call.turns.map((t) => (
