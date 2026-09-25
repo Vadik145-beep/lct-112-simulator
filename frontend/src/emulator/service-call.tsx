@@ -130,8 +130,11 @@ export function ServiceCallPanel({
     void play(last.audio_url);
   }, [call.id, call.turns, telephony]);
 
+  // Only the transcript scrolls: scrollIntoView moved the whole page as well and pushed the
+  // services strip off the screen.
   useEffect(() => {
-    log.current?.lastElementChild?.scrollIntoView({ block: "nearest" });
+    const transcript = log.current;
+    if (transcript) transcript.scrollTop = transcript.scrollHeight;
   }, [call.turns.length]);
 
   useEffect(() => {
@@ -226,7 +229,10 @@ export function ServiceCallPanel({
   return (
     <section
       className={cn(
-        "flex flex-col gap-2 rounded-sm border p-2 text-xs",
+        // The panel takes the room left in the trainer panel; of that room only the
+        // transcript grows (from three lines up), the buttons and the input keep their
+        // size, and a longer conversation scrolls inside the transcript.
+        "flex grow flex-col gap-2 rounded-sm border p-2 text-xs *:shrink-0",
         open
           ? "border-[var(--arm-blue)] bg-[#eef3fb]"
           : "border-[#a9adb2] bg-[var(--arm-field)]",
@@ -261,7 +267,7 @@ export function ServiceCallPanel({
       </div>
       <ol
         ref={log}
-        className="flex max-h-48 flex-col gap-1 overflow-y-auto"
+        className="flex min-h-16 grow basis-16 flex-col gap-1 overflow-y-auto"
         aria-label="Стенограмма звонка"
       >
         {call.turns.map((t) => (
