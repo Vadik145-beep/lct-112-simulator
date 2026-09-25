@@ -127,8 +127,11 @@ export function ServiceCallPanel({
     void play(last.audio_url);
   }, [call.turns, telephony]);
 
+  // Only the transcript scrolls: scrollIntoView moved the whole page as well and pushed the
+  // services strip off the screen.
   useEffect(() => {
-    log.current?.lastElementChild?.scrollIntoView({ block: "nearest" });
+    const transcript = log.current;
+    if (transcript) transcript.scrollTop = transcript.scrollHeight;
   }, [call.turns.length]);
 
   useEffect(() => {
