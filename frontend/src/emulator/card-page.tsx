@@ -974,7 +974,7 @@ function CardView({
                     title={finished ? "Карточка закрыта" : "Проставить статус"}
                     disabled={finished || transitions.length === 0}
                     onClick={() => openEditor()}
-                    className="flex size-6 items-center justify-center rounded-sm border border-[var(--arm-orange)] text-[var(--arm-orange)] hover:bg-[var(--arm-orange)] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                    className="flex size-6 items-center justify-center rounded-sm border border-[var(--arm-orange)] bg-[var(--arm-orange)] text-white hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     <Pencil className="size-3.5" />
                   </button>
@@ -1324,9 +1324,10 @@ function CallButton({
       data-service={service.code}
       className={cn(
         "relative flex size-6 items-center justify-center rounded-sm border text-white disabled:cursor-not-allowed disabled:opacity-40",
-        open
-          ? "border-[var(--arm-green)] bg-[var(--arm-green)]"
-          : "border-[var(--arm-green)] text-[var(--arm-green)] hover:bg-[var(--arm-green)] hover:text-white",
+        // Filled, not outlined: an outline disappears on the blue tile of the own service.
+        // A call in progress gets a white ring.
+        "border-[var(--arm-green)] bg-[var(--arm-green)] hover:brightness-110",
+        open && "ring-2 ring-white",
       )}
     >
       <Phone className="size-3.5" aria-hidden />
@@ -1376,7 +1377,7 @@ function PhoneBox({
           className={cn(
             "flex size-6 items-center justify-center rounded-sm border",
             canCall
-              ? "border-[var(--arm-green)] text-[var(--arm-green)] hover:bg-[var(--arm-green)] hover:text-white"
+              ? "border-[var(--arm-green)] bg-[var(--arm-green)] text-white hover:brightness-110"
               : "border-transparent text-[var(--arm-text-muted)] opacity-50",
           )}
         >
