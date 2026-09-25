@@ -1,4 +1,4 @@
-import { Circle, Mic, Phone, PhoneOff, Send } from "lucide-react";
+import { Circle, Loader2, Mic, Phone, PhoneOff, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { getAccessToken } from "@/api/token";
@@ -51,6 +51,7 @@ export function ServiceCallPanel({
   onMicDevice,
   onMicOpened,
   pending,
+  replying = false,
   error,
   onSay,
   onSpeak,
@@ -70,6 +71,8 @@ export function ServiceCallPanel({
   onMicDevice: (deviceId: string | null) => void;
   onMicOpened: () => void;
   pending: boolean;
+  /** The dispatcher's phrase is on its way and the other side's answer is awaited. */
+  replying?: boolean;
   error: string | null;
   onSay: (text: string, actionId: string) => void;
   onSpeak: (blob: Blob, actionId: string) => void;
@@ -135,7 +138,7 @@ export function ServiceCallPanel({
   useEffect(() => {
     const transcript = log.current;
     if (transcript) transcript.scrollTop = transcript.scrollHeight;
-  }, [call.turns.length]);
+  }, [call.turns.length, replying]);
 
   useEffect(() => {
     if (!pending) actionId.current = null;
@@ -288,6 +291,17 @@ export function ServiceCallPanel({
             {t.text}
           </li>
         ))}
+        {/* Our model is answering; a cloud call speaks for itself (Vapi). */}
+        {open && replying && cloud === "off" && (
+          <li
+            className="flex items-center gap-1.5 rounded-sm bg-white px-2 py-1 text-[var(--arm-text-muted)]"
+            role="status"
+            data-testid="service-call-replying"
+          >
+            <Loader2 className="size-3.5 animate-spin" aria-hidden />
+            {otherSide(call)} отвечает…
+          </li>
+        )}
         {call.turns.length === 0 && (
           <li className="text-[var(--arm-text-muted)]">
             {isReport(call)
