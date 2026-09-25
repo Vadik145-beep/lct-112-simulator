@@ -1058,6 +1058,9 @@ function CardView({
         </div>
       </div>
 
+      {/* The trainer panel is as tall as the screen and scrolls inside: grown by the call panel
+          it used to stretch the page and push the services strip off the screen. */}
+      <div className="sticky top-0 flex h-dvh shrink-0">
       <TrainerPanel
         connection={connection}
         footer={
@@ -1070,6 +1073,7 @@ function CardView({
           </button>
         }
       >
+        <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
         <div>
           <div className="text-xs text-[var(--arm-text-muted)]">
             Карточка {card.number}
@@ -1294,7 +1298,9 @@ function CardView({
             {finish.error.message}
           </p>
         )}
+        </div>
       </TrainerPanel>
+      </div>
 
       {showHelp && <HotkeysHelp onClose={() => setShowHelp(false)} />}
     </div>
