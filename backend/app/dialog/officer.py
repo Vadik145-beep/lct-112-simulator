@@ -412,6 +412,8 @@ async def answer(
     _store(attempt, call)
     if attempt.state in (ATTEMPT_ISSUED, ATTEMPT_RECEIVED):
         attempt.state = ATTEMPT_IN_PROGRESS
+    if with_opening:  # a cloud call is played by the provider, not by our model
+        dialog.warm_up(ts, _context(attempt, call, officer))
     return call, [await _event(session, attempt, EVENT_ANSWERED, call)]
 
 

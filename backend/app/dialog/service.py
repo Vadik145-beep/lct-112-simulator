@@ -15,6 +15,7 @@ Every function works inside the caller's transaction and returns the events it a
 
 from __future__ import annotations
 
+import asyncio
 import random
 import re
 import uuid
@@ -56,6 +57,7 @@ from app.providers.dialog import (
     CallerReply,
     DialogContext,
     DialogProvider,
+    GenerateDialog,
     get_dialog_provider,
 )
 from app.providers.stt import get_stt_provider
@@ -209,6 +211,31 @@ async def opening_audio(version: ScenarioVersion, scenario: CallIntakeScenario) 
 
 def provider_for(ts: TrainingSession) -> DialogProvider:
     return get_dialog_provider(ts.dialog_mode or None)
+
+
+# Warm-ups running in the background; kept here so a task is not collected half-way.
+_warm_ups: set[asyncio.Task[None]] = set()
+
+
+def warm_generation(ts: TrainingSession, attempt: Attempt, scenario: CallIntakeScenario) -> None:
+    """The 112 call of a lesson of free generation: see ``warm_up``."""
+    warm_up(ts, _context(attempt, scenario))
+
+
+def warm_up(ts: TrainingSession, ctx: DialogContext) -> None:
+    """In a lesson of free generation, start reading the call's prompt into the model while
+    the other side's first phrase plays (``GenerateDialog.warm``): the caller of 112, the
+    duty officer, the squad leader, the caller called back. Other modes and the cloud voice
+    are left as they are; without a model the provider is not ``GenerateDialog`` and nothing
+    starts."""
+    if ts.dialog_mode != "generate":
+        return
+    provider = provider_for(ts)
+    if not isinstance(provider, GenerateDialog):
+        return
+    task = asyncio.create_task(provider.warm(ctx))
+    _warm_ups.add(task)
+    task.add_done_callback(_warm_ups.discard)
 
 
 def cloud_lesson(ts: TrainingSession) -> bool:
