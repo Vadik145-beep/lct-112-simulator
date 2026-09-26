@@ -43,8 +43,8 @@ const DEFAULTS: Omit<SessionIn, "group_id"> = {
 };
 
 // PRD 9.3: the caller answers with an approved reply (select), may improvise with the
-// teacher approving new lines (hybrid), improvises freely (generate), or the trainee
-// presses topic buttons (buttons, no model).
+// teacher approving new lines (hybrid, no longer offered for new lessons), improvises freely
+// (generate), or the trainee presses topic buttons (buttons, no model).
 // «Источник карточек» of the ТЗ: «scenarios» is the value older sessions carry; the server
 // treats it and «mixed» alike.
 const CARD_SOURCES = [
@@ -62,18 +62,20 @@ const DIALOG_MODES: { code: string; title: string; hint: string; dds?: string }[
     dds: "модель выбирает реплику из банка службы, звучит её запись; режим стенда",
   },
   {
-    code: "hybrid",
-    title: "Готовые + новые",
-    hint: "если реплики нет, модель сочиняет; новое — на утверждение после занятия",
-    dds: "если реплики нет, модель сочиняет; новое — на утверждение после занятия",
-  },
-  {
     code: "generate",
     title: "Свободная генерация",
     hint: "модель сочиняет каждую реплику; медленнее и менее предсказуемо",
     dds: "дежурный и старший группы отвечают свободно; медленнее и менее предсказуемо",
   },
 ];
+// Not offered for new lessons any more; kept in the list of a lesson that already has it, so its
+// form shows the mode it runs in. The server still runs it.
+const HYBRID_MODE: (typeof DIALOG_MODES)[number] = {
+  code: "hybrid",
+  title: "Готовые + новые",
+  hint: "если реплики нет, модель сочиняет; новое — на утверждение после занятия",
+  dds: "если реплики нет, модель сочиняет; новое — на утверждение после занятия",
+};
 // Not offered for new lessons any more; kept in the list of a lesson that already has it, so its
 // form shows the mode it runs in. The engine stays: every mode falls back to it without a model.
 const BUTTONS_MODE: (typeof DIALOG_MODES)[number] = {
@@ -232,7 +234,9 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                 </Label>
                 <select id="dialog-mode" className={selectClass} value={form.dialog_mode} onChange={(e) => patch({ dialog_mode: e.target.value })}>
                   {[
-                    ...DIALOG_MODES,
+                    ...DIALOG_MODES.slice(0, 1),
+                    ...(form.dialog_mode === "hybrid" ? [HYBRID_MODE] : []),
+                    ...DIALOG_MODES.slice(1),
                     ...(form.dialog_mode === "buttons" ? [BUTTONS_MODE] : []),
                     // Облачный голос играет только заявителя: служебные звонки ДДС идут
                     // через локальный конвейер (plan/track-c-vapi.md).
