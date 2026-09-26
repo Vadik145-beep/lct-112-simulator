@@ -69,9 +69,9 @@ function modeOptions() {
 describe("Dialog mode of a lesson", () => {
   it("does not offer «Кнопки тем» for a new lesson, in either mode", () => {
     renderForm("/teacher/sessions/new");
-    expect(modeOptions()).toEqual(["select", "hybrid", "generate"]);
+    expect(modeOptions()).toEqual(["select", "generate"]);
     fireEvent.click(screen.getByLabelText(/Реагирование на карточку/));
-    expect(modeOptions()).toEqual(["select", "hybrid", "generate"]);
+    expect(modeOptions()).toEqual(["select", "generate"]);
   });
 
   it("keeps «Кнопки тем» shown for a lesson that already runs in it", () => {
@@ -82,9 +82,17 @@ describe("Dialog mode of a lesson", () => {
     expect(modeOptions()).toContain("buttons");
   });
 
+  it("does not offer «Готовые + новые» for a new lesson but keeps it for a lesson that has it", () => {
+    existing.current = draft("hybrid");
+    renderForm("/teacher/sessions/s1/edit");
+    const select = document.getElementById("dialog-mode") as HTMLSelectElement;
+    expect(select.value).toBe("hybrid");
+    expect(modeOptions()).toEqual(["select", "hybrid", "generate"]);
+  });
+
   it("does not add it to a lesson in another mode", () => {
     existing.current = draft("select");
     renderForm("/teacher/sessions/s1/edit");
-    expect(modeOptions()).toEqual(["select", "hybrid", "generate"]);
+    expect(modeOptions()).toEqual(["select", "generate"]);
   });
 });
