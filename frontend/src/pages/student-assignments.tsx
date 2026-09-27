@@ -103,15 +103,21 @@ export function StudentAssignmentsPage() {
         </Card>
       )}
 
-      {rest.length > 0 && (
-        <section className="space-y-2">
-          <h2 className="text-lg font-medium">Другие занятия</h2>
-          <ul className="divide-y rounded-lg border bg-card">
-            {rest.map((a) => (
-              <AssignmentRow key={a.id} assignment={a} />
-            ))}
-          </ul>
-        </section>
+      {[
+        { title: "Предстоящие занятия", items: rest.filter((a) => a.status === "draft") },
+        { title: "Пройденные занятия", items: rest.filter((a) => a.status !== "draft") },
+      ].map(
+        (list) =>
+          list.items.length > 0 && (
+            <section key={list.title} className="space-y-2">
+              <h2 className="text-lg font-medium">{list.title}</h2>
+              <ul className="divide-y rounded-lg border bg-card">
+                {list.items.map((a) => (
+                  <AssignmentRow key={a.id} assignment={a} />
+                ))}
+              </ul>
+            </section>
+          ),
       )}
     </div>
   );
