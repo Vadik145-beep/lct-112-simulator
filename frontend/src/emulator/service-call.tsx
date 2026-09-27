@@ -1,4 +1,4 @@
-import { Circle, Loader2, Mic, Phone, PhoneOff, Send } from "lucide-react";
+import { Circle, Loader2, Mic, MicOff, Phone, PhoneOff, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { getAccessToken } from "@/api/token";
@@ -58,6 +58,9 @@ export function ServiceCallPanel({
   onSpeak,
   onAnswer,
   cloud,
+  cloudOnly = false,
+  muted = false,
+  onToggleMute,
   onEnd,
 }: {
   call: ServiceCallOut;
@@ -86,6 +89,16 @@ export function ServiceCallPanel({
    * голосом, «failed» — облако не поднялось и разговор идёт текстом и микрофоном.
    */
   cloud: "off" | "connecting" | "live" | "failed";
+  /**
+   * The lesson plays the other side in the cloud (Vapi) and there is no telephony: the
+   * dispatcher talks only by voice through the cloud — no push-to-talk, text field or
+   * microphone list of the local path, even while the cloud connects.
+   */
+  cloudOnly?: boolean;
+  /** The dispatcher's microphone is off in the cloud call. */
+  muted?: boolean;
+  /** Turns the microphone of the cloud call off and on (as in the 112 card). */
+  onToggleMute?: () => void;
   onEnd: () => void;
 }) {
   const [text, setText] = useState("");
@@ -105,6 +118,8 @@ export function ServiceCallPanel({
   const open = call.ended_at === null;
   const canSpeak =
     sttAvailable && !telephony && typeof MediaRecorder !== "undefined";
+  // The local path (text, push-to-talk): not in a cloud-only call, not while the cloud talks.
+  const localTalk = !cloudOnly && cloud !== "live";
 
   // A call that ends while the microphone is on: stop the recorder, drop the recording.
   useEffect(() => {
@@ -337,10 +352,29 @@ export function ServiceCallPanel({
           {cloud === "connecting" && "Соединяем с облачным голосом…"}
           {cloud === "live" && "Разговор голосом через облако: говорите в гарнитуру."}
           {cloud === "failed" &&
-            "Облако недоступно: отвечает локальная модель, пишите или говорите в микрофон."}
+            (cloudOnly
+              ? "Облачный голос недоступен. Завершите звонок и позвоните снова."
+              : "Облако недоступно: отвечает локальная модель, пишите или говорите в микрофон.")}
         </div>
       )}
-      {open && call.answered && cloud !== "live" && (
+      {open && cloud === "live" && onToggleMute && (
+        <button
+          type="button"
+          onClick={onToggleMute}
+          aria-pressed={muted}
+          data-testid="service-cloud-mute"
+          className={cn(
+            "inline-flex h-7 w-full items-center justify-center gap-1 rounded-sm border px-2",
+            muted
+              ? "border-[var(--arm-red)] bg-[var(--arm-red)] text-white hover:opacity-90"
+              : "border-[#a9adb2] bg-white text-[var(--arm-text)] hover:bg-[var(--arm-panel-2)]",
+          )}
+        >
+          {muted ? <MicOff className="size-3.5" aria-hidden /> : <Mic className="size-3.5" aria-hidden />}
+          {muted ? "Микрофон выключен" : "Микрофон включён"}
+        </button>
+      )}
+      {open && call.answered && localTalk && (
         <form
           className="flex gap-1"
           onSubmit={(e) => {
@@ -370,7 +404,7 @@ export function ServiceCallPanel({
           </button>
         </form>
       )}
-      {open && call.answered && cloud !== "live" && canSpeak && devices.length > 0 && (
+      {open && call.answered && localTalk && canSpeak && devices.length > 0 && (
         <label className="flex items-center gap-1 text-[10px] text-[var(--arm-text-muted)]">
           <Mic className="size-3" aria-hidden />
           <select
@@ -388,7 +422,7 @@ export function ServiceCallPanel({
           </select>
         </label>
       )}
-      {open && call.answered && cloud !== "live" && canSpeak && (
+      {open && call.answered && localTalk && canSpeak && (
         <button
           type="button"
           aria-label={
@@ -460,7 +494,7 @@ export function ServiceCallPanel({
           {micNote}
         </span>
       )}
-      {open && call.answered && !telephony && !sttAvailable && (
+      {open && call.answered && localTalk && !telephony && !sttAvailable && (
         <span className="text-[10px] text-[var(--arm-text-muted)]">
           Распознавание речи недоступно: пишите текстом ({otherSide(call)}).
         </span>
