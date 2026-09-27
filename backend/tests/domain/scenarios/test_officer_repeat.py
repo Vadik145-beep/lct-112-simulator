@@ -36,3 +36,25 @@ def test_cloud_gets_the_repeat_instruction_only_on_a_repeat_call() -> None:
     prompt = vapi.role_prompt(again)
     assert "уже принял от него в прошлом" in prompt
     assert "ПРИНЯТЬ информацию" not in prompt
+
+
+def test_repeat_officer_gets_its_own_generate_prompt() -> None:
+    from app.domain.evaluation.schemas import ServiceCallRef
+    from app.domain.scenarios import officers
+    from app.providers import dialog as dlg
+    from tests.domain.evaluation.helpers import card_scenario
+
+    scenario = card_scenario()
+    ref = ServiceCallRef(service="mosgaz")
+    first = officers.officer_scenario(scenario, ref, "Мосгаз", "arrived")
+    again = officers.officer_scenario(scenario, ref, "Мосгаз", "arrived", repeat=True)
+
+    def system(officer):
+        ctx = dlg.DialogContext(
+            scenario=officer, history=[], conversation_id="t", role=dlg.ROLE_OFFICER
+        )
+        return dlg.generate_messages(ctx, "Как там у вас?")[0]["content"]
+
+    assert "спроси один следующий факт" in system(first)
+    assert "СНОВА" in system(again)
+    assert "спроси один следующий факт" not in system(again)
