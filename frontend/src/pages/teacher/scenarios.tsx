@@ -76,8 +76,8 @@ export function TeacherScenariosPage() {
           <Label htmlFor="kind">Режим</Label>
           <select id="kind" className={selectClass} value={filters.kind ?? ""} onChange={(e) => patch({ kind: (e.target.value || undefined) as ScenarioFilters["kind"] })}>
             <option value="">Все</option>
-            <option value="call_intake">Приём вызова</option>
-            <option value="card_response">Реагирование</option>
+            <option value="call_intake">Приём вызова (оператор 112)</option>
+            <option value="card_response">Реагирование на карточку (ДДС)</option>
           </select>
         </div>
         <div>
@@ -290,8 +290,8 @@ function GenerateForm({ onClose }: { onClose: () => void }) {
           <div>
             <Label htmlFor="gen-kind">Режим</Label>
             <select id="gen-kind" className={selectClass} value={form.kind} onChange={(e) => patch({ kind: e.target.value as GenerateIn["kind"] })}>
-              <option value="call_intake">Приём вызова</option>
-              <option value="card_response">Реагирование на карточку</option>
+              <option value="call_intake">Приём вызова (оператор 112)</option>
+              <option value="card_response">Реагирование на карточку (ДДС)</option>
             </select>
             <label className="mt-2 flex items-center gap-2 text-sm">
               <input type="checkbox" checked={form.both_kinds ?? false} onChange={(e) => patch({ both_kinds: e.target.checked })} />

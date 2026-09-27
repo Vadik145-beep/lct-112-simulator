@@ -10,8 +10,8 @@ import { formatDateTime } from "@/emulator/time";
 import { PhoneCallsNotice } from "./student-phone";
 
 const MODE_TITLES: Record<string, string> = {
-  card_response: "Реагирование на карточку",
-  call_intake: "Приём вызова",
+  card_response: "Реагирование на карточку (ДДС)",
+  call_intake: "Приём вызова (оператор 112)",
 };
 
 const STATUS_TITLES: Record<string, string> = {
