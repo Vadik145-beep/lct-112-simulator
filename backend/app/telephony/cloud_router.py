@@ -98,7 +98,7 @@ async def start_web_call(attempt_id: uuid.UUID, user: ActiveUser, session: DbSes
     )
     if not dialog.cloud_lesson(ts):
         raise ApiError(409, "not_cloud_lesson", "В этом занятии заявителя играет локальная модель.")
-    if telephony.telephony_active():
+    if telephony.for_session(ts):
         raise ApiError(409, "telephony_active", "Звонок идёт через телефонию стенда.")
     web_calls = cloud_web.get_calls()
     if web_calls is None:
@@ -137,7 +137,7 @@ async def start_service_web_call(
         raise ApiError(
             409, "not_cloud_lesson", "В этом занятии службу и бригаду играет локальная модель."
         )
-    if telephony.telephony_active():
+    if telephony.for_session(ts):
         raise ApiError(409, "telephony_active", "Звонок идёт через телефонию стенда.")
     web_calls = cloud_web.get_calls()
     if web_calls is None:

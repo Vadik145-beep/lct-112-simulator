@@ -72,6 +72,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--close-open", action="store_true", help="закрыть незавершённые вызовы обучающегося"
     )
+    parser.add_argument(
+        "--prepare",
+        action="store_true",
+        help="только завести занятие (со звонком на телефон), вызов не выдавать",
+    )
     return parser.parse_args()
 
 
@@ -117,12 +122,15 @@ async def issue(args: argparse.Namespace) -> uuid.UUID:
                 norm_seconds=args.norm,
                 dialog_mode=args.dialog_mode,
                 voice_enabled=True,
+                # Calls go through Asterisk only in a lesson with this box (27.09.2026).
+                phone_calls=True,
                 status=SESSION_RUNNING,
                 started_at=utcnow(),
             )
             session.add(ts)
         else:
             ts.status = SESSION_RUNNING
+            ts.phone_calls = True
             ts.dialog_mode = args.dialog_mode
             ts.norm_seconds = args.norm
             if scenario.id not in ts.scenario_ids:
@@ -139,6 +147,9 @@ async def issue(args: argparse.Namespace) -> uuid.UUID:
             for old in open_attempts:
                 old.state = ATTEMPT_FINISHED
                 old.submitted_at = utcnow()
+        if args.prepare:
+            await session.commit()
+            return ts.id
         existing = list(await session.scalars(select(Attempt.id).where(Attempt.session_id == ts.id)))
         attempt = Attempt(
             session_id=ts.id,

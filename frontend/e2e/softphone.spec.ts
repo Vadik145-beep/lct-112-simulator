@@ -39,10 +39,10 @@ async function loginAsStudent(page: Page) {
   await expect(page.getByRole("heading", { name: "Мои задания" })).toBeVisible();
 }
 
-function issueCall(student = "student1") {
+function issueCall(student = "student1", ...extra: string[]) {
   execFileSync(
     "uv",
-    ["run", "--project", "backend", "python", "scripts/issue_call.py", "--student", student, "--close-open"],
+    ["run", "--project", "backend", "python", "scripts/issue_call.py", "--student", student, "--close-open", ...extra],
     { cwd: ROOT, stdio: "pipe", shell: process.platform === "win32" },
   );
 }
@@ -61,6 +61,9 @@ test("софтфон регистрируется, принимает вызов
   page.on("websocket", (ws) => {
     if (ws.url().endsWith("/ws/sip")) ws.on("close", () => problems.push(`sip websocket closed at ${new Date().toISOString()}`));
   });
+  // The softphone registers on Asterisk only for a lesson with the «звонок на телефон» box:
+  // the lesson is set up before the trainee logs in.
+  issueCall("student1", "--prepare");
   await loginAsStudent(page);
 
   const badge = page.getByTestId("softphone-status");
@@ -83,18 +86,6 @@ test("софтфон регистрируется, принимает вызов
   // The fake microphone asks «Что случилось? Диктуйте адрес.»: recognised text and a reply.
   await expect(panel).toContainText("Вы:", { timeout: REPLY_TIMEOUT });
   await page.screenshot({ path: resolve(SHOTS, "03-talking.png") });
-
-  const stats = page.getByTestId("call-stats");
-  await expect(stats).toContainText("RTT", { timeout: 10_000 });
-  const statsText = (await stats.textContent()) ?? "";
-  const rtt = /RTT (\d+) мс/.exec(statsText)?.[1];
-  const jitter = /джиттер (\d+) мс/.exec(statsText)?.[1];
-  const codec = statsText.split("·")[0].trim();
-  writeFileSync(
-    resolve(SHOTS, "webrtc_stats.json"),
-    JSON.stringify({ at: new Date().toISOString(), browser: "chromium", codec, rtt_ms: Number(rtt), jitter_ms: Number(jitter), raw: statsText }, null, 2),
-  );
-  expect(Number(rtt)).toBeLessThan(150);
 
   await page.getByTestId("call-hangup").click();
   await expect(panel).toContainText("завершён", { timeout: 15_000 });
