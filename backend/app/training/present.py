@@ -401,7 +401,9 @@ def service_call_out(attempt: Attempt, body: dict, call: dict, lookups: Lookups)
         (
             list(c.get("required_facts") or [])
             for c in (body.get("reference") or {}).get("service_calls") or []
-            if c.get("service") == call.get("service") and call.get("kind") != "report"
+            if c.get("service") == call.get("service")
+            and call.get("kind") != "report"
+            and not call.get("repeat")
         ),
         [],
     )

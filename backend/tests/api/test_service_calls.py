@@ -353,3 +353,55 @@ async def test_utterance_with_recognized_speech(client: AsyncClient, monkeypatch
         files={"file": ("q.wav", b"RIFF....WAVE", "audio/wav")},
     )
     assert r.status_code == 409
+
+
+async def test_repeat_call_does_not_take_the_card_again(client: AsyncClient) -> None:
+    """The dispatcher calls the service he has passed the card to (замечание 27.09.2026): the
+    officer says the card is with them and where the squad is, asks for nothing, requires
+    nothing; the first call still counts in the evaluation."""
+    attempt_id = await make_attempt(CARD, mode=MODE_CARD_RESPONSE, dialog_mode="buttons")
+    token = await login(client, "student1")
+
+    first = (await start(client, token, attempt_id)).json()["call"]
+    assert "repeat" not in first or not first.get("repeat")
+    r = await say(
+        client,
+        token,
+        attempt_id,
+        first["id"],
+        "Улица Молостовых, дом 10, корпус 1, нет отопления в трёх домах, пострадавших нет",
+    )
+    assert set(r.json()["call"]["facts_passed"]) >= {"address", "incident_type", "injured"}
+    await end(client, token, attempt_id, first["id"])
+
+    r = await start(client, token, attempt_id)
+    assert r.status_code == 200, r.text
+    again = r.json()["call"]
+    opening = again["turns"][0]["text"]
+    assert "уже приняли" in opening and "слушаю" in opening
+    assert again["facts_required"] == []
+    # Whatever the dispatcher says, the officer does not ask for the card again.
+    for text in ("Алло, как там у вас?", "Улица Молостовых, дом 10", "Пострадавших нет"):
+        r = await say(client, token, attempt_id, again["id"], text)
+        assert r.status_code == 200, r.text
+        reply = r.json()["call"]["turns"][-1]
+        assert reply["role"] == "caller"
+        assert not reply["text"].rstrip().endswith("?"), reply["text"]
+    await end(client, token, attempt_id, again["id"])
+
+    # A call to another service is a first call there.
+    other = (await start(client, token, attempt_id, "mosvodokanal")).json()["call"]
+    assert "уже приняли" not in other["turns"][0]["text"]
+    await end(client, token, attempt_id, other["id"])
+
+    for body in (
+        {"status": "accepted"},
+        {"status": "response_started", "order_number": "МОЭК-4127", "comment": "Бригада"},
+        {"status": "arrived"},
+        {"status": "works_started", "comment": "Проверка ИТП"},
+        {"status": "works_done", "comment": "Отопление восстановлено"},
+    ):
+        r = await status(client, token, attempt_id, **body)
+        assert r.status_code == 200, r.text
+    component = r.json()["attempt"]["evaluation"]["components"]["service_call"]
+    assert component["items"][0]["facts_missing"] == []

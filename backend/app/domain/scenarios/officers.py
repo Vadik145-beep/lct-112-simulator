@@ -54,6 +54,16 @@ OFFICER_BEHAVIOUR = (
     "спокойный дежурный службы: говорит коротко и по делу, уточняет адрес, тип происшествия, "
     "есть ли пострадавшие, просит номер наряда, подтверждает приём информации"
 )
+# A repeat call: the dispatcher calls the same service again after the card was passed
+# (замечание пользователя 27.09.2026 — дежурный заново спрашивал адрес). The officer does not
+# take the card again: he says where the squad is and that the squad leader will report.
+OFFICER_REPEAT_BEHAVIOUR = (
+    "спокойный дежурный службы: карточку уже принял от этого диспетчера в прошлом звонке, "
+    "бригада работает по ней; коротко говорит, где бригада, и что старший группы доложит сам; "
+    "данные карточки не переспрашивает"
+)
+REPEAT_FACT_KEY = "карточка"
+REPEAT_FACT = "уже принята от диспетчера в прошлом звонке, бригада работает по ней"
 # Replies scenarios may not replace: the built-in set is the floor of every service.
 BUILTIN_REPLY_ID_BASE = 1000
 
@@ -266,6 +276,13 @@ def greeting(service: str, service_title: str) -> str:
     return GENERIC_REPLIES[0][1].format(service=spoken_service(service, service_title))
 
 
+def repeat_opening(service: str, service_title: str, state: str = SQUAD_STATE_PENDING) -> str:
+    """The officer's first phrase on a repeat call: the card is with the service already, the
+    squad is where the reports put it."""
+    first = greeting(service, service_title)
+    return f"{first} Карточку от вас уже приняли. {PROGRESS_REPLIES[state]}"
+
+
 def _reference_card(scenario: CardResponseScenario) -> ReferenceCard:
     card = scenario.card
     return ReferenceCard(
@@ -284,17 +301,31 @@ def officer_scenario(
     ref: ServiceCallRef,
     service_title: str,
     state: str = SQUAD_STATE_PENDING,
+    repeat: bool = False,
 ) -> CallIntakeScenario:
     """The officer as the dialog engine sees him: the same shape as a caller scenario, so the
     select / hybrid / generate providers and the voice pipeline work unchanged. The «caller»
     side is the officer, the «operator» side the dispatcher. ``state`` is the squad's state
-    (``squad_state``): the officer answers about the progress from it."""
+    (``squad_state``): the officer answers about the progress from it. ``repeat``: the card was
+    passed on an earlier call — the officer opens with where the squad is, asks for no fact of
+    the card and requires none."""
     facts = {
         "служба": service_title,
         "твой наряд": ref.order_number or order_number(scenario, ref.service),
         "что знает": "о происшествии — только то, что сообщает диспетчер",
         "где бригада": PROGRESS_REPLIES[state],
     }
+    replies = officer_replies(scenario, ref.service, service_title, state)
+    opening = greeting(ref.service, service_title)
+    behaviour = OFFICER_BEHAVIOUR
+    required = list(ref.required_facts)
+    if repeat:
+        facts[REPEAT_FACT_KEY] = REPEAT_FACT
+        opening = repeat_opening(ref.service, service_title, state)
+        behaviour = OFFICER_REPEAT_BEHAVIOUR
+        required = []
+        # The officer's questions about the card («Назовите адрес…», «Где запах газа?»).
+        replies = [r for r in replies if not r.text.rstrip().endswith("?")]
     return CallIntakeScenario(
         kind="call_intake",
         title=f"Звонок дежурному: {service_title}",
@@ -305,12 +336,12 @@ def officer_scenario(
             persona=OFFICER_PERSONA,
             voice=OFFICER_VOICE,
             noise=None,
-            opening=greeting(ref.service, service_title),
+            opening=opening,
             facts=facts,
-            behaviour=OFFICER_BEHAVIOUR,
+            behaviour=behaviour,
         ),
-        replies=officer_replies(scenario, ref.service, service_title, state),
-        required_topics=list(ref.required_facts),
+        replies=replies,
+        required_topics=required,
         reference_card=_reference_card(scenario),
     )
 
