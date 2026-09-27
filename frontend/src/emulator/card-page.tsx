@@ -262,6 +262,12 @@ function CardView({
   const openCall =
     attempt.service_calls.find((c) => c.ended_at === null) ?? null;
   const [shownCallId, setShownCallId] = useState<string | null>(null);
+  // The call on the line stays in the panel when it ends — a report of the squad included, not
+  // only the calls the dispatcher dialled; a line of the history opens any earlier one.
+  const openCallId = openCall?.id ?? null;
+  useEffect(() => {
+    if (openCallId) setShownCallId(openCallId);
+  }, [openCallId]);
   const shownCall =
     openCall ?? attempt.service_calls.find((c) => c.id === shownCallId) ?? null;
   const callBusy =
