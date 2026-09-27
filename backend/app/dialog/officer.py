@@ -175,13 +175,38 @@ def reference_for(scenario: CardResponseScenario, service: str) -> ServiceCallRe
     return ServiceCallRef(service=service)
 
 
+def is_repeat(call: dict) -> bool:
+    """The dispatcher calls a service he has already passed the card to (``start``)."""
+    return bool(call.get("repeat"))
+
+
+def card_passed_to(attempt: Attempt, service: str) -> bool:
+    """An earlier call of the dispatcher to ``service`` passed at least one fact of the card."""
+    return any(
+        (c.get("kind") or KIND_OUTGOING) == KIND_OUTGOING
+        and c.get("service") == service
+        and c.get("facts_passed")
+        for c in calls_of(attempt)
+    )
+
+
 def officer_scenario(
-    scenario: CardResponseScenario, service: str, service_title: str, attempt: Attempt
+    scenario: CardResponseScenario,
+    service: str,
+    service_title: str,
+    attempt: Attempt,
+    *,
+    repeat: bool = False,
 ) -> CallIntakeScenario:
     """The officer of ``service`` as he is now: the progress answer follows the squad, the
-    built-in replies carry their studio recordings when the installation has them."""
+    built-in replies carry their studio recordings when the installation has them. On a
+    repeat call the card is with him already (``officers.officer_scenario``)."""
     built = officers.officer_scenario(
-        scenario, reference_for(scenario, service), service_title, squad_state(attempt)
+        scenario,
+        reference_for(scenario, service),
+        service_title,
+        squad_state(attempt),
+        repeat=repeat,
     )
     return with_studio_audio(built, service)
 
@@ -203,7 +228,7 @@ def call_scenario(
         report = _report_of(scenario, call)
         leader = officers.report_scenario(scenario, report, title)
         return with_studio_audio(leader, STUDIO_SQUAD_KEY)
-    return officer_scenario(scenario, call["service"], title, attempt)
+    return officer_scenario(scenario, call["service"], title, attempt, repeat=is_repeat(call))
 
 
 def _report_of(scenario: CardResponseScenario, call: dict) -> BrigadeReport:
@@ -293,6 +318,8 @@ async def start(
         # Calling from a card not opened yet still means it was received.
         events += await training.open_attempt(session, attempt, ts)
     call = _new_call(service, service_title, now, telephony=telephony, kind=kind)
+    if kind == KIND_OUTGOING and card_passed_to(attempt, service):
+        call["repeat"] = True
     attempt.service_calls = [*calls_of(attempt), call]
     flag_modified(attempt, "service_calls")
     events.append(await _event(session, attempt, EVENT_STARTED, call))
@@ -392,7 +419,7 @@ async def answer(
     else:
         # A call back uses the caller's own folder of recordings, split by voice.
         key = f"{STUDIO_CALLER_KEY}/{officer.caller.voice}" if is_caller(call) else call["service"]
-        audio = await _greeting_audio(version, officer, key)
+        audio = await _greeting_audio(version, officer, key, repeat=is_repeat(call))
         topics = ["greeting"]
     opening = (
         [
@@ -667,18 +694,23 @@ async def _report_audio(
 
 
 async def _greeting_audio(
-    version: ScenarioVersion, officer: CallIntakeScenario, service: str
+    version: ScenarioVersion, officer: CallIntakeScenario, service: str, *, repeat: bool = False
 ) -> str | None:
     opening = officer.caller.opening
+    # The repeat call opens with where the squad is: its own file per phrase, so the cached
+    # greeting of the first call is neither played here nor overwritten.
+    stem = (
+        f"officer-{service}-repeat-{_text_key(opening)}"
+        if repeat
+        else f"officer-{service}-greeting"
+    )
     reply = CallerReply(
         text=opening,
         topics=["greeting"],
         operator_topics=[],
         audio=studio_audio(service, opening),
     )
-    return await dialog.reply_audio(
-        None, version, officer, reply, stem=f"officer-{service}-greeting"
-    )
+    return await dialog.reply_audio(None, version, officer, reply, stem=stem)
 
 
 def _add_pending_reply(version: ScenarioVersion, service: str, reply: CallerReply) -> bool:
