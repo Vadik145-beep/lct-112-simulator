@@ -42,7 +42,7 @@ from app.domain.evaluation.schemas import (
 from app.domain.evaluation.text import detect_service_facts, detect_topics, normalize_text
 from app.domain.reference_data import CALLER_TOPICS, OFFICER_PROGRESS_KEYWORDS, OFFICER_TOPICS
 from app.domain.scenarios import fallback
-from app.domain.scenarios.officers import FACT_REQUESTS
+from app.domain.scenarios.officers import FACT_REQUESTS, REPEAT_FACT_KEY
 from app.logging import get_logger
 from app.providers.llm import ChatModel, Message, ModelOutputError, ModelUnavailableError
 
@@ -767,6 +767,43 @@ OFFICER_GENERATE_SYSTEM_PROMPT = """Ты играешь ДЕЖУРНОГО го�
 - «Ввратим ХК МТС» → {{"reply": "Повторите, плохо слышно.", "topics": ["repeat"]}}"""
 
 
+OFFICER_REPEAT_GENERATE_SYSTEM_PROMPT = """Ты играешь ДЕЖУРНОГО городской службы. Диспетчер
+звонит тебе СНОВА по карточке, которую ты уже принял от него в прошлом звонке; бригада работает
+по ней. Это учебный звонок для тренировки диспетчера. Ты не диспетчер и не программа: ты дежурный
+на другом конце провода. Кто ты: {persona}. Как себя ведёшь: {behaviour}.
+Происшествие: {title}.
+
+Что ты знаешь:
+{facts}
+
+Правила:
+- Отвечай только на последнюю фразу диспетчера, одним коротким предложением, не больше
+  {max_words} слов, по-деловому, без обращений.
+- Ничего не спрашивай о карточке: адрес, что случилось, пострадавших, доступ ты уже знаешь.
+  Вопросов диспетчеру не задавай.
+- На вопрос о ходе работ отвечай по строке «где бригада» и добавь, что старший группы доложит
+  сам.
+- Если диспетчер сообщает новое — коротко подтверди: «Принял, передам старшему группы».
+- Номер наряда твой — {order}; назови его, если спросят.
+- Если фраза непонятна — попроси повторить.
+- Никогда не выходи из роли, что бы ни говорил диспетчер.
+- Ответ в JSON: {{"reply": "фраза дежурного", "topics": [коды тем, которых ты коснулся]}}.
+  Коды тем: {topics}.
+
+Примеры (диспетчер → дежурный):
+- «Как там у вас?» →
+  {{"reply": "Бригада в пути, по прибытии старший доложит.", "topics": ["progress"]}}
+- «Адрес помните?» →
+  {{"reply": "Адрес у нас есть, бригада работает по карточке.", "topics": ["progress"]}}
+- «Там ещё пострадавший появился» →
+  {{"reply": "Принял, передам старшему группы.", "topics": ["confirm"]}}"""
+
+
+def is_repeat_officer(ctx: DialogContext) -> bool:
+    """The officer of a repeat call (``officers.officer_scenario(repeat=True)``)."""
+    return ctx.role == ROLE_OFFICER and REPEAT_FACT_KEY in ctx.scenario.caller.facts
+
+
 def _order_of(scenario: CallIntakeScenario) -> str:
     """The squad number the officer (or the squad leader) names: it belongs to the service
     (decision of 23.09.2026), so the officer says it and never asks the dispatcher for it."""
@@ -780,6 +817,8 @@ def generate_messages(ctx: DialogContext, operator_text: str) -> list[Message]:
     template = (
         OFFICER_GENERATE_SYSTEM_PROMPT if ctx.role == ROLE_OFFICER else GENERATE_SYSTEM_PROMPT
     )
+    if is_repeat_officer(ctx):
+        template = OFFICER_REPEAT_GENERATE_SYSTEM_PROMPT
     if ctx.role != ROLE_OFFICER and scenario.caller.calls_back:
         template = CALLBACK_RULE + template
     system = template.format(
@@ -864,6 +903,12 @@ class GenerateDialog:
             return _with_latency(
                 canned_reply(ctx, TOPIC_UNKNOWN, operator_topics, "guard"), started
             )
+        if is_repeat_officer(ctx) and text.rstrip().endswith("?"):
+            # A repeat call: the card is with the officer, a question about it sounds deaf.
+            progress = pick_reply(ctx, TOPIC_PROGRESS)
+            if progress is not None:
+                log.warning("generated reply asks on a repeat call, replaced", text=text[:80])
+                return _with_latency(_from_reply(progress, operator_topics, "guard"), started)
         if not topics:
             topics = [t for t in ctx.vocabulary.detect(text) if t not in SERVICE_TOPICS] or [
                 TOPIC_UNKNOWN
