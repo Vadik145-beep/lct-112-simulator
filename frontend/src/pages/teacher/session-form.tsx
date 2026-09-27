@@ -310,9 +310,10 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-6 lg:grid-cols-2">
-          <fieldset>
+          {/* В приёме вызова профиля службы нет: группы занимают всю ширину и почти без прокрутки. */}
+          <fieldset className={cn(isCall && "lg:col-span-2")}>
             <legend className="mb-2 text-sm font-medium">Группы происшествий</legend>
-            <div className="grid max-h-64 gap-1 overflow-y-auto rounded-md border p-2 sm:grid-cols-2">
+            <div className={cn("grid gap-1 overflow-y-auto rounded-md border p-2 sm:grid-cols-2", isCall ? "max-h-96 gap-x-4 lg:grid-cols-4" : "max-h-64")}>
               {tree.data.groups.map((g) => (
                 <label key={g.code} className="flex items-start gap-2 text-sm">
                   <input
