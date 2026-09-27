@@ -118,7 +118,7 @@ function SettingsForm({ settings }: { settings: AdminSettingsOut }) {
               </div>
             </fieldset>
             <div className="space-y-1.5">
-              <Label htmlFor="trainee-phones">Телефоны стажёров (МультиФон)</Label>
+              <Label htmlFor="trainee-phones">Телефоны стажёров (линия оператора)</Label>
               <textarea
                 id="trainee-phones"
                 value={phones}
@@ -129,7 +129,7 @@ function SettingsForm({ settings }: { settings: AdminSettingsOut }) {
               />
               <p className="text-xs text-muted-foreground">
                 По строке на стажёра: логин = телефон. Вызовы звонят и на этот телефон; со своего телефона стажёр может сам
-                позвонить на номер МультиФона и взять вызов, который ему звонит.
+                позвонить на номер линии и взять вызов, который ему звонит.
               </p>
             </div>
           </CardContent>

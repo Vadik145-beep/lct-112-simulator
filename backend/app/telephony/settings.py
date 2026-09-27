@@ -96,9 +96,11 @@ def trainee_phone(config: TelephonySettings, login: str, own: str | None = None)
 
 
 def phone_calls_available() -> bool:
-    """Lessons may ring the trainees' phones: telephony is on and MultiFon is configured."""
+    """Lessons may ring the trainees' phones: telephony is on and an operator line is
+    configured, the trunk of the local Asterisk (docs/TRUNK.md) or MultiFon of asterisk-cloud."""
     s = get_settings()
-    return bool(s.telephony_enabled and s.cloud_voice_enabled and s.multifon_user)
+    cloud_line = s.cloud_voice_enabled and s.multifon_user
+    return bool(s.telephony_enabled and (s.telephony_trunk_user or cloud_line))
 
 
 def defaults() -> TelephonySettings:

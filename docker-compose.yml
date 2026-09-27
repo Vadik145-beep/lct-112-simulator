@@ -71,6 +71,8 @@ x-backend-env: &backend-env
   TELEPHONY_TRAINEE_PHONES: ${TELEPHONY_TRAINEE_PHONES:-}
   # Configured MultiFon account = lessons may ring the trainees' phones.
   MULTIFON_USER: ${MULTIFON_USER:-}
+  # Configured trunk of the local Asterisk (docs/TRUNK.md) = the same, without the cloud.
+  TELEPHONY_TRUNK_USER: ${TELEPHONY_TRUNK_USER:-}
 
 services:
   nginx:

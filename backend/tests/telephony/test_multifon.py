@@ -211,6 +211,26 @@ async def test_own_number_comes_before_the_administrator_table(
         await set_own_phone("student1", None)
 
 
+async def test_teacher_number_of_the_lesson_comes_first(
+    manager: CallManager, fake_ari: FakeAri, trainee_phone: None
+):
+    """The teacher entered the number of the live call: it rings, not the trainee's own."""
+    await set_own_phone("student1", "79220000009")
+    try:
+        attempt_id = await phone_attempt()
+        async with SessionLocal() as session:
+            attempt = await session.get(Attempt, attempt_id)
+            ts = await session.get(TrainingSession, attempt.session_id)
+            ts.phone = "79220000077"
+            await session.commit()
+        call = await manager.dial(attempt_id)
+        assert call is not None and call.phone == "79220000077"
+        create = fake_ari.calls("POST", "/channels/create")[-1]
+        assert create.body["variables"][VAR_MOBILE] == "79220000077"
+    finally:
+        await set_own_phone("student1", None)
+
+
 async def test_dispatcher_call_on_the_phone_rings_back_before_the_officer(
     manager: CallManager, fake_ari: FakeAri, trainee_phone: None, monkeypatch: pytest.MonkeyPatch
 ):

@@ -861,10 +861,12 @@ def lesson_phone(
     login: str,
     config: telephony_settings.TelephonySettings,
 ) -> str:
-    """The trainee's own phone when the lesson rings phones (``phone_calls``), else empty."""
+    """The phone the calls ring when the lesson rings phones (``phone_calls``): the number the
+    teacher entered for the lesson, else the trainee's own one; empty otherwise."""
     if ts is None or not ts.phone_calls:
         return ""
-    return telephony_settings.trainee_phone(config, login, user.phone)
+    lesson = telephony_settings.normalize_phone(ts.phone)
+    return lesson or telephony_settings.trainee_phone(config, login, user.phone)
 
 
 def dialled_digits(phone: str | None) -> str:

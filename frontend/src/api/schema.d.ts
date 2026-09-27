@@ -2397,6 +2397,8 @@ export interface components {
              * @default false
              */
             phone_calls: boolean;
+            /** Lesson Phone */
+            lesson_phone?: string | null;
             /** Started At */
             started_at: string | null;
             /** Finished At */
@@ -4707,6 +4709,8 @@ export interface components {
              * @default false
              */
             phone_calls: boolean;
+            /** Phone */
+            phone?: string | null;
         };
         /** SessionInfo */
         SessionInfo: {
@@ -4734,6 +4738,8 @@ export interface components {
              * @default false
              */
             phone_calls: boolean;
+            /** Lesson Phone */
+            lesson_phone?: string | null;
             /** Started At */
             started_at: string | null;
             /** Finished At */
@@ -4842,6 +4848,8 @@ export interface components {
              * @default false
              */
             phone_calls: boolean;
+            /** Phone */
+            phone?: string | null;
             /** Members */
             members: components["schemas"]["StudentOut"][];
             /** Queue */
@@ -4889,6 +4897,8 @@ export interface components {
             adaptive?: boolean | null;
             /** Phone Calls */
             phone_calls?: boolean | null;
+            /** Phone */
+            phone?: string | null;
         };
         /** SipAccountAdminOut */
         SipAccountAdminOut: {

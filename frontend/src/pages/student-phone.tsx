@@ -7,6 +7,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatPhone } from "@/lib/phone";
 
+/** A lesson with the live call on the number the teacher entered: the calls ring it. */
+export function LessonPhoneNotice({ phone }: { phone: string }) {
+  return (
+    <div className="flex flex-wrap items-center gap-3 rounded-md border bg-muted/40 px-3 py-2 text-sm" data-testid="lesson-phone-notice">
+      <Phone className="size-4 text-primary" aria-hidden />
+      <span>
+        Вызовы звонят на телефон <strong>{formatPhone(phone)}</strong>: возьмите трубку.
+      </span>
+    </div>
+  );
+}
+
 /** A lesson with calls to the phone (docs/MULTIFON.md): the calls ring the trainee's own
  * phone, so the page shows the number and asks for it when there is none yet. */
 export function PhoneCallsNotice() {

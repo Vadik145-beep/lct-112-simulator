@@ -40,6 +40,7 @@ const DEFAULTS: Omit<SessionIn, "group_id"> = {
   dialog_mode: "select",
   adaptive: false,
   phone_calls: false,
+  phone: "",
 };
 
 // PRD 9.3: the caller answers with an approved reply (select), may improvise with the
@@ -129,6 +130,7 @@ function toInput(s: SessionOut): SessionIn {
     dialog_mode: s.dialog_mode,
     adaptive: s.adaptive,
     phone_calls: s.phone_calls ?? false,
+    phone: s.phone ?? "",
   };
 }
 
@@ -254,7 +256,15 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                 <Label htmlFor="dialog-mode">
                   {isCall ? "Как отвечает заявитель" : "Как отвечают служба и бригада"}
                 </Label>
-                <select id="dialog-mode" className={selectClass} value={form.dialog_mode} onChange={(e) => patch({ dialog_mode: e.target.value })}>
+                <select
+                  id="dialog-mode"
+                  className={selectClass}
+                  value={form.dialog_mode}
+                  // The live call to the phone belongs to the cloud mode only.
+                  onChange={(e) =>
+                    patch({ dialog_mode: e.target.value, ...(e.target.value !== "cloud" ? { phone_calls: false } : {}) })
+                  }
+                >
                   {[
                     ...DIALOG_MODES.slice(0, 1),
                     ...(form.dialog_mode === "hybrid" ? [HYBRID_MODE] : []),
@@ -278,8 +288,8 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                   </p>
                 )}
               </div>
-              {(models.data?.phone || form.phone_calls) && (
-                <div className="space-y-1">
+              {((isCall && form.dialog_mode === "cloud" && models.data?.phone) || form.phone_calls) && (
+                <div className="space-y-1.5">
                   <label className="flex items-center gap-2 text-sm">
                     <input
                       type="checkbox"
@@ -287,13 +297,27 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                       onChange={(e) => patch({ phone_calls: e.target.checked })}
                       data-testid="phone-calls"
                     />
-                    Звонки на телефон обучающегося (МультиФон)
+                    Живой звонок на телефон
                   </label>
-                  <p className="text-xs text-muted-foreground" data-testid="phone-calls-note">
-                    Вызовы звонят ещё и на мобильный, который обучающийся укажет при входе в занятие. Звонки в
-                    службу и заявителю из карточки тоже приходят ему на телефон: он берёт трубку и слышит гудки,
-                    как при наборе.
-                  </p>
+                  {form.phone_calls && (
+                    <>
+                      <Input
+                        id="lesson-phone"
+                        type="tel"
+                        required
+                        value={form.phone ?? ""}
+                        onChange={(e) => patch({ phone: e.target.value })}
+                        placeholder="8 922 000-00-00"
+                        aria-label="Номер телефона для звонка"
+                        className="max-w-xs"
+                        data-testid="lesson-phone"
+                      />
+                      <p className="text-xs text-muted-foreground" data-testid="phone-calls-note">
+                        Вызовы занятия приходят на этот номер: заявитель звонит по телефону, звонки в службу и
+                        заявителю из карточки тоже.
+                      </p>
+                    </>
+                  )}
                 </div>
               )}
               {models.data && (!models.data.tts || !models.data.stt) && (

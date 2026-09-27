@@ -179,6 +179,9 @@ class TrainingSession(Base):
     dialog_mode: Mapped[str] = mapped_column(String(16), nullable=False, default="select")
     # Calls of the lesson ring the trainees' own phones too, through MultiFon (docs/MULTIFON.md).
     phone_calls: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    # The number the teacher entered for the live call (7XXXXXXXXXX): the calls ring it instead
+    # of the trainee's own number; empty = the trainee's own number.
+    phone: Mapped[str | None] = mapped_column(String(20))
     # Adaptive selection by skill ratings (PRD 9.7, app.domain.analytics.adaptive).
     adaptive: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     weights: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
