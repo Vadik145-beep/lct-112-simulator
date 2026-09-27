@@ -338,7 +338,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                     onChange={() => toggle("incident_groups", g.code)}
                   />
                   <span>
-                    <span className="text-muted-foreground">{g.code}.</span> {g.title}
+                    {g.title}
                   </span>
                 </label>
               ))}
