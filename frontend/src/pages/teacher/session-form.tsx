@@ -33,7 +33,7 @@ const DEFAULTS: Omit<SessionIn, "group_id"> = {
   norm_seconds: 30,
   pass_threshold: 70,
   hints_enabled: true,
-  cards_per_student: 0,
+  cards_per_student: 1,
   unfinished_seconds: 48 * HOUR,
   weights: {},
   voice_enabled: true,
@@ -87,6 +87,9 @@ const CLOUD_MODE: (typeof DIALOG_MODES)[number] = {
   hint: "заявителя играет облачная модель с живым голосом; демо вне закрытого контура",
   dds: "дежурного и бригаду играет облачная модель с живым голосом; демо вне закрытого контура",
 };
+// Cards a trainee gets in the whole lesson: one at difficulty 1 and 2, three at 3 (at once in
+// card response, one after another in call intake). No endless queue.
+const cardsFor = (difficulty: number) => CARDS_AT_ONCE[difficulty] ?? 1;
 const NORM_DEFAULT = { card_response: 30, call_intake: 60 } as const;
 
 const selectClass =
@@ -170,6 +173,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
     const hours = Number(unfinishedHours);
     const body: SessionIn = {
       ...form,
+      cards_per_student: cardsFor(form.difficulty),
       title: form.title.trim(),
       group_id: groupId,
       unfinished_seconds: Number.isFinite(hours) && hours > 0 ? Math.round(hours * HOUR) : (DEFAULTS.unfinished_seconds ?? null),
@@ -350,20 +354,14 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               ))}
             </select>
             <p className="text-xs text-muted-foreground">
-              {form.mode === "call_intake" ? "Оператор 112 принимает по одному вызову." : `На экране одновременно: ${CARDS_AT_ONCE[form.difficulty] ?? 1}.`}
+              {form.mode === "call_intake"
+                ? cardsFor(form.difficulty) === 1
+                  ? "Каждый обучающийся получит один вызов."
+                  : `Каждый обучающийся получит ${cardsFor(form.difficulty)} вызова подряд.`
+                : cardsFor(form.difficulty) === 1
+                  ? "Каждый обучающийся получит одну карточку."
+                  : `Каждый обучающийся получит ${cardsFor(form.difficulty)} карточки сразу.`}
             </p>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="cards">{form.mode === "call_intake" ? "Вызовов на обучающегося (всего за занятие)" : "Карточек на обучающегося (всего за занятие)"}</Label>
-            <Input
-              id="cards"
-              type="number"
-              min={0}
-              max={50}
-              value={form.cards_per_student}
-              onChange={(e) => patch({ cards_per_student: Number(e.target.value) })}
-            />
-            <p className="text-xs text-muted-foreground">0 — вся очередь: каждый получает все подходящие карточки по очереди.</p>
           </div>
           <div className="lg:col-span-2" data-testid="queue-preview" aria-live="polite">
             {preview.isPending ? (
@@ -378,8 +376,8 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               <p className="text-sm">
                 Подходит {form.mode === "call_intake" ? "вызовов" : "карточек"}: <b>{preview.data.total}</b>
                 {preview.data.harder_only && <span className="text-muted-foreground"> — все сложнее выбранной сложности, будут выданы как есть</span>}
-                {form.cards_per_student > preview.data.total && (
-                  <span className="text-muted-foreground"> — меньше, чем «{form.cards_per_student} на обучающегося»: каждый получит {preview.data.total}</span>
+                {cardsFor(form.difficulty) > preview.data.total && (
+                  <span className="text-muted-foreground"> — меньше, чем {cardsFor(form.difficulty)} на обучающегося: каждый получит {preview.data.total}</span>
                 )}
                 .
               </p>
