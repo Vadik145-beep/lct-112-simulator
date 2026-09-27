@@ -466,3 +466,16 @@ async def _service_answered(attempt_id: uuid.UUID, call_id: str) -> bool:
 
 async def _service_ended(attempt_id: uuid.UUID, call_id: str) -> bool:
     return bool(service_call_of(await load(attempt_id), call_id).get("ended_at"))
+
+
+async def test_finishing_the_lesson_hangs_up_the_phone(
+    manager: CallManager, fake_ari: FakeAri, trainee_phone: None
+):
+    """The call on the phone has no «Завершить» in the card: the lesson's end hangs it up."""
+    attempt_id = await phone_attempt()
+    call = await manager.dial(attempt_id)
+    assert call is not None
+    assert await manager.hangup_session(call.session_id) == 1
+    assert [r.path for r in fake_ari.calls("DELETE", f"/channels/{call.channel_id}")]
+    assert manager.call_for_attempt(attempt_id) is None
+    assert await manager.hangup_session(call.session_id) == 0

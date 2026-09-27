@@ -30,6 +30,7 @@ from app.models import (
 from app.reports import export
 from app.scenarios import jobs
 from app.scenarios import service as scenarios
+from app.telephony import service as telephony
 from app.training import present
 from app.training import report as reporting
 from app.training import sessions as lessons
@@ -436,6 +437,9 @@ async def finish_session(
         )
         await session.commit()
         await publish_events(events)
+    service = telephony.get_service()
+    if service is not None:
+        await service.calls.hangup_session(ts.id)
     return await _session_out(session, ts)
 
 

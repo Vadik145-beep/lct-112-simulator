@@ -422,6 +422,17 @@ class CallManager:
         await self._end(call, reason, already_stored=True)
         return True
 
+    async def hangup_session(self, session_id: uuid.UUID) -> int:
+        """The teacher finished the lesson: every call of it is hung up. A call on the
+        trainee's own phone would otherwise go on with nobody left to end it."""
+        ended = 0
+        for call in list(self.calls.values()):
+            if call.session_id != session_id or call.ended:
+                continue
+            await self._end(call, CALL_END_HANGUP)
+            ended += 1
+        return ended
+
     # ------------------------------------------------------------ events
 
     async def handle_event(self, event: dict) -> None:
