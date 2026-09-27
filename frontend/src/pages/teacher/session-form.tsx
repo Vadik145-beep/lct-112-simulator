@@ -328,8 +328,10 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               ))}
             </div>
           </fieldset>
-          <fieldset disabled={form.mode === "call_intake"} className={cn(form.mode === "call_intake" && "opacity-50")}>
-            <legend className="mb-2 text-sm font-medium">Профиль службы{form.mode === "call_intake" ? " (оператор 112 — без службы)" : ""}</legend>
+          {/* Оператор 112 не относится ни к одной службе: профиль службы только для ДДС. */}
+          {form.mode !== "call_intake" && (
+          <fieldset>
+            <legend className="mb-2 text-sm font-medium">Профиль службы</legend>
             <div className="grid max-h-64 gap-1 overflow-y-auto rounded-md border p-2 sm:grid-cols-2">
               {services.data.map((s) => (
                 <label key={s.code} className="flex items-start gap-2 text-sm">
@@ -344,6 +346,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               ))}
             </div>
           </fieldset>
+          )}
           <div className="space-y-1.5">
             <Label htmlFor="difficulty">Сложность</Label>
             <select id="difficulty" className={selectClass} value={form.difficulty} onChange={(e) => patch({ difficulty: Number(e.target.value) })}>
