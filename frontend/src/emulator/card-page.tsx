@@ -1361,11 +1361,6 @@ function CallButton({
       )}
     >
       <Phone className="size-3.5" aria-hidden />
-      {calls.length > 0 && (
-        <span className="absolute -right-1 -top-1 rounded-full bg-white px-1 text-[9px] font-semibold text-[var(--arm-text)]">
-          {calls.length}
-        </span>
-      )}
     </button>
   );
 }
