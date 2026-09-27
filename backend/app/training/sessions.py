@@ -279,9 +279,10 @@ def apply_settings(ts: TrainingSession, spec: SessionSettings) -> None:
 async def pick_scenarios(session: AsyncSession, ts: TrainingSession) -> list[Scenario]:
     """Queue of a session without an explicit one: approved scenarios of the mode filtered by
     service profile and incident groups, not harder than the session difficulty (when none
-    match, harder ones are taken rather than nothing), shuffled inside each difficulty so
-    easier cards come first (the duplicate card follows its original). Random for now; the
-    adaptive selection by ratings reorders it per trainee in ``service.issue_cards``."""
+    match, harder ones are taken rather than nothing; call intake ignores the difficulty),
+    shuffled inside each difficulty so easier cards come first (the duplicate card follows its
+    original). Random for now; the adaptive selection by ratings reorders it per trainee in
+    ``service.issue_cards``."""
     if ts.scenario_ids:
         return await training.scenario_queue(session, ts)
     query = select(Scenario).where(Scenario.kind == ts.mode, Scenario.status == SCENARIO_APPROVED)
@@ -298,8 +299,11 @@ async def pick_scenarios(session: AsyncSession, ts: TrainingSession) -> list[Sce
             for s in rows
             if s.incident_type_code and s.incident_type_code.split(".")[0] in ts.incident_groups
         ]
-    easy = [s for s in rows if s.difficulty <= ts.difficulty]
-    rows = easy or rows
+    # Call intake takes every approved scenario whatever the difficulty (the operator gets one
+    # call at a time anyway); difficulty only orders the queue, easy calls first.
+    if ts.mode != MODE_CALL_INTAKE:
+        easy = [s for s in rows if s.difficulty <= ts.difficulty]
+        rows = easy or rows
     random.shuffle(rows)
     rows.sort(key=lambda s: s.difficulty)
     return rows
