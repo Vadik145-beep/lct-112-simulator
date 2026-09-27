@@ -203,16 +203,25 @@ function CardView({
   const cloudLesson = attempt.session.dialog_mode === "cloud";
   const cloudCall = useRef<CloudCall | null>(null);
   const [cloudState, setCloudState] = useState<"off" | "connecting" | "live" | "failed">("off");
+  // Микрофон диспетчера в облачном звонке: выключается кнопкой, как в карточке 112.
+  const [cloudMuted, setCloudMuted] = useState(false);
+  const toggleCloudMute = () => {
+    const next = !cloudMuted;
+    cloudCall.current?.setMuted(next);
+    setCloudMuted(next);
+  };
   const stopCloudCall = useCallback(async () => {
     const call = cloudCall.current;
     cloudCall.current = null;
     setCloudState("off");
+    setCloudMuted(false);
     if (call) await call.stop();
   }, []);
   const startCloudCall = useCallback(
     async (callId: string) => {
       if (cloudCall.current) return;
       setCloudState("connecting");
+      setCloudMuted(false);
       let keys;
       try {
         keys = await cloudKeys.mutateAsync(callId);
@@ -1186,6 +1195,9 @@ function CardView({
             }
             onAnswer={answerReport}
             cloud={cloudLesson ? cloudState : "off"}
+            cloudOnly={cloudLesson && !shownCall.telephony}
+            muted={cloudMuted}
+            onToggleMute={toggleCloudMute}
             onEnd={hangUpService}
           />
         )}
