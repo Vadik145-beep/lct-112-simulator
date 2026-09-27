@@ -164,13 +164,14 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
     service_profile: form.service_profile ?? [],
   });
   const groupsWithCards = new Set((available.data?.queue ?? []).map((q) => q.incident_type_code?.split(".")[0]).filter(Boolean));
-  // Services with approved card-response scenarios (any group, any difficulty): services
-  // without any are not offered in the profile.
+  // Services with approved card-response scenarios under the checked incident groups (any
+  // difficulty): the two lists narrow each other, so a checked group and a checked service
+  // always have cards in common.
   const servicesAvailable = useQueuePreview({
     mode: "card_response",
     card_source: form.card_source,
     scenario_ids: [],
-    incident_groups: [],
+    incident_groups: form.incident_groups ?? [],
     difficulty: 3,
     service_profile: [],
   });
