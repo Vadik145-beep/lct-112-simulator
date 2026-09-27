@@ -193,6 +193,27 @@ async def test_cloud_dialog_mode_needs_the_cloud_voice(client: AsyncClient, monk
     assert (await client.get("/api/models", headers=bearer(teacher))).json()["cloud"] is True
 
 
+async def test_call_intake_queue_ignores_difficulty(client: AsyncClient) -> None:
+    teacher = await login(client, "teacher1")
+    body = {
+        "mode": "call_intake",
+        "card_source": "scenarios",
+        "scenario_ids": [],
+        "incident_groups": [],
+        "service_profile": [],
+    }
+    totals, queues = {}, {}
+    for level in (1, 3):
+        r = await client.post(
+            "/api/sessions/preview", headers=bearer(teacher), json={**body, "difficulty": level}
+        )
+        assert r.status_code == 200, r.text
+        totals[level] = r.json()["total"]
+        queues[level] = [s["difficulty"] for s in r.json()["queue"]]
+    assert totals[1] == totals[3] > 0
+    assert queues[1] == sorted(queues[1])  # easy calls first
+
+
 async def test_create_shows_queue_preview_and_own_sessions(client: AsyncClient) -> None:
     teacher = await login(client, "teacher1")
     created = await create_session(client, teacher)
