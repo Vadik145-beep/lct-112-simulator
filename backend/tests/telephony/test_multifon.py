@@ -207,6 +207,9 @@ async def test_own_number_comes_before_the_administrator_table(
         attempt_id = await phone_attempt()
         call = await manager.dial(attempt_id)
         assert call is not None and call.phone == "79220000009"
+        # The trainee's own number rings next to the browser, as before.
+        create = fake_ari.calls("POST", "/channels/create")[-1]
+        assert create.body["variables"]["__PHONE_ONLY"] == ""
     finally:
         await set_own_phone("student1", None)
 
@@ -227,6 +230,14 @@ async def test_teacher_number_of_the_lesson_comes_first(
         assert call is not None and call.phone == "79220000077"
         create = fake_ari.calls("POST", "/channels/create")[-1]
         assert create.body["variables"][VAR_MOBILE] == "79220000077"
+        # Only the phone rings: answering in the browser would end the call.
+        assert create.body["variables"]["__PHONE_ONLY"] == "1"
+        from app.dialog.router import call_out
+
+        async with SessionLocal() as session:
+            attempt = await session.get(Attempt, attempt_id)
+            ts = await session.get(TrainingSession, attempt.session_id)
+            assert call_out(attempt, ts).phone == "79220000077"
     finally:
         await set_own_phone("student1", None)
 

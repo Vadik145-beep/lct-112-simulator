@@ -2678,6 +2678,8 @@ export interface components {
              * @default false
              */
             recording_available: boolean;
+            /** Phone */
+            phone?: string | null;
         };
         /** CallResponse */
         CallResponse: {

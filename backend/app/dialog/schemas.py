@@ -53,6 +53,9 @@ class CallOut(BaseModel):
     # True when the call goes through Asterisk; False = browser microphone and /utterance.
     telephony: bool = False
     recording_available: bool = False
+    # The number the call rings when the teacher entered one for the lesson: the conversation
+    # is on that phone, the card shows no «Ответить» / «Завершить».
+    phone: str | None = None
 
 
 class DialogOut(BaseModel):

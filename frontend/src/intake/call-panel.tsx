@@ -2,7 +2,45 @@ import { Phone, PhoneIncoming, PhoneOff } from "lucide-react";
 
 import { ArmButton } from "@/emulator/widgets";
 import { END_REASON_LABELS, STATUS_LABELS, type Softphone } from "@/softphone/context";
+import { formatPhone } from "@/lib/phone";
 import { cn } from "@/lib/utils";
+
+const PHONE_STATUS: Record<string, string> = {
+  ringing: "звонит на телефон — возьмите трубку",
+  talking: "разговор по телефону",
+  ended: "вызов завершён",
+};
+
+/**
+ * A lesson with the live call on the teacher's number: the call rings only that phone, so the
+ * card has nothing to answer or end — the trainee talks and hangs up on the phone.
+ */
+export function PhoneCallBlock({ phone, status }: { phone: string; status: string }) {
+  const ringing = status === "ringing";
+  return (
+    <div
+      className={cn(
+        "flex min-h-[4.5rem] w-[16rem] shrink-0 flex-col justify-center gap-1 px-3 py-2",
+        ringing ? "animate-pulse bg-[var(--arm-orange)] text-white" : "border-l-4 bg-[var(--arm-panel)]",
+        status === "talking" && "border-[var(--arm-green)]",
+      )}
+      data-testid="phone-call-panel"
+      data-status={status}
+      aria-live="polite"
+    >
+      <div className="flex items-center gap-2">
+        <PhoneIncoming className="size-6 shrink-0" aria-hidden />
+        <div className="flex min-w-0 flex-col leading-tight">
+          <span className="truncate text-sm font-semibold">Звонок на телефон</span>
+          <span className="truncate font-mono text-base tabular-nums">{formatPhone(phone)}</span>
+        </div>
+      </div>
+      <span className={cn("text-[11px]", ringing ? "text-white/90" : "text-[var(--arm-text-muted)]")} role="status">
+        {PHONE_STATUS[status] ?? "ждём вызов"}
+      </span>
+    </div>
+  );
+}
 
 /**
  * The call block at the top-left of the operator card (screenshot page 15): one row, as flat

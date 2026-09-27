@@ -87,6 +87,8 @@ VAR_RING_TIMEOUT = "__RING_TIMEOUT"
 VAR_CALLER_NAME = "__CALLER_NAME"
 VAR_CALLER_NUM = "__CALLER_NUM"
 VAR_MOBILE = "__MOBILE"
+# "1" = ring only MOBILE: the teacher entered the number of the lesson, the browser stays quiet.
+VAR_PHONE_ONLY = "__PHONE_ONLY"
 # Stasis arguments of a call to the MultiFon number (deploy/asterisk-cloud/extensions.conf).
 INBOUND_ARG = "inbound"
 # Ring-back of a call the dispatcher makes from the card on his own phone: the tone of the
@@ -282,6 +284,7 @@ class CallManager:
             caller_name, caller_num = _caller_id(loaded.scenario)
             timeout = config.ring_timeout_seconds
             phone = lesson_phone(loaded.ts, user, account.login, config)
+            phone_only = lesson_phone_only(loaded.ts)
         if created and self.sync_endpoints is not None:
             await self.sync_endpoints()
         call = self.call_class(
@@ -311,6 +314,7 @@ class CallManager:
                     VAR_CALLER_NAME: caller_name,
                     VAR_CALLER_NUM: caller_num,
                     VAR_MOBILE: phone,
+                    VAR_PHONE_ONLY: "1" if phone and phone_only else "",
                 },
             )
             await self.ari.dial(call.channel_id, ring_seconds=timeout)
@@ -362,6 +366,7 @@ class CallManager:
             await session.commit()
             timeout = config.ring_timeout_seconds
             phone = lesson_phone(loaded.ts, user, account.login, config)
+            phone_only = lesson_phone_only(loaded.ts)
         if created and self.sync_endpoints is not None:
             await self.sync_endpoints()
         call = self.call_class(
@@ -394,6 +399,7 @@ class CallManager:
                     VAR_CALLER_NAME: service_title or service,
                     VAR_CALLER_NUM: dialled_digits(number) or service_number(service),
                     VAR_MOBILE: phone,
+                    VAR_PHONE_ONLY: "1" if phone and phone_only else "",
                 },
             )
             await self.ari.dial(call.channel_id, ring_seconds=timeout)
@@ -867,6 +873,12 @@ def lesson_phone(
         return ""
     lesson = telephony_settings.normalize_phone(ts.phone)
     return lesson or telephony_settings.trainee_phone(config, login, user.phone)
+
+
+def lesson_phone_only(ts: TrainingSession | None) -> bool:
+    """The teacher entered the number of the live call: the calls ring only that phone, the
+    browser softphone and the desk phone stay quiet (answering there would end the call)."""
+    return bool(ts and ts.phone_calls and telephony_settings.normalize_phone(ts.phone))
 
 
 def dialled_digits(phone: str | None) -> str:

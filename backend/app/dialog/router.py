@@ -53,9 +53,12 @@ def _turn_out(index: int, turn: dict) -> DialogTurnOut:
     )
 
 
-def call_out(attempt: Attempt) -> CallOut:
+def call_out(attempt: Attempt, ts: TrainingSession | None = None) -> CallOut:
+    from app.telephony import settings as telephony_settings
+    from app.telephony.calls import lesson_phone_only
     from app.telephony.service import telephony_active
 
+    phone = telephony_settings.normalize_phone(ts.phone) if lesson_phone_only(ts) else ""
     return CallOut(
         state=attempt.call_state,
         end_reason=attempt.call_end_reason,
@@ -64,6 +67,7 @@ def call_out(attempt: Attempt) -> CallOut:
         no_contact_marked=attempt.no_contact_marked,
         telephony=telephony_active(),
         recording_available=bool(attempt.recording_path),
+        phone=phone or None,
     )
 
 
@@ -84,7 +88,7 @@ async def _dialog_out(
         stt_available=dialog.stt_available(),
         tts_available=dialog.tts_available(),
         answered_at=attempt.answered_at,
-        call=call_out(attempt),
+        call=call_out(attempt, ts),
         turns=[_turn_out(i, t) for i, t in enumerate(attempt.dialog)],
         topics=[
             TopicOut(
