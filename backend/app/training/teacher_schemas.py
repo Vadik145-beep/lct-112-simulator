@@ -53,6 +53,16 @@ class GroupPatch(BaseModel):
 # ---------------------------------------------------------------- sessions
 
 
+class SessionsDeleteIn(BaseModel):
+    """Lessons the teacher removes with their history (issued cards, scores, recordings)."""
+
+    session_ids: list[uuid.UUID]
+
+
+class SessionsDeletedOut(BaseModel):
+    deleted: int
+
+
 class SessionIn(BaseModel):
     """Settings of a lesson (PRD 13.7). Fields not sent keep the trainer defaults."""
 

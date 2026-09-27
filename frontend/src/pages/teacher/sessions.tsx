@@ -1,7 +1,8 @@
-import { CalendarDays, Plus } from "lucide-react";
+import { CalendarDays, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import { useTeacherSessions, type SessionListItem } from "@/api/teacher";
+import { useDeleteSessions, useTeacherSessions, type SessionListItem } from "@/api/teacher";
 import { ErrorState, LoadingState } from "@/components/states";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,12 +15,36 @@ const STATUS_TONES: Record<string, BadgeTone> = { draft: "neutral", running: "su
 /** «Занятия»: the teacher's sessions, the running one first. */
 export function TeacherSessionsPage() {
   const query = useTeacherSessions();
+  const remove = useDeleteSessions();
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [confirming, setConfirming] = useState(false);
 
   if (query.isPending) return <LoadingState text="Загружаем занятия…" />;
   if (query.isError) return <ErrorState message={query.error.message} onRetry={() => void query.refetch()} />;
 
   const order: Record<string, number> = { running: 0, draft: 1, finished: 2 };
   const sessions = [...query.data].sort((a, b) => (order[a.status] ?? 3) - (order[b.status] ?? 3));
+  // A running lesson is finished first, then deleted.
+  const deletable = sessions.filter((s) => s.status !== "running");
+  const chosen = deletable.filter((s) => selected.has(s.id));
+  const allChosen = deletable.length > 0 && chosen.length === deletable.length;
+  const toggle = (id: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  const doRemove = () =>
+    remove.mutate(
+      chosen.map((s) => s.id),
+      {
+        onSuccess: () => {
+          setSelected(new Set());
+          setConfirming(false);
+        },
+      },
+    );
 
   return (
     <div className="space-y-6">
@@ -44,9 +69,52 @@ export function TeacherSessionsPage() {
         </Card>
       ) : (
         <>
+          {chosen.length > 0 && (
+            <div className="hidden flex-wrap items-center gap-3 md:flex" data-testid="sessions-selection">
+              <span className="text-sm text-muted-foreground">Выбрано: {chosen.length}</span>
+              <Button size="sm" variant="outline" onClick={() => setConfirming(true)} disabled={remove.isPending}>
+                <Trash2 /> Удалить выбранные
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>
+                Снять выбор
+              </Button>
+            </div>
+          )}
+          {confirming && chosen.length > 0 && (
+            <div
+              className="hidden flex-wrap items-center gap-3 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm md:flex"
+              role="alertdialog"
+              aria-label="Удаление занятий"
+            >
+              <span>
+                Удалить занятия ({chosen.length})? Карточки, оценки, комментарии и записи разговоров этих
+                занятий удалятся безвозвратно.
+              </span>
+              <Button size="sm" variant="destructive" onClick={doRemove} disabled={remove.isPending}>
+                {remove.isPending ? "Удаляем…" : "Да, удалить"}
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => setConfirming(false)}>
+                Отмена
+              </Button>
+            </div>
+          )}
+          {remove.isError && (
+            <p className="text-sm text-destructive" role="alert">
+              Не удалось удалить: {remove.error.message}
+            </p>
+          )}
           <table className="hidden w-full text-sm md:table" aria-label="Список занятий">
             <thead className="text-left text-xs text-muted-foreground">
               <tr className="border-b">
+                <th className="w-8 py-2 pr-2">
+                  <input
+                    type="checkbox"
+                    aria-label="Выбрать все занятия"
+                    checked={allChosen}
+                    disabled={deletable.length === 0}
+                    onChange={() => setSelected(allChosen ? new Set() : new Set(deletable.map((s) => s.id)))}
+                  />
+                </th>
                 <th className="py-2 pr-3 font-medium">Дата</th>
                 <th className="py-2 pr-3 font-medium">Занятие</th>
                 <th className="py-2 pr-3 font-medium">Группа</th>
@@ -58,6 +126,16 @@ export function TeacherSessionsPage() {
             <tbody>
               {sessions.map((s) => (
                 <tr key={s.id} className="border-b last:border-0 hover:bg-accent/40">
+                  <td className="py-2 pr-2">
+                    <input
+                      type="checkbox"
+                      aria-label={`Выбрать: ${s.title}`}
+                      checked={selected.has(s.id)}
+                      disabled={s.status === "running"}
+                      title={s.status === "running" ? "Занятие идёт: завершите его, потом удаляйте" : undefined}
+                      onChange={() => toggle(s.id)}
+                    />
+                  </td>
                   <td className="py-2 pr-3 whitespace-nowrap text-muted-foreground">{when(s)}</td>
                   <td className="py-2 pr-3">
                     <Link to={`/teacher/sessions/${s.id}`} className="font-medium hover:underline">

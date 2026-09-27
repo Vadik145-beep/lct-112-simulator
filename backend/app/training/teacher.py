@@ -8,7 +8,7 @@ import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Request, Response
-from sqlalchemy import select
+from sqlalchemy import delete, select
 
 from app.admin import health
 from app.admin import settings as admin_settings
@@ -20,6 +20,8 @@ from app.models import (
     MODE_CALL_INTAKE,
     MODE_CARD_RESPONSE,
     SESSION_DRAFT,
+    SESSION_RUNNING,
+    Attempt,
     Group,
     IncidentGroup,
     Role,
@@ -50,6 +52,8 @@ from app.training.teacher_schemas import (
     SessionListItem,
     SessionOut,
     SessionPatch,
+    SessionsDeletedOut,
+    SessionsDeleteIn,
     StudentOut,
 )
 
@@ -436,6 +440,64 @@ async def finish_session(
         await session.commit()
         await publish_events(events)
     return await _session_out(session, ts)
+
+
+@router.post("/sessions/delete", response_model=SessionsDeletedOut)
+async def delete_sessions(
+    body: SessionsDeleteIn, user: Teacher, session: DbSession, request: Request
+) -> SessionsDeletedOut:
+    """The teacher clears his history: the chosen lessons go with everything they hold —
+    issued cards, scores, comments, events (the database cascades), the recordings of
+    their calls; the trainees' ratings are replayed from what remains. A running lesson
+    is not deleted: it is finished first. All or nothing: one lesson that may not go
+    stops the request. Every lesson deleted is an audit row."""
+    from app.analytics import ratings
+    from app.dialog import service as dialog
+
+    ids = list(dict.fromkeys(body.session_ids))
+    if not ids:
+        raise ApiError(422, "nothing_selected", "Не выбрано ни одного занятия.")
+    chosen = [await lessons.own_session(session, sid, user) for sid in ids]
+    running = [ts.title for ts in chosen if ts.status == SESSION_RUNNING]
+    if running:
+        raise ApiError(
+            409,
+            "session_running",
+            f"Занятие «{running[0]}» ещё идёт: завершите его, потом удаляйте.",
+        )
+    attempts = list(await session.scalars(select(Attempt).where(Attempt.session_id.in_(ids))))
+    students = {a.student_id for a in attempts}
+    files = [a.recording_path for a in attempts if a.recording_path]
+    files += [
+        c["recording_path"]
+        for a in attempts
+        for c in a.service_calls or []
+        if c.get("recording_path")
+    ]
+    per_session: dict[uuid.UUID, int] = {}
+    for a in attempts:
+        per_session[a.session_id] = per_session.get(a.session_id, 0) + 1
+    for ts in chosen:
+        await write_audit(
+            session,
+            action="session.delete",
+            actor_id=user.id,
+            actor_role=user.role,
+            entity="training_session",
+            entity_id=str(ts.id),
+            details={"title": ts.title, "status": ts.status, "attempts": per_session.get(ts.id, 0)},
+            ip=client_ip(request),
+        )
+    # The database cascades: attempts, evaluations, comments, overrides, events.
+    await session.execute(delete(TrainingSession).where(TrainingSession.id.in_(ids)))
+    await ratings.rebuild(session, students)
+    await session.commit()
+    root = dialog.storage_root().resolve()
+    for relative in files:
+        path = (root / relative).resolve()
+        if path.is_relative_to(root) and path.is_file():
+            path.unlink(missing_ok=True)
+    return SessionsDeletedOut(deleted=len(chosen))
 
 
 @router.get("/sessions/{session_id}/monitor", response_model=MonitorOut)
