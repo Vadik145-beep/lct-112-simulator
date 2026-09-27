@@ -244,12 +244,6 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                     </option>
                   ))}
                 </select>
-                {!isCall && (
-                  <p className="text-xs text-muted-foreground" data-testid="dds-mode-note">
-                    Режим общий для звонка диспетчера дежурному службы и для докладов старшего
-                    группы.
-                  </p>
-                )}
                 {form.dialog_mode === "cloud" && (
                   <p className="text-xs text-muted-foreground" data-testid="cloud-mode-note">
                     {isCall
@@ -282,15 +276,6 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                   </p>
                 </div>
               )}
-              {/* Голос не переключают: занятие всегда идёт голосом, когда озвучка и
-                  распознавание подняты, и само переходит в текст, когда их нет. */}
-              <p className="text-xs text-muted-foreground">
-                {isCall
-                  ? "Заявитель звучит, обучающийся говорит в гарнитуру."
-                  : "Служба и бригада звучат, обучающийся говорит в гарнитуру."}{" "}
-                Реплики эталонных сценариев звучат записанным голосом с эмоцией, остальные — синтезом.
-                Без озвучки или распознавания разговор идёт текстом в панели тренажёра.
-              </p>
               {models.data && (!models.data.tts || !models.data.stt) && (
                 <p className="text-xs text-destructive" role="alert" data-testid="voice-warning">
                   {!models.data.tts && `Озвучка недоступна: ${isCall ? "заявитель ответит" : "служба и бригада ответят"} текстом. `}
