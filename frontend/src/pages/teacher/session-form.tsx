@@ -255,7 +255,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                       : []),
                   ].map((m) => (
                     <option key={m.code} value={m.code}>
-                      {m.title} — {isCall ? m.hint : (m.dds ?? m.hint)}
+                      {m.title}
                     </option>
                   ))}
                 </select>
