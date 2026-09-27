@@ -50,9 +50,17 @@ from app.telephony.vapi import (
     webhook_secret,
 )
 from tests.api.conftest import DATA_DIR
-from tests.api.test_dialog import GAS_PIPE, make_attempt
+from tests.api.test_dialog import GAS_PIPE
+from tests.api.test_dialog import make_attempt as _make_attempt
 from tests.telephony.fake_ari import FakeAri
 from tests.telephony.test_calls import DROPS_CALL, _ended, events_of, load, wait_until
+
+
+async def make_attempt(*args, **kwargs) -> uuid.UUID:
+    """A lesson with the «звонок на телефон» box: only such a lesson's calls go through
+    Asterisk (решение пользователя 27.09.2026)."""
+    return await _make_attempt(*args, phone_calls=True, **kwargs)
+
 
 pytestmark = pytest.mark.skipif(
     not (DATA_DIR / "seed" / "classifier.json").exists(),

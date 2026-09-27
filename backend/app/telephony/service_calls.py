@@ -135,7 +135,7 @@ async def start_service_call(
         if service is None:
             raise ApiError(422, "unknown_service", f"Службы «{body.service}» нет в справочнике.")
         code, title = service.code, service.title
-    live = telephony.telephony_active()
+    live = telephony.for_session(ts)
     # В облачном занятии без телефонии трубку снимает браузерный звонок: первую фразу
     # говорит сам провайдер (см. cloud_router.start_service_web_call).
     cloud = dialog.cloud_lesson(ts) and not live

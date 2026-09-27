@@ -191,12 +191,13 @@ async def test_call_from_the_phone_picks_up_a_service_call(
 async def test_lesson_without_phone_calls_does_not_ring_the_phone(
     manager: CallManager, fake_ari: FakeAri, trainee_phone: None
 ):
-    """The number alone is not enough: the teacher turns the phone on per lesson."""
+    """The number alone is not enough: the teacher turns the phone on per lesson, and a
+    lesson without the box is not dialled at all — it talks in the browser (27.09.2026)."""
+    before = len(fake_ari.calls("POST", "/channels/create"))
     attempt_id = await make_attempt()
     call = await manager.dial(attempt_id)
-    assert call is not None and call.phone == ""
-    create = fake_ari.calls("POST", "/channels/create")[-1]
-    assert create.body["variables"][VAR_MOBILE] == ""
+    assert call is None
+    assert len(fake_ari.calls("POST", "/channels/create")) == before
 
 
 async def test_own_number_comes_before_the_administrator_table(

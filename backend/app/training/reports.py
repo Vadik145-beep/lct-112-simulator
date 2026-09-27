@@ -160,8 +160,11 @@ async def sweep_reports(
     )
     events: list[SessionEvent] = []
     to_dial: list[tuple[Attempt, dict]] = []
-    live = telephony.telephony_active()
+    lessons: dict = {}
     for (attempt,) in rows:
+        if attempt.session_id not in lessons:
+            lessons[attempt.session_id] = await session.get(TrainingSession, attempt.session_id)
+        live = telephony.for_session(lessons[attempt.session_id])
         stale = stale_report(attempt, now)
         if stale is not None:
             _, ended = await officer.end(session, attempt, stale["id"], officer.END_NOT_TAKEN)

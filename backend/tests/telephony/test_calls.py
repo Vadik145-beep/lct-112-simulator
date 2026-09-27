@@ -34,8 +34,15 @@ from app.telephony import media
 from app.telephony.ari import AriClient
 from app.telephony.calls import CallManager
 from tests.api.conftest import DATA_DIR
-from tests.api.test_dialog import make_attempt
+from tests.api.test_dialog import make_attempt as _make_attempt
 from tests.telephony.fake_ari import FakeAri
+
+
+async def make_attempt(*args, **kwargs) -> uuid.UUID:
+    """A lesson with the «звонок на телефон» box: only such a lesson's calls go through
+    Asterisk (решение пользователя 27.09.2026)."""
+    return await _make_attempt(*args, phone_calls=True, **kwargs)
+
 
 pytestmark = pytest.mark.skipif(
     not (DATA_DIR / "seed" / "classifier.json").exists(),
