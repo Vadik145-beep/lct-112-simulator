@@ -781,8 +781,7 @@ OFFICER_REPEAT_GENERATE_SYSTEM_PROMPT = """Ты играешь ДЕЖУРНОГ�
   {max_words} слов, по-деловому, без обращений.
 - Ничего не спрашивай о карточке: адрес, что случилось, пострадавших, доступ ты уже знаешь.
   Вопросов диспетчеру не задавай.
-- На вопрос о ходе работ отвечай по строке «где бригада» и добавь, что старший группы доложит
-  сам.
+- На вопрос о ходе работ отвечай ДОСЛОВНО строкой «где бригада»: {progress}
 - Если диспетчер сообщает новое — коротко подтверди: «Принял, передам старшему группы».
 - Номер наряда твой — {order}; назови его, если спросят.
 - Если фраза непонятна — попроси повторить.
@@ -792,7 +791,7 @@ OFFICER_REPEAT_GENERATE_SYSTEM_PROMPT = """Ты играешь ДЕЖУРНОГ�
 
 Примеры (диспетчер → дежурный):
 - «Как там у вас?» →
-  {{"reply": "Бригада в пути, по прибытии старший доложит.", "topics": ["progress"]}}
+  {{"reply": "{progress}", "topics": ["progress"]}}
 - «Адрес помните?» →
   {{"reply": "Адрес у нас есть, бригада работает по карточке.", "topics": ["progress"]}}
 - «Там ещё пострадавший появился» →
@@ -802,6 +801,39 @@ OFFICER_REPEAT_GENERATE_SYSTEM_PROMPT = """Ты играешь ДЕЖУРНОГ�
 def is_repeat_officer(ctx: DialogContext) -> bool:
     """The officer of a repeat call (``officers.officer_scenario(repeat=True)``)."""
     return ctx.role == ROLE_OFFICER and REPEAT_FACT_KEY in ctx.scenario.caller.facts
+
+
+# The officer of a repeat call takes new information for the squad leader; said twice, the
+# same confirmation would be taken for a dumped fact and turned into «это не ко мне».
+REPEAT_CONFIRMATIONS = (
+    "Принял, передам старшему группы.",
+    "Понял, старшему группы сообщу.",
+    "Записал, бригаде передам.",
+)
+
+
+def repeat_officer_guard(
+    ctx: DialogContext, text: str, operator_text: str, operator_topics: list[str]
+) -> CallerReply | None:
+    """A generated reply of a repeat call's officer that must not stand: a question (the card
+    is with him) becomes the squad's state, a confirmation said before becomes another one.
+    ``None`` keeps the reply."""
+    progress = pick_reply(ctx, TOPIC_PROGRESS)
+    if "?" in text and progress is not None:
+        log.warning("generated reply asks on a repeat call, replaced", text=text[:80])
+        return _from_reply(progress, operator_topics, "guard")
+    if _already_said(ctx, text) and not _asks_to_repeat(operator_text):
+        fresh = [c for c in REPEAT_CONFIRMATIONS if not _already_said(ctx, c)]
+        if fresh:
+            return CallerReply(
+                text=fresh[0],
+                topics=[TOPIC_CONFIRM],
+                operator_topics=operator_topics,
+                method="guard",
+            )
+        if progress is not None:
+            return _from_reply(progress, operator_topics, "guard")
+    return None
 
 
 def _order_of(scenario: CallIntakeScenario) -> str:
@@ -829,6 +861,7 @@ def generate_messages(ctx: DialogContext, operator_text: str) -> list[Message]:
         topics=", ".join(f"{code} ({vocabulary.titles[code]})" for code in vocabulary.codes),
         max_words=MAX_REPLY_WORDS,
         order=_order_of(scenario),
+        progress=scenario.caller.facts.get("где бригада", ""),
     )
     messages: list[Message] = [{"role": "system", "content": system}]
     messages.extend(_history_messages(ctx.history))
@@ -897,18 +930,16 @@ class GenerateDialog:
             # Small models sometimes copy the question back: ask to repeat instead.
             log.warning("generated reply echoes the operator, replaced", text=text[:80])
             return _with_latency(canned_reply(ctx, TOPIC_REPEAT, operator_topics, "guard"), started)
+        if is_repeat_officer(ctx):
+            guarded = repeat_officer_guard(ctx, text, operator_text, operator_topics)
+            if guarded is not None:
+                return _with_latency(guarded, started)
         if _already_said(ctx, text) and not _asks_to_repeat(operator_text):
             # The same sentence as before (usually a fact dumped on an unrelated question).
             log.warning("generated reply repeats an earlier one, replaced", text=text[:80])
             return _with_latency(
                 canned_reply(ctx, TOPIC_UNKNOWN, operator_topics, "guard"), started
             )
-        if is_repeat_officer(ctx) and text.rstrip().endswith("?"):
-            # A repeat call: the card is with the officer, a question about it sounds deaf.
-            progress = pick_reply(ctx, TOPIC_PROGRESS)
-            if progress is not None:
-                log.warning("generated reply asks on a repeat call, replaced", text=text[:80])
-                return _with_latency(_from_reply(progress, operator_topics, "guard"), started)
         if not topics:
             topics = [t for t in ctx.vocabulary.detect(text) if t not in SERVICE_TOPICS] or [
                 TOPIC_UNKNOWN

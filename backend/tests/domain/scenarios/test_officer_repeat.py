@@ -58,3 +58,30 @@ def test_repeat_officer_gets_its_own_generate_prompt() -> None:
     assert "спроси один следующий факт" in system(first)
     assert "СНОВА" in system(again)
     assert "спроси один следующий факт" not in system(again)
+
+
+def test_repeat_officer_guard_replaces_questions_and_repeats() -> None:
+    from app.domain.evaluation.schemas import DialogTurn, ServiceCallRef
+    from app.domain.scenarios import officers
+    from app.providers import dialog as dlg
+    from tests.domain.evaluation.helpers import card_scenario
+
+    officer = officers.officer_scenario(
+        card_scenario(), ServiceCallRef(service="mosgaz"), "Мосгаз", "pending", repeat=True
+    )
+    progress = officers.PROGRESS_REPLIES["pending"]
+    ctx = dlg.DialogContext(
+        scenario=officer, history=[], conversation_id="t", role=dlg.ROLE_OFFICER
+    )
+    assert "бригада в пути" not in dlg.generate_messages(ctx, "Как там?")[0]["content"].lower()
+    assert progress in dlg.generate_messages(ctx, "Как там?")[0]["content"]
+
+    asked = dlg.repeat_officer_guard(ctx, "Как у вас? Адрес какой?", "Как дела?", [])
+    assert asked is not None and asked.text == progress
+
+    said = dlg.REPEAT_CONFIRMATIONS[0]
+    ctx.history = [DialogTurn(role="caller", text=said, topics=["confirm"])]
+    again = dlg.repeat_officer_guard(ctx, said, "Там ещё запах появился", [])
+    assert again is not None and again.text == dlg.REPEAT_CONFIRMATIONS[1]
+
+    assert dlg.repeat_officer_guard(ctx, "Работаем по карточке.", "Ну как?", []) is None
