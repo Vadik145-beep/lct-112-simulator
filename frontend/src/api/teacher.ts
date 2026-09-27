@@ -31,6 +31,17 @@ export function useTeacherSessions() {
   return useQuery({ queryKey: sessionsKey, queryFn: () => unwrap(api.GET("/api/sessions")) });
 }
 
+/** «Удалить выбранные»: lessons go with their cards, scores and recordings; the lists and the
+ * analytics are read again. */
+export function useDeleteSessions() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (sessionIds: string[]) =>
+      unwrap(api.POST("/api/sessions/delete", { body: { session_ids: sessionIds } })),
+    onSuccess: () => void client.invalidateQueries(),
+  });
+}
+
 export function useTeacherSession(id: string) {
   return useQuery({
     queryKey: sessionKey(id),

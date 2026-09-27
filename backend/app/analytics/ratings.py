@@ -6,11 +6,11 @@ from __future__ import annotations
 import uuid
 from collections.abc import Iterable
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.analytics.rating import START_RATING, RatingState, incident_group, updated_rating
-from app.models import Attempt, Scenario, SkillRating
+from app.models import Attempt, Evaluation, Scenario, SkillRating
 
 
 async def apply_evaluation(session: AsyncSession, attempt: Attempt, total: float) -> SkillRating:
@@ -57,3 +57,21 @@ async def load_states(
         state.ratings[(r.incident_group, r.mode)] = r.rating
         state.counts[(r.incident_group, r.mode)] = r.n
     return states
+
+
+async def rebuild(session: AsyncSession, student_ids: Iterable[uuid.UUID]) -> None:
+    """The ratings of these trainees replayed from the evaluations that remain, in the order
+    they were stored — after lessons with their attempts were deleted, the rows must not keep
+    what is gone."""
+    ids = list(set(student_ids))
+    if not ids:
+        return
+    await session.execute(delete(SkillRating).where(SkillRating.student_id.in_(ids)))
+    rows = await session.execute(
+        select(Attempt, Evaluation.total)
+        .join(Evaluation, Evaluation.attempt_id == Attempt.id)
+        .where(Attempt.student_id.in_(ids))
+        .order_by(Evaluation.created_at)
+    )
+    for attempt, total in rows:
+        await apply_evaluation(session, attempt, total)

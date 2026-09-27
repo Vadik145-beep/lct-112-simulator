@@ -591,3 +591,106 @@ async def test_generate_for_session_without_groups_covers_several(client: AsyncC
         assert scenario["problems"] == [], scenario["problems"]
         for error in scenario["body"].get("injected_errors", []):
             assert error["field"] and error["wrong_value"] != error["correct_value"]
+
+
+async def test_teacher_deletes_finished_and_draft_lessons_with_their_history(
+    client: AsyncClient,
+) -> None:
+    """«Очистить историю» (решение пользователя 27.09.2026): the chosen lessons go with their
+    cards, scores and events; a running one is refused, a foreign one is not found; every
+    deletion is an audit row; the trainees' ratings are replayed from what remains."""
+    from sqlalchemy import func
+
+    from app.models import Attempt, AuditLog, Evaluation, SkillRating, TrainingSession
+
+    teacher = await login(client, "teacher1")
+    finished = await create_session(client, teacher, title="Удаляемое завершённое")
+    await start(client, teacher, finished["id"])
+    # Cards are issued when a trainee opens the journal.
+    trainee = await login(client, "student1")
+    r = await client.get(f"/api/sessions/{finished['id']}/journal", headers=bearer(trainee))
+    assert r.status_code == 200, r.text
+    async with SessionLocal() as session:
+        issued = await session.scalar(
+            select(func.count())
+            .select_from(Attempt)
+            .where(Attempt.session_id == uuid.UUID(finished["id"]))
+        )
+        students = set(
+            await session.scalars(
+                select(Attempt.student_id).where(Attempt.session_id == uuid.UUID(finished["id"]))
+            )
+        )
+    assert issued > 0
+    r = await client.post(f"/api/sessions/{finished['id']}/finish", headers=bearer(teacher))
+    assert r.status_code == 200, r.text
+    draft = await create_session(client, teacher, title="Удаляемый черновик")
+    running = await create_session(client, teacher, title="Идущее")
+    await start(client, teacher, running["id"])
+
+    # A running lesson stops the whole request; nothing is deleted.
+    r = await client.post(
+        "/api/sessions/delete",
+        headers=bearer(teacher),
+        json={"session_ids": [finished["id"], running["id"]]},
+    )
+    assert r.status_code == 409 and r.json()["error"]["code"] == "session_running"
+    # Another teacher cannot delete these lessons.
+    other = await login(client, "teacher2")
+    r = await client.post(
+        "/api/sessions/delete", headers=bearer(other), json={"session_ids": [finished["id"]]}
+    )
+    assert r.status_code == 403
+    r = await client.post("/api/sessions/delete", headers=bearer(teacher), json={"session_ids": []})
+    assert r.status_code == 422
+
+    r = await client.post(
+        "/api/sessions/delete",
+        headers=bearer(teacher),
+        json={"session_ids": [finished["id"], draft["id"]]},
+    )
+    assert r.status_code == 200, r.text
+    assert r.json() == {"deleted": 2}
+
+    async with SessionLocal() as session:
+        gone = [uuid.UUID(finished["id"]), uuid.UUID(draft["id"])]
+        assert (
+            await session.scalar(
+                select(func.count())
+                .select_from(TrainingSession)
+                .where(TrainingSession.id.in_(gone))
+            )
+            == 0
+        )
+        assert (
+            await session.scalar(
+                select(func.count()).select_from(Attempt).where(Attempt.session_id.in_(gone))
+            )
+            == 0
+        )
+        audit = list(
+            await session.scalars(
+                select(AuditLog.entity_id).where(AuditLog.action == "session.delete")
+            )
+        )
+        assert finished["id"] in audit and draft["id"] in audit
+        assert await session.get(TrainingSession, uuid.UUID(running["id"])) is not None
+        for student in students:
+            evaluated = await session.scalar(
+                select(func.count())
+                .select_from(Evaluation)
+                .join(Attempt, Attempt.id == Evaluation.attempt_id)
+                .where(Attempt.student_id == student)
+            )
+            counted = await session.scalar(
+                select(func.coalesce(func.sum(SkillRating.n), 0)).where(
+                    SkillRating.student_id == student
+                )
+            )
+            assert counted == evaluated
+
+    r = await client.get("/api/sessions", headers=bearer(teacher))
+    listed = {s["id"] for s in r.json()}
+    assert finished["id"] not in listed and draft["id"] not in listed
+    assert running["id"] in listed
+    await client.post(f"/api/sessions/{running['id']}/finish", headers=bearer(teacher))
