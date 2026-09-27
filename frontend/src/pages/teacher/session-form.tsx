@@ -306,7 +306,9 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
         <CardHeader>
           <CardTitle>Карточки</CardTitle>
           <CardDescription>
-            Источник — утверждённые сценарии. Без отметок берутся все группы происшествий и все службы.
+            {isCall
+              ? "Карточки собираются из утверждённых сценариев. Если группы не отмечены, подходят все."
+              : "Карточки собираются из утверждённых сценариев. Если группы и службы не отмечены, подходят все."}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-6 lg:grid-cols-2">
