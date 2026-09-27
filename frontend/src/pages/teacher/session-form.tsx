@@ -45,13 +45,8 @@ const DEFAULTS: Omit<SessionIn, "group_id"> = {
 // PRD 9.3: the caller answers with an approved reply (select), may improvise with the
 // teacher approving new lines (hybrid, no longer offered for new lessons), improvises freely
 // (generate), or the trainee presses topic buttons (buttons, no model).
-// «Источник карточек» of the ТЗ: «scenarios» is the value older sessions carry; the server
-// treats it and «mixed» alike.
-const CARD_SOURCES = [
-  { code: "scenarios", title: "Все утверждённые сценарии" },
-  { code: "generated", title: "Билеты и сгенерированные (без карточек обучающихся)" },
-  { code: "student_made", title: "Только карточки обучающихся" },
-];
+// «Источник карточек» of the ТЗ is not offered in the form: a lesson always takes every approved
+// scenario («scenarios»). The server still accepts «generated» / «student_made».
 
 // ``hint`` — про заявителя (приём вызова), ``dds`` — про дежурного службы и старшего группы.
 const DIALOG_MODES: { code: string; title: string; hint: string; dds?: string }[] = [
@@ -116,7 +111,7 @@ function toInput(s: SessionOut): SessionIn {
     title: s.title,
     mode: s.mode,
     group_id: s.group_id ?? "",
-    card_source: s.card_source,
+    card_source: "scenarios",
     scenario_ids: s.scenario_ids,
     incident_groups: s.incident_groups,
     difficulty: s.difficulty,
@@ -304,21 +299,6 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               )}
             </div>
           )}
-          <div className="space-y-1.5">
-            <Label htmlFor="card-source">Источник карточек</Label>
-            <select id="card-source" className={selectClass} value={form.card_source} onChange={(e) => patch({ card_source: e.target.value })}>
-              {CARD_SOURCES.map((c) => (
-                <option key={c.code} value={c.code}>
-                  {c.title}
-                </option>
-              ))}
-            </select>
-            <p className="text-xs text-muted-foreground">
-              {form.mode === "card_response"
-                ? "Карточки обучающихся — сохранённые в приёме вызова и утверждённые преподавателем как сценарии."
-                : "В приёме вызова карточки обучающихся не участвуют: берутся сценарии из билетов и сгенерированные."}
-            </p>
-          </div>
           <div className="space-y-1.5">
             <Label htmlFor="group">Группа</Label>
             <select id="group" className={selectClass} value={groupId} onChange={(e) => patch({ group_id: e.target.value })} required>

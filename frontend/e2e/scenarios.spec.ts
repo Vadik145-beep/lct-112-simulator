@@ -189,13 +189,6 @@ test.describe("Волна 8: сценарии", () => {
     if (await confirmStudent.isVisible()) await confirmStudent.click();
     await expect(page.getByText("Утверждён", { exact: true })).toBeVisible({ timeout: 60_000 });
 
-    // The lesson form offers the trainees' cards as a source.
-    await page.goto("/teacher/sessions/new");
-    const source = page.getByLabel("Источник карточек");
-    await source.selectOption("student_made");
-    await expect(source).toHaveValue("student_made");
-    await expect(page.getByText(/Карточки обучающихся — сохранённые в приёме вызова/)).toBeVisible();
-    await page.screenshot({ path: `${SHOTS}/07-session-source.png` });
   });
 
   test("удаление: черновик исчезает, использованный уходит в архив и восстанавливается", async ({ page, request }) => {
