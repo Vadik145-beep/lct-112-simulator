@@ -152,7 +152,18 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
     difficulty: form.difficulty,
     service_profile: form.service_profile ?? [],
   });
-  const [unfinishedHours, setUnfinishedHours] = useState(() => String(Math.round((existing?.unfinished_seconds ?? DEFAULTS.unfinished_seconds!) / HOUR)));
+  // Which incident groups have approved scenarios for this mode (and service profile in card
+  // response): groups without any are not offered. Difficulty 3 so a group with only harder
+  // scenarios still counts — the queue falls back to them.
+  const available = useQueuePreview({
+    mode: form.mode,
+    card_source: form.card_source,
+    scenario_ids: [],
+    incident_groups: [],
+    difficulty: 3,
+    service_profile: form.service_profile ?? [],
+  });
+  const groupsWithCards = new Set((available.data?.queue ?? []).map((q) => q.incident_type_code?.split(".")[0]).filter(Boolean));
   const mutation = existing ? update : create;
 
   if (groups.isPending || tree.isPending || services.isPending) return <LoadingState text="Готовим форму…" />;
@@ -170,13 +181,13 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
 
   function submit(e: FormEvent) {
     e.preventDefault();
-    const hours = Number(unfinishedHours);
     const body: SessionIn = {
       ...form,
       cards_per_student: cardsFor(form.difficulty),
       title: form.title.trim(),
       group_id: groupId,
-      unfinished_seconds: Number.isFinite(hours) && hours > 0 ? Math.round(hours * HOUR) : (DEFAULTS.unfinished_seconds ?? null),
+      // «Не завершено» через: поля в форме нет, остаётся значение занятия (по умолчанию 48 ч).
+      unfinished_seconds: form.unfinished_seconds || (DEFAULTS.unfinished_seconds ?? null),
     };
     mutation.mutate(body, { onSuccess: (data) => navigate(`/teacher/sessions/${data.id}`) });
   }
@@ -316,7 +327,9 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
           <fieldset className={cn(isCall && "lg:col-span-2")}>
             <legend className="mb-2 text-sm font-medium">Группы происшествий</legend>
             <div className={cn("grid gap-1 overflow-y-auto rounded-md border p-2 sm:grid-cols-2", isCall ? "max-h-96 gap-x-4 lg:grid-cols-4" : "max-h-64")}>
-              {tree.data.groups.map((g) => (
+              {tree.data.groups
+                .filter((g) => !available.data || groupsWithCards.has(g.code) || form.incident_groups?.includes(g.code))
+                .map((g) => (
                 <label key={g.code} className="flex items-start gap-2 text-sm">
                   <input
                     type="checkbox"
@@ -407,11 +420,6 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
             <Input id="threshold" type="number" min={0} max={100} required value={form.pass_threshold} onChange={(e) => patch({ pass_threshold: Number(e.target.value) })} />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="unfinished">«Не завершено» через, часов</Label>
-            <Input id="unfinished" type="number" min={0.05} step="any" required value={unfinishedHours} onChange={(e) => setUnfinishedHours(e.target.value)} />
-            <p className="text-xs text-muted-foreground">В АРМ-112 — 48 часов после «Принята».</p>
-          </div>
-          <div className="space-y-1.5">
             <span className="text-sm font-medium">Подсказки</span>
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" checked={form.hints_enabled} onChange={(e) => patch({ hints_enabled: e.target.checked })} />
@@ -425,7 +433,6 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               <input type="checkbox" checked={form.adaptive} onChange={(e) => patch({ adaptive: e.target.checked })} />
               Подбирать карточки под слабые места
             </label>
-            <p className="text-xs text-muted-foreground">Каждому — сначала его слабая группа происшествий, сложность по рейтингу, непройденные первыми.</p>
           </div>
         </CardContent>
       </Card>
