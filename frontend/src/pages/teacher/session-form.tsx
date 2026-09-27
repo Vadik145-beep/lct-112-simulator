@@ -335,10 +335,10 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-6 lg:grid-cols-2">
-          {/* В приёме вызова профиля службы нет: группы занимают всю ширину и почти без прокрутки. */}
-          <fieldset className={cn(isCall && "lg:col-span-2")}>
+          {/* Списки групп и служб — на всю ширину друг под другом, по четыре колонки. */}
+          <fieldset className="lg:col-span-2">
             <legend className="mb-2 text-sm font-medium">Группы происшествий</legend>
-            <div className={cn("grid gap-x-4 gap-y-3 overflow-y-auto rounded-md border p-3 sm:grid-cols-2", isCall ? "max-h-96 lg:grid-cols-4" : "max-h-64")}>
+            <div className="grid max-h-96 gap-x-4 gap-y-3 overflow-y-auto rounded-md border p-3 sm:grid-cols-2 lg:grid-cols-4">
               {tree.data.groups
                 .filter((g) => !available.data || groupsWithCards.has(g.code) || form.incident_groups?.includes(g.code))
                 .map((g) => (
@@ -358,9 +358,9 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
           </fieldset>
           {/* Оператор 112 не относится ни к одной службе: профиль службы только для ДДС. */}
           {form.mode !== "call_intake" && (
-          <fieldset>
+          <fieldset className="lg:col-span-2">
             <legend className="mb-2 text-sm font-medium">Профиль службы</legend>
-            <div className="grid max-h-64 gap-x-4 gap-y-3 overflow-y-auto rounded-md border p-3 sm:grid-cols-2">
+            <div className="grid max-h-96 gap-x-4 gap-y-3 overflow-y-auto rounded-md border p-3 sm:grid-cols-2 lg:grid-cols-4">
               {services.data
                 .filter((s) => !servicesAvailable.data || servicesWithCards.has(s.code) || form.service_profile?.includes(s.code))
                 .map((s) => (
