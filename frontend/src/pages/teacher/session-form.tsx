@@ -164,6 +164,17 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
     service_profile: form.service_profile ?? [],
   });
   const groupsWithCards = new Set((available.data?.queue ?? []).map((q) => q.incident_type_code?.split(".")[0]).filter(Boolean));
+  // Services with approved card-response scenarios (any group, any difficulty): services
+  // without any are not offered in the profile.
+  const servicesAvailable = useQueuePreview({
+    mode: "card_response",
+    card_source: form.card_source,
+    scenario_ids: [],
+    incident_groups: [],
+    difficulty: 3,
+    service_profile: [],
+  });
+  const servicesWithCards = new Set((servicesAvailable.data?.queue ?? []).map((q) => q.service_code).filter(Boolean));
   const mutation = existing ? update : create;
 
   if (groups.isPending || tree.isPending || services.isPending) return <LoadingState text="Готовим форму…" />;
@@ -349,7 +360,9 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
           <fieldset>
             <legend className="mb-2 text-sm font-medium">Профиль службы</legend>
             <div className="grid max-h-64 gap-x-4 gap-y-3 overflow-y-auto rounded-md border p-3 sm:grid-cols-2">
-              {services.data.map((s) => (
+              {services.data
+                .filter((s) => !servicesAvailable.data || servicesWithCards.has(s.code) || form.service_profile?.includes(s.code))
+                .map((s) => (
                 <label key={s.code} className="flex items-start gap-2 text-sm">
                   <input
                     type="checkbox"
