@@ -92,7 +92,7 @@ test.describe("Волна 4: занятие целиком", () => {
     await form.getByRole("button", { name: "Создать занятие" }).click();
 
     await expect(teacher.getByRole("heading", { name: title })).toBeVisible();
-    await expect(teacher.getByText("Очередь карточек · 3")).toBeVisible();
+    await expect(teacher.getByText("Подходящие сценарии · 3")).toBeVisible();
     const sessionUrl = teacher.url();
     const sessionId = sessionUrl.split("/sessions/")[1]!;
     await teacher.screenshot({ path: `${SHOTS}/03-session-draft.png`, fullPage: true });
