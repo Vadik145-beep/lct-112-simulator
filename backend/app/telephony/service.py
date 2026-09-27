@@ -188,6 +188,14 @@ def telephony_active() -> bool:
     return _service is not None and _service.connected
 
 
+def for_session(ts: object | None) -> bool:
+    """The calls of this lesson go through Asterisk: telephony is up and the lesson has the
+    «звонок на телефон» box (``phone_calls``). Without the box the lesson talks in the
+    browser, as on a stand without telephony — its call panel stays the same whatever the
+    stand runs (решение пользователя 27.09.2026)."""
+    return telephony_active() and bool(getattr(ts, "phone_calls", False))
+
+
 def cloud_active() -> bool:
     """True when SIP calls of cloud lessons can reach Vapi (plan/track-c-vapi.md)."""
     return telephony_active() and _service is not None and _service.cloud

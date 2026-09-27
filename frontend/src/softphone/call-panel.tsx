@@ -329,19 +329,6 @@ export function CallControls({ className }: { className?: string }) {
             ))}
           </select>
         )}
-        {phone.stats && (
-          <span
-            className="font-mono"
-            title="Статистика WebRTC"
-            data-testid="call-stats"
-          >
-            {phone.stats.codec ?? "—"} · RTT {phone.stats.rttMs ?? "—"} мс ·
-            джиттер {phone.stats.jitterMs ?? "—"} мс
-            {phone.stats.packetsLost
-              ? ` · потери ${phone.stats.packetsLost}`
-              : ""}
-          </span>
-        )}
       </footer>
     </div>
   );

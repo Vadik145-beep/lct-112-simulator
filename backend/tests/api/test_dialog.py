@@ -48,6 +48,7 @@ async def make_attempt(
     mode: str = MODE_CALL_INTAKE,
     dialog_mode: str = "select",
     voice_enabled: bool = True,
+    phone_calls: bool = False,
 ) -> uuid.UUID:
     """A running session of «Учебная-1» with one attempt for student1."""
     async with SessionLocal() as session:
@@ -65,6 +66,7 @@ async def make_attempt(
             norm_seconds=90,
             dialog_mode=dialog_mode,
             voice_enabled=voice_enabled,
+            phone_calls=phone_calls,
             status=SESSION_RUNNING,
             started_at=utcnow(),
         )

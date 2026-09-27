@@ -246,6 +246,7 @@ class CallManager:
                     Attempt.call_state == CALL_IDLE,
                     Attempt.state.in_(ACTIVE_ATTEMPT_STATES),
                     TrainingSession.status == SESSION_RUNNING,
+                    TrainingSession.phone_calls.is_(True),
                 )
             )
             ids = [row[0] for row in rows]
@@ -272,6 +273,9 @@ class CallManager:
             if loaded is None or loaded.attempt.call_state != CALL_IDLE:
                 return None
             if loaded.attempt.state not in ACTIVE_ATTEMPT_STATES:
+                return None
+            # A lesson without the «звонок на телефон» box talks in the browser.
+            if not loaded.ts.phone_calls:
                 return None
             user = await session.get(User, loaded.attempt.student_id)
             if user is None:

@@ -24,6 +24,7 @@ from app.models import (
     CALL_END_HANGUP,
     CALL_ENDED,
     MODE_CALL_INTAKE,
+    SESSION_DRAFT,
     SESSION_RUNNING,
     Attempt,
     Role,
@@ -62,8 +63,14 @@ async def my_sip_account(user: Student, session: DbSession) -> SipAccountOut:
     service = telephony.get_service()
     if created and service is not None:
         await service.sync_endpoints()
+    # The softphone registers on Asterisk only for a lesson with the «звонок на телефон»
+    # box; any other lesson talks in the browser (see ``telephony.for_session``).
+    phone_lesson = any(
+        ts.phone_calls and ts.status in (SESSION_RUNNING, SESSION_DRAFT)
+        for ts in await training.sessions_for_student(session, user)
+    )
     return SipAccountOut(
-        enabled=s.telephony_enabled,
+        enabled=s.telephony_enabled and phone_lesson,
         connected=telephony.telephony_active(),
         ws_path=s.sip_ws_path,
         domain=config.sip_domain,
@@ -124,7 +131,7 @@ async def answer(attempt_id: uuid.UUID, user: ActiveUser, session: DbSession) ->
         session, attempt_id, user, for_write=True
     )
     opening, events = await call_state.answer(
-        session, attempt, ts, version, scenario, telephony=telephony.telephony_active()
+        session, attempt, ts, version, scenario, telephony=telephony.for_session(ts)
     )
     await session.commit()
     await publish_events(events)

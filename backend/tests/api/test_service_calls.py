@@ -405,3 +405,21 @@ async def test_repeat_call_does_not_take_the_card_again(client: AsyncClient) -> 
         assert r.status_code == 200, r.text
     component = r.json()["attempt"]["evaluation"]["components"]["service_call"]
     assert component["items"][0]["facts_missing"] == []
+
+
+async def test_lesson_without_the_phone_box_calls_in_the_browser(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Telephony is up, the lesson has no «звонок на телефон» box: the officer answers in the
+    browser at once, as on a stand without telephony (решение пользователя 27.09.2026)."""
+    from app.telephony import service as telephony
+
+    monkeypatch.setattr(telephony, "telephony_active", lambda: True)
+    attempt_id = await make_attempt(CARD, mode=MODE_CARD_RESPONSE, dialog_mode="buttons")
+    token = await login(client, "student1")
+    r = await start(client, token, attempt_id)
+    assert r.status_code == 200, r.text
+    call = r.json()["call"]
+    assert call["telephony"] is False
+    assert call["answered"] is True and call["turns"][0]["role"] == "caller"
+    await end(client, token, attempt_id, call["id"])

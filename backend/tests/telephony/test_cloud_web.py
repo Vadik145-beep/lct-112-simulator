@@ -183,10 +183,14 @@ async def test_start_refuses_other_lessons_and_telephony(
     local = await make_attempt(GAS_PIPE, dialog_mode="select")
     r = await client.post(f"/api/attempts/{local}/cloud-call", headers=bearer(student))
     assert r.status_code == 409 and r.json()["error"]["code"] == "not_cloud_lesson"
-    cloud = await make_attempt(GAS_PIPE, dialog_mode="cloud")
     monkeypatch.setattr(telephony, "telephony_active", lambda: True)
-    r = await client.post(f"/api/attempts/{cloud}/cloud-call", headers=bearer(student))
+    # Telephony is up, but only a lesson with the «звонок на телефон» box talks through it.
+    phone = await make_attempt(GAS_PIPE, dialog_mode="cloud", phone_calls=True)
+    r = await client.post(f"/api/attempts/{phone}/cloud-call", headers=bearer(student))
     assert r.status_code == 409 and r.json()["error"]["code"] == "telephony_active"
+    cloud = await make_attempt(GAS_PIPE, dialog_mode="cloud")
+    r = await client.post(f"/api/attempts/{cloud}/cloud-call", headers=bearer(student))
+    assert r.status_code == 200, r.text
 
 
 async def test_unreachable_cloud_is_503_and_a_fallback_event(

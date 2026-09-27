@@ -46,6 +46,34 @@ class TestSipAccount:
         second = await client.get("/api/me/sip", headers=bearer(token))
         assert second.json()["password"] == body["password"]
 
+    async def test_softphone_registers_only_for_a_lesson_with_the_phone_box(
+        self, client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+    ):
+        """With telephony on, the softphone goes to Asterisk only while the trainee has a
+        lesson with the «звонок на телефон» box; any other lesson talks in the browser
+        (решение пользователя 27.09.2026)."""
+        from sqlalchemy import update
+
+        from app.models import SESSION_DRAFT, SESSION_FINISHED, SESSION_RUNNING, TrainingSession
+
+        monkeypatch.setattr(get_settings(), "telephony_enabled", True)
+        token = await student(client)
+        async with SessionLocal() as session:
+            await session.execute(
+                update(TrainingSession)
+                .where(
+                    TrainingSession.phone_calls.is_(True),
+                    TrainingSession.status.in_([SESSION_RUNNING, SESSION_DRAFT]),
+                )
+                .values(status=SESSION_FINISHED)
+            )
+            await session.commit()
+        r = await client.get("/api/me/sip", headers=bearer(token))
+        assert r.json()["enabled"] is False
+        await make_attempt(phone_calls=True)
+        r = await client.get("/api/me/sip", headers=bearer(token))
+        assert r.json()["enabled"] is True
+
     async def test_only_students_have_softphones(self, client: AsyncClient):
         token = await login(client, "teacher1")
         r = await client.get("/api/me/sip", headers=bearer(token))
