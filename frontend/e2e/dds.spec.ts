@@ -741,8 +741,8 @@ test.describe("Доклады бригады диспетчеру по теле�
     test.setTimeout(240_000);
     const { problems, foreign } = watchNetwork(page);
 
-    // A copy of the seed card «Течь стояка» with a fast squad: the reports come 2 seconds
-    // after the previous milestone (the background sweep runs every 5 seconds).
+    // A copy of the seed card «Течь стояка» with a fast squad: the reports come 5 seconds
+    // after the previous milestone — the least a scenario allows (the sweep runs every 5 s).
     const teacher = await apiToken(request, "teacher1");
     const th = { Authorization: `Bearer ${teacher}` };
     const stamp = new Date().toLocaleTimeString("ru-RU");
@@ -760,6 +760,7 @@ test.describe("Доклады бригады диспетчеру по теле�
     type Seed = {
       body: {
         title: string;
+        card: { address: { street: string; house: string } };
         injected_errors?: unknown[];
         reference: { reports: { status: string; after_seconds: number }[] };
       };
@@ -792,7 +793,7 @@ test.describe("Доклады бригады диспетчеру по теле�
         ...seed.body.reference,
         reports: seed.body.reference.reports.map((r) => ({
           ...r,
-          after_seconds: 2,
+          after_seconds: 5,
         })),
       },
     };
@@ -867,6 +868,27 @@ test.describe("Доклады бригады диспетчеру по теле�
       page.getByText(/Старший группы реагирования будет звонить с докладами/),
     ).toBeVisible();
 
+    // The squad leaves once the officer was told the address (#127): the dispatcher calls.
+    const { street, house } = seed.body.card.address;
+    await page
+      .getByRole("button", { name: /Позвонить: .*ЕДЦ ЖКХ/ })
+      .first()
+      .click();
+    const call = page.locator(
+      '[data-testid="service-call-panel"][data-kind="outgoing"]',
+    );
+    await expect(call).toHaveAttribute("data-state", "talking");
+    await call
+      .getByLabel("Сказать: дежурный")
+      .fill(`${street}, дом ${house}, течь стояка в подъезде, пострадавших нет`);
+    await call.getByRole("button", { name: "Отправить: дежурный" }).click();
+    await expect(call.locator("li[data-role=officer]")).toHaveCount(2, {
+      timeout: 30_000,
+    });
+    await call.getByRole("button", { name: "Завершить звонок" }).click();
+    // The call that just ended stays in the panel (#240).
+    await expect(call).toHaveAttribute("data-state", "ended");
+
     const report = page.locator(
       '[data-testid="service-call-panel"][data-kind="report"]',
     );
@@ -878,23 +900,26 @@ test.describe("Доклады бригады диспетчеру по теле�
       await expect(report).toBeVisible({ timeout: 30_000 });
       await expect(report).toContainText("Доклад бригады");
       // The squad's call is incoming: nothing is said until the trainee answers (#103).
-      await expect(report).toHaveAttribute("data-state", "ringing");
+      // The previous report stays in the panel as «ended» until the next one rings.
+      await expect(report).toHaveAttribute("data-state", "ringing", { timeout: 30_000 });
       await expect(report).not.toContainText(phrase);
       await report.getByTestId("answer-report").click();
       await expect(report).toContainText(phrase);
       await report.getByRole("button", { name: "Завершить звонок" }).click();
-      await expect(report).toHaveCount(0, { timeout: 15_000 });
+      // The ended report stays in the panel until the next call (#240).
+      await expect(report).toHaveAttribute("data-state", "ended", { timeout: 15_000 });
       await setStatus(page, status, opts);
     };
     await takeReport(/Выехали/, "Начало реагирования", {
       orderNumber: "ЖКХ-118",
       comment: "Направлен дежурный сантехник, наряд ЖКХ-118",
     });
-    await expect(page.getByTestId("service-call-line").first()).toContainText(
-      "Доклад бригады",
-    );
+    // The history lists the dispatcher's call first, then the squad's report.
+    await expect(
+      page.getByTestId("service-call-line").filter({ hasText: "Доклад бригады" }),
+    ).toHaveCount(1);
     await takeReport(/Прибыли/, "Прибытие");
-    await takeReport(/Перекрыт стояк/, "Проведение работ", {
+    await takeReport(/перекрыт стояк/i, "Проведение работ", {
       comment: "Перекрыт стояк по подъезду, устранение течи",
     });
     await takeReport(/Работы завершены/, "Работы завершены", {
