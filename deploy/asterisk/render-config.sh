@@ -7,6 +7,12 @@ set -e
 GEN=/etc/asterisk/generated
 mkdir -p "$GEN"
 touch "$GEN/endpoints.conf"
+touch "$GEN/trunk.conf"
+
+{
+  echo "[globals]"
+  echo "TRUNK_INBOUND=${TELEPHONY_TRUNK_INBOUND:-}"
+} > "$GEN/globals.conf"
 
 ARI_PASSWORD="${ARI_PASSWORD:-trainer}"
 RTP_START="${TELEPHONY_RTP_START:-10000}"
@@ -62,6 +68,65 @@ CONF
     done
   fi
 } > "$GEN/transports.conf"
+
+# Внешний SIP-транк оператора связи: включается только если заданы логин и пароль.
+# Значения живут в .env на сервере, в репозиторий они не попадают.
+TRUNK_USER="${TELEPHONY_TRUNK_USER:-}"
+TRUNK_PASSWORD="${TELEPHONY_TRUNK_PASSWORD:-}"
+TRUNK_DOMAIN="${TELEPHONY_TRUNK_DOMAIN:-}"
+TRUNK_PROXY="${TELEPHONY_TRUNK_PROXY:-}"
+TRUNK_CODECS="${TELEPHONY_TRUNK_CODECS:-alaw,ulaw}"
+
+if [ -n "$TRUNK_USER" ] && [ -n "$TRUNK_PASSWORD" ] && [ -n "$TRUNK_DOMAIN" ]; then
+  PROXY_LINE=""
+  if [ -n "$TRUNK_PROXY" ]; then
+    PROXY_LINE="outbound_proxy=sip:$TRUNK_PROXY\\;lr"
+  fi
+  {
+    echo "[trunk-auth]"
+    echo "type=auth"
+    echo "auth_type=userpass"
+    echo "username=$TRUNK_USER"
+    echo "password=$TRUNK_PASSWORD"
+    echo ""
+    echo "[trunk-reg]"
+    echo "type=registration"
+    echo "transport=transport-udp"
+    echo "outbound_auth=trunk-auth"
+    echo "server_uri=sip:$TRUNK_DOMAIN"
+    echo "client_uri=sip:$TRUNK_USER@$TRUNK_DOMAIN"
+    echo "expiration=180"
+    echo "retry_interval=60"
+    [ -n "$PROXY_LINE" ] && echo "$PROXY_LINE"
+    echo ""
+    echo "[trunk-aor]"
+    echo "type=aor"
+    echo "contact=sip:${TRUNK_PROXY:-$TRUNK_DOMAIN}"
+    echo ""
+    echo "[trunk]"
+    echo "type=endpoint"
+    echo "transport=transport-udp"
+    echo "context=trunk-in"
+    echo "disallow=all"
+    echo "allow=$TRUNK_CODECS"
+    echo "outbound_auth=trunk-auth"
+    echo "aors=trunk-aor"
+    echo "from_user=$TRUNK_USER"
+    echo "from_domain=$TRUNK_DOMAIN"
+    echo "direct_media=no"
+    echo "rtp_symmetric=yes"
+    echo "force_rport=yes"
+    echo "rewrite_contact=yes"
+    echo "language=ru"
+    [ -n "$PROXY_LINE" ] && echo "$PROXY_LINE"
+    echo ""
+    echo "[trunk-identify]"
+    echo "type=identify"
+    echo "endpoint=trunk"
+    echo "match=${TRUNK_PROXY%%:*}"
+    echo "match=$TRUNK_DOMAIN"
+  } > "$GEN/trunk.conf"
+fi
 
 chown -R asterisk:asterisk "$GEN" 2>/dev/null || true
 exec /usr/local/bin/entrypoint.sh "$@"
