@@ -347,6 +347,26 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
             </div>
           </fieldset>
           )}
+          <div className="lg:col-span-2" data-testid="queue-preview" aria-live="polite">
+            {preview.isPending ? (
+              <p className="text-xs text-muted-foreground">Считаем подходящие карточки…</p>
+            ) : preview.isError ? (
+              <p className="text-xs text-destructive">Не удалось посчитать карточки: {preview.error.message}</p>
+            ) : preview.data.total === 0 ? (
+              <p className="text-sm text-destructive" role="alert">
+                Под выбранные {form.mode === "call_intake" ? "группы происшествий" : "службы и группы происшествий"} нет утверждённых сценариев — занятие не начнётся. Снимите отметки или утвердите сценарии.
+              </p>
+            ) : (
+              <p className="text-sm">
+                Доступно карточек: <b>{preview.data.total}</b>
+                {preview.data.harder_only && <span className="text-muted-foreground"> — все сложнее выбранной сложности, будут выданы как есть</span>}
+                {cardsFor(form.difficulty) > preview.data.total && (
+                  <span className="text-muted-foreground"> — меньше, чем {cardsFor(form.difficulty)} на обучающегося: каждый получит {preview.data.total}</span>
+                )}
+                .
+              </p>
+            )}
+          </div>
           <div className="space-y-1.5">
             <Label htmlFor="difficulty">Сложность</Label>
             <select id="difficulty" className={selectClass} value={form.difficulty} onChange={(e) => patch({ difficulty: Number(e.target.value) })}>
@@ -365,26 +385,6 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                   ? "Каждый обучающийся получит одну карточку."
                   : `Каждый обучающийся получит ${cardsFor(form.difficulty)} карточки сразу.`}
             </p>
-          </div>
-          <div className="lg:col-span-2" data-testid="queue-preview" aria-live="polite">
-            {preview.isPending ? (
-              <p className="text-xs text-muted-foreground">Считаем подходящие карточки…</p>
-            ) : preview.isError ? (
-              <p className="text-xs text-destructive">Не удалось посчитать карточки: {preview.error.message}</p>
-            ) : preview.data.total === 0 ? (
-              <p className="text-sm text-destructive" role="alert">
-                Под выбранные {form.mode === "call_intake" ? "группы происшествий" : "службы и группы происшествий"} нет утверждённых сценариев — занятие не начнётся. Снимите отметки или утвердите сценарии.
-              </p>
-            ) : (
-              <p className="text-sm">
-                Подходит {form.mode === "call_intake" ? "вызовов" : "карточек"}: <b>{preview.data.total}</b>
-                {preview.data.harder_only && <span className="text-muted-foreground"> — все сложнее выбранной сложности, будут выданы как есть</span>}
-                {cardsFor(form.difficulty) > preview.data.total && (
-                  <span className="text-muted-foreground"> — меньше, чем {cardsFor(form.difficulty)} на обучающегося: каждый получит {preview.data.total}</span>
-                )}
-                .
-              </p>
-            )}
           </div>
         </CardContent>
       </Card>
