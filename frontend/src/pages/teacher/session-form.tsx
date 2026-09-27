@@ -271,13 +271,6 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                     </option>
                   ))}
                 </select>
-                {form.dialog_mode === "cloud" && (
-                  <p className="text-xs text-muted-foreground" data-testid="cloud-mode-note">
-                    {isCall
-                      ? "Голос оператора и выдуманные данные билета уходят во внешний облачный сервис. Без телефонии разговор идёт прямо из браузера; если облако недоступно, заявитель отвечает локальной моделью."
-                      : "Голос диспетчера и данные карточки уходят во внешний облачный сервис. Без телефонии разговор идёт прямо из браузера; если облако недоступно, дежурный и бригада отвечают локальной моделью."}
-                  </p>
-                )}
                 {models.data && !models.data.dialog && form.dialog_mode !== "buttons" && form.dialog_mode !== "cloud" && (
                   <p className="text-xs text-destructive" role="alert" data-testid="dialog-model-warning">
                     Модель диалога сейчас недоступна: {isCall ? "заявитель" : "служба и бригада"} будет
