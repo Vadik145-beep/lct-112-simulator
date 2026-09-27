@@ -326,7 +326,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
           {/* В приёме вызова профиля службы нет: группы занимают всю ширину и почти без прокрутки. */}
           <fieldset className={cn(isCall && "lg:col-span-2")}>
             <legend className="mb-2 text-sm font-medium">Группы происшествий</legend>
-            <div className={cn("grid gap-1 overflow-y-auto rounded-md border p-2 sm:grid-cols-2", isCall ? "max-h-96 gap-x-4 lg:grid-cols-4" : "max-h-64")}>
+            <div className={cn("grid gap-x-4 gap-y-3 overflow-y-auto rounded-md border p-3 sm:grid-cols-2", isCall ? "max-h-96 lg:grid-cols-4" : "max-h-64")}>
               {tree.data.groups
                 .filter((g) => !available.data || groupsWithCards.has(g.code) || form.incident_groups?.includes(g.code))
                 .map((g) => (
@@ -348,7 +348,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
           {form.mode !== "call_intake" && (
           <fieldset>
             <legend className="mb-2 text-sm font-medium">Профиль службы</legend>
-            <div className="grid max-h-64 gap-1 overflow-y-auto rounded-md border p-2 sm:grid-cols-2">
+            <div className="grid max-h-64 gap-x-4 gap-y-3 overflow-y-auto rounded-md border p-3 sm:grid-cols-2">
               {services.data.map((s) => (
                 <label key={s.code} className="flex items-start gap-2 text-sm">
                   <input
