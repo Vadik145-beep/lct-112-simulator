@@ -1,15 +1,12 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, ClipboardList, Loader2, Play, Settings, Sparkles, Square, WifiOff } from "lucide-react";
+import { AlertTriangle, ClipboardList, Play, Settings, Square, WifiOff } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 
-import { useJob } from "@/api/scenarios";
 import {
   monitorKey,
-  sessionKey,
   useClassifierTree,
   useFinishSession,
-  useGenerateForSession,
   useMonitor,
   useServices,
   useStartSession,
@@ -21,9 +18,6 @@ import { ErrorState, LoadingState } from "@/components/states";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { JobProgress } from "@/pages/teacher/scenarios";
 import { acceptanceTimer, formatDateTime, formatSeconds, useNow } from "@/emulator/time";
 import { useSessionEvents, type SessionEvent } from "@/emulator/ws";
 import { cn } from "@/lib/utils";
@@ -117,6 +111,21 @@ function SessionDetails({ session }: { session: SessionOut }) {
   );
 }
 
+/** How many cards each trainee gets: one, or three at difficulty 3 (older lessons: whatever
+ * they were saved with; 0 meant the whole queue). */
+function perStudent(session: SessionOut): number {
+  return session.cards_per_student > 0 ? session.cards_per_student : 0;
+}
+
+function cardsText(session: SessionOut): string {
+  const n = perStudent(session);
+  if (n === 0) return "все подходящие";
+  if (session.mode === "call_intake") return n === 1 ? "1 вызов на обучающегося" : `${n} ${plural(n, "вызов", "вызова", "вызовов")} подряд на обучающегося`;
+  if (n === 1) return "1 карточка на обучающегося";
+  const together = (CARDS_AT_ONCE[session.difficulty] ?? 1) >= n ? " сразу" : "";
+  return `${n} ${plural(n, "карточка", "карточки", "карточек")}${together} на обучающегося`;
+}
+
 function SettingsSummary({ session }: { session: SessionOut }) {
   const tree = useClassifierTree();
   const groupTitles = useMemo(() => new Map((tree.data?.groups ?? []).map((g) => [g.code, g.title])), [tree.data]);
@@ -127,22 +136,22 @@ function SettingsSummary({ session }: { session: SessionOut }) {
       <dt className="text-muted-foreground">Сложность</dt>
       <dd>{DIFFICULTY_TITLES[session.difficulty] ?? session.difficulty}</dd>
       <dt className="text-muted-foreground">Норматив</dt>
-      <dd>{session.norm_seconds} с до первичного статуса</dd>
+      <dd>{session.mode === "call_intake" ? `${session.norm_seconds} с на вызов` : `${session.norm_seconds} с до первичного статуса`}</dd>
       <dt className="text-muted-foreground">Порог зачёта</dt>
       <dd>{session.pass_threshold} баллов</dd>
       <dt className="text-muted-foreground">Карточек</dt>
-      <dd>
-        {session.mode === "call_intake" ? "по одному вызову" : CARDS_AT_ONCE[session.difficulty] === 1 ? "по одной за раз" : `${CARDS_AT_ONCE[session.difficulty]} одновременно`}
-        {" · "}
-        {session.cards_per_student > 0 ? `всего ${session.cards_per_student} на обучающегося` : "вся очередь"}
-      </dd>
+      <dd>{cardsText(session)}</dd>
       <dt className="text-muted-foreground">Подсказки</dt>
       <dd>{session.hints_enabled ? "включены" : "выключены (аттестация)"}</dd>
-      <dt className="text-muted-foreground">Службы</dt>
-      <dd>{session.service_profile.length > 0 ? session.service_profile.map((c) => serviceTitles.get(c) ?? c).join(", ") : "все"}</dd>
+      {session.mode !== "call_intake" && (
+        <>
+          <dt className="text-muted-foreground">Службы</dt>
+          <dd>{session.service_profile.length > 0 ? session.service_profile.map((c) => serviceTitles.get(c) ?? c).join(", ") : "все"}</dd>
+        </>
+      )}
       <dt className="text-muted-foreground">Группы происшествий</dt>
       <dd data-testid="session-groups">
-        {session.incident_groups.length > 0 ? session.incident_groups.map((c) => `${c} — ${groupTitles.get(c) ?? "?"}`).join("; ") : "все"}
+        {session.incident_groups.length > 0 ? session.incident_groups.map((c) => groupTitles.get(c) ?? c).join("; ") : "все"}
       </dd>
     </dl>
   );
@@ -161,12 +170,12 @@ function DraftOverview({ session }: { session: SessionOut }) {
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle>Очередь карточек · {session.queue.length}</CardTitle>
+          <CardTitle>Подходящие сценарии · {session.queue.length}</CardTitle>
         </CardHeader>
         <CardContent>
           {session.queue.length === 0 ? (
             <p className="text-sm text-destructive">
-              Под выбранные службы, группы происшествий и сложность нет утверждённых сценариев. Сгенерируйте их ниже или измените настройки.
+              Под выбранные настройки нет утверждённых сценариев. Утвердите сценарии в разделе «Сценарии» или измените настройки.
             </p>
           ) : (
             <ol className="list-decimal space-y-1 pl-5 text-sm">
@@ -177,8 +186,11 @@ function DraftOverview({ session }: { session: SessionOut }) {
               ))}
             </ol>
           )}
-          <p className="mt-2 text-xs text-muted-foreground">Порядок фиксируется при старте: лёгкие карточки раньше.</p>
-          <GenerateForLesson session={session} />
+          {session.queue.length > 0 && perStudent(session) > 0 && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Каждый обучающийся получит {Math.min(perStudent(session), session.queue.length)} из них, сначала самые простые.
+            </p>
+          )}
         </CardContent>
       </Card>
       <Card>
@@ -204,81 +216,6 @@ function DraftOverview({ session }: { session: SessionOut }) {
           )}
         </CardContent>
       </Card>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------- generation for the lesson
-
-const GENERATE_MAX = 10;
-type GeneratedItem = { scenario_id: string; title?: string; method?: string };
-
-/** ТЗ «Настройка учебной среды»: the teacher picked the categories, the system drafts the
- * scenarios under them, the teacher approves — the approved ones enter the queue. */
-function GenerateForLesson({ session }: { session: SessionOut }) {
-  const client = useQueryClient();
-  const generate = useGenerateForSession(session.id);
-  const [jobId, setJobId] = useState<string | null>(null);
-  const [count, setCount] = useState(Math.min(GENERATE_MAX, Math.max(1, session.incident_groups.length || 3)));
-  const job = useJob(jobId);
-  const running = Boolean(jobId) && job.data?.status !== "failed" && job.data?.status !== "done";
-  const drafted: GeneratedItem[] = job.data?.status === "done" ? ((job.data.result as { scenarios?: GeneratedItem[] } | null)?.scenarios ?? []) : [];
-  const byTemplate = drafted.filter((s) => s.method === "template").length;
-
-  // The queue is computed by the server on each read: refetch once the drafts exist.
-  useEffect(() => {
-    if (job.data?.status === "done") void client.invalidateQueries({ queryKey: sessionKey(session.id) });
-  }, [job.data?.status, client, session.id]);
-
-  const submit = async () => {
-    const accepted = await generate.mutateAsync({ count });
-    setJobId(accepted.job_id);
-  };
-
-  return (
-    <div className="mt-4 space-y-2 border-t pt-3" data-testid="generate-for-lesson">
-      <p className="text-sm">
-        Сгенерировать сценарии под {session.incident_groups.length > 0 ? "выбранные группы происшествий" : "первые группы классификатора"} и сложность занятия.
-        Они попадут в библиотеку «на проверке»; в очередь войдут после утверждения.
-      </p>
-      <div className="flex flex-wrap items-end gap-2">
-        <div className="space-y-1">
-          <Label htmlFor="generate-count">Сколько</Label>
-          <Input
-            id="generate-count"
-            type="number"
-            min={1}
-            max={GENERATE_MAX}
-            className="w-20"
-            value={count}
-            onChange={(e) => setCount(Math.min(GENERATE_MAX, Math.max(1, Number(e.target.value) || 1)))}
-            disabled={running}
-          />
-        </div>
-        <Button onClick={() => void submit()} disabled={generate.isPending || running}>
-          {generate.isPending || running ? <Loader2 className="animate-spin" /> : <Sparkles />} Сгенерировать
-        </Button>
-      </div>
-      {generate.isError && <p className="text-sm text-destructive">{generate.error.message}</p>}
-      {jobId && job.data && job.data.status !== "done" && <JobProgress job={job.data} />}
-      {job.data?.status === "done" && (
-        <div className="space-y-1 text-sm" data-testid="generated-list">
-          <p>
-            Готово: {drafted.length} {plural(drafted.length, "сценарий", "сценария", "сценариев")} на проверке.
-            {byTemplate > 0 && ` ${byTemplate} собраны по шаблону без модели — их нужно доработать.`}{" "}
-            Откройте каждый и нажмите «Утвердить целиком», после этого он появится в очереди.
-          </p>
-          <ul className="list-disc space-y-0.5 pl-5">
-            {drafted.map((s) => (
-              <li key={s.scenario_id}>
-                <Link to={`/teacher/scenarios/${s.scenario_id}`} className="underline">
-                  {s.title || s.scenario_id}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </div>
   );
 }
