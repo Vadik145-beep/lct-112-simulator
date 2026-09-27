@@ -64,9 +64,13 @@ async def my_sip_account(user: Student, session: DbSession) -> SipAccountOut:
     if created and service is not None:
         await service.sync_endpoints()
     # The softphone registers on Asterisk only for a lesson with the «звонок на телефон»
-    # box; any other lesson talks in the browser (see ``telephony.for_session``).
+    # box whose calls ring the browser; any other lesson talks in the browser (see
+    # ``telephony.for_session``). A lesson with the teacher's own number rings only that
+    # phone, so it needs no softphone and does not pull the others off the browser path.
     phone_lesson = any(
-        ts.phone_calls and ts.status in (SESSION_RUNNING, SESSION_DRAFT)
+        ts.phone_calls
+        and not getattr(ts, "phone", None)
+        and ts.status in (SESSION_RUNNING, SESSION_DRAFT)
         for ts in await training.sessions_for_student(session, user)
     )
     return SipAccountOut(
