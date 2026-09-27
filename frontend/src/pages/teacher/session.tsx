@@ -132,7 +132,7 @@ function SettingsSummary({ session }: { session: SessionOut }) {
   const services = useServices();
   const serviceTitles = useMemo(() => new Map((services.data ?? []).map((s) => [s.code, s.short_title])), [services.data]);
   return (
-    <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+    <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 text-sm">
       <dt className="text-muted-foreground">Сложность</dt>
       <dd>{DIFFICULTY_TITLES[session.difficulty] ?? session.difficulty}</dd>
       <dt className="text-muted-foreground">Норматив</dt>
