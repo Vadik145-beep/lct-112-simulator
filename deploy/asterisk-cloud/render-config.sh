@@ -65,7 +65,20 @@ CONF
   fi
 } > "$GEN/transports.conf"
 
-# The trunk to Vapi: no registration, no authentication; G.711 both ways (the browser leg is
+# Vapi challenges the INVITE (401): the backend writes the credentials into
+# generated/vapi-auth.conf once it knows the SIP number; until then a placeholder keeps the
+# endpoint loadable. An existing file is kept: the backend may have written it already.
+if [ ! -s "$GEN/vapi-auth.conf" ]; then
+  {
+    echo "[vapi-auth]"
+    echo "type=auth"
+    echo "auth_type=userpass"
+    echo "username=unset"
+    echo "password=unset"
+  } > "$GEN/vapi-auth.conf"
+fi
+
+# The trunk to Vapi: no registration; G.711 both ways (the browser leg is
 # Opus, Asterisk transcodes in the bridge). Requests from Vapi's addresses are matched to it.
 {
   echo "[vapi]"
@@ -75,6 +88,7 @@ CONF
   echo "disallow=all"
   echo "allow=ulaw,alaw"
   echo "aors=vapi"
+  echo "outbound_auth=vapi-auth"
   echo "direct_media=no"
   echo "rtp_symmetric=yes"
   echo "force_rport=yes"

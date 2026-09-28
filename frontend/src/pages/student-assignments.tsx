@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDateTime } from "@/emulator/time";
 
-import { PhoneCallsNotice } from "./student-phone";
+import { LessonPhoneNotice, PhoneCallsNotice } from "./student-phone";
 
 const MODE_TITLES: Record<string, string> = {
   card_response: "Реагирование на карточку (ДДС)",
@@ -39,7 +39,14 @@ export function StudentAssignmentsPage() {
       </div>
 
       {/* One notice for the page: several phone lessons must not open several windows. */}
-      {running.some((a) => a.phone_calls) && <PhoneCallsNotice />}
+      {/* The teacher entered the number of the live call: nothing to ask. */}
+      {running.some((a) => a.phone_calls && !a.lesson_phone) && <PhoneCallsNotice />}
+      {running
+        .filter((a) => a.phone_calls && a.lesson_phone)
+        .slice(0, 1)
+        .map((a) => (
+          <LessonPhoneNotice key={a.id} phone={a.lesson_phone ?? ""} />
+        ))}
 
       {running.length > 0 ? (
         running.map((active) => (

@@ -682,3 +682,26 @@ async def _bridged(fake_ari: FakeAri, call: CloudCall) -> bool:
         and r.params.get("channel") == call.vapi_channel_id
         for r in fake_ari.calls("POST", "/addChannel")
     )
+
+
+def test_vapi_auth_is_written_once_per_change(tmp_path, monkeypatch):
+    """Vapi answers the INVITE with 401: asterisk-cloud needs the SIP user and a password."""
+    from app.config import get_settings
+    from app.telephony import sip
+
+    monkeypatch.setattr(get_settings(), "asterisk_config_dir", str(tmp_path))
+    assert sip.write_vapi_auth("dds-trainer-abc") is True
+    text = (tmp_path / sip.VAPI_AUTH_FILE).read_text(encoding="utf-8")
+    assert "[vapi-auth]" in text and "username=dds-trainer-abc" in text
+    password = next(line for line in text.splitlines() if line.startswith("password="))
+    assert len(password) > len("password=")
+    assert sip.write_vapi_auth("dds-trainer-abc") is False
+    assert sip.write_vapi_auth("dds-trainer-other") is True
+
+
+def test_vapi_auth_without_a_folder(monkeypatch):
+    from app.config import get_settings
+    from app.telephony import sip
+
+    monkeypatch.setattr(get_settings(), "asterisk_config_dir", None)
+    assert sip.write_vapi_auth("dds-trainer-abc") is False

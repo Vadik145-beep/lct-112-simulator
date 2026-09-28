@@ -7,10 +7,18 @@ set -e
 GEN=/etc/asterisk/generated
 mkdir -p "$GEN"
 touch "$GEN/endpoints.conf"
-touch "$GEN/trunk.conf"
+# Emptied on every start: removing the trunk variables switches the trunk off.
+: > "$GEN/trunk.conf"
 
+# TRUNK_ON: the trunk block below is rendered (the same condition), calls of a lesson with
+# calls to the phone then ring the trainee's own phone through it (trainee-targets).
+TRUNK_ON=""
+if [ -n "${TELEPHONY_TRUNK_USER:-}" ] && [ -n "${TELEPHONY_TRUNK_PASSWORD:-}" ]   && [ -n "${TELEPHONY_TRUNK_DOMAIN:-}" ]; then
+  TRUNK_ON=1
+fi
 {
   echo "[globals]"
+  echo "TRUNK_ON=$TRUNK_ON"
   echo "TRUNK_INBOUND=${TELEPHONY_TRUNK_INBOUND:-}"
 } > "$GEN/globals.conf"
 

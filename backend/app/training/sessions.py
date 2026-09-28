@@ -167,6 +167,7 @@ class SessionSettings:
     dialog_mode: str = "select"
     adaptive: bool = False
     phone_calls: bool = False
+    phone: str | None = None
 
 
 async def validate_settings(session: AsyncSession, spec: SessionSettings, teacher: User) -> None:
@@ -186,8 +187,16 @@ async def validate_settings(session: AsyncSession, spec: SessionSettings, teache
         raise ApiError(
             422,
             "phone_calls_unavailable",
-            "Звонки на телефон недоступны: на этой установке не включены телефония и МультиФон.",
+            "Звонки на телефон недоступны: на этой установке не включены телефония "
+            "и линия оператора (транк или МультиФон).",
         )
+    if spec.phone_calls and (spec.phone or "").strip():
+        if not telephony_settings.normalize_phone(spec.phone):
+            raise ApiError(
+                422,
+                "bad_phone",
+                "Номер для звонка: российский номер из 11 цифр, например 8 922 000-00-00.",
+            )
     if spec.card_source not in CARD_SOURCES:
         raise ApiError(
             422,
@@ -274,6 +283,9 @@ def apply_settings(ts: TrainingSession, spec: SessionSettings) -> None:
     ts.dialog_mode = spec.dialog_mode
     ts.adaptive = spec.adaptive
     ts.phone_calls = spec.phone_calls
+    # The number matters only with the checkbox; stored as MultiFon dials it.
+    phone = telephony_settings.normalize_phone(spec.phone) if spec.phone_calls else ""
+    ts.phone = phone or None
 
 
 async def pick_scenarios(session: AsyncSession, ts: TrainingSession) -> list[Scenario]:

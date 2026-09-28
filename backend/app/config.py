@@ -97,6 +97,9 @@ class Settings(BaseSettings):
     # The MultiFon account of asterisk-cloud (the backend only needs to know it is configured:
     # lessons may then ring the trainees' phones).
     multifon_user: str = ""
+    # The operator trunk of the local Asterisk (docs/TRUNK.md): configured = lessons may ring
+    # the trainees' phones through it, without the cloud voice.
+    telephony_trunk_user: str = ""
     # Silero VAD model (ONNX); missing file = energy-based detector.
     vad_model_path: str | None = None
 
