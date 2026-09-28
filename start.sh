@@ -11,7 +11,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 # Архив моделей на Google Диске (models.tar из scripts/offline_bundle.sh --with-models).
-MODELS_URL="${MODELS_URL:-}"
+MODELS_URL="${MODELS_URL:-https://drive.usercontent.google.com/download?id=1Cg23w3AxHc34QQo-TWKnoTCS_vsJVe3X&export=download&confirm=t}"
 MODELS_SHA256="82e7de18d037490524e3b2ae9f4d5cb5ff6bec7e756da514246276119ceb501d"
 # The file that tells the models are in place: the caller's model of the stand.
 MODELS_MARK="models/llm/qwen2.5-3b-instruct-q4_k_m.gguf"
