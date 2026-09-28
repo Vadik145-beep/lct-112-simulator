@@ -33,7 +33,7 @@ async def test_seed_users_creates_the_stand_accounts_on_clean_install(
         {"login": f"teacher-{suffix}", "full_name": "Преподаватель", "role": Role.teacher},
         {"login": f"student-{suffix}", "full_name": "Обучающийся", "role": Role.student},
     ]
-    demo = specs + [{"login": f"teacher2-{suffix}", "full_name": "Демо", "role": Role.teacher}]
+    demo = [*specs, {"login": f"teacher2-{suffix}", "full_name": "Демо", "role": Role.teacher}]
     monkeypatch.setattr(seed_module, "demo_users", lambda: demo)
     monkeypatch.setattr(seed_module, "clean_install_users", lambda: specs)
     try:

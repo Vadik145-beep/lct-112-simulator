@@ -48,7 +48,9 @@ chmod +x "$OUT/install.sh"
 if [ "$WITH_MODELS" = 1 ]; then
   echo "== модели из $MODELS_DIR"
   [ -d "$MODELS_DIR" ] || { echo "нет каталога моделей: сначала ./scripts/fetch_models.sh" >&2; exit 1; }
-  tar -cf "$OUT/models.tar" -C "$(dirname "$MODELS_DIR")" "$(basename "$MODELS_DIR")"
+  # Always models/ in the archive: the compose file reads ./models whatever the folder here is.
+  tar -cf "$OUT/models.tar" -C "$(dirname "$MODELS_DIR")" \
+    --transform "s,^$(basename "$MODELS_DIR"),models," "$(basename "$MODELS_DIR")"
 else
   echo "== модели пропущены (--with-models, чтобы включить)"
 fi

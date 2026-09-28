@@ -64,6 +64,13 @@ if [ ! -f .env ]; then
   secret="$(head -c 48 /dev/urandom | od -An -tx1 | tr -d ' \n')"
   sed -i "s|^SECRET_KEY=.*|SECRET_KEY=${secret}|" .env
   sed -i "s|^TLS_HOSTS=.*|TLS_HOSTS=localhost,127.0.0.1,${HOST_ADDR}|" .env
+  # The stand's settings (28.09.2026): production, the caller and the scenario generation on
+  # Qwen2.5-3B with a 16k context, speech recognition on whisper small.
+  sed -i "s|^APP_ENV=.*|APP_ENV=production|" .env
+  sed -i "s|^LLM_DIALOG_MODEL=.*|LLM_DIALOG_MODEL=qwen2.5-3b-instruct-q4_k_m.gguf|" .env
+  sed -i "s|^LLM_GEN_URL=.*|LLM_GEN_URL=http://llm-dialog:8080|" .env
+  sed -i "s|^LLM_DIALOG_CTX=.*|LLM_DIALOG_CTX=16384|" .env
+  sed -i "s|^STT_MODEL=.*|STT_MODEL=faster-whisper-small|" .env
   if [[ " ${PROFILES[*]} " == *" telephony "* ]]; then
     sed -i "s|^TELEPHONY_ENABLED=.*|TELEPHONY_ENABLED=true|" .env
     sed -i "s|^TELEPHONY_EXTERNAL_IP=.*|TELEPHONY_EXTERNAL_IP=${HOST_ADDR}|" .env
@@ -72,7 +79,12 @@ if [ ! -f .env ]; then
 fi
 
 echo "== запуск (${PROFILES[*]:-без профилей})"
-docker compose "${PROFILES[@]}" up -d --no-build --pull never
+SCALE=()
+# As on the stand: when the generation goes to the dialog model, the 7B server is not started.
+if grep -q '^LLM_GEN_URL=http://llm-dialog:' .env && [[ " ${PROFILES[*]} " == *" ai "* ]]; then
+  SCALE=(--scale llm-gen=0)
+fi
+docker compose "${PROFILES[@]}" up -d --no-build --pull never "${SCALE[@]}"
 
 echo "== ожидание готовности"
 for _ in $(seq 1 60); do
