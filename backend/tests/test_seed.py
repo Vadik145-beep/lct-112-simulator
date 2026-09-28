@@ -1,5 +1,6 @@
-"""Seed on a clean install (DEMO_MODE=false): one administrator who must change the password,
-no demo users, groups, sessions or history. Demo mode keeps creating everything."""
+"""Seed on a clean install (DEMO_MODE=false): an administrator who must change the password
+and the stand's ``teacher`` and ``student``; no demo users, groups, sessions or history. Demo
+mode keeps creating everything."""
 
 import uuid
 
@@ -23,7 +24,7 @@ def clean_install():
         settings.demo_mode = True
 
 
-async def test_seed_users_creates_only_admin_on_clean_install(
+async def test_seed_users_creates_the_stand_accounts_on_clean_install(
     clean_install, monkeypatch: pytest.MonkeyPatch, admin_engine: AsyncEngine
 ) -> None:
     suffix = uuid.uuid4().hex[:8]
@@ -32,17 +33,23 @@ async def test_seed_users_creates_only_admin_on_clean_install(
         {"login": f"teacher-{suffix}", "full_name": "Преподаватель", "role": Role.teacher},
         {"login": f"student-{suffix}", "full_name": "Обучающийся", "role": Role.student},
     ]
-    monkeypatch.setattr(seed_module, "demo_users", lambda: specs)
+    demo = specs + [{"login": f"teacher2-{suffix}", "full_name": "Демо", "role": Role.teacher}]
+    monkeypatch.setattr(seed_module, "demo_users", lambda: demo)
+    monkeypatch.setattr(seed_module, "clean_install_users", lambda: specs)
     try:
         async with SessionLocal() as session:
             created = await seed_module.seed_users(session)
             await session.commit()
-        assert created == 1
+        assert created == 3
         async with SessionLocal() as session:
-            users = list(await session.scalars(select(User).where(User.login.like(f"%-{suffix}"))))
-        assert [u.login for u in users] == [f"admin-{suffix}"]
-        assert users[0].role == Role.admin
-        assert users[0].must_change_password is True
+            users = {
+                u.login: u
+                for u in await session.scalars(select(User).where(User.login.like(f"%-{suffix}")))
+            }
+        assert set(users) == {f"admin-{suffix}", f"teacher-{suffix}", f"student-{suffix}"}
+        assert users[f"admin-{suffix}"].must_change_password is True
+        assert users[f"teacher-{suffix}"].must_change_password is False
+        assert users[f"student-{suffix}"].must_change_password is False
     finally:
         async with admin_engine.begin() as conn:
             await conn.execute(text("DELETE FROM users WHERE login LIKE :p"), {"p": f"%-{suffix}"})

@@ -36,7 +36,7 @@
 ## Настройки в .env
 
 ```
-TELEPHONY_TRUNK_USER=79292491096          # номер или логин у оператора
+TELEPHONY_TRUNK_USER=79001234567          # номер или логин у оператора
 TELEPHONY_TRUNK_PASSWORD=...              # пароль SIP
 TELEPHONY_TRUNK_DOMAIN=multifon.ru        # домен регистрации
 TELEPHONY_TRUNK_PROXY=sbc.megafon.ru:5060 # узел оператора

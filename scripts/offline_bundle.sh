@@ -27,7 +27,8 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
-PROFILES=(--profile ai --profile telephony)
+# cloud: the Vapi pieces too, so a server with internet can turn them on with its own keys.
+PROFILES=(--profile ai --profile telephony --profile cloud)
 MODELS_DIR="${MODELS_DIR:-./models}"
 
 mkdir -p "$OUT"

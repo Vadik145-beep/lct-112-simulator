@@ -91,12 +91,12 @@ async def set_own_phone(login: str, phone: str | None) -> None:
 
 def test_phones_are_normalized_for_multifon():
     normalize = telephony_settings.normalize_phone
-    assert normalize("8 922 781-62-05") == "79227816205"
-    assert normalize("+7 (922) 781-62-05") == "79227816205"
-    assert normalize("9227816205") == "79227816205"
+    assert normalize("8 900 123-45-67") == "79001234567"
+    assert normalize("+7 (900) 123-45-67") == "79001234567"
+    assert normalize("9001234567") == "79001234567"
     assert normalize("112") == ""
     assert normalize("") == ""
-    assert telephony_settings.same_phone("+79227816205", "89227816205")
+    assert telephony_settings.same_phone("+79001234567", "89001234567")
     assert not telephony_settings.same_phone("", "")
     assert telephony_settings.parse_phones("a=89220000001, b=oops ,=1") == {"a": "79220000001"}
 

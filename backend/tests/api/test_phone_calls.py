@@ -62,7 +62,7 @@ async def test_phone_lessons_need_telephony_and_multifon(
 
     monkeypatch.setattr(settings, "telephony_enabled", True)
     monkeypatch.setattr(settings, "cloud_voice_enabled", True)
-    monkeypatch.setattr(settings, "multifon_user", "79227816205")
+    monkeypatch.setattr(settings, "multifon_user", "79001234567")
     models = await client.get("/api/models", headers=bearer(token))
     assert models.json()["phone"] is True
     created = await client.post("/api/sessions", headers=bearer(token), json=body)
