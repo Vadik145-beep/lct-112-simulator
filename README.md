@@ -23,6 +23,10 @@
 > Браузер: Chrome, Яндекс.Браузер или Firefox. Для звонка нужны микрофон и наушники.
 > Когда браузер спросит доступ к микрофону, нажмите «Разрешить».
 
+**🎬 Видео: как работает тренажёр** —
+https://drive.google.com/file/d/1EqRIDEoB-Ikpvw0qfixzoyYD6TQkFXjt/view
+([папка с видео](https://drive.google.com/drive/folders/1QmRZGd6KxJnyK1q0Ivu496xJ-opeMClM)).
+
 ## Установка у себя
 
 Выберите свой случай:
