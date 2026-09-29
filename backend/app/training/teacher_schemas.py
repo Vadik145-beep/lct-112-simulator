@@ -93,6 +93,8 @@ class SessionIn(BaseModel):
     adaptive: bool = False
     # Calls ring the trainees' own phones too (docs/MULTIFON.md).
     phone_calls: bool = False
+    # The number of the live call; empty = each trainee's own number.
+    phone: str | None = Field(default=None, max_length=30)
 
 
 class SessionPatch(BaseModel):
@@ -114,6 +116,7 @@ class SessionPatch(BaseModel):
     dialog_mode: str | None = None
     adaptive: bool | None = None
     phone_calls: bool | None = None
+    phone: str | None = Field(default=None, max_length=30)
 
 
 class QueueScenarioOut(BaseModel):
@@ -188,6 +191,7 @@ class SessionOut(SessionListItem):
     dialog_mode: str
     adaptive: bool
     phone_calls: bool = False
+    phone: str | None = None
     members: list[StudentOut]
     # The queue: fixed once the session starts, a preview of the current filters before.
     queue: list[QueueScenarioOut]

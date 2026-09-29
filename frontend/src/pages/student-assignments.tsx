@@ -39,7 +39,8 @@ export function StudentAssignmentsPage() {
       </div>
 
       {/* One notice for the page: several phone lessons must not open several windows. */}
-      {running.some((a) => a.phone_calls) && <PhoneCallsNotice />}
+      {/* The teacher entered the number of the live call: nothing to ask. */}
+      {running.some((a) => a.phone_calls && !a.lesson_phone) && <PhoneCallsNotice />}
 
       {running.length > 0 ? (
         running.map((active) => (

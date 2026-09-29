@@ -27,14 +27,20 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
-PROFILES=(--profile ai --profile telephony)
+# cloud: the Vapi pieces too, so a server with internet can turn them on with its own keys.
+PROFILES=(--profile ai --profile telephony --profile cloud)
 MODELS_DIR="${MODELS_DIR:-./models}"
 
 mkdir -p "$OUT"
 echo "== образы: сборка и загрузка (${PROFILES[*]})"
 docker compose "${PROFILES[@]}" build
-docker compose "${PROFILES[@]}" pull --ignore-buildable
+# A network hiccup while refreshing is not fatal when the image is already here.
+docker compose "${PROFILES[@]}" pull --ignore-buildable ||
+  echo "   обновить образы не удалось, берём уже скачанные"
 IMAGES=$(docker compose "${PROFILES[@]}" config --images | sort -u)
+for image in $IMAGES; do
+  docker image inspect "$image" >/dev/null 2>&1 || { echo "нет образа $image" >&2; exit 1; }
+done
 echo "$IMAGES" | sed 's/^/   /'
 # shellcheck disable=SC2086
 docker save $IMAGES -o "$OUT/images.tar"
@@ -47,7 +53,9 @@ chmod +x "$OUT/install.sh"
 if [ "$WITH_MODELS" = 1 ]; then
   echo "== модели из $MODELS_DIR"
   [ -d "$MODELS_DIR" ] || { echo "нет каталога моделей: сначала ./scripts/fetch_models.sh" >&2; exit 1; }
-  tar -cf "$OUT/models.tar" -C "$(dirname "$MODELS_DIR")" "$(basename "$MODELS_DIR")"
+  # Always models/ in the archive: the compose file reads ./models whatever the folder here is.
+  tar -cf "$OUT/models.tar" -C "$(dirname "$MODELS_DIR")" \
+    --transform "s,^$(basename "$MODELS_DIR"),models," "$(basename "$MODELS_DIR")"
 else
   echo "== модели пропущены (--with-models, чтобы включить)"
 fi

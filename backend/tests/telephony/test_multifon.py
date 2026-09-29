@@ -91,12 +91,12 @@ async def set_own_phone(login: str, phone: str | None) -> None:
 
 def test_phones_are_normalized_for_multifon():
     normalize = telephony_settings.normalize_phone
-    assert normalize("8 922 781-62-05") == "79227816205"
-    assert normalize("+7 (922) 781-62-05") == "79227816205"
-    assert normalize("9227816205") == "79227816205"
+    assert normalize("8 900 123-45-67") == "79001234567"
+    assert normalize("+7 (900) 123-45-67") == "79001234567"
+    assert normalize("9001234567") == "79001234567"
     assert normalize("112") == ""
     assert normalize("") == ""
-    assert telephony_settings.same_phone("+79227816205", "89227816205")
+    assert telephony_settings.same_phone("+79001234567", "89001234567")
     assert not telephony_settings.same_phone("", "")
     assert telephony_settings.parse_phones("a=89220000001, b=oops ,=1") == {"a": "79220000001"}
 
@@ -208,6 +208,37 @@ async def test_own_number_comes_before_the_administrator_table(
         attempt_id = await phone_attempt()
         call = await manager.dial(attempt_id)
         assert call is not None and call.phone == "79220000009"
+        # The trainee's own number rings next to the browser, as before.
+        create = fake_ari.calls("POST", "/channels/create")[-1]
+        assert create.body["variables"]["__PHONE_ONLY"] == ""
+    finally:
+        await set_own_phone("student1", None)
+
+
+async def test_teacher_number_of_the_lesson_comes_first(
+    manager: CallManager, fake_ari: FakeAri, trainee_phone: None
+):
+    """The teacher entered the number of the live call: it rings, not the trainee's own."""
+    await set_own_phone("student1", "79220000009")
+    try:
+        attempt_id = await phone_attempt()
+        async with SessionLocal() as session:
+            attempt = await session.get(Attempt, attempt_id)
+            ts = await session.get(TrainingSession, attempt.session_id)
+            ts.phone = "79220000077"
+            await session.commit()
+        call = await manager.dial(attempt_id)
+        assert call is not None and call.phone == "79220000077"
+        create = fake_ari.calls("POST", "/channels/create")[-1]
+        assert create.body["variables"][VAR_MOBILE] == "79220000077"
+        # Only the phone rings: answering in the browser would end the call.
+        assert create.body["variables"]["__PHONE_ONLY"] == "1"
+        from app.dialog.router import call_out
+
+        async with SessionLocal() as session:
+            attempt = await session.get(Attempt, attempt_id)
+            ts = await session.get(TrainingSession, attempt.session_id)
+            assert call_out(attempt, ts).phone == "79220000077"
     finally:
         await set_own_phone("student1", None)
 
@@ -436,3 +467,16 @@ async def _service_answered(attempt_id: uuid.UUID, call_id: str) -> bool:
 
 async def _service_ended(attempt_id: uuid.UUID, call_id: str) -> bool:
     return bool(service_call_of(await load(attempt_id), call_id).get("ended_at"))
+
+
+async def test_finishing_the_lesson_hangs_up_the_phone(
+    manager: CallManager, fake_ari: FakeAri, trainee_phone: None
+):
+    """The call on the phone has no «Завершить» in the card: the lesson's end hangs it up."""
+    attempt_id = await phone_attempt()
+    call = await manager.dial(attempt_id)
+    assert call is not None
+    assert await manager.hangup_session(call.session_id) == 1
+    assert [r.path for r in fake_ari.calls("DELETE", f"/channels/{call.channel_id}")]
+    assert manager.call_for_attempt(attempt_id) is None
+    assert await manager.hangup_session(call.session_id) == 0

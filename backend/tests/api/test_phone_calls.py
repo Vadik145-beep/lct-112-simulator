@@ -62,7 +62,7 @@ async def test_phone_lessons_need_telephony_and_multifon(
 
     monkeypatch.setattr(settings, "telephony_enabled", True)
     monkeypatch.setattr(settings, "cloud_voice_enabled", True)
-    monkeypatch.setattr(settings, "multifon_user", "79227816205")
+    monkeypatch.setattr(settings, "multifon_user", "79001234567")
     models = await client.get("/api/models", headers=bearer(token))
     assert models.json()["phone"] is True
     created = await client.post("/api/sessions", headers=bearer(token), json=body)
@@ -85,3 +85,67 @@ async def test_phone_lessons_need_telephony_and_multifon(
     )
     assert plain.status_code == 201
     assert plain.json()["phone_calls"] is False
+
+
+async def test_phone_lessons_work_through_the_trunk_without_the_cloud(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The operator trunk of the local Asterisk (docs/TRUNK.md) is enough: no cloud voice."""
+    token = await login(client, "teacher1")
+    body = await _lesson_body(client, token)
+    settings = get_settings()
+    monkeypatch.setattr(settings, "telephony_enabled", True)
+    monkeypatch.setattr(settings, "cloud_voice_enabled", False)
+    monkeypatch.setattr(settings, "telephony_trunk_user", "79292491096")
+
+    models = await client.get("/api/models", headers=bearer(token))
+    assert models.json()["phone"] is True
+    created = await client.post("/api/sessions", headers=bearer(token), json=body)
+    assert created.status_code == 201, created.text
+    assert created.json()["phone_calls"] is True
+
+    # Without telephony the trunk alone does not make the lesson possible.
+    monkeypatch.setattr(settings, "telephony_enabled", False)
+    refused = await client.post("/api/sessions", headers=bearer(token), json=body)
+    assert refused.status_code == 422, refused.text
+
+
+async def test_teacher_enters_the_number_of_the_live_call(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    token = await login(client, "teacher1")
+    body = await _lesson_body(client, token)
+    settings = get_settings()
+    monkeypatch.setattr(settings, "telephony_enabled", True)
+    monkeypatch.setattr(settings, "telephony_trunk_user", "79292491096")
+
+    bad = await client.post("/api/sessions", headers=bearer(token), json={**body, "phone": "112"})
+    assert bad.status_code == 422, bad.text
+    assert bad.json()["error"]["code"] == "bad_phone"
+
+    created = await client.post(
+        "/api/sessions", headers=bearer(token), json={**body, "phone": "8 (922) 000-00-77"}
+    )
+    assert created.status_code == 201, created.text
+    assert created.json()["phone"] == "79220000077"
+    session_id = created.json()["id"]
+
+    # The trainee sees the number: the page does not ask for his own.
+    student = await login(client, "student1")
+    assignments = await client.get("/api/me/assignments", headers=bearer(student))
+    lesson = next(a for a in assignments.json() if a["id"] == session_id)
+    assert lesson["lesson_phone"] == "79220000077"
+
+    # Without the checkbox the number is dropped; an empty number clears it.
+    patched = await client.patch(
+        f"/api/sessions/{session_id}", headers=bearer(token), json={"phone": ""}
+    )
+    assert patched.status_code == 200, patched.text
+    assert patched.json()["phone"] is None
+    off = await client.patch(
+        f"/api/sessions/{session_id}",
+        headers=bearer(token),
+        json={"phone": "89220000077", "phone_calls": False},
+    )
+    assert off.status_code == 200, off.text
+    assert off.json()["phone"] is None

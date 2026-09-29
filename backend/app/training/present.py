@@ -294,6 +294,7 @@ def session_info(ts: TrainingSession, lookups: Lookups, service_code: str | None
         hints_enabled=ts.hints_enabled,
         dialog_mode=ts.dialog_mode,
         phone_calls=ts.phone_calls,
+        lesson_phone=ts.phone,
         started_at=ts.started_at,
         finished_at=ts.finished_at,
         service=_service_info(service_code, lookups),

@@ -21,7 +21,7 @@ import { formatDateTime, useNow } from "@/emulator/time";
 import { ArmButton, TrainerPanel } from "@/emulator/widgets";
 import { useSessionEvents, type SessionEvent } from "@/emulator/ws";
 import { AddressForm } from "@/intake/address-form";
-import { CallBlock } from "@/intake/call-panel";
+import { CallBlock, PhoneCallBlock } from "@/intake/call-panel";
 import { CallControls } from "@/softphone/call-panel";
 import { DialogPanel } from "@/intake/dialog-panel";
 import { newId, useCardDraft, type Card } from "@/intake/draft";
@@ -219,7 +219,11 @@ export function CallCard({ attempt, connectionSeq }: { attempt: AttemptOut; conn
       <div className="arm-scroll flex min-h-0 min-w-0 flex-1 flex-col gap-1 overflow-y-auto p-1">
         {/* Top: the call panel, phones, incident number, the conversation timer. */}
         <header className="flex items-start gap-1 text-xs">
-          <CallBlock phone={phone ?? softphone} />
+          {dialogQuery.data?.call.phone ? (
+            <PhoneCallBlock phone={dialogQuery.data.call.phone} status={status} />
+          ) : (
+            <CallBlock phone={phone ?? softphone} />
+          )}
           <PhoneBox label="АОН" value={intake?.caller_phone ?? ""} />
           <PhoneBox label="предоставленный" value={card.caller.phone} onChange={(v) => !closed && setCard({ caller: { ...card.caller, phone: v } })} />
           <PhoneBox label="телефон на месте" value="" />

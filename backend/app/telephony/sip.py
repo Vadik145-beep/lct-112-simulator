@@ -34,6 +34,8 @@ log = get_logger(__name__)
 WEBRTC_PREFIX = "stu-"
 PHONE_PREFIX = "phone-"
 ENDPOINTS_FILE = "endpoints.conf"
+# Credentials asterisk-cloud answers Vapi's 401 with (deploy/asterisk-cloud/pjsip.conf).
+VAPI_AUTH_FILE = "vapi-auth.conf"
 PASSWORD_BYTES = 18  # 24 characters of URL-safe base64
 _UNSAFE = re.compile(r"[^a-z0-9_-]")
 
@@ -166,3 +168,37 @@ def write_endpoints(accounts: list[SipAccount], config: TelephonySettings) -> Pa
     tmp.write_text(content, encoding="utf-8")
     os.replace(tmp, path)
     return path
+
+
+def render_vapi_auth(sip_user: str) -> str:
+    """Vapi challenges an INVITE to a SIP number with 401: the username must be the user part
+    of the number's SIP URI, the password anything non-empty (docs.vapi.ai, SIP trunking)."""
+    password = hashlib.sha256(f"vapi-sip:{get_settings().secret_key}".encode()).hexdigest()[:24]
+    return "\n".join(
+        [
+            "; Written by the backend once it knows the Vapi SIP number (app.telephony.sip).",
+            "[vapi-auth]",
+            "type=auth",
+            "auth_type=userpass",
+            f"username={sip_user}",
+            f"password={password}",
+            "",
+        ]
+    )
+
+
+def write_vapi_auth(sip_user: str) -> bool:
+    """Writes the Vapi credentials for asterisk-cloud; ``True`` when the file changed (PJSIP
+    must then be reloaded), ``False`` when it is unchanged or no folder is configured."""
+    folder = get_settings().asterisk_config_dir
+    if not folder:
+        return False
+    path = Path(folder) / VAPI_AUTH_FILE
+    content = render_vapi_auth(sip_user)
+    if path.exists() and path.read_text(encoding="utf-8") == content:
+        return False
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(".tmp")
+    tmp.write_text(content, encoding="utf-8")
+    os.replace(tmp, path)
+    return True

@@ -28,6 +28,8 @@ class SessionInfo(BaseModel):
     dialog_mode: str
     # Calls ring the trainee's own phone too: the page asks for the number (docs/MULTIFON.md).
     phone_calls: bool = False
+    # The number the teacher entered: the calls ring it, the page does not ask for one.
+    lesson_phone: str | None = None
     started_at: datetime | None
     finished_at: datetime | None
     service: ServiceInfo | None

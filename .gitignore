@@ -50,6 +50,7 @@ frontend/test-results/
 frontend/e2e/vapi/out/
 # downloaded AI models at the repository root (scripts/fetch_models.sh), not app/models/
 /models/
+/models.tar.part
 
 # readiness forecast: the trained model is committed, the simulated cohort is not
 # (scripts/simulate_cohort.py recreates it)

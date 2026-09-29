@@ -50,6 +50,7 @@ from app.models import (
     CALL_ENDED,
 )
 from app.telephony import settings as telephony_settings
+from app.telephony import sip
 from app.telephony.ari import AriError
 from app.telephony.calls import (
     CHANNEL_FORMAT,
@@ -359,7 +360,25 @@ class CloudCallManager(CallManager):
             log.warning("vapi number set-up failed", error=str(exc))
             return False
         log.info("cloud voice ready", sip_user=self.sip_user, host=s.vapi_sip_host)
+        await self._write_vapi_auth()
         return True
+
+    async def _write_vapi_auth(self) -> None:
+        """Vapi answers an INVITE without credentials with 401: asterisk-cloud takes them
+        from generated/vapi-auth.conf, written here and picked up by a PJSIP reload."""
+        from app.telephony.service import PJSIP_MODULE
+
+        try:
+            changed = sip.write_vapi_auth(self.sip_user or "")
+        except OSError as exc:
+            log.warning("vapi auth not written", error=str(exc))
+            return
+        if not changed:
+            return
+        try:
+            await self.ari.reload_module(PJSIP_MODULE)
+        except AriError as exc:
+            log.warning("pjsip reload failed", error=str(exc))
 
     # ------------------------------------------------------------ lookup
 

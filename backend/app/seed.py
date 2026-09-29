@@ -3,8 +3,9 @@ scenarios get a new version only when their file changed, the demo session keeps
 
 ``DEMO_MODE=true`` (the jury stand, development): demo users, groups, two running sessions
 and a month of history (PRD section 15). ``DEMO_MODE=false`` (a clean install at the
-customer's): only the scenarios from the organizers' tickets and one ``admin`` who must
-change the password at the first login; teachers, trainees and groups are created by hand.
+customer's, the default of the delivery): the scenarios from the organizers' tickets, an
+``admin`` who must change the password at the first login and the two accounts of the stand,
+``teacher`` and ``student`` (SEED_PASSWORD); groups and lessons are created by hand.
 
 Run: python -m app.seed
 """
@@ -104,19 +105,34 @@ def demo_users() -> list[dict]:
     return users
 
 
+def clean_install_users() -> list[dict]:
+    """The accounts of a clean install: the same logins as on the stand (решение пользователя
+    28.09.2026), the administrator on top to manage them."""
+    return [
+        demo_users()[0],
+        {"login": "teacher", "full_name": "Преподаватель", "role": Role.teacher},
+        {
+            "login": "student",
+            "full_name": "Обучающийся",
+            "role": Role.student,
+            "service_code": "gkh",  # as on the stand
+        },
+    ]
+
+
 async def seed_users(session: AsyncSession) -> int:
-    """All demo users in demo mode; only the administrator on a clean install."""
+    """All demo users in demo mode; the administrator and the stand's ``teacher`` and
+    ``student`` on a clean install. Only the administrator must change the password."""
     settings = get_settings()
     password_hash = hash_password(settings.seed_password)
     existing = set(await session.scalars(select(User.login)))
-    specs = demo_users() if settings.demo_mode else demo_users()[:1]
+    specs = demo_users() if settings.demo_mode else clean_install_users()
     created = 0
     for spec in specs:
         if spec["login"] in existing:
             continue
-        session.add(
-            User(password_hash=password_hash, must_change_password=not settings.demo_mode, **spec)
-        )
+        must_change = not settings.demo_mode and spec["role"] == Role.admin
+        session.add(User(password_hash=password_hash, must_change_password=must_change, **spec))
         created += 1
     await session.flush()
     return created
