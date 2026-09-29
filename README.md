@@ -27,6 +27,10 @@
 https://drive.google.com/file/d/1EqRIDEoB-Ikpvw0qfixzoyYD6TQkFXjt/view
 ([папка с видео](https://drive.google.com/drive/folders/1QmRZGd6KxJnyK1q0Ivu496xJ-opeMClM)).
 
+**📄 Документация:** https://docs.google.com/document/d/1jUSraFs4v05WsOllQZAZFcoP-sllYiqL0SQoTPuxCtQ/edit
+
+**📊 Презентация:** https://docs.google.com/presentation/d/1KIT0vImiX4MTWcn07Gl4nErMMglOpNxSUuhBdFSZ3O0/edit
+
 ## Установка у себя
 
 Выберите свой случай:
