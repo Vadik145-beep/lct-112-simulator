@@ -42,16 +42,23 @@ if [ -f "$MODELS_MARK" ]; then
 else
   got=0
   if [ -n "$MODELS_URL" ]; then
-    echo "   архив с Google Диска (~9 ГБ)"
-    if curl -L --fail --retry 5 --retry-delay 5 --progress-bar -o models.tar.part "$MODELS_URL" &&
-      [ "$(sha256sum models.tar.part | cut -d' ' -f1)" = "$MODELS_SHA256" ]; then
-      tar -xf models.tar.part && rm -f models.tar.part && got=1
+    echo "   архив с Google Диска (~9 ГБ); после обрыва докачивается с того же места"
+    # -C -: a broken download continues where it stopped, on a retry and on the next ./start.sh.
+    if curl -L --fail --retry 20 --retry-delay 5 -C - --progress-bar -o models.tar.part "$MODELS_URL"; then
+      if [ "$(sha256sum models.tar.part | cut -d' ' -f1)" = "$MODELS_SHA256" ]; then
+        tar -xf models.tar.part && rm -f models.tar.part && got=1
+      else
+        echo "   архив повреждён — удаляю и качаю по файлу с официальных источников"
+        rm -f models.tar.part
+      fi
     else
-      echo "   архив не скачался или повреждён — качаю по файлу с официальных источников"
-      rm -f models.tar.part
+      echo "   архив не докачался (запустите ./start.sh ещё раз — продолжит с места обрыва);"
+      echo "   пока качаю по файлу с официальных источников"
     fi
   fi
-  [ "$got" = 1 ] || ./scripts/fetch_models.sh
+  if [ "$got" != 1 ]; then
+    ./scripts/fetch_models.sh && rm -f models.tar.part
+  fi
 fi
 
 if [ ! -f .env ]; then
