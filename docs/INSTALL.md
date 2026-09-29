@@ -28,8 +28,11 @@ cp .env.example .env
 ```
 
 В файле `.env` обязательно поменять `SECRET_KEY`, `POSTGRES_PASSWORD`, `APP_DB_PASSWORD`,
-`SEED_PASSWORD`, `ARI_PASSWORD`. Для боевой установки поставить `DEMO_MODE=false`: тогда при первом
-запуске создаётся только администратор, а демонстрационные пользователи и история не создаются.
+`SEED_PASSWORD`, `ARI_PASSWORD`. По умолчанию `DEMO_MODE=false`: при первом запуске создаются
+`admin` (при первом входе меняет пароль), `teacher` и `student` с паролем `SEED_PASSWORD`.
+Для показа можно поставить `DEMO_MODE=true` до первого запуска: на экране входа появятся кнопки
+«Войти как обучающийся / преподаватель / администратор», демо-учётки `teacher1`, `student1` …
+`student12` и демо-занятия.
 
 ```bash
 docker compose up -d --build
