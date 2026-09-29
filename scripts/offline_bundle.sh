@@ -32,6 +32,8 @@ PROFILES=(--profile ai --profile telephony --profile cloud)
 MODELS_DIR="${MODELS_DIR:-./models}"
 
 mkdir -p "$OUT"
+# docker compose reads .env for the build; a fresh clone has none yet.
+[ -f .env ] || cp .env.example .env
 echo "== образы: сборка и загрузка (${PROFILES[*]})"
 docker compose "${PROFILES[@]}" build
 # A network hiccup while refreshing is not fatal when the image is already here.
