@@ -3818,6 +3818,11 @@ export interface components {
         PublicConfig: {
             /** Demo Mode */
             demo_mode: boolean;
+            /**
+             * Quick Login Roles
+             * @default []
+             */
+            quick_login_roles: components["schemas"]["Role"][];
             /** External Ai */
             external_ai: boolean;
             /** App Env */

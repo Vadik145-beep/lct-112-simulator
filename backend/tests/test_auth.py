@@ -204,6 +204,47 @@ async def test_demo_login_disabled_when_demo_mode_off(client: AsyncClient) -> No
         settings.demo_mode = True
 
 
+async def test_quick_login_enters_the_stand_accounts_but_not_admin(
+    client: AsyncClient, admin_engine: AsyncEngine
+) -> None:
+    """QUICK_LOGIN without the demo mode: the buttons enter the stand's teacher and student."""
+    created: list[str] = []
+    async with admin_engine.begin() as conn:
+        for login_, role in (("teacher", "teacher"), ("student", "student")):
+            row = await conn.execute(
+                text(
+                    "INSERT INTO users (id, login, password_hash, full_name, role, service_code) "
+                    "VALUES (gen_random_uuid(), :login, 'x', 'Стенд', :role, :service) "
+                    "ON CONFLICT (login) DO NOTHING RETURNING login"
+                ),
+                {"login": login_, "role": role, "service": "gkh" if role == "student" else None},
+            )
+            created += [r[0] for r in row]
+    settings = get_settings()
+    settings.demo_mode = False
+    try:
+        r = await client.get("/api/config")
+        assert r.json()["quick_login_roles"] == []
+        assert (await client.post("/api/auth/demo/teacher")).status_code == 404
+
+        settings.quick_login = True
+        r = await client.get("/api/config")
+        assert sorted(r.json()["quick_login_roles"]) == ["student", "teacher"]
+        for role in ("teacher", "student"):
+            r = await client.post(f"/api/auth/demo/{role}")
+            assert r.status_code == 200, r.text
+            assert r.json()["user"]["login"] == role
+        assert (await client.post("/api/auth/demo/admin")).status_code == 404
+    finally:
+        settings.demo_mode = True
+        settings.quick_login = False
+        if created:
+            async with admin_engine.begin() as conn:
+                await conn.execute(
+                    text("DELETE FROM users WHERE login = ANY(:logins)"), {"logins": created}
+                )
+
+
 async def test_validation_error_shape(client: AsyncClient) -> None:
     r = await client.post("/api/auth/login", json={"login": "student1"})
     assert r.status_code == 422
