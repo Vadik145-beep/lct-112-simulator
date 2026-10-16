@@ -39,3 +39,7 @@ class User(Base):
     sip_password_enc: Mapped[str | None] = mapped_column(String(255))
     # The trainee's own phone (7XXXXXXXXXX) for lessons with calls to the phone (docs/MULTIFON.md).
     phone: Mapped[str | None] = mapped_column(String(20))
+    # The 112 operator mode (call intake) is hidden unless the administrator grants it.
+    call_intake_access: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false"
+    )

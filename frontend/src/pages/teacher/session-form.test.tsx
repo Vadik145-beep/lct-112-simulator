@@ -1,7 +1,9 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
+import { AuthContext } from "@/app/auth-context";
 import { SessionFormPage } from "@/pages/teacher/session-form";
+import { makeAuth, makeUser } from "@/test/helpers";
 
 const existing = { current: null as Record<string, unknown> | null };
 
@@ -45,17 +47,20 @@ function draft(dialogMode: string) {
   };
 }
 
-function renderForm(path: string) {
+function renderForm(path: string, callIntakeAccess = true) {
+  const user = makeUser({ role: "teacher", call_intake_access: callIntakeAccess });
   return render(
-    <MemoryRouter initialEntries={[path]}>
-      <Routes>
-        <Route path="/teacher/sessions/new" element={<SessionFormPage />} />
-        <Route
-          path="/teacher/sessions/:sessionId/edit"
-          element={<SessionFormPage />}
-        />
-      </Routes>
-    </MemoryRouter>,
+    <AuthContext.Provider value={makeAuth({ status: "authenticated", user })}>
+      <MemoryRouter initialEntries={[path]}>
+        <Routes>
+          <Route path="/teacher/sessions/new" element={<SessionFormPage />} />
+          <Route
+            path="/teacher/sessions/:sessionId/edit"
+            element={<SessionFormPage />}
+          />
+        </Routes>
+      </MemoryRouter>
+    </AuthContext.Provider>,
   );
 }
 
@@ -94,5 +99,22 @@ describe("Dialog mode of a lesson", () => {
     existing.current = draft("select");
     renderForm("/teacher/sessions/s1/edit");
     expect(modeOptions()).toEqual(["select", "generate"]);
+  });
+});
+
+describe("Lesson mode and access to the 112 operator mode", () => {
+  it("offers both modes to a teacher the administrator opened 112 for", () => {
+    existing.current = null;
+    renderForm("/teacher/sessions/new");
+    expect(screen.getByLabelText(/Приём вызова/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Реагирование на карточку/)).toBeInTheDocument();
+  });
+
+  it("hides the mode choice from a teacher without access", () => {
+    existing.current = null;
+    renderForm("/teacher/sessions/new", false);
+    expect(screen.queryByText("Режим")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/Приём вызова/)).not.toBeInTheDocument();
+    expect(screen.getByText("Как отвечают служба и бригада")).toBeInTheDocument();
   });
 });

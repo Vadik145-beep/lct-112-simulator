@@ -32,6 +32,7 @@ class AdminUserOut(BaseModel):
     is_blocked: bool
     must_change_password: bool
     has_sip_account: bool
+    call_intake_access: bool
     created_at: datetime
     last_login_at: datetime | None
 
@@ -52,6 +53,7 @@ class AdminUserPatch(BaseModel):
     # Explicit flag so an empty service can be set: {"service_code": null, "clear_service": true}.
     clear_service: bool = False
     is_blocked: bool | None = None
+    call_intake_access: bool | None = None
 
 
 class AdminUserCreated(BaseModel):

@@ -111,6 +111,7 @@ export function AdminUsersPage() {
                 <th className="py-2 pr-3 font-medium">Роль</th>
                 <th className="py-2 pr-3 font-medium">Служба</th>
                 <th className="py-2 pr-3 font-medium">Состояние</th>
+                <th className="py-2 pr-3 font-medium">Режим 112</th>
                 <th className="py-2 pr-3 font-medium">Последний вход</th>
                 <th className="py-2 pr-3 font-medium">Действия</th>
               </tr>
@@ -128,6 +129,7 @@ export function AdminUsersPage() {
                     })
                   }
                   onBlock={(blocked) => update.mutate({ id: u.id, is_blocked: blocked }, { onError: fail })}
+                  onCallIntake={(granted) => update.mutate({ id: u.id, call_intake_access: granted }, { onError: fail })}
                   onReset={() =>
                     reset.mutate(u.id, {
                       onSuccess: (data) => setSecret({ title: `Временный пароль: ${u.login}`, lines: [`Пароль: ${data.temporary_password}`] }),
@@ -164,6 +166,7 @@ function UserRow({
   fullName,
   onReveal,
   onBlock,
+  onCallIntake,
   onReset,
   onSip,
 }: {
@@ -171,6 +174,7 @@ function UserRow({
   fullName?: string | undefined;
   onReveal: () => void;
   onBlock: (blocked: boolean) => void;
+  onCallIntake: (granted: boolean) => void;
   onReset: () => void;
   onSip: () => void;
 }) {
@@ -195,6 +199,12 @@ function UserRow({
           {u.must_change_password && <Badge tone="warning">сменить пароль</Badge>}
           {u.has_sip_account && <Badge tone="neutral">SIP</Badge>}
         </div>
+      </td>
+      <td className="py-2 pr-3">
+        <label className="inline-flex items-center gap-2" title="Режим оператора 112: приём вызова">
+          <input type="checkbox" checked={u.call_intake_access} onChange={(e) => onCallIntake(e.target.checked)} aria-label={`Режим 112: ${u.login}`} />
+          {u.call_intake_access ? "открыт" : <span className="text-muted-foreground">скрыт</span>}
+        </label>
       </td>
       <td className="py-2 pr-3 whitespace-nowrap text-muted-foreground">{u.last_login_at ? formatDateTime(u.last_login_at) : "—"}</td>
       <td className="py-2 pr-3">

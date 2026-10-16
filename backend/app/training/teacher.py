@@ -13,6 +13,7 @@ from sqlalchemy import delete, select
 from app.admin import health
 from app.admin import settings as admin_settings
 from app.audit import write_audit
+from app.auth.access import require_call_intake_access
 from app.auth.deps import DbSession, client_ip, require_role
 from app.errors import ApiError
 from app.events import publish_events
@@ -235,6 +236,8 @@ async def preview_queue(body: QueuePreviewIn, user: Teacher, session: DbSession)
     before the lesson exists, so an empty queue is not a surprise (docs/BUGS.md, 6 and 7)."""
     if body.mode not in (MODE_CARD_RESPONSE, MODE_CALL_INTAKE):
         raise ApiError(422, "bad_mode", "Неизвестный режим занятия.")
+    if body.mode == MODE_CALL_INTAKE:
+        require_call_intake_access(user)
     if body.card_source not in lessons.CARD_SOURCES:
         raise ApiError(422, "bad_card_source", "Неизвестный источник карточек.")
     draft = TrainingSession(

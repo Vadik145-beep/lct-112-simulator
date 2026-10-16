@@ -2330,6 +2330,8 @@ export interface components {
             must_change_password: boolean;
             /** Has Sip Account */
             has_sip_account: boolean;
+            /** Call Intake Access */
+            call_intake_access: boolean;
             /**
              * Created At
              * Format: date-time
@@ -2352,6 +2354,8 @@ export interface components {
             clear_service: boolean;
             /** Is Blocked */
             is_blocked?: boolean | null;
+            /** Call Intake Access */
+            call_intake_access?: boolean | null;
         };
         /** AnswerResponse */
         AnswerResponse: {
@@ -5253,6 +5257,11 @@ export interface components {
             must_change_password: boolean;
             /** Phone */
             phone?: string | null;
+            /**
+             * Call Intake Access
+             * @default false
+             */
+            call_intake_access: boolean;
         };
         /** ValidationError */
         ValidationError: {

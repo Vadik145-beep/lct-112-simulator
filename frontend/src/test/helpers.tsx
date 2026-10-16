@@ -14,6 +14,7 @@ export function makeUser(overrides: Partial<UserOut> = {}): UserOut {
     role: "student",
     service_code: null,
     must_change_password: false,
+    call_intake_access: false,
     ...overrides,
   };
 }
