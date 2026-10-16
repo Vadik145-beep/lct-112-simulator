@@ -24,6 +24,8 @@ class UserOut(BaseModel):
     must_change_password: bool
     # The trainee's own phone for lessons with calls to the phone (docs/MULTIFON.md).
     phone: str | None = None
+    # The 112 operator mode is shown to the user (granted by the administrator).
+    call_intake_access: bool = False
 
 
 class TokenResponse(BaseModel):

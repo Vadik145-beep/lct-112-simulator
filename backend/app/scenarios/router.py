@@ -13,6 +13,7 @@ from fastapi import APIRouter, Depends, File, Query, Response, UploadFile
 from sqlalchemy import select
 
 from app.audit import write_audit
+from app.auth.access import require_call_intake_access
 from app.auth.deps import DbSession, require_role
 from app.config import get_settings
 from app.dialog import service as dialog
@@ -90,6 +91,10 @@ async def list_scenarios(
     ticket: Annotated[str | None, Query(max_length=16)] = None,
     q: Annotated[str | None, Query(max_length=100)] = None,
 ) -> ScenarioListOut:
+    if not user.call_intake_access:
+        if kind == "call_intake":
+            return ScenarioListOut(items=[], total=0)
+        kind = "card_response"
     items = await scenarios.list_scenarios(
         session, kind=kind, group=group, source=source, status=status, ticket=ticket, q=q
     )
@@ -102,6 +107,8 @@ async def list_scenarios(
 @router.post("/scenarios", response_model=ScenarioOut, status_code=201)
 async def create_scenario(body: ScenarioCreateIn, user: Teacher, session: DbSession) -> ScenarioOut:
     scenarios.scenario_body_or_422(body.body)
+    if body.body.get("kind") == "call_intake":
+        require_call_intake_access(user)
     refs = await scenarios.load_refs(session)
     loaded = await scenarios.create(
         session, body.body, source="manual", status=body.status, author=user, refs=refs
@@ -216,6 +223,8 @@ def _check_generation_options(body: GenerateIn) -> None:
 async def generate_scenario(body: GenerateIn, user: Teacher, session: DbSession) -> JobAcceptedOut:
     """Starts a generation job; poll ``GET /jobs/{id}``, the result names the scenario."""
     _check_generation_options(body)
+    if body.both_kinds or body.kind == "call_intake":
+        require_call_intake_access(user)
     refs = await scenarios.load_refs(session)
     if body.incident_type and body.incident_type not in refs.incident_types:
         raise ApiError(

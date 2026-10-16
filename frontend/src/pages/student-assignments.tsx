@@ -2,6 +2,7 @@ import { ArrowRight, ClipboardList } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { useAssignments, type AssignmentOut } from "@/api/training";
+import { useAuth } from "@/app/use-auth";
 import { ErrorState, LoadingState } from "@/components/states";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,13 +24,16 @@ const STATUS_TITLES: Record<string, string> = {
 /** «Мои задания»: the running session first and large, the rest as a list. */
 export function StudentAssignmentsPage() {
   const query = useAssignments();
+  const callIntake = useAuth().user?.call_intake_access ?? false;
 
   if (query.isPending) return <LoadingState text="Загружаем задания…" />;
   if (query.isError) return <ErrorState message={query.error.message} onRetry={() => void query.refetch()} />;
 
   // Several lessons may run at once (a card lesson and a call lesson): each gets a card.
-  const running = query.data.filter((a) => a.status === "running");
-  const rest = query.data.filter((a) => a.status !== "running");
+  // Lessons of the 112 operator mode are hidden unless the administrator opened the mode.
+  const visible = callIntake ? query.data : query.data.filter((a) => a.mode !== "call_intake");
+  const running = visible.filter((a) => a.status === "running");
+  const rest = visible.filter((a) => a.status !== "running");
 
   return (
     <div className="space-y-6">

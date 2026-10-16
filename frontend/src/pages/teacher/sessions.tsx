@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import { useDeleteSessions, useTeacherSessions, type SessionListItem } from "@/api/teacher";
+import { useAuth } from "@/app/use-auth";
 import { ErrorState, LoadingState } from "@/components/states";
 import { Badge, type BadgeTone } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,12 +19,14 @@ export function TeacherSessionsPage() {
   const remove = useDeleteSessions();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [confirming, setConfirming] = useState(false);
+  const callIntake = useAuth().user?.call_intake_access ?? false;
 
   if (query.isPending) return <LoadingState text="Загружаем занятия…" />;
   if (query.isError) return <ErrorState message={query.error.message} onRetry={() => void query.refetch()} />;
 
   const order: Record<string, number> = { running: 0, draft: 1, finished: 2 };
-  const sessions = [...query.data].sort((a, b) => (order[a.status] ?? 3) - (order[b.status] ?? 3));
+  // Lessons of the 112 operator mode are hidden unless the administrator opened the mode.
+  const sessions = query.data.filter((s) => callIntake || s.mode !== "call_intake").sort((a, b) => (order[a.status] ?? 3) - (order[b.status] ?? 3));
   // A running lesson is finished first, then deleted.
   const deletable = sessions.filter((s) => s.status !== "running");
   const chosen = deletable.filter((s) => selected.has(s.id));

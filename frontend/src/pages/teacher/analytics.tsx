@@ -2,6 +2,7 @@ import { BarChart3 } from "lucide-react";
 import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
+import { useAuth } from "@/app/use-auth";
 import { useGroupAnalytics, type GroupAnalyticsOut, type ReadinessOut } from "@/api/analytics";
 import { useGroups } from "@/api/teacher";
 import { heatmapOption, scoreDynamicsOption, timeDynamicsOption } from "@/analytics/charts";
@@ -148,7 +149,11 @@ function GroupAnalytics({ groupId, days }: { groupId: string; days: number }) {
 
 function Heatmaps({ data }: { data: GroupAnalyticsOut }) {
   const p = usePalette();
-  const modes = useMemo(() => Array.from(new Set(data.heatmap.map((c) => c.mode))).sort(), [data.heatmap]);
+  const callIntake = useAuth().user?.call_intake_access ?? false;
+  const modes = useMemo(
+    () => Array.from(new Set(data.heatmap.map((c) => c.mode))).filter((m) => callIntake || m !== "call_intake").sort(),
+    [data.heatmap, callIntake],
+  );
   const options = useMemo(
     () => modes.map((mode) => ({ mode, option: heatmapOption(p, data.heatmap, data.students, data.incident_groups, mode, THRESHOLD) })),
     [p, modes, data],

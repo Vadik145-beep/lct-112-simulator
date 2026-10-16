@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.auth.access import require_call_intake_access
 from app.config import get_settings
 from app.domain.evaluation import apply_weights
 from app.domain.evaluation import call_intake as call_intake_engine
@@ -174,6 +175,8 @@ async def validate_settings(session: AsyncSession, spec: SessionSettings, teache
     """Rejects settings the trainer cannot run; messages say what to change."""
     if spec.mode not in (MODE_CARD_RESPONSE, MODE_CALL_INTAKE):
         raise ApiError(422, "bad_mode", "Неизвестный режим занятия.")
+    if spec.mode == MODE_CALL_INTAKE:
+        require_call_intake_access(teacher)
     if spec.dialog_mode not in DIALOG_MODES:
         raise ApiError(422, "bad_dialog_mode", f"Режим диалога: один из {', '.join(DIALOG_MODES)}.")
     if spec.dialog_mode == DIALOG_MODE_CLOUD and not get_settings().cloud_voice_enabled:

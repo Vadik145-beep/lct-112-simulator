@@ -50,6 +50,10 @@ async def test_seed_users_creates_the_stand_accounts_on_clean_install(
         assert users[f"admin-{suffix}"].must_change_password is True
         assert users[f"teacher-{suffix}"].must_change_password is False
         assert users[f"student-{suffix}"].must_change_password is False
+        # The 112 operator mode is hidden from the stand's teacher and trainee.
+        assert users[f"admin-{suffix}"].call_intake_access is True
+        assert users[f"teacher-{suffix}"].call_intake_access is False
+        assert users[f"student-{suffix}"].call_intake_access is False
     finally:
         async with admin_engine.begin() as conn:
             await conn.execute(text("DELETE FROM users WHERE login LIKE :p"), {"p": f"%-{suffix}"})

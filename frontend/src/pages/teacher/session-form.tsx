@@ -13,6 +13,7 @@ import {
   type SessionIn,
   type SessionOut,
 } from "@/api/teacher";
+import { useAuth } from "@/app/use-auth";
 import { ErrorState, LoadingState } from "@/components/states";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -144,6 +145,9 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
   const update = useUpdateSession(existing?.id ?? "");
   const [form, setForm] = useState<SessionIn>(() => (existing ? toInput(existing) : { ...DEFAULTS, group_id: "" }));
   const isCall = form.mode === "call_intake";
+  // The 112 operator mode is offered only to teachers the administrator opened it for.
+  const { user } = useAuth();
+  const showMode = (user?.call_intake_access ?? false) || isCall;
   // Модели нужны обоим режимам: в ДДС ими отвечают дежурный службы и старший группы.
   const models = useModels();
   const preview = useQueuePreview({
@@ -234,7 +238,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               placeholder="Например: Реагирование ДДС управы, занятие 3"
             />
           </div>
-          <fieldset className="space-y-1.5">
+          {showMode && <fieldset className="space-y-1.5">
             <legend className="text-sm font-medium">Режим</legend>
             <label className="flex items-center gap-2 text-sm">
               <input type="radio" name="mode" checked={form.mode === "card_response"} onChange={() => patch({ mode: "card_response" })} />
@@ -249,7 +253,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               />
               Приём вызова (оператор 112)
             </label>
-          </fieldset>
+          </fieldset>}
           {(
             <div className="space-y-3 sm:col-span-2" data-testid="call-intake-settings">
               <div className="space-y-1.5">

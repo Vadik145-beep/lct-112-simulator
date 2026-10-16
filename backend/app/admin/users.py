@@ -37,6 +37,7 @@ def user_out(user: User) -> AdminUserOut:
         is_blocked=user.is_blocked,
         must_change_password=user.must_change_password,
         has_sip_account=user.sip_password_enc is not None,
+        call_intake_access=user.call_intake_access,
         created_at=user.created_at,
         last_login_at=user.last_login_at,
     )
@@ -133,6 +134,9 @@ async def update_user(session: AsyncSession, user: User, body: AdminUserPatch, a
             # Open sessions of a blocked user end at once (refresh tokens become invalid).
             user.token_version += 1
         changes["is_blocked"] = body.is_blocked
+    if body.call_intake_access is not None and body.call_intake_access != user.call_intake_access:
+        user.call_intake_access = body.call_intake_access
+        changes["call_intake_access"] = body.call_intake_access
     await session.flush()
     return changes
 

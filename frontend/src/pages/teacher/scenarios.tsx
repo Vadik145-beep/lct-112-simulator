@@ -15,6 +15,7 @@ import {
   type ScenarioListItem,
 } from "@/api/scenarios";
 import { useClassifierTree } from "@/api/teacher";
+import { useAuth } from "@/app/use-auth";
 import { ErrorState, LoadingState } from "@/components/states";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,7 @@ const selectClass =
 /** «Сценарии»: the library with filters, generation by a phrase, methodical documents. */
 export function TeacherScenariosPage() {
   const [filters, setFilters] = useState<ScenarioFilters>({});
+  const callIntake = useAuth().user?.call_intake_access ?? false;
   const [search, setSearch] = useState("");
   const [showGenerate, setShowGenerate] = useState(false);
   const [showDocs, setShowDocs] = useState(false);
@@ -72,14 +74,14 @@ export function TeacherScenariosPage() {
           <Label htmlFor="q">Поиск по названию</Label>
           <Input id="q" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="мусоропровод, ДТП…" />
         </div>
-        <div>
+        {callIntake && <div>
           <Label htmlFor="kind">Режим</Label>
           <select id="kind" className={selectClass} value={filters.kind ?? ""} onChange={(e) => patch({ kind: (e.target.value || undefined) as ScenarioFilters["kind"] })}>
             <option value="">Все</option>
             <option value="call_intake">Приём вызова (оператор 112)</option>
             <option value="card_response">Реагирование на карточку (ДДС)</option>
           </select>
-        </div>
+        </div>}
         <div>
           <Label htmlFor="group">Группа происшествий</Label>
           <select id="group" className={selectClass} value={filters.group ?? ""} onChange={(e) => patch({ group: e.target.value || undefined })}>
@@ -226,8 +228,10 @@ function GenerateForm({ onClose }: { onClose: () => void }) {
   const navigate = useNavigate();
   const [jobId, setJobId] = useState<string | null>(null);
   const job = useJob(jobId);
+  // Without access to the 112 operator mode only card-response scenarios are generated.
+  const callIntake = useAuth().user?.call_intake_access ?? false;
   const [form, setForm] = useState<GenerateIn>({
-    kind: "call_intake",
+    kind: callIntake ? "call_intake" : "card_response",
     phrase: "",
     incident_group: null,
     incident_type: null,
@@ -287,7 +291,7 @@ function GenerateForm({ onClose }: { onClose: () => void }) {
               placeholder="пожар в подземном паркинге, звонит ребёнок"
             />
           </div>
-          <div>
+          {callIntake && <div>
             <Label htmlFor="gen-kind">Режим</Label>
             <select id="gen-kind" className={selectClass} value={form.kind} onChange={(e) => patch({ kind: e.target.value as GenerateIn["kind"] })}>
               <option value="call_intake">Приём вызова (оператор 112)</option>
@@ -297,7 +301,7 @@ function GenerateForm({ onClose }: { onClose: () => void }) {
               <input type="checkbox" checked={form.both_kinds ?? false} onChange={(e) => patch({ both_kinds: e.target.checked })} />
               Сразу оба режима
             </label>
-          </div>
+          </div>}
           <div>
             <Label htmlFor="gen-group">Группа происшествий</Label>
             <select
@@ -341,7 +345,7 @@ function GenerateForm({ onClose }: { onClose: () => void }) {
               ))}
             </select>
           </div>
-          <div>
+          {callIntake && <div>
             <Label htmlFor="gen-persona">Персонаж заявителя</Label>
             <select id="gen-persona" className={selectClass} value={form.persona ?? ""} onChange={(e) => patch({ persona: e.target.value || null })} disabled={form.kind === "card_response" && !form.both_kinds}>
               <option value="">По ситуации</option>
@@ -351,8 +355,8 @@ function GenerateForm({ onClose }: { onClose: () => void }) {
                 </option>
               ))}
             </select>
-          </div>
-          <div>
+          </div>}
+          {callIntake && <div>
             <Label htmlFor="gen-noise">Шум на фоне</Label>
             <select id="gen-noise" className={selectClass} value={form.noise ?? ""} onChange={(e) => patch({ noise: e.target.value || null })} disabled={form.kind === "card_response" && !form.both_kinds}>
               <option value="">По ситуации</option>
@@ -362,7 +366,7 @@ function GenerateForm({ onClose }: { onClose: () => void }) {
                 </option>
               ))}
             </select>
-          </div>
+          </div>}
           <div className="flex flex-wrap items-center gap-3 md:col-span-3">
             <Button type="submit" disabled={generate.isPending || running}>
               {generate.isPending || running ? <Loader2 className="animate-spin" /> : <Sparkles />}

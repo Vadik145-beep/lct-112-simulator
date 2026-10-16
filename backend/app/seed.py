@@ -132,7 +132,16 @@ async def seed_users(session: AsyncSession) -> int:
         if spec["login"] in existing:
             continue
         must_change = not settings.demo_mode and spec["role"] == Role.admin
-        session.add(User(password_hash=password_hash, must_change_password=must_change, **spec))
+        session.add(
+            User(
+                password_hash=password_hash,
+                must_change_password=must_change,
+                # On a clean install the 112 operator mode is hidden from the teacher and
+                # the trainee; the demo set keeps every mode.
+                call_intake_access=settings.demo_mode or spec["role"] == Role.admin,
+                **spec,
+            )
+        )
         created += 1
     await session.flush()
     return created
