@@ -6,11 +6,11 @@ import { LoginPage } from "@/pages/login";
 import { makeUser } from "@/test/helpers";
 import { makeAuth, renderAt } from "@/test/helpers";
 
-function mockConfig(demoMode: boolean) {
+function mockConfig(demoMode: boolean, quickLoginRoles: string[] = demoMode ? ["student", "teacher", "admin"] : []) {
   vi.stubGlobal(
     "fetch",
     vi.fn(async () =>
-      new Response(JSON.stringify({ demo_mode: demoMode, external_ai: false, app_env: "test" }), {
+      new Response(JSON.stringify({ demo_mode: demoMode, quick_login_roles: quickLoginRoles, external_ai: false, app_env: "test" }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       }),
@@ -59,6 +59,18 @@ describe("LoginPage", () => {
     renderAt(loginRoute, "/login", makeAuth());
     await waitFor(() => expect(fetch).toHaveBeenCalled());
     expect(screen.queryByRole("button", { name: /Войти как/ })).not.toBeInTheDocument();
+  });
+
+  it("offers one-click entry as teacher and student, not admin, when QUICK_LOGIN is on", async () => {
+    mockConfig(false, ["teacher", "student"]);
+    const auth = makeAuth();
+    renderAt(loginRoute, "/login", auth);
+    const teacher = await screen.findByRole("button", { name: /Войти как преподаватель/ });
+    expect(screen.getByRole("button", { name: /Войти как обучающийся/ })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Войти как администратор/ })).not.toBeInTheDocument();
+    expect(screen.getByText("Вход в демонстрационный стенд без пароля")).toBeInTheDocument();
+    await userEvent.click(teacher);
+    expect(auth.demoLogin).toHaveBeenCalledWith("teacher");
   });
 
   it("submits login and password and shows the server message on failure", async () => {

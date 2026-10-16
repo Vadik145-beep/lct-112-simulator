@@ -14,8 +14,8 @@ import { Label } from "@/components/ui/label";
 import { ROLE_HOME } from "@/lib/roles";
 
 const DEMO_BUTTONS: { role: Role; label: string; icon: typeof UserRound }[] = [
-  { role: "student", label: "Войти как обучающийся", icon: UserRound },
   { role: "teacher", label: "Войти как преподаватель", icon: GraduationCap },
+  { role: "student", label: "Войти как обучающийся", icon: UserRound },
   { role: "admin", label: "Войти как администратор", icon: Shield },
 ];
 
@@ -29,6 +29,9 @@ export function LoginPage() {
   const [busy, setBusy] = useState<"form" | Role | null>(null);
 
   const config = usePublicConfig();
+  // DEMO_MODE or QUICK_LOGIN (showing the stand): one-click entry, the server names the roles.
+  const quickRoles = new Set(config.data?.quick_login_roles ?? []);
+  const quickButtons = DEMO_BUTTONS.filter(({ role }) => quickRoles.has(role));
 
   // Do not offer the form while a previous session may still be restored.
   if (status === "loading") return <FullScreenLoading />;
@@ -111,10 +114,12 @@ export function LoginPage() {
             </Button>
           </form>
 
-          {config.data?.demo_mode && (
+          {quickButtons.length > 0 && (
             <div className="mt-6 space-y-2 border-t pt-4">
-              <p className="text-xs text-muted-foreground">Демо-режим: вход без пароля</p>
-              {DEMO_BUTTONS.map(({ role, label, icon: Icon }) => (
+              <p className="text-xs text-muted-foreground">
+                {config.data?.demo_mode ? "Демо-режим: вход без пароля" : "Вход в демонстрационный стенд без пароля"}
+              </p>
+              {quickButtons.map(({ role, label, icon: Icon }) => (
                 <Button
                   key={role}
                   type="button"

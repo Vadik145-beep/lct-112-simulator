@@ -17,6 +17,21 @@ DEMO_LOGINS: dict[Role, str] = {
     Role.teacher: "teacher1",
     Role.admin: "admin",
 }
+# QUICK_LOGIN on a clean install: the stand's accounts; never the administrator.
+QUICK_LOGINS: dict[Role, str] = {
+    Role.teacher: "teacher",
+    Role.student: "student",
+}
+
+
+def passwordless_logins() -> dict[Role, str]:
+    """Accounts behind the «Войти как …» buttons of the login page; empty when they are off."""
+    settings = get_settings()
+    if settings.demo_mode:
+        return DEMO_LOGINS
+    if settings.quick_login:
+        return QUICK_LOGINS
+    return {}
 
 
 def _now() -> datetime:
@@ -95,10 +110,10 @@ async def authenticate(session: AsyncSession, login: str, password: str, ip: str
 
 
 async def demo_login(session: AsyncSession, role: Role, ip: str | None) -> User:
-    settings = get_settings()
-    if not settings.demo_mode:
-        raise ApiError(404, "not_found", "Демо-вход выключен (DEMO_MODE=false).")
-    user = await session.scalar(select(User).where(User.login == DEMO_LOGINS[role]))
+    logins = passwordless_logins()
+    if role not in logins:
+        raise ApiError(404, "not_found", "Вход без пароля для этой роли выключен.")
+    user = await session.scalar(select(User).where(User.login == logins[role]))
     if user is None or user.is_blocked:
         raise ApiError(
             503, "demo_user_missing", "Демо-пользователь не создан. Выполните python -m app.seed."
