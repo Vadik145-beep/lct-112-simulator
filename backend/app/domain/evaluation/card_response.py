@@ -30,7 +30,6 @@ from app.domain.evaluation.result import (
     scale,
 )
 from app.domain.evaluation.schemas import CardResponseAttempt, CardResponseScenario, StatusEntry
-from app.domain.evaluation.text import normalize_text
 from app.domain.evaluation.timing import seconds_between, time_fraction
 from app.domain.reference_data import REJECT_REASONS
 from app.providers.embeddings import EmbeddingProvider, TfidfEmbedding
@@ -84,28 +83,6 @@ def applicable_components(scenario: CardResponseScenario | Mapping | None) -> li
 
 NO_REJECT_SERVICES = frozenset({"103"})
 REJECT_REASON_TITLES = {r["code"]: r["title"] for r in REJECT_REASONS}
-# How a reason is phrased in a free-text comment when the drop-down was not used.
-REASON_PHRASES: list[tuple[str, tuple[str, ...]]] = [
-    ("duplicate", ("дубл", "повторн")),
-    ("other_card", ("по другой карточке", "по кп", "другой карточк")),
-    ("no_contract", ("нет договора",)),
-    ("not_our_territory", ("территор",)),
-    ("not_in_competence", ("компетенц", "не относится")),
-    ("transferred", ("передан", "передал")),
-    ("not_our_object", ("не обслужива", "объект")),
-]
-
-
-def infer_reject_reason(entry: StatusEntry) -> str | None:
-    if entry.reject_reason:
-        return entry.reject_reason
-    comment = normalize_text(entry.comment)
-    for code, phrases in REASON_PHRASES:
-        if any(p in comment for p in phrases):
-            return code
-    return None
-
-
 def _lcs(reference: list[str], actual: list[str]) -> list[str]:
     """Longest common subsequence: reference statuses that appear in order."""
     n, m = len(reference), len(actual)
@@ -150,7 +127,7 @@ def _decision(ctx: CardContext, max_points: int) -> Component:
     note = "решение не совпало с эталоном"
     if actual == expected:
         if expected == "reject":
-            actual_reason = infer_reject_reason(reason_entry)
+            actual_reason = sm.infer_reject_reason(reason_entry)
             if expected_reason is None or actual_reason == expected_reason:
                 fraction, note = 1.0, "решение и причина верны"
             else:

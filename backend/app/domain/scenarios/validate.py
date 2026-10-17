@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from pydantic import ValidationError
 
 from app.domain.evaluation import status_machine as sm
-from app.domain.evaluation.data_check import FIELD_TITLES, values_match
+from app.domain.evaluation.data_check import FIELD_TITLES, WRONG_SERVICE_FIELD, values_match
 from app.domain.evaluation.schemas import (
     SERVICE_CALL_FACTS,
     BrigadeReport,
@@ -186,6 +186,8 @@ def _card_value(scenario: CardResponseScenario, field: str) -> str | None:
         return card.incident_type
     if field == "description":
         return card.description
+    if field == WRONG_SERVICE_FIELD:
+        return scenario.service
     return None  # services: «+code» / «-code» describe an action, not a value
 
 

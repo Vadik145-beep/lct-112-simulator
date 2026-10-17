@@ -4,7 +4,9 @@ The scenario lists the planted mistakes (``injected_errors``: field, wrong value
 value); the attempt lists the fields the dispatcher flagged with the value they entered. Each
 planted mistake is worth an equal share of the component: a flag with a matching correction
 earns the share, a flag with a wrong correction half of it, a missed mistake nothing. A flag on
-a field that was right (a false alarm) costs half a share. Values are compared after the same
+a field that was right (a false alarm) costs half a share. A card sent to the wrong service
+(field ``service``, issue #265) is found by refusing it as «не в компетенции службы»; a refusal
+with another reason counts as a wrong correction. Values are compared after the same
 normalization the call-intake engine uses for a saved card (streets by ``rapidfuzz``, houses
 without «д.» and spaces, everything else lower-cased without punctuation).
 """
@@ -15,6 +17,7 @@ from dataclasses import dataclass
 
 from rapidfuzz import fuzz
 
+from app.domain.evaluation import status_machine as sm
 from app.domain.evaluation.result import Component, scale
 from app.domain.evaluation.schemas import (
     CardResponseAttempt,
@@ -23,12 +26,18 @@ from app.domain.evaluation.schemas import (
     InjectedError,
 )
 from app.domain.evaluation.text import normalize_house, normalize_text, streets_match
+from app.domain.reference_data import REJECT_REASONS
 
 KEY = "data_check"
 TITLE = "Проверка данных"
 FALSE_ALARM_FRACTION = 0.5  # of one share
 WRONG_CORRECTION_FRACTION = 0.5
 LABEL_THRESHOLD = 80.0  # rapidfuzz token_set_ratio for a title typed instead of a code
+# The whole card went to a service it does not concern: the answer is a refusal, not a flag.
+WRONG_SERVICE_FIELD = "service"
+WRONG_SERVICE_ANSWER = sm.REJECTED
+WRONG_SERVICE_REASON = "not_in_competence"
+_REASON_TITLES = {r["code"]: r["title"] for r in REJECT_REASONS}
 
 FIELD_TITLES: dict[str, str] = {
     "address.region": "Регион",
@@ -49,6 +58,7 @@ FIELD_TITLES: dict[str, str] = {
     "caller.name": "Заявитель",
     "caller.phone": "Телефон заявителя",
     "description": "Описание",
+    WRONG_SERVICE_FIELD: "Служба-получатель",
 }
 BOOL_TRUE = {"true", "1", "да", "есть", "yes"}
 BOOL_FALSE = {"false", "0", "нет", "no"}
@@ -124,9 +134,14 @@ def check(scenario: CardResponseScenario, attempt: CardResponseAttempt) -> DataC
     planted_fields = set()
     for error in scenario.injected_errors:
         planted_fields.add(error.field)
-        flag = flagged.get(error.field)
+        flag = _refusal(attempt) if error.field == WRONG_SERVICE_FIELD else flagged.get(error.field)
         if flag is None:
             missed.append(error)
+        elif error.field == WRONG_SERVICE_FIELD:
+            if flag.corrected_value == WRONG_SERVICE_REASON:
+                found.append(error)
+            else:
+                wrong.append((error, flag))
         elif values_match(
             error.field, error.correct_value, flag.corrected_value, error.correct_label
         ):
@@ -135,6 +150,29 @@ def check(scenario: CardResponseScenario, attempt: CardResponseAttempt) -> DataC
             wrong.append((error, flag))
     false_alarms = [f for f in attempt.flagged_fields if f.field not in planted_fields]
     return DataCheckOutcome(found, wrong, missed, false_alarms)
+
+
+def _refusal(attempt: CardResponseAttempt) -> FlaggedField | None:
+    """The last refusal of the card as a «flag» of the service, its reason as the value."""
+    refusals = [e for e in attempt.status_log if e.status in sm.REJECT_STATUSES]
+    if not refusals:
+        return None
+    last = refusals[-1]
+    return FlaggedField(
+        field=WRONG_SERVICE_FIELD,
+        corrected_value=sm.infer_reject_reason(last) or "",
+        at=last.at,
+    )
+
+
+def _shown_correction(flag: FlaggedField | None) -> str | None:
+    """The dispatcher's value as the review shows it (a refusal by its reason's title)."""
+    if flag is None:
+        return None
+    if flag.field == WRONG_SERVICE_FIELD:
+        reason = _REASON_TITLES.get(flag.corrected_value, flag.corrected_value)
+        return f"Не принята: {reason.lower()}" if reason else "Не принята без причины"
+    return flag.corrected_value
 
 
 def data_check_component(
@@ -148,12 +186,13 @@ def data_check_component(
     )
     fraction -= len(outcome.false_alarms) * share * FALSE_ALARM_FRACTION
     items: list[dict] = []
+    corrections = {id(error): flag for error, flag in outcome.wrong_correction}
     flagged = {f.field: f for f in attempt.flagged_fields}
     for error in scenario.injected_errors:
-        flag = flagged.get(error.field)
-        if error in outcome.found:
+        flag = corrections.get(id(error)) or flagged.get(error.field)
+        if any(error is f for f in outcome.found):
             verdict, part = "found", 1.0
-        elif flag is not None:
+        elif id(error) in corrections:
             verdict, part = "wrong_correction", WRONG_CORRECTION_FRACTION
         else:
             verdict, part = "missed", 0.0
@@ -166,7 +205,7 @@ def data_check_component(
                 "wrong_label": error.wrong_label,
                 "correct_label": error.correct_label,
                 "hint_level": error.hint_level,
-                "corrected_value": flag.corrected_value if flag else None,
+                "corrected_value": _shown_correction(flag),
                 "verdict": verdict,
                 "fraction": round(part, 2),
             }

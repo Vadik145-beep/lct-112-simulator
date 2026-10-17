@@ -49,6 +49,7 @@ from app.models import (
     Scenario,
     ScenarioVersion,
     Service,
+    Street,
     Ticket,
     User,
 )
@@ -997,11 +998,14 @@ async def _generation_context(
         return index.search_memo(query), index.similar_tickets(query)
 
     memo_chunks, similar = await asyncio.to_thread(retrieve)
+    # Real Moscow streets: the look-alike street mistake picks one from them.
+    streets = list(await session.scalars(select(Street.name).distinct()))
     return GenerationContext(
         type_rows=list(refs.incident_types.values()),
         catalogue=catalogue,
         memo_chunks=memo_chunks,
         similar_tickets=similar,
+        streets=streets,
     )
 
 
