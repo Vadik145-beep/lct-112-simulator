@@ -76,6 +76,8 @@ class GenerationRequest:
     # A real address for a card without a ticket (a street of the reference list); the model
     # writes the description around it and the card keeps it, so nothing is invented.
     address: Address | None = None
+    # Kinds of operator mistakes to plant first (``distort``): the trainee's weak spots.
+    mistakes_first: list[str] = field(default_factory=list)
 
     def facts_or_phrase(self) -> TicketFacts:
         if self.facts is not None:
@@ -123,7 +125,9 @@ def with_real_address(request: GenerationRequest, ctx: GenerationContext) -> Gen
     return dataclasses.replace(request, address=Address(street=street, house=house))
 
 
-def plant_mistakes(body: dict, ctx: GenerationContext) -> dict:
+def plant_mistakes(
+    body: dict, ctx: GenerationContext, prefer: Sequence[str] = ()
+) -> dict:
     """Operator mistakes for a card by its difficulty (issues #35, #265, ``distort``)."""
     return distort.inject_by_difficulty(
         body,
@@ -131,6 +135,7 @@ def plant_mistakes(body: dict, ctx: GenerationContext) -> dict:
         catalogue=ctx.catalogue,
         streets=ctx.streets,
         services=ctx.services,
+        prefer=prefer,
     )
 
 
@@ -240,7 +245,7 @@ class TemplateGeneration:
                 catalogue=ctx.catalogue,
                 difficulty=request.difficulty,
             )
-            body = plant_mistakes(body, ctx)
+            body = plant_mistakes(body, ctx, request.mistakes_first)
         return GenerationResult(
             body=body, method=self.method, latency_ms=round((time.perf_counter() - started) * 1000)
         )

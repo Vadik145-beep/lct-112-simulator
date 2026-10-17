@@ -46,6 +46,7 @@ from app.models import (
     TrainingSession,
     User,
 )
+from app.training import ai_cards
 
 # Card statuses (codes of the ``card_statuses`` table) the trainer derives itself.
 CARD_REGISTERED = "registered"
@@ -66,7 +67,13 @@ STREAM_MINUTES = 5
 
 
 def is_stream(ts: TrainingSession) -> bool:
-    return ts.mode == MODE_CARD_RESPONSE and ts.difficulty == STREAM_DIFFICULTY
+    # A lesson whose cards are written for each trainee gives them one at a time, the stream
+    # of such cards is not there yet (issue #265).
+    return (
+        ts.mode == MODE_CARD_RESPONSE
+        and ts.difficulty == STREAM_DIFFICULTY
+        and not ai_cards.is_ai(ts)
+    )
 
 
 # Journal numbers look like real АРМ-112 incident numbers (8 digits).
@@ -229,7 +236,11 @@ async def scenario_queue(session: AsyncSession, ts: TrainingSession) -> list[Sce
         return [rows[i] for i in ts.scenario_ids if i in rows]
     query = (
         select(Scenario)
-        .where(Scenario.kind == ts.mode, Scenario.status == SCENARIO_APPROVED)
+        .where(
+            Scenario.kind == ts.mode,
+            Scenario.status == SCENARIO_APPROVED,
+            Scenario.source != ai_cards.SCENARIO_SOURCE_AI,
+        )
         .order_by(Scenario.created_at, Scenario.title)
     )
     if ts.service_profile and ts.mode != MODE_CALL_INTAKE:
@@ -315,8 +326,10 @@ async def issue_cards(
             Attempt.state.in_(ACTIVE_ATTEMPT_STATES),
         )
     )
-    # The 112 operator takes one call at a time whatever the difficulty.
-    at_once = 1 if ts.mode == MODE_CALL_INTAKE else CARDS_AT_ONCE.get(ts.difficulty, 1)
+    # The 112 operator takes one call at a time whatever the difficulty; cards written for the
+    # trainee come one at a time too, each after the previous one is scored.
+    one_by_one = ts.mode == MODE_CALL_INTAKE or ai_cards.is_ai(ts)
+    at_once = 1 if one_by_one else CARDS_AT_ONCE.get(ts.difficulty, 1)
     want = at_once - (active or 0)
     if want <= 0:
         return [], []
@@ -340,8 +353,11 @@ async def issue_next(
         want = min(want, ts.cards_per_student - len(done))
         if want <= 0:
             return [], []
-    candidates = [s for s in await scenario_queue(session, ts) if s.id not in set(done)]
-    if ts.adaptive:
+    if ai_cards.is_ai(ts):
+        candidates = await ai_cards.ready_for(session, ts, student, done)
+    else:
+        candidates = [s for s in await scenario_queue(session, ts) if s.id not in set(done)]
+    if ts.adaptive and not ai_cards.is_ai(ts):
         # PRD 9.7: the weakest incident group first, difficulty near the rating.
         state = await ratings.load_state(session, student.id)
         candidates = order_queue(candidates, mode=ts.mode, ratings=state, done=done)

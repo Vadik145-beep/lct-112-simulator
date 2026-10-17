@@ -19,6 +19,7 @@ from app.errors import ApiError
 from app.events import append_event, publish_events
 from app.models import (
     ACTIVE_ATTEMPT_STATES,
+    ATTEMPT_EVALUATED,
     MODE_CALL_INTAKE,
     Attempt,
     Evaluation,
@@ -27,7 +28,7 @@ from app.models import (
     TrainingSession,
     User,
 )
-from app.training import present, review
+from app.training import ai_cards, present, review
 from app.training import service as training
 from app.training.schemas import (
     AssignmentOut,
@@ -248,6 +249,9 @@ async def set_status(
         )
         await session.commit()
         await publish_events(change.events)
+        if attempt.state == ATTEMPT_EVALUATED:
+            # The next card written for the trainee starts while he reads the result (#265).
+            await ai_cards.prepare_next(session, ts, attempt.student_id)
     return StatusResponse(
         attempt=await _attempt_out(session, attempt, ts),
         applied=change.changed,
@@ -275,6 +279,9 @@ async def finish_attempt(
         )
         await session.commit()
         await publish_events(change.events)
+        if attempt.state == ATTEMPT_EVALUATED:
+            # The next card written for the trainee starts while he reads the result (#265).
+            await ai_cards.prepare_next(session, ts, attempt.student_id)
     return StatusResponse(
         attempt=await _attempt_out(session, attempt, ts),
         applied=change.changed,

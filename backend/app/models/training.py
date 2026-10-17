@@ -242,6 +242,41 @@ class Attempt(Base):
     )
 
 
+# A card written for one trainee in a lesson «Задания формирует ИИ» (issue #265).
+AI_CARD_GENERATING = "generating"  # the request is being written; the row also holds the slot
+AI_CARD_READY = "ready"  # the scenario is stored and waits to be issued
+AI_CARD_FAILED = "failed"  # neither the model nor the template gave a valid card
+
+
+class AiCard(Base):
+    """One card of one trainee in a lesson where the cards are written for each trainee: its
+    number for that trainee, the scenario once written and why it was chosen (shown to the
+    trainee and the teacher). The unique number keeps two requests from writing the same card
+    twice."""
+
+    __tablename__ = "ai_cards"
+    __table_args__ = (UniqueConstraint("session_id", "student_id", "seq", name="uq_ai_cards_seq"),)
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    session_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("training_sessions.id", ondelete="CASCADE"), nullable=False
+    )
+    student_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    seq: Mapped[int] = mapped_column(Integer, nullable=False)
+    status: Mapped[str] = mapped_column(String(16), nullable=False, default=AI_CARD_GENERATING)
+    scenario_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("scenarios.id", ondelete="SET NULL")
+    )
+    method: Mapped[str | None] = mapped_column(String(16))  # llm | template
+    reasons: Mapped[list[str]] = mapped_column(ARRAY(Text), nullable=False, default=list)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    ready_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
 class Setting(Base):
     """Operational settings edited by the administrator, one JSON document per section
     (``telephony``, later ``logging``…). Defaults come from the environment."""

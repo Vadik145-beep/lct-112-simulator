@@ -76,6 +76,7 @@ from app.scenarios.schemas import (
     TopicOut,
     VersionOut,
 )
+from app.training.ai_cards import SCENARIO_SOURCE_AI
 
 log = get_logger(__name__)
 
@@ -362,6 +363,9 @@ async def list_scenarios(
         query = query.where(IncidentType.group_code == group)
     if source:
         query = query.where(Scenario.source == source)
+    else:
+        # Cards written for one trainee in a lesson (issue #265) live in its results.
+        query = query.where(Scenario.source != SCENARIO_SOURCE_AI)
     if status:
         query = query.where(Scenario.status == status)
     else:

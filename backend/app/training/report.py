@@ -26,7 +26,7 @@ from app.models import (
     User,
 )
 from app.models.cabinets import Comment, EvaluationOverride
-from app.training import present, review, stream
+from app.training import ai_cards, present, review, stream
 from app.training import service as training
 from app.training import sessions as lessons
 from app.training.teacher_schemas import (
@@ -449,7 +449,7 @@ async def build_monitor(session: AsyncSession, ts: TrainingSession) -> MonitorOu
         status=ts.status,
         norm_seconds=ts.norm_seconds,
         pass_threshold=ts.pass_threshold,
-        cards_total=len(ts.scenario_ids),
+        cards_total=ai_cards.cards_for(ts) if ai_cards.is_ai(ts) else len(ts.scenario_ids),
         students=tiles,
         last_seq=last_seq,
     )
