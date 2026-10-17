@@ -36,6 +36,25 @@ TRUTH_SENTENCES = (
     "Звонивший сообщил, что {}.",
 )
 TRUTH_KEY = "_truth"  # the clause a kind returns with its error; removed before storing
+# Words of a street name that only tell its type; the rest is matched by stems.
+STREET_TYPES = frozenset(
+    {
+        "улица",
+        "проспект",
+        "переулок",
+        "бульвар",
+        "шоссе",
+        "проезд",
+        "площадь",
+        "набережная",
+        "тупик",
+        "аллея",
+        "линия",
+        "квартал",
+        "микрорайон",
+    }
+)
+STEM_LENGTH = 5  # «Маршала Тимошенко» in «улице Маршала Тимошенко», «Свободы» in «Свободе»
 # Kinds that change the same part of the card: one of a group per card (the address sentence
 # of one would otherwise repeat the wrong value of the other).
 SAME_PART = {"house": "address", "street": "address"}
@@ -312,9 +331,16 @@ def _address_truth(card: Mapping, street: str, house: str | None, *, about: str)
     description = normalize_text(card.get("description") or "")
     if about == "house" and house and f"дом {normalize_house(house)}" in description:
         return None
-    if about == "street" and normalize_text(street) in description:
+    if about == "street" and _street_named(street, description):
         return None
     return f"точный адрес — {street}{', дом ' + house if house else ''}"
+
+
+def _street_named(street: str, description: str) -> bool:
+    """Whether the description names the street, in any case form («улице Маршала
+    Тимошенко» for «улица Маршала Тимошенко»): every word but the street type, by its stem."""
+    words = [w for w in normalize_text(street).split() if w not in STREET_TYPES]
+    return bool(words) and all(w[:STEM_LENGTH] in description for w in words)
 
 
 def _spoken_title(title: str) -> str:

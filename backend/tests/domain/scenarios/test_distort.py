@@ -190,3 +190,17 @@ async def test_template_provider_plants_mistakes_by_difficulty(type_rows: list[d
     for result in hard:
         scenario = parse_scenario(result.body)
         assert len(scenario.injected_errors) == 2
+
+
+def test_street_named_in_another_case_is_not_repeated(type_rows: list[dict]) -> None:
+    body = seed_card()
+    body["card"]["description"] = "Течёт стояк на лестнице в доме 42 на улице Свободы."
+    card = distort.inject(
+        body,
+        count=1,
+        rng=random.Random(3),  # noqa: S311
+        ctx=context(type_rows),
+        prefer=["street"],
+    )
+    assert card["injected_errors"][0]["field"] == "address.street"
+    assert card["card"]["description"] == body["card"]["description"]
