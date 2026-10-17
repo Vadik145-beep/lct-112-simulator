@@ -245,6 +245,36 @@ async def test_quick_login_enters_the_stand_accounts_but_not_admin(
                 )
 
 
+async def test_shown_credentials_are_listed_and_locked(client: AsyncClient) -> None:
+    """SHOW_DEMO_CREDENTIALS: the login page gets login and password by role; nobody can
+    change a password that everybody sees."""
+    r = await client.get("/api/config")
+    assert r.json()["demo_credentials"] == []
+    settings = get_settings()
+    settings.show_demo_credentials = True
+    try:
+        shown = (await client.get("/api/config")).json()["demo_credentials"]
+        assert {(c["role"], c["login"]) for c in shown} == {
+            ("student", "student1"),
+            ("teacher", "teacher1"),
+            ("admin", "admin"),
+        }
+        assert {c["password"] for c in shown} == {SEED_PASSWORD}
+        r = await client.post(
+            "/api/auth/login", json={"login": "teacher1", "password": SEED_PASSWORD}
+        )
+        assert r.status_code == 200
+        r = await client.post(
+            "/api/auth/change-password",
+            json={"old_password": SEED_PASSWORD, "new_password": "Other-Pass-33"},
+            headers=bearer(r.json()),
+        )
+        assert r.status_code == 409
+        assert r.json()["error"]["code"] == "shown_password"
+    finally:
+        settings.show_demo_credentials = False
+
+
 async def test_validation_error_shape(client: AsyncClient) -> None:
     r = await client.post("/api/auth/login", json={"login": "student1"})
     assert r.status_code == 422

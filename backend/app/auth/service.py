@@ -17,7 +17,14 @@ DEMO_LOGINS: dict[Role, str] = {
     Role.teacher: "teacher1",
     Role.admin: "admin",
 }
-# QUICK_LOGIN on a clean install: the stand's accounts; never the administrator.
+# The stand's accounts on a clean install (app.seed.clean_install_users).
+STAND_LOGINS: dict[Role, str] = {
+    Role.teacher: "teacher",
+    Role.student: "student",
+    Role.admin: "admin",
+}
+# QUICK_LOGIN without SHOW_DEMO_CREDENTIALS: the administrator gets no button — his password
+# is not public then.
 QUICK_LOGINS: dict[Role, str] = {
     Role.teacher: "teacher",
     Role.student: "student",
@@ -30,8 +37,17 @@ def passwordless_logins() -> dict[Role, str]:
     if settings.demo_mode:
         return DEMO_LOGINS
     if settings.quick_login:
-        return QUICK_LOGINS
+        return STAND_LOGINS if settings.show_demo_credentials else QUICK_LOGINS
     return {}
+
+
+def shown_credentials() -> dict[Role, str]:
+    """Accounts whose login and password the login page shows (SHOW_DEMO_CREDENTIALS); their
+    password is SEED_PASSWORD."""
+    settings = get_settings()
+    if not settings.show_demo_credentials:
+        return {}
+    return DEMO_LOGINS if settings.demo_mode else STAND_LOGINS
 
 
 def _now() -> datetime:
@@ -129,6 +145,13 @@ async def demo_login(session: AsyncSession, role: Role, ip: str | None) -> User:
 async def change_password(
     session: AsyncSession, user: User, old_password: str, new_password: str, ip: str | None
 ) -> User:
+    if user.login in shown_credentials().values():
+        raise ApiError(
+            409,
+            "shown_password",
+            "Пароль этой учётной записи показан на странице входа и общий для всех, "
+            "его менять нельзя.",
+        )
     if not await verify_password_async(old_password, user.password_hash):
         raise ApiError(400, "bad_old_password", "Текущий пароль указан неверно.")
     if old_password == new_password:

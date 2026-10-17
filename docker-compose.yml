@@ -6,6 +6,7 @@ x-backend-env: &backend-env
   APP_ENV: ${APP_ENV:-development}
   DEMO_MODE: ${DEMO_MODE:-true}
   QUICK_LOGIN: ${QUICK_LOGIN:-false}
+  SHOW_DEMO_CREDENTIALS: ${SHOW_DEMO_CREDENTIALS:-false}
   ALLOW_EXTERNAL_AI: ${ALLOW_EXTERNAL_AI:-false}
   TZ: ${TZ:-Europe/Moscow}
   SECRET_KEY: ${SECRET_KEY:?SECRET_KEY не задан, см. .env.example}

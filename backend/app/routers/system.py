@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from redis.asyncio import Redis
 from sqlalchemy import text
 
-from app.auth.service import passwordless_logins
+from app.auth.service import passwordless_logins, shown_credentials
 from app.config import get_settings
 from app.db import engine
 from app.models import Role
@@ -22,10 +22,18 @@ class HealthResponse(BaseModel):
     version: str
 
 
+class DemoCredential(BaseModel):
+    role: Role
+    login: str
+    password: str
+
+
 class PublicConfig(BaseModel):
     demo_mode: bool
     # Roles with a «Войти как …» button on the login page (DEMO_MODE or QUICK_LOGIN).
     quick_login_roles: list[Role] = []
+    # SHOW_DEMO_CREDENTIALS: login and password by role for the login page.
+    demo_credentials: list[DemoCredential] = []
     external_ai: bool
     app_env: str
     dialog_mode: str
@@ -66,6 +74,10 @@ async def public_config() -> PublicConfig:
     return PublicConfig(
         demo_mode=s.demo_mode,
         quick_login_roles=list(passwordless_logins()),
+        demo_credentials=[
+            DemoCredential(role=role, login=login, password=s.seed_password)
+            for role, login in shown_credentials().items()
+        ],
         external_ai=s.allow_external_ai,
         app_env=s.app_env,
         dialog_mode=s.dialog_mode,

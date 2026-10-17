@@ -2922,6 +2922,14 @@ export interface components {
             /** Seq */
             seq: number;
         };
+        /** DemoCredential */
+        DemoCredential: {
+            role: components["schemas"]["Role"];
+            /** Login */
+            login: string;
+            /** Password */
+            password: string;
+        };
         /** DialogOut */
         DialogOut: {
             /** Attempt Id */
@@ -3823,6 +3831,11 @@ export interface components {
              * @default []
              */
             quick_login_roles: components["schemas"]["Role"][];
+            /**
+             * Demo Credentials
+             * @default []
+             */
+            demo_credentials: components["schemas"]["DemoCredential"][];
             /** External Ai */
             external_ai: boolean;
             /** App Env */
