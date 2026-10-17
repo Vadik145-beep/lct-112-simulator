@@ -108,7 +108,7 @@ async def test_reports_arrive_on_the_timeline_and_the_dispatcher_reflects_them(
     call_id = r.json()["call"]["id"]
     r = await say(client, token, attempt_id, call_id, "Как обстановка, бригада выехала?")
     assert r.json()["call"]["turns"][-1]["topics"] == ["progress"]
-    assert "ждём вашего распоряжения" in r.json()["call"]["turns"][-1]["text"]
+    assert "Назовите адрес и что случилось" in r.json()["call"]["turns"][-1]["text"]
     await say(client, token, attempt_id, call_id, "Улица Молостовых, дом 10, корпус 1, выезжайте")
     await end(client, token, attempt_id, call_id)
     await rewind(attempt_id, 20)

@@ -83,11 +83,12 @@ def test_no_vehicles_after_the_house_is_settled_then_the_head_finds_one() -> Non
     call = chief_call()
     attempt = Attempt(service_calls=[call])
     accepted(attempt)
-    # The house is misheard first; «машин нет» answers the order to go (#263).
+    # The house is misheard first; «машин нет» comes once the chief knows where and what.
     assert talk(scenario, attempt, call, ADDRESS).startswith("Записал:")
-    assert talk(scenario, attempt, call, "Нет, дом 42.") == "Понял, дом 42. Исправил, записал."
+    said = talk(scenario, attempt, call, "Нет, дом 42.")
+    assert said == f"Понял, дом 42. Исправил, записал. {no_vehicles.SHORTAGE}"
     assert misheard.state(attempt.service_calls).fixed
-    assert talk(scenario, attempt, call, "Выезжайте.") == no_vehicles.ANNOUNCE
+    assert talk(scenario, attempt, call, "Выезжайте.") == no_vehicles.STILL_NONE
     call["ended_at"] = (NOW + timedelta(seconds=40)).isoformat()
 
     # One truth: the squad has no vehicles and goes nowhere.
@@ -116,7 +117,8 @@ def test_a_complication_turn_has_vehicles() -> None:
     call = chief_call(no_vehicles.PLAN_COMPLICATION)
     attempt = Attempt(service_calls=[call])
     talk(scenario, attempt, call, ADDRESS)
-    assert talk(scenario, attempt, call, "Да.") == misheard.AGREED
+    said = talk(scenario, attempt, call, "Да.")
+    assert said.startswith(misheard.AGREED) and "Выезжаем, наряд" in said
     assert not no_vehicles.announced(attempt.service_calls)
 
 

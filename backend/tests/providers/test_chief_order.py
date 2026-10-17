@@ -72,26 +72,40 @@ def test_address_as_the_card_writes_it_is_misheard_on_a_lesson_of_difficulty_two
         assert talk(scenario, fresh, again, spoken).startswith("Записал:")
 
 
-def test_no_squad_number_before_the_order_then_it_is_taken() -> None:
+def test_the_chief_goes_once_he_knows_where_and_what() -> None:
+    """Decision of 17.10.2026: enough information sends the squad, «выезжайте» alone does
+    not."""
     scenario = moek(1)
     call = new_call("moek")
     attempt = Attempt(service_calls=[call])
-    said = talk(scenario, attempt, call, AS_IN_CARD + " Нет отопления в домах.")
-    assert said == officer.ASK_ORDER
-    assert officer.squad_state(attempt) == officers.SQUAD_STATE_WAITING
     said = talk(scenario, attempt, call, "Высылайте бригаду на выезд.", provider=UNKNOWN)
+    assert said == officer.ASK_ADDRESS
+    assert officer.squad_state(attempt) == officers.SQUAD_STATE_WAITING
+    said = talk(scenario, attempt, call, AS_IN_CARD + " Нет отопления в домах.")
     assert said == f"Принял, выезжаем. Наряд {squad(scenario)}."
     assert officer.squad_state(attempt) == officers.SQUAD_STATE_PENDING
 
 
-def test_partial_card_gets_a_plain_acknowledgement_and_an_order_without_address_asks_where() -> (
-    None
-):
+def test_no_squad_number_while_something_is_missing() -> None:
     scenario = moek(1)
     call = new_call("moek")
     attempt = Attempt(service_calls=[call])
     assert talk(scenario, attempt, call, "Пострадавших нет.") == officer.TAKEN
-    assert talk(scenario, attempt, call, "Выезжайте.", provider=UNKNOWN) == officer.ASK_ADDRESS
-    assert talk(scenario, attempt, call, AS_IN_CARD, provider=UNKNOWN).startswith(
-        "Принял, выезжаем"
+    said = talk(scenario, attempt, call, "Выезжайте.", provider=UNKNOWN)
+    assert said == officer.ASK_ADDRESS
+    said = talk(scenario, attempt, call, "Улица Молостовых, дом 10, корпус 1.")
+    # The incident is still to come: no squad number yet.
+    assert "наряд" not in said.lower() and "выезжаем" not in said.lower()
+
+
+def test_the_address_said_with_a_pause_is_still_the_address() -> None:
+    """Speech recognition cut the address at a pause on the stand (17.10.2026): «…Молостовых.»
+    «10, корпус 1.» — the street and the house in two phrases."""
+    scenario = officer.lesson_scenario(moek(1), SimpleNamespace(difficulty=2))
+    call = new_call("moek")
+    attempt = Attempt(service_calls=[call])
+    assert talk(scenario, attempt, call, "Нет отопления, улица Молостовых.") != (
+        "Записал: улица Молостовых, дом 12, корпус 1?"
     )
+    said = talk(scenario, attempt, call, "Дом 10, корпус 1.")
+    assert said == "Записал: улица Молостовых, дом 12, корпус 1?"

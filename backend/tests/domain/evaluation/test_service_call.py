@@ -241,3 +241,11 @@ def test_address_in_any_case_and_order_is_the_true_one(said: str) -> None:
         true_card(scenario), said.replace("17", "19").replace("семнадцать", "девятнадцать")
     )
     assert not address_named(true_card(scenario), "Дом 17 по Красному проспекту")
+
+
+def test_address_cut_by_a_pause_is_counted() -> None:
+    """«Нет, улица Молостовых.» «Дом 10, корпус 1.» — two phrases of the recognizer, one
+    address (stand 17.10.2026)."""
+    scenario = with_calls()
+    attempt = called(scenario, ["Нет отопления, улица Молостовых.", "Дом 10, корпус 1."])
+    assert "address" in facts_from_dialog(scenario.card, attempt.service_calls[0].dialog)

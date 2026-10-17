@@ -26,7 +26,7 @@ def opening(service: str, *, repeat: bool = False) -> str:
 def test_own_tab_is_the_squad_chief_other_tabs_their_duty_officers() -> None:
     assert opening("gkh") == "Начальник аварийной бригады ЕДЦ ЖКХ, слушаю."
     assert opening("gkh", repeat=True).startswith(
-        "Начальник аварийной бригады ЕДЦ ЖКХ, слушаю. Распоряжение от вас уже получил."
+        "Начальник аварийной бригады ЕДЦ ЖКХ, слушаю. Карточку от вас уже принял."
     )
     assert opening("moek") == "Дежурный МОЭК, слушаю."
 

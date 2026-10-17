@@ -137,12 +137,6 @@ def true_card(scenario: CardResponseScenario) -> Card:
     return scenario.card.model_copy(update={"address": address})
 
 
-def address_told(scenario: CardResponseScenario, text: str) -> bool:
-    """The phrase names the address: the true one, or the one the card shows by mistake (the
-    squad goes there all the same; the evaluation names the mistake)."""
-    return address_named(true_card(scenario), text) or address_named(scenario.card, text)
-
-
 def wrong_address_told(scenario: CardResponseScenario, text: str) -> bool:
     """The phrase passes the operator's mistake in the address, not the truth."""
     truth = true_card(scenario)
@@ -184,9 +178,44 @@ def incident_named(card: Card, text: str) -> bool:
     return bool(said & incident_words(card))
 
 
+# Speech recognition cuts a phrase at a pause: «Улица Лётчика Грицевца.» «83.» (stand
+# 17.10.2026). The address may take this many phrases of the dispatcher in a row.
+ADDRESS_PHRASES = 3
+
+
+def address_in_phrases(card: Card, texts: list[str]) -> bool:
+    """The address named across a few phrases said in a row, not only within one."""
+    return any(
+        address_named(card, " ".join(texts[start : start + size]))
+        for size in range(1, ADDRESS_PHRASES + 1)
+        for start in range(len(texts) - size + 1)
+    )
+
+
+# What the squad chief needs to go (decision of 17.10.2026): where and what happened. The
+# rest he asks or the dispatcher adds; the evaluation counts it.
+TO_GO = ("address", "incident_type")
+
+
+def missing_to_go(scenario: CardResponseScenario, texts: list[str]) -> list[str]:
+    """What the squad chief still lacks to go, from the dispatcher's phrases: the address (the
+    true one, or the field's by mistake — the squad goes there all the same) and the
+    incident."""
+    truth = true_card(scenario)
+    missing: list[str] = []
+    if not (address_in_phrases(truth, texts) or address_in_phrases(scenario.card, texts)):
+        missing.append("address")
+    if not any(incident_named(truth, text) for text in texts):
+        missing.append("incident_type")
+    return missing
+
+
 def facts_from_dialog(card: Card, dialog: list[DialogTurn]) -> list[str]:
     """Facts the dispatcher passed in the call, in the order of ``SERVICE_CALL_FACTS``."""
     found: set[str] = set()
+    said = [turn.text for turn in dispatcher_turns(dialog)]
+    if address_in_phrases(card, said):
+        found.add("address")
     for turn in dispatcher_turns(dialog):
         detected = set(detect_service_facts(turn.text)) | {
             t for t in turn.topics if t in FACT_TITLES

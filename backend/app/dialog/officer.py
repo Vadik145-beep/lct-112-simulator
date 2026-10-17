@@ -159,19 +159,16 @@ def delivered_reports(attempt: Attempt) -> list[str]:
 
 def squad_state(attempt: Attempt) -> str:
     """Where the squad is, one truth for every answer: no vehicles while the head has not
-    found one (``no_vehicles``), waiting for the order to go while nobody gave it, else by the
-    reports delivered."""
-    if no_vehicles.blocked(calls_of(attempt)):
+    found one (``no_vehicles``), at the base while the squad chief has not taken the card,
+    else by the reports delivered."""
+    calls = calls_of(attempt)
+    if no_vehicles.blocked(calls):
         return officers.SQUAD_STATE_NO_VEHICLES
     state = officers.squad_state(delivered_reports(attempt))
-    ordered = any(
-        engine.gives_order(str(t.get("text") or ""))
-        for c in calls_of(attempt)
-        if (c.get("kind") or KIND_OUTGOING) == KIND_OUTGOING
-        for t in c.get("dialog") or []
-        if t.get("role") == "operator"
-    )
-    if state == officers.SQUAD_STATE_PENDING and not ordered:
+    outgoing = [c for c in calls if (c.get("kind") or KIND_OUTGOING) == KIND_OUTGOING]
+    # Sent: the chief took the card, or the head found a vehicle after «машин нет».
+    sent = squad_sent(outgoing) or no_vehicles.resolving_call(calls) is not None
+    if state == officers.SQUAD_STATE_PENDING and not sent:
         return officers.SQUAD_STATE_WAITING
     return state
 
@@ -410,9 +407,9 @@ async def start(
         # Calling from a card not opened yet still means it was received.
         events += await training.open_attempt(session, attempt, ts)
     call = _new_call(service, service_title, now, telephony=telephony, kind=kind)
-    # The squad chief has the card once he has the order to go too; a duty officer, once told.
+    # The squad chief has the card once he took it; a duty officer, once told.
     passed = card_passed_to(attempt, service)
-    if service == scenario.service and not order_given(attempt, scenario):
+    if service == scenario.service and not squad_sent(chief_calls(attempt, scenario)):
         passed = False
     if kind == KIND_OUTGOING and passed:
         call["repeat"] = True
@@ -894,8 +891,8 @@ def wrong_contact_reply(call: dict, text: str) -> tuple[CallerReply, dict] | Non
 # распоряжения»).
 _DISPATCHING = re.compile(r"наряд|выезж|выезд|направля|на месте")
 TOPIC_ORDER_TAKEN = "order_taken"
-ASK_ORDER = "Так что делаем-то?"
-ASK_ADDRESS = "Куда выезжать? Назовите адрес."
+ASK_ADDRESS = "Адрес какой? Куда выезжать?"
+ASK_INCIDENT = "Что случилось? С чем выезжать?"
 TAKEN = "Принял."
 
 
@@ -1017,6 +1014,16 @@ def _said_by_dispatcher(calls: list[dict]) -> list[str]:
     ]
 
 
+def squad_sent(calls: list[dict]) -> bool:
+    """The squad chief has taken the card and named his squad: the squad is sent."""
+    return any(
+        TOPIC_ORDER_TAKEN in (t.get("topics") or [])
+        for c in calls
+        for t in c.get("dialog") or []
+        if t.get("role") == "caller"
+    )
+
+
 def order_given(attempt: Attempt, scenario: CardResponseScenario) -> bool:
     """The dispatcher has told the squad chief to go (in any call to him)."""
     return any(
@@ -1027,13 +1034,14 @@ def order_given(attempt: Attempt, scenario: CardResponseScenario) -> bool:
 def chief_reply(
     scenario: CardResponseScenario, attempt: Attempt, call: dict, text: str, reply: CallerReply
 ) -> CallerReply:
-    """The squad chief's answer follows the order of the dispatcher and the one truth about the
-    squad (#263):
+    """The squad chief's answer follows what he knows and the one truth about the squad (#263,
+    decision of 17.10.2026: «если ему достаточно информации — он выезжает»):
 
-    * no squad number and no «выезжаем» before the order to go: when the card has been told,
-      «Так что делаем-то?», otherwise a plain «Принял.»;
-    * the order taken: «Принял, выезжаем. Наряд 5600.» — or, on a «машин нет» card, «машин
-      нет»; an order with no address yet gets «Куда выезжать?»;
+    * once he knows where and what happened, he takes the card: «Принял, выезжаем. Наряд
+      5600.» — or, on a «машин нет» card, «машин нет»; a wrong or misheard address does not
+      stop him, it costs the dispatcher points;
+    * before that, no squad number and no «выезжаем»; «выезжайте» alone gets the question of
+      what is missing («Адрес какой?»);
     * while the head of the organization has found no vehicle, «машин так и нет».
 
     The question about the house and the cut-in of a hurried chief stay as they are."""
@@ -1045,14 +1053,8 @@ def chief_reply(
         return reply
     calls = chief_calls(attempt, scenario)
     said = [*_said_by_dispatcher(calls), text]
-    ordered = any(engine.gives_order(phrase) for phrase in said)
-    told = any(engine.address_told(scenario, phrase) for phrase in said)
-    taken = any(
-        TOPIC_ORDER_TAKEN in (t.get("topics") or [])
-        for c in calls
-        for t in c.get("dialog") or []
-        if t.get("role") == "caller"
-    )
+    missing = engine.missing_to_go(scenario, said)
+    taken = squad_sent(calls)
     everything = calls_of(attempt)
     no_cars = no_vehicles.plan_of(everything) == no_vehicles.PLAN_NO_VEHICLES
     # The house just corrected stays acknowledged: «Понял, дом 42. Исправил, записал. …».
@@ -1066,16 +1068,13 @@ def chief_reply(
             method=method,
         )
 
-    if not ordered:
-        if not _dispatching(reply):
-            return reply
-        required = list(reference_for(scenario, scenario.service).required_facts)
-        turns = [DialogTurn(role="operator", text=phrase, topics=[]) for phrase in said]
-        passed = engine.facts_from_dialog(engine.true_card(scenario), turns)
-        complete = all(f in passed for f in required)
-        return answer(ASK_ORDER if complete else TAKEN, ["confirm"], "order")
-    if not told:
-        return answer(ASK_ADDRESS, ["address"], "order")
+    if missing:
+        if engine.gives_order(text):
+            ask = ASK_ADDRESS if "address" in missing else ASK_INCIDENT
+            return answer(ask, [missing[0]], "order")
+        if _dispatching(reply):
+            return answer(TAKEN, ["confirm"], "order")
+        return reply
     if no_cars:
         if not no_vehicles.announced(everything):
             line = no_vehicles.SHORTAGE if fixed else no_vehicles.ANNOUNCE
@@ -1141,7 +1140,8 @@ def misheard_reply(
             return None
         if not misheard.applies(scenario.difficulty, card):
             return None
-        if not engine.address_named(card, text):
+        said = [*_said_by_dispatcher([call]), text]
+        if not engine.address_in_phrases(card, said[-engine.ADDRESS_PHRASES :]):
             return None
         said = misheard.wrong_house(card.address.house)
         reply = answer(misheard.question(card), [misheard.TOPIC_MISHEARD], heard)

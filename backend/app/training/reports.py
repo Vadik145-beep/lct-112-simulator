@@ -31,7 +31,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.evaluation import status_machine as machine
 from app.domain.evaluation.schemas import BrigadeReport, CardResponseScenario
-from app.domain.evaluation.service_call import address_told, gives_order
+from app.domain.evaluation.service_call import missing_to_go
 from app.domain.scenarios import complication, no_vehicles
 from app.models import (
     ACTIVE_ATTEMPT_STATES,
@@ -67,9 +67,9 @@ def dispatched_at(scenario: CardResponseScenario, attempt: Attempt) -> datetime 
 
     A card the reference sends nobody to call is dispatched by «Принята» alone. Where the card
     does require a call to the squad chief, the squad leaves at the end of the call by which
-    the dispatcher has named the address and given the order to go: a squad that was not told
-    where to go (issue #127) or was never sent (#263) does not depart, however long the
-    dispatcher held the line. When the squad chief said
+    the chief knows where to go and what happened (decision of 17.10.2026): a squad told
+    nothing does not depart (issue #127), «выезжайте» alone sends nobody; a wrong address
+    sends it all the same and costs points. When the squad chief said
     there are no vehicles, the squad leaves at the end of the call in which the head of the
     organization found one (#263), and stays put until then.
     """
@@ -84,21 +84,19 @@ def dispatched_at(scenario: CardResponseScenario, attempt: Attempt) -> datetime 
         return max(released, accepted) if released is not None else None
     if not scenario.reference.service_calls:
         return accepted
-    told = ordered = False
+    said: list[str] = []
     for call in officer.chief_calls(attempt, scenario):
         if not call.get("answered"):
             continue
         # The stored turns carry more than the evaluation schema (the voicing, the method), so
         # they are read as they are written.
-        said = [
+        said += [
             str(turn.get("text") or "")
             for turn in call.get("dialog") or []
             if turn.get("role") == "operator"
         ]
-        told = told or any(address_told(scenario, text) for text in said)
-        ordered = ordered or any(gives_order(text) for text in said)
         ended = _at(call.get("ended_at"))
-        if told and ordered and ended is not None:
+        if ended is not None and not missing_to_go(scenario, said):
             # Sent before «Принята» (#263): the squad leaves once the card is accepted.
             return max(ended, accepted)
     return None
