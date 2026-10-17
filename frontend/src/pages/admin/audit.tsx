@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatDateTime } from "@/emulator/time";
 import { cn } from "@/lib/utils";
+import { auditActionTitle } from "@/pages/admin/audit-actions";
 
 const PER_PAGE = 50;
 
@@ -77,7 +78,7 @@ export function AdminAuditPage() {
             <option value="">Все</option>
             {(query.data?.actions ?? []).map((a) => (
               <option key={a} value={a}>
-                {a}
+                {auditActionTitle(a)}
               </option>
             ))}
           </select>
@@ -127,7 +128,9 @@ export function AdminAuditPage() {
                       {r.actor_login ?? <span className="text-muted-foreground">—</span>}
                       {r.actor_role && <span className="text-xs text-muted-foreground"> · {r.actor_role}</span>}
                     </td>
-                    <td className="py-1.5 pr-3 font-mono text-xs">{r.action}</td>
+                    <td className="py-1.5 pr-3 text-xs" title={r.action}>
+                      {auditActionTitle(r.action)}
+                    </td>
                     <td className="py-1.5 pr-3 text-xs text-muted-foreground">
                       {r.entity}
                       {r.entity_id && <span className="block truncate font-mono">{r.entity_id}</span>}

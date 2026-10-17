@@ -175,6 +175,24 @@ export function useClassifierTree() {
   });
 }
 
+/** Typical errors of the memo: the scenario page names them instead of their codes. */
+export function useTypicalErrors() {
+  return useQuery({
+    queryKey: ["reference", "typical-errors"],
+    queryFn: () => unwrap(api.GET("/api/typical-errors")),
+    staleTime: Infinity,
+  });
+}
+
+/** Reasons of «Не принята»: the scenario page names them instead of their codes. */
+export function useRejectReasons() {
+  return useQuery({
+    queryKey: ["reference", "reject-reasons"],
+    queryFn: () => unwrap(api.GET("/api/reject-reasons")),
+    staleTime: Infinity,
+  });
+}
+
 export function useServices() {
   return useQuery({
     queryKey: ["reference", "services"],

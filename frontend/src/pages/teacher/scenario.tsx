@@ -46,6 +46,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useRejectReasons, useServices, useTypicalErrors } from "@/api/teacher";
+import { FIELD_TITLES } from "@/emulator/flag-field-model";
 import { factTitle } from "@/emulator/service-call-model";
 import { formatDateTime } from "@/emulator/time";
 import { MODE_TITLES, RESPONSE_STATUS_TITLES } from "@/teacher/labels";
@@ -507,6 +509,7 @@ function FactRow({ title, value }: { title: string; value: string }) {
 }
 
 function CardFacts({ scenario }: { scenario: ScenarioOut }) {
+  const services = useServices();
   const card = obj(scenario.body.card);
   const caller = obj(card.caller);
   const flags = obj(card.flags);
@@ -548,7 +551,11 @@ function CardFacts({ scenario }: { scenario: ScenarioOut }) {
           <FactRow title="Описание" value={str(card.description)} />
           <FactRow
             title="Служба обучающегося"
-            value={scenario.service_code ?? ""}
+            value={
+              services.data?.find((s) => s.code === scenario.service_code)?.title ??
+              scenario.service_code ??
+              ""
+            }
           />
         </dl>
         <p className="mt-3 text-muted-foreground">
@@ -572,7 +579,7 @@ function PlantedErrors({ body }: { body: Body }) {
       <ul className="mt-1 list-disc space-y-0.5 pl-5 text-muted-foreground">
         {errors.map((e, i) => (
           <li key={i}>
-            {str(e.field)}: в карточке «{str(e.wrong_label || e.wrong_value)}»,
+            {FIELD_TITLES[str(e.field)] ?? str(e.field)}: в карточке «{str(e.wrong_label || e.wrong_value)}»,
             верно «{str(e.correct_label || e.correct_value)}»
             {e.hint_level ? ` · заметность ${str(e.hint_level)}` : ""}
           </li>
@@ -603,6 +610,8 @@ const REPORT_DELAY_MIN = 5;
 const REPORT_DELAY_MAX = 3600;
 
 function Reference({ scenario }: { scenario: ScenarioOut }) {
+  const typicalErrors = useTypicalErrors();
+  const rejectReasons = useRejectReasons();
   const update = useUpdateScenario(scenario.id);
   const approve = useApproveScenario(scenario.id);
   const [editing, setEditing] = useState(false);
@@ -756,7 +765,9 @@ function Reference({ scenario }: { scenario: ScenarioOut }) {
               </Badge>
               {reference.reject_reason ? (
                 <span className="ml-2 text-muted-foreground">
-                  причина: {str(reference.reject_reason)}
+                  причина:{" "}
+                  {rejectReasons.data?.find((r) => r.code === str(reference.reject_reason))
+                    ?.title ?? str(reference.reject_reason)}
                 </span>
               ) : null}
             </p>
@@ -776,7 +787,12 @@ function Reference({ scenario }: { scenario: ScenarioOut }) {
             </ol>
             <p className="text-muted-foreground">
               Критичные ошибки:{" "}
-              {((reference.critical_errors as string[]) ?? []).join(", ") ||
+              {((reference.critical_errors as string[]) ?? [])
+                .map(
+                  (code) =>
+                    typicalErrors.data?.find((t) => t.code === code)?.title ?? code,
+                )
+                .join(", ") ||
                 "—"}
             </p>
             <p

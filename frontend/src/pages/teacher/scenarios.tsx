@@ -1,4 +1,4 @@
-import { BookOpen, FileUp, Loader2, Sparkles, Trash2, Wand2 } from "lucide-react";
+import { BookOpen, ChevronDown, ChevronUp, FileUp, Loader2, Sparkles, Trash2, Wand2 } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -41,6 +41,8 @@ export function TeacherScenariosPage() {
   const [search, setSearch] = useState("");
   const [showGenerate, setShowGenerate] = useState(false);
   const [showDocs, setShowDocs] = useState(false);
+  // Source, status and ticket are rare filters: folded under «Ещё», open while one is set.
+  const [moreFilters, setMoreFilters] = useState(false);
   const list = useScenarios({ ...filters, q: search.trim() || undefined });
   const tree = useClassifierTree();
   const options = useScenarioOptions();
@@ -93,6 +95,19 @@ export function TeacherScenariosPage() {
             ))}
           </select>
         </div>
+        <div className="flex items-end">
+          <Button
+            type="button"
+            variant="ghost"
+            aria-expanded={moreFilters || Boolean(filters.source || filters.status || filters.ticket)}
+            onClick={() => setMoreFilters((v) => !v)}
+          >
+            Ещё фильтры{" "}
+            {moreFilters ? <ChevronUp className="size-4" aria-hidden /> : <ChevronDown className="size-4" aria-hidden />}
+          </Button>
+        </div>
+        {(moreFilters || Boolean(filters.source || filters.status || filters.ticket)) && (
+        <>
         <div>
           <Label htmlFor="source">Источник</Label>
           <select id="source" className={selectClass} value={filters.source ?? ""} onChange={(e) => patch({ source: e.target.value || undefined })}>
@@ -119,6 +134,8 @@ export function TeacherScenariosPage() {
           <Label htmlFor="ticket">Билет</Label>
           <Input id="ticket" value={filters.ticket ?? ""} onChange={(e) => patch({ ticket: e.target.value || undefined })} placeholder="2-1" />
         </div>
+        </>
+        )}
       </div>
 
       {list.isPending ? (
@@ -132,13 +149,15 @@ export function TeacherScenariosPage() {
           </CardContent>
         </Card>
       ) : (
-        <ScenarioTable items={list.data.items} />
+        <ScenarioTable items={list.data.items} callIntake={callIntake} />
       )}
     </div>
   );
 }
 
-function ScenarioTable({ items }: { items: ScenarioListItem[] }) {
+/** «Режим» and «Реплики» matter only with the 112 operator mode (the replies are of a call):
+ * without it every scenario is a ДДС card and the columns would repeat the same thing. */
+function ScenarioTable({ items, callIntake }: { items: ScenarioListItem[]; callIntake: boolean }) {
   return (
     <>
       <p className="text-sm text-muted-foreground">
@@ -148,11 +167,11 @@ function ScenarioTable({ items }: { items: ScenarioListItem[] }) {
         <thead className="text-left text-xs text-muted-foreground">
           <tr className="border-b">
             <th className="py-2 pr-3 font-medium">Сценарий</th>
-            <th className="py-2 pr-3 font-medium">Режим</th>
+            {callIntake && <th className="py-2 pr-3 font-medium">Режим</th>}
             <th className="py-2 pr-3 font-medium">Тип происшествия</th>
             <th className="py-2 pr-3 font-medium">Билет</th>
             <th className="py-2 pr-3 font-medium">Источник</th>
-            <th className="py-2 pr-3 font-medium">Реплики</th>
+            {callIntake && <th className="py-2 pr-3 font-medium">Реплики</th>}
             <th className="py-2 pr-3 font-medium">Статус</th>
             <th className="py-2 pr-3 font-medium">Обновлён</th>
           </tr>
@@ -168,16 +187,18 @@ function ScenarioTable({ items }: { items: ScenarioListItem[] }) {
                   {DIFFICULTY_SHORT[s.difficulty] ?? s.difficulty} · версия {s.current_version}
                 </div>
               </td>
-              <td className="py-2 pr-3">{MODE_TITLES[s.kind] ?? s.kind}</td>
+              {callIntake && <td className="py-2 pr-3">{MODE_TITLES[s.kind] ?? s.kind}</td>}
               <td className="py-2 pr-3">
                 <div>{s.incident_type_title ?? "—"}</div>
                 <div className="text-xs text-muted-foreground">{s.incident_group_title ?? ""}</div>
               </td>
               <td className="py-2 pr-3 tabular-nums">{s.ticket_ref ?? "—"}</td>
               <td className="py-2 pr-3">{SOURCE_TITLES[s.source] ?? s.source}</td>
-              <td className="py-2 pr-3 tabular-nums">
-                {s.kind === "call_intake" ? <RepliesCell item={s} /> : "—"}
-              </td>
+              {callIntake && (
+                <td className="py-2 pr-3 tabular-nums">
+                  {s.kind === "call_intake" ? <RepliesCell item={s} /> : "—"}
+                </td>
+              )}
               <td className="py-2 pr-3">
                 <Badge tone={SCENARIO_STATUS_TONES[s.status]}>{SCENARIO_STATUS_TITLES[s.status] ?? s.status}</Badge>
               </td>
@@ -195,7 +216,8 @@ function ScenarioTable({ items }: { items: ScenarioListItem[] }) {
                 <Badge tone={SCENARIO_STATUS_TONES[s.status]}>{SCENARIO_STATUS_TITLES[s.status] ?? s.status}</Badge>
               </div>
               <div className="mt-1 text-xs text-muted-foreground">
-                {MODE_TITLES[s.kind]} · {s.incident_type_title ?? "тип не задан"} · {SOURCE_TITLES[s.source] ?? s.source}
+                {callIntake && `${MODE_TITLES[s.kind]} · `}
+                {s.incident_type_title ?? "тип не задан"} · {SOURCE_TITLES[s.source] ?? s.source}
                 {s.ticket_ref ? ` · билет ${s.ticket_ref}` : ""}
               </div>
             </Link>

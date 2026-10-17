@@ -23,8 +23,7 @@ export function AdminServicesPage() {
         <table className="w-full min-w-[560px] text-sm" aria-label="Службы">
           <thead className="text-left text-xs text-muted-foreground">
             <tr className="border-b">
-              <th className="py-2 pl-3 pr-3 font-medium">Код</th>
-              <th className="py-2 pr-3 font-medium">Служба</th>
+              <th className="py-2 pl-3 pr-3 font-medium">Служба</th>
               <th className="py-2 pr-3 font-medium">Через АРМ-112</th>
               <th className="py-2 pr-3 font-medium">Без отказа</th>
             </tr>
@@ -32,8 +31,7 @@ export function AdminServicesPage() {
           <tbody>
             {services.data.map((s) => (
               <tr key={s.code} className="border-b last:border-0" data-service={s.code}>
-                <td className="py-2 pl-3 pr-3 font-mono text-xs">{s.code}</td>
-                <td className="py-2 pr-3">
+                <td className="py-2 pl-3 pr-3" title={s.code}>
                   <div className="font-medium">{s.short_title}</div>
                   <div className="text-xs text-muted-foreground">{s.title}</div>
                 </td>
