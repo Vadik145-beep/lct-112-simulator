@@ -14,6 +14,7 @@ from app.domain.evaluation.schemas import (
     CardResponseScenario,
     parse_scenario,
 )
+from app.domain.evaluation.service_call import true_card
 from app.providers.grammar import GrammarMatch, GrammarResult
 
 SCENARIOS_DIR = Path(__file__).resolve().parents[4] / "data" / "seed" / "scenarios"
@@ -126,8 +127,9 @@ def perfect_report_calls(scenario: CardResponseScenario) -> list[dict]:
 
 def perfect_service_calls(scenario: CardResponseScenario) -> list[dict]:
     """Calls to every officer of the reference with all required facts, inside the norm
-    (issue #36); the address is named as the card has it."""
-    card = scenario.card
+    (issue #36); the address is named as it really is — the house the caller gave, not a
+    mistake of the operator in the field (#263)."""
+    card = true_card(scenario)
     calls = []
     for i, ref in enumerate(scenario.reference.service_calls):
         start = 40 + i * 100

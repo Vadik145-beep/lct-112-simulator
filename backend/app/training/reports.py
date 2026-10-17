@@ -31,7 +31,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.evaluation import status_machine as machine
 from app.domain.evaluation.schemas import BrigadeReport, CardResponseScenario
-from app.domain.evaluation.service_call import address_named, gives_order
+from app.domain.evaluation.service_call import address_told, gives_order
 from app.domain.scenarios import complication, no_vehicles
 from app.models import (
     ACTIVE_ATTEMPT_STATES,
@@ -95,7 +95,7 @@ def dispatched_at(scenario: CardResponseScenario, attempt: Attempt) -> datetime 
             for turn in call.get("dialog") or []
             if turn.get("role") == "operator"
         ]
-        told = told or any(address_named(scenario.card, text) for text in said)
+        told = told or any(address_told(scenario, text) for text in said)
         ordered = ordered or any(gives_order(text) for text in said)
         ended = _at(call.get("ended_at"))
         if told and ordered and ended is not None and ended >= accepted:

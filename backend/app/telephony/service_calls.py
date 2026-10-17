@@ -335,7 +335,7 @@ async def speak_to_officer(
     attempt, ts, card, scenario = await card_attempt(session, attempt_id, user)
     record = officer.find_call(attempt, call_id)
     if record.get("ended_at"):
-        raise ApiError(409, "call_ended", "Звонок завершён: дежурному больше не сказать.")
+        raise ApiError(409, "call_ended", "Звонок завершён: сказать больше ничего нельзя.")
     audio = await file.read()
     if not audio:
         raise ApiError(422, "empty_audio", "Пустая запись: скажите фразу ещё раз.")

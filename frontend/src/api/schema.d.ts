@@ -2510,6 +2510,11 @@ export interface components {
             phone_calls: boolean;
             /** Lesson Phone */
             lesson_phone?: string | null;
+            /**
+             * Allow Caller Call
+             * @default false
+             */
+            allow_caller_call: boolean;
             /** Started At */
             started_at: string | null;
             /** Finished At */
@@ -4985,6 +4990,11 @@ export interface components {
             phone_calls: boolean;
             /** Lesson Phone */
             lesson_phone?: string | null;
+            /**
+             * Allow Caller Call
+             * @default false
+             */
+            allow_caller_call: boolean;
             /** Started At */
             started_at: string | null;
             /** Finished At */

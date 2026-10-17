@@ -400,18 +400,21 @@ function CardView({
             value={card.phones.aon ?? ""}
             onCall={callerBack}
             busy={callDisabled}
+            forbidden={!attempt.session.allow_caller_call}
           />
           <PhoneBox
             label="предоставленный"
             value={card.phones.provided ?? ""}
             onCall={callerBack}
             busy={callDisabled}
+            forbidden={!attempt.session.allow_caller_call}
           />
           <PhoneBox
             label="телефон на месте"
             value={card.phones.on_site ?? ""}
             onCall={callerBack}
             busy={callDisabled}
+            forbidden={!attempt.session.allow_caller_call}
           />
           <div className="flex min-w-0 flex-1 flex-col justify-center bg-[var(--arm-panel)] px-3 py-1 text-[11px] leading-tight">
             <span className="text-sm font-semibold">
@@ -869,6 +872,7 @@ function CardView({
                     calls={callsByService.get(ownService.code) ?? []}
                     disabled={callDisabled}
                     onClick={() => dial(ownService.code)}
+                    chief
                   />
                 </div>
                 <div
@@ -1181,18 +1185,27 @@ function CallButton({
   calls,
   disabled,
   onClick,
+  chief = false,
 }: {
   service: { code: string; title: string };
   calls: AttemptOut["service_calls"];
   disabled: boolean;
   onClick: () => void;
+  /** The own service's handset rings the chief of its emergency squad (#263). */
+  chief?: boolean;
 }) {
   const open = calls.some((c) => c.ended_at === null);
   return (
     <button
       type="button"
       aria-label={`Позвонить: ${service.title}`}
-      title={open ? "Идёт разговор" : `Позвонить дежурному: ${service.title}`}
+      title={
+        open
+          ? "Идёт разговор"
+          : chief
+            ? "Позвонить начальнику аварийной бригады"
+            : `Позвонить дежурному: ${service.title}`
+      }
       disabled={disabled}
       onClick={onClick}
       data-service={service.code}
@@ -1220,13 +1233,17 @@ function PhoneBox({
   value,
   onCall,
   busy,
+  forbidden,
 }: {
   label: string;
   value: string;
   onCall?: () => void;
   busy?: boolean;
+  /** The lesson does not allow calling the caller (#263): the handset is grey. */
+  forbidden?: boolean;
 }) {
-  const canCall = Boolean(onCall) && value.trim().length > 0 && !busy;
+  const canCall =
+    Boolean(onCall) && value.trim().length > 0 && !busy && !forbidden;
   return (
     <div className="flex items-center gap-1.5 bg-[var(--arm-panel)] px-2 py-1">
       {onCall ? (
@@ -1234,11 +1251,13 @@ function PhoneBox({
           type="button"
           aria-label={`Позвонить заявителю: ${label}`}
           title={
-            value.trim()
-              ? busy
-                ? "Идёт разговор"
-                : `Позвонить заявителю: ${value}`
-              : "Номера нет: звонить некуда"
+            forbidden
+              ? "Звонок заявителю в этом занятии не разрешён"
+              : value.trim()
+                ? busy
+                  ? "Идёт разговор"
+                  : `Позвонить заявителю: ${value}`
+                : "Номера нет: звонить некуда"
           }
           disabled={!canCall}
           onClick={onCall}
@@ -1247,7 +1266,7 @@ function PhoneBox({
             "flex size-6 items-center justify-center rounded-sm border",
             canCall
               ? "border-[var(--arm-green)] bg-[var(--arm-green)] text-white hover:brightness-110"
-              : value.trim()
+              : value.trim() && !forbidden
                 ? // A number while another call is on: dimmed like the call buttons of the strip.
                   "cursor-not-allowed border-[var(--arm-green)] bg-[var(--arm-green)] text-white opacity-40"
                 : "border-transparent text-[var(--arm-text-muted)] opacity-50",
