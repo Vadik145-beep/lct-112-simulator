@@ -267,7 +267,7 @@ export function ServiceCallPanel({
         <span className="inline-flex items-center gap-1 font-semibold">
           <Phone className="size-3.5" aria-hidden />
           {isReport(call)
-            ? `Доклад бригады: ${call.service_title}`
+            ? callTitle(call)
             : isCaller(call)
               ? `Заявитель: ${call.service_title}`
               : call.kind === "staff"

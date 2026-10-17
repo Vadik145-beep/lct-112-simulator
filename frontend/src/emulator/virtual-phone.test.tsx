@@ -78,6 +78,16 @@ describe("VirtualPhone", () => {
     expect(dial).toHaveBeenCalledWith("2103");
   });
 
+  it("clears the number once the call goes through", () => {
+    const { rerender } = render(<Phone />);
+    fireEvent.click(screen.getByRole("button", { name: "Телефон" }));
+    for (const key of ["3", "8", "0", "3"]) fireEvent.click(screen.getByRole("button", { name: key }));
+    const call = { id: "c1", kind: "outgoing", answered: true, ended_at: null } as CardCalls["openCall"];
+    rerender(<Phone overrides={{ openCall: call }} />);
+    rerender(<Phone overrides={{ openCall: null }} />);
+    expect(screen.getByLabelText("Набираемый номер")).toHaveValue("");
+  });
+
   it("fills the number from the book and keeps the caller's line as a hint", () => {
     render(<Phone />);
     fireEvent.click(screen.getByRole("button", { name: "Телефон" }));

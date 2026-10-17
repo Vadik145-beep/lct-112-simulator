@@ -1,5 +1,5 @@
 import { Delete, Phone, PhoneIncoming, X } from "lucide-react";
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 import { usePhoneBook } from "@/api/phones";
 import type { AttemptOut } from "@/api/training";
@@ -36,6 +36,11 @@ export function VirtualPhone({
   const open = calls.phoneOpen;
   const setOpen = calls.setPhoneOpen;
   const [number, setNumber] = useState("");
+  // A call that went through leaves the keypad clean for the next number.
+  const openCallId = calls.openCall?.id ?? null;
+  useEffect(() => {
+    if (openCallId) setNumber("");
+  }, [openCallId]);
   const [search, setSearch] = useState("");
   const book = usePhoneBook(attempt.id);
   const { openCall, shownCall } = calls;
