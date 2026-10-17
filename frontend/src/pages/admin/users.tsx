@@ -31,6 +31,9 @@ export function AdminUsersPage() {
   const [role, setRole] = useState("");
   const [q, setQ] = useState("");
   const users = useAdminUsers({ role, q });
+  // The service column names the service, not its code.
+  const services = useAdminServices();
+  const serviceOf = (code: string | null) => services.data?.find((s) => s.code === code);
   const [creating, setCreating] = useState(false);
   const [revealed, setRevealed] = useState<Record<string, string>>({});
   const [secret, setSecret] = useState<{ title: string; lines: string[] } | null>(null);
@@ -121,6 +124,7 @@ export function AdminUsersPage() {
                 <UserRow
                   key={u.id}
                   user={u}
+                  service={serviceOf(u.service_code)}
                   fullName={revealed[u.id] ?? undefined}
                   onReveal={() =>
                     reveal.mutate(u.id, {
@@ -163,6 +167,7 @@ export function AdminUsersPage() {
 
 function UserRow({
   user: u,
+  service,
   fullName,
   onReveal,
   onBlock,
@@ -171,6 +176,7 @@ function UserRow({
   onSip,
 }: {
   user: AdminUserOut;
+  service?: { short_title: string; title: string } | undefined;
   fullName?: string | undefined;
   onReveal: () => void;
   onBlock: (blocked: boolean) => void;
@@ -192,7 +198,9 @@ function UserRow({
         )}
       </td>
       <td className="py-2 pr-3">{ROLE_TITLES[u.role]}</td>
-      <td className="py-2 pr-3">{u.service_code ?? <span className="text-muted-foreground">—</span>}</td>
+      <td className="py-2 pr-3" title={service?.title}>
+        {service?.short_title ?? u.service_code ?? <span className="text-muted-foreground">—</span>}
+      </td>
       <td className="py-2 pr-3">
         <div className="flex flex-wrap gap-1">
           {u.is_blocked ? <Badge tone="danger">заблокирован</Badge> : <Badge tone="success">активен</Badge>}
