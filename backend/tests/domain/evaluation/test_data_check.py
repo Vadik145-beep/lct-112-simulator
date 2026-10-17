@@ -230,3 +230,19 @@ def test_wrong_service_accepted_is_missed() -> None:
     result = evaluate_card_response(scenario, attempt, grammar=grammar_ok())
     assert [i["verdict"] for i in result.components["data_check"].items] == ["missed"]
     assert "error_missed" in {e.code for e in result.errors}
+
+
+def test_an_address_flag_counts_for_the_part_its_correction_names() -> None:
+    """Stand 18.10.2026: the part list said «Улица» by default and the trainee wrote the whole
+    address with the right house — the house is found, the street is no false alarm."""
+    scenario = planted(HOUSE)
+    street = scenario.card.address.street
+    attempt = flagged(scenario, ("address.street", f"{street}, дом 21"))
+    result = evaluate_card_response(scenario, attempt, grammar=grammar_ok())
+    check = result.components["data_check"]
+    assert [i["verdict"] for i in check.items] == ["found"]
+    assert not {e.code for e in result.errors} & {"error_missed", "false_alarm"}
+    # A wrong house in the correction is still a false alarm on the street and a miss.
+    attempt = flagged(scenario, ("address.street", f"{street}, дом 25"))
+    result = evaluate_card_response(scenario, attempt, grammar=grammar_ok())
+    assert {"error_missed", "false_alarm"} <= {e.code for e in result.errors}
