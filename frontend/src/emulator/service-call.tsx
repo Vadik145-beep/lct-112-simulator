@@ -270,7 +270,11 @@ export function ServiceCallPanel({
             ? `Доклад бригады: ${call.service_title}`
             : isCaller(call)
               ? `Заявитель: ${call.service_title}`
-              : call.service_title}
+              : call.kind === "staff"
+                ? (call.role_title ?? call.service_title)
+                : call.contact === "начальник аварийной бригады"
+                  ? `Начальник аварийной бригады: ${call.service_title}`
+                  : call.service_title}
         </span>
         <span className="text-[var(--arm-text-muted)]">
           {!open

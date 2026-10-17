@@ -9,7 +9,12 @@ import type { CardCalls } from "@/emulator/use-card-calls";
 import { cn } from "@/lib/utils";
 
 // Statuses at which the squad is out and its reports may still come (issue #103).
-const REPORTING_STATUSES = new Set(["accepted", "response_started", "arrived", "works_started"]);
+const REPORTING_STATUSES = new Set([
+  "accepted",
+  "response_started",
+  "arrived",
+  "works_started",
+]);
 const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"];
 const RECENT_CALLS = 5;
 
@@ -21,14 +26,22 @@ const RECENT_CALLS = 5;
  * teacher's directory and the last calls. The number dialled tells the server who answers;
  * the conversation, a squad's incoming report included, goes on in the same window.
  */
-export function VirtualPhone({ attempt, calls }: { attempt: AttemptOut; calls: CardCalls }) {
+export function VirtualPhone({
+  attempt,
+  calls,
+}: {
+  attempt: AttemptOut;
+  calls: CardCalls;
+}) {
   const open = calls.phoneOpen;
   const setOpen = calls.setPhoneOpen;
   const [number, setNumber] = useState("");
   const [search, setSearch] = useState("");
   const book = usePhoneBook(attempt.id);
   const { openCall, shownCall } = calls;
-  const ringing = Boolean(openCall && openCall.kind === "report" && !openCall.answered);
+  const ringing = Boolean(
+    openCall && openCall.kind === "report" && !openCall.answered,
+  );
   const ownService = attempt.card.services.find((s) => s.is_own)?.code;
 
   const entries = useMemo(() => {
@@ -36,7 +49,9 @@ export function VirtualPhone({ attempt, calls }: { attempt: AttemptOut; calls: C
     const rows = book.data?.entries ?? [];
     if (!query) return rows;
     return rows.filter((e) =>
-      [e.role_title, e.name, e.number ?? ""].some((v) => v.toLowerCase().includes(query)),
+      [e.role_title, e.name, e.number ?? ""].some((v) =>
+        v.toLowerCase().includes(query),
+      ),
     );
   }, [book.data, search]);
   const recent = [...attempt.service_calls].reverse().slice(0, RECENT_CALLS);
@@ -65,7 +80,11 @@ export function VirtualPhone({ attempt, calls }: { attempt: AttemptOut; calls: C
           ringing && "ring-4 ring-[var(--arm-red)]",
         )}
       >
-        {ringing ? <PhoneIncoming className="size-6" aria-hidden /> : <Phone className="size-6" aria-hidden />}
+        {ringing ? (
+          <PhoneIncoming className="size-6" aria-hidden />
+        ) : (
+          <Phone className="size-6" aria-hidden />
+        )}
       </button>
 
       {open && (
@@ -76,7 +95,11 @@ export function VirtualPhone({ attempt, calls }: { attempt: AttemptOut; calls: C
         >
           <header className="flex items-center justify-between bg-[var(--arm-dark)] px-3 py-2 text-sm text-[var(--arm-on-dark)]">
             <span className="font-medium">Телефон</span>
-            <button type="button" onClick={() => setOpen(false)} aria-label="Свернуть телефон">
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Свернуть телефон"
+            >
               <X className="size-4" aria-hidden />
             </button>
           </header>
@@ -84,33 +107,42 @@ export function VirtualPhone({ attempt, calls }: { attempt: AttemptOut; calls: C
           <div className="flex flex-col gap-3 overflow-y-auto p-3">
             {shownCall ? (
               <>
-                <ServiceCallPanel
-                  call={shownCall}
-                  telephony={Boolean(shownCall.telephony && calls.softphone?.mode === "sip")}
-                  sttAvailable={calls.sttAvailable}
-                  micDeviceId={calls.softphone?.micDeviceId ?? null}
-                  devices={calls.softphone?.devices ?? []}
-                  onMicDevice={(id) => calls.softphone?.setMicDevice(id)}
-                  onMicOpened={() => void calls.softphone?.refreshDevices()}
-                  pending={calls.busy}
-                  replying={calls.replying}
-                  awaitingReport={
-                    !calls.finished &&
-                    attempt.reports_expected &&
-                    REPORTING_STATUSES.has(attempt.response_status) &&
-                    shownCall.kind === "outgoing" &&
-                    shownCall.service === ownService
-                  }
-                  error={calls.error ? calls.error.message : null}
-                  onSay={(text, actionId) => calls.say(shownCall.id, text, actionId)}
-                  onSpeak={(blob, actionId) => calls.speak(shownCall.id, blob, actionId)}
-                  onAnswer={calls.answer}
-                  cloud={calls.cloudLesson ? calls.cloudState : "off"}
-                  cloudOnly={calls.cloudLesson && !shownCall.telephony}
-                  muted={calls.cloudMuted}
-                  onToggleMute={calls.toggleCloudMute}
-                  onEnd={calls.hangUp}
-                />
+                {/* The transcript grows into the room it is given: here a fixed height. */}
+                <div className="flex h-[380px] shrink-0 flex-col">
+                  <ServiceCallPanel
+                    call={shownCall}
+                    telephony={Boolean(
+                      shownCall.telephony && calls.softphone?.mode === "sip",
+                    )}
+                    sttAvailable={calls.sttAvailable}
+                    micDeviceId={calls.softphone?.micDeviceId ?? null}
+                    devices={calls.softphone?.devices ?? []}
+                    onMicDevice={(id) => calls.softphone?.setMicDevice(id)}
+                    onMicOpened={() => void calls.softphone?.refreshDevices()}
+                    pending={calls.busy}
+                    replying={calls.replying}
+                    awaitingReport={
+                      !calls.finished &&
+                      attempt.reports_expected &&
+                      REPORTING_STATUSES.has(attempt.response_status) &&
+                      shownCall.kind === "outgoing" &&
+                      shownCall.service === ownService
+                    }
+                    error={calls.error ? calls.error.message : null}
+                    onSay={(text, actionId) =>
+                      calls.say(shownCall.id, text, actionId)
+                    }
+                    onSpeak={(blob, actionId) =>
+                      calls.speak(shownCall.id, blob, actionId)
+                    }
+                    onAnswer={calls.answer}
+                    cloud={calls.cloudLesson ? calls.cloudState : "off"}
+                    cloudOnly={calls.cloudLesson && !shownCall.telephony}
+                    muted={calls.cloudMuted}
+                    onToggleMute={calls.toggleCloudMute}
+                    onEnd={calls.hangUp}
+                  />
+                </div>
                 {shownCall.ended_at !== null && (
                   <button
                     type="button"
@@ -122,7 +154,11 @@ export function VirtualPhone({ attempt, calls }: { attempt: AttemptOut; calls: C
                 )}
               </>
             ) : (
-              <form onSubmit={submit} className="flex flex-col gap-2" aria-label="Набор номера">
+              <form
+                onSubmit={submit}
+                className="flex flex-col gap-2"
+                aria-label="Набор номера"
+              >
                 <div className="flex items-center gap-1 rounded-sm border border-[var(--arm-dark)] bg-[var(--arm-field)] px-2">
                   <input
                     value={number}
@@ -143,7 +179,10 @@ export function VirtualPhone({ attempt, calls }: { attempt: AttemptOut; calls: C
                   </button>
                 </div>
                 {calls.dialError && (
-                  <p className="text-xs font-medium text-[var(--arm-red)]" role="alert">
+                  <p
+                    className="text-xs font-medium text-[var(--arm-red)]"
+                    role="alert"
+                  >
                     {calls.dialError.message}
                   </p>
                 )}
@@ -200,8 +239,12 @@ export function VirtualPhone({ attempt, calls }: { attempt: AttemptOut; calls: C
                         title="Набрать этот номер"
                       >
                         <span className="min-w-0">
-                          <span className="block truncate font-medium">{e.role_title}</span>
-                          <span className="block truncate text-xs text-[var(--arm-text-muted)]">{e.name}</span>
+                          <span className="block truncate font-medium">
+                            {e.role_title}
+                          </span>
+                          <span className="block truncate text-xs text-[var(--arm-text-muted)]">
+                            {e.name}
+                          </span>
                         </span>
                         <span className="font-mono">{e.number}</span>
                       </button>
@@ -214,7 +257,9 @@ export function VirtualPhone({ attempt, calls }: { attempt: AttemptOut; calls: C
                   </li>
                 ))}
                 {book.isSuccess && entries.length === 0 && (
-                  <li className="px-2 py-1.5 text-xs text-[var(--arm-text-muted)]">Ничего не найдено.</li>
+                  <li className="px-2 py-1.5 text-xs text-[var(--arm-text-muted)]">
+                    Ничего не найдено.
+                  </li>
                 )}
               </ul>
             </div>
@@ -232,8 +277,12 @@ export function VirtualPhone({ attempt, calls }: { attempt: AttemptOut; calls: C
                         onClick={() => calls.showCall(c.id)}
                         className="flex w-full flex-col px-2 py-1.5 text-left hover:bg-[var(--arm-panel-2)]"
                       >
-                        <span className="font-medium">{c.role_title ?? callTitle(c)}</span>
-                        <span className="text-[var(--arm-text-muted)]">{describeCall(c)}</span>
+                        <span className="font-medium">
+                          {c.role_title ?? callTitle(c)}
+                        </span>
+                        <span className="text-[var(--arm-text-muted)]">
+                          {describeCall(c)}
+                        </span>
                       </button>
                     </li>
                   ))}

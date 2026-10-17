@@ -397,23 +397,21 @@ async def _squad_plan(
     session: AsyncSession, attempt: Attempt, scenario: CardResponseScenario
 ) -> str | None:
     """The turn of a card of difficulty 3, once per card: «машин нет» or a complication,
-    alternating over the trainee's cards of the lesson, «машин нет» first."""
+    alternating over the trainee's cards of the lesson in the order he calls on them,
+    «машин нет» first."""
     if not no_vehicles.applies(scenario.difficulty):
         return None
     if no_vehicles.plan_of(calls_of(attempt)) is not None:
         return None
-    earlier = await session.scalars(
-        select(Attempt.service_calls)
-        .where(
+    others = await session.scalars(
+        select(Attempt.service_calls).where(
             Attempt.session_id == attempt.session_id,
             Attempt.student_id == attempt.student_id,
             Attempt.id != attempt.id,
-            Attempt.issued_at <= attempt.issued_at,
         )
-        .order_by(Attempt.issued_at.desc())
     )
-    previous = next((p for calls in earlier if (p := no_vehicles.plan_of(calls or []))), None)
-    return no_vehicles.next_plan(previous)
+    plans = [p for calls in others if (p := no_vehicles.plan_of(calls or []))]
+    return no_vehicles.plan_after(plans)
 
 
 def _new_call(

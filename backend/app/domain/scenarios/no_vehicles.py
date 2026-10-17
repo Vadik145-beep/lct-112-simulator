@@ -43,9 +43,13 @@ def applies(difficulty: int) -> bool:
     return difficulty >= MIN_DIFFICULTY
 
 
-def next_plan(previous: str | None) -> str:
-    """The turn of a new card of difficulty 3 after the trainee's previous one."""
-    return PLAN_COMPLICATION if previous == PLAN_NO_VEHICLES else PLAN_NO_VEHICLES
+def plan_after(plans: Iterable[str]) -> str:
+    """The turn of the next card after the turns already given in the lesson: «машин нет» while
+    it is not ahead of the complications, so the cards alternate whatever order they are
+    worked in."""
+    rows = list(plans)
+    ahead = rows.count(PLAN_NO_VEHICLES) > rows.count(PLAN_COMPLICATION)
+    return PLAN_COMPLICATION if ahead else PLAN_NO_VEHICLES
 
 
 def plan_of(calls: Iterable[Mapping]) -> str | None:

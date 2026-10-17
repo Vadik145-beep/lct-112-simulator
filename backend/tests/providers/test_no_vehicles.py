@@ -71,10 +71,11 @@ def accepted(attempt: Attempt) -> None:
     attempt.status_log = [{"status": "accepted", "at": NOW.isoformat(), "by": "student"}]
 
 
-def test_turns_alternate_and_start_with_no_vehicles() -> None:
-    assert no_vehicles.next_plan(None) == no_vehicles.PLAN_NO_VEHICLES
-    assert no_vehicles.next_plan(no_vehicles.PLAN_NO_VEHICLES) == no_vehicles.PLAN_COMPLICATION
-    assert no_vehicles.next_plan(no_vehicles.PLAN_COMPLICATION) == no_vehicles.PLAN_NO_VEHICLES
+def test_turns_alternate_in_the_order_cards_are_worked() -> None:
+    assert no_vehicles.plan_after([]) == no_vehicles.PLAN_NO_VEHICLES
+    assert no_vehicles.plan_after(["no_vehicles"]) == no_vehicles.PLAN_COMPLICATION
+    assert no_vehicles.plan_after(["no_vehicles", "complication"]) == "no_vehicles"
+    assert no_vehicles.plan_after(["complication", "no_vehicles"]) == "no_vehicles"
 
 
 def test_no_vehicles_after_the_house_is_settled_then_the_head_finds_one() -> None:
