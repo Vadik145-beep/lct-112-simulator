@@ -865,8 +865,10 @@ test.describe("Доклады бригады диспетчеру по теле�
     // No report before «Принята»; the hint tells the trainee to wait for the reports.
     await expect(page.getByTestId("service-call-panel")).toHaveCount(0);
     await setStatus(page, "Принята");
+    // The trainer panel is folded by default (#275): the hint is inside it.
+    await page.getByRole("button", { name: "Развернуть панель тренажёра" }).click();
     await expect(
-      page.getByText(/Старший группы реагирования будет звонить с докладами/),
+      page.getByText(/Начальник аварийной бригады будет звонить с докладами/),
     ).toBeVisible();
 
     // The squad leaves once its chief was told the address (#127) and sent (#263).
