@@ -46,7 +46,14 @@ from app.telephony.cloud import (
     report_recording_url,
     token_candidates,
 )
-from app.telephony.vapi import VapiClient, VapiError, build_assistant
+from app.telephony.vapi import (
+    VapiClient,
+    VapiError,
+    build_assistant,
+    control_url,
+    hint_message,
+    send_control,
+)
 
 log = get_logger(__name__)
 
@@ -73,6 +80,9 @@ class WebCall:
     operator_stopped_at: float | None = None
     pending_latency_ms: int | None = None
     latencies_ms: list[int] = field(default_factory=list)
+    # The server's decision to voice next and where to send it (Vapi Live Call Control, #263).
+    pending_hint: str | None = None
+    control_url: str | None = None
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
     # The end-of-call report was handled: nothing more is expected from Vapi.
     reported: bool = False
@@ -120,7 +130,8 @@ class CloudWebCalls:
         from app.dialog import officer
 
         record = officer.find_call(loaded.attempt, call_id)
-        scenario = officer.call_scenario(loaded.scenario, record, loaded.attempt)
+        card = officer.lesson_scenario(loaded.scenario, loaded.ts)
+        scenario = officer.call_scenario(card, record, loaded.attempt)
         return await self._prepare(
             loaded.attempt.id,
             loaded.attempt.session_id,
@@ -239,8 +250,12 @@ class CloudWebCalls:
         if call is None or call.ended:
             log.info("vapi web message for an unknown call", type=kind)
             return {}
+        control = control_url(message)
+        if control:
+            call.control_url = control
         if kind == "transcript":
             await record_transcript(call, message)
+            await self._send_hint(call)
         elif kind == "speech-update":
             note_speech(call, message)
         elif kind == "status-update":
@@ -256,6 +271,17 @@ class CloudWebCalls:
         elif kind == "hang":
             log.warning("vapi reports a delay", attempt=str(call.attempt_id))
         return {}
+
+    async def _send_hint(self, call: WebCall) -> None:
+        """Hands the server's decision to the cloud in the middle of the call: a note the
+        assistant reads and says in its own words; the dispatcher does not hear it (#263)."""
+        hint, call.pending_hint = call.pending_hint, None
+        if not hint:
+            return
+        if not call.control_url:
+            log.warning("vapi call without control url: hint dropped", call=call.service_call_id)
+            return
+        await send_control(call.control_url, hint_message(hint))
 
     async def _save_recording(self, call: WebCall, url: str | None) -> None:
         if not url or self.vapi is None:

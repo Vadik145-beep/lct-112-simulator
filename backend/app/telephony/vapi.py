@@ -259,6 +259,52 @@ OFFICER_PROMPT = """Ты дежурный службы: {service}. Тебе зв
 {facts}
 """
 
+# The squad chief of the dispatcher's own service (#263): he sends the squad, and only on the
+# dispatcher's order. What he must say at the turns that matter (the misheard house, the order
+# taken, «машин нет») comes from the server as a note during the call.
+CHIEF_PROMPT = """Ты начальник аварийной бригады службы {service}. Тебе звонит диспетчер
+дежурно-диспетчерской службы (ДДС) своей организации и передаёт происшествие из карточки
+системы-112. Это рабочий звонок, а не обращение пострадавшего.
+
+Твоя работа — принять происшествие и выехать с бригадой, когда диспетчер распорядится.
+
+Как идёт разговор:
+1. Слушаешь, пока диспетчер передаёт адрес, что случилось, пострадавших, доступ. Пауза в его
+   речи — не конец. Не перебиваешь и не поддакиваешь на каждую фразу.
+2. Если чего-то не назвали, спрашиваешь одним вопросом. Уже названное не переспрашиваешь.
+3. Номер наряда и «выезжаем» говоришь ТОЛЬКО после распоряжения диспетчера («выезжайте»,
+   «высылайте бригаду», «направляйте»). Без распоряжения не выезжаешь: если всё передано,
+   а распоряжения нет, спрашиваешь: «Так что делаем-то?».
+4. Дальше отвечаешь только на вопросы, одной фразой.
+{hurry}
+Чего не делаешь: не спрашиваешь диспетчера, где он и что видит — он на АРМ-112; не просишь у
+него номер наряда — наряд твой; ничего не придумываешь; не кладёшь трубку и не прощаешься —
+разговор заканчивает диспетчер; не переходишь на другой язык ни в одном слове.
+
+{hints}
+Как говорить: по-русски, коротко и по-деловому, одно-два предложения за реплику.
+
+Что ты знаешь о себе и о бригаде:
+{facts}
+"""
+CHIEF_HURRY = """
+Ты торопишься, у тебя ещё вызовы: говоришь резко и коротко. Если диспетчер говорит долго —
+обрываешь: «Стоп, короче. Адрес и что случилось»."""
+HINTS_RULE = """Во время звонка тебе могут приходить служебные подсказки тренажёра (сообщения,
+которые начинаются словами «Служебная подсказка тренажёра»). Диспетчер их не слышит.
+Отвечая на следующую фразу диспетчера, обязательно скажи по смыслу то, что в подсказке,
+своими словами; подсказку не упоминаешь и не зачитываешь дословно."""
+# What each person of the organization is for (#263, рекомендации заказчика п. 8).
+STAFF_DUTIES: dict[str, str] = {
+    "organization_head": "Принимаешь доклады о происшествиях. Решаешь то, что бригаде не по "
+    "силам: машины, люди, техника. Бригаду сам не высылаешь — распоряжение на выезд даёт "
+    "диспетчер начальнику аварийной бригады.",
+    "response_chief": "Принимаешь доклад о происшествии и ставишь его на контроль, уточняешь, "
+    "какие силы направлены. Бригаду не высылаешь и машинами не распоряжаешься.",
+    "squad_specialist": "Ты на месте с бригадой: рассказываешь, что видишь и что делаете. "
+    "Распоряжений на выезд не принимаешь — это к начальнику аварийной бригады.",
+}
+
 OFFICER_REPEAT_PROMPT = """Ты дежурный службы: {service}. Тебе снова звонит диспетчер
 дежурно-диспетчерской службы (ДДС) по карточке, которую ты уже принял от него в прошлом
 звонке. Бригада работает по ней. Это рабочий звонок двух дежурных.
@@ -316,10 +362,14 @@ STAFF_PROMPT = """Ты сотрудник городской службы, ра�
 
 Кто ты и как себя ведёшь: {behaviour}.
 
+За что ты отвечаешь: {duties}
+
 Твоя первая фраза уже сказана. Дальше:
 - Отвечаешь на последнюю фразу диспетчера одним-двумя короткими предложениями.
 - Не выдумываешь того, чего нет в списке ниже; не кладёшь трубку и не прощаешься —
   разговор заканчивает диспетчер; не переходишь на другой язык ни в одном слове.
+
+{hints}
 
 Что ты знаешь:
 {facts}
@@ -343,16 +393,27 @@ def role_prompt(scenario: CallIntakeScenario) -> str:
     facts = "\n".join(f"- {key}: {value}" for key, value in caller.facts.items())
     service = caller.facts.get("служба", "службы")
     if caller.persona == OFFICER_PERSONA:
-        from app.domain.scenarios.officers import REPEAT_FACT_KEY
+        from app.domain.scenarios.officers import REPEAT_FACT_KEY, SQUAD_CHIEF_TITLE
 
-        template = OFFICER_REPEAT_PROMPT if REPEAT_FACT_KEY in caller.facts else OFFICER_PROMPT
-        return template.format(service=service, facts=facts or "- ничего особенного")
+        repeat = REPEAT_FACT_KEY in caller.facts
+        if scenario.title.startswith(SQUAD_CHIEF_TITLE) and not repeat:
+            return CHIEF_PROMPT.format(
+                service=service,
+                facts=facts or "- ничего особенного",
+                hurry=CHIEF_HURRY if scenario.difficulty >= HURRY_DIFFICULTY else "",
+                hints=HINTS_RULE,
+            )
+        template = OFFICER_REPEAT_PROMPT if repeat else OFFICER_PROMPT
+        prompt = template.format(service=service, facts=facts or "- ничего особенного")
+        return f"{prompt}\n{HINTS_RULE}\n"
     if caller.persona == SQUAD_LEADER_PERSONA:
         return SQUAD_PROMPT.format(service=service, facts=facts or "- ничего особенного")
     if caller.persona in _staff_personas():
         return STAFF_PROMPT.format(
             title=scenario.title,
             behaviour=caller.behaviour or "",
+            duties=STAFF_DUTIES.get(caller.persona, ""),
+            hints=HINTS_RULE,
             facts=facts or "- ничего особенного",
         )
     return caller_prompt(scenario)
@@ -421,6 +482,52 @@ def transcriber_config(settings: Settings | None = None) -> dict[str, Any]:
     return config
 
 
+# Live Call Control (#263): the server adds a note to the assistant's conversation. The
+# assistant answers the dispatcher's phrase itself; the note steers that answer.
+HINT_PREFIX = "Служебная подсказка тренажёра, диспетчер её не слышит."
+# The squad chief is in a hurry from this difficulty on (``app.domain.scenarios.rush``).
+HURRY_DIFFICULTY = 3
+HINT_TRIGGERS_RESPONSE = False
+CONTROL_TIMEOUT_SECONDS = 5.0
+
+
+def hint_message(decision: str) -> dict[str, Any]:
+    """The control message carrying the server's decision («Записал: …, дом 19?»)."""
+    return {
+        "type": "add-message",
+        "message": {
+            "role": "system",
+            "content": (
+                f"{HINT_PREFIX} Отвечая диспетчеру, скажи по смыслу: «{decision}». "
+                "Своими словами, коротко, не упоминай подсказку."
+            ),
+        },
+        "triggerResponseEnabled": HINT_TRIGGERS_RESPONSE,
+    }
+
+
+def control_url(message: dict) -> str | None:
+    """Where the call takes control messages: Vapi sends it with the call's messages when the
+    assistant has ``monitorPlan.controlEnabled``."""
+    monitor = (message.get("call") or {}).get("monitor") or {}
+    url = monitor.get("controlUrl")
+    return str(url) if url else None
+
+
+async def send_control(url: str, body: dict[str, Any]) -> bool:
+    try:
+        async with httpx.AsyncClient(timeout=CONTROL_TIMEOUT_SECONDS) as client:
+            response = await client.post(url, json=body)
+    except httpx.HTTPError as exc:
+        log.warning("vapi control failed", error=str(exc))
+        return False
+    if response.status_code >= 400:
+        log.warning("vapi control refused", status=response.status_code, body=response.text[:200])
+        return False
+    log.info("vapi control sent", type=body.get("type"))
+    return True
+
+
 def build_assistant(
     scenario: CallIntakeScenario, settings: Settings | None = None, *, recording: bool = False
 ) -> dict[str, Any]:
@@ -452,6 +559,9 @@ def build_assistant(
         # Диспетчер передаёт карточку кусками, с паузами: дежурный ждёт дольше обычного,
         # чтобы не отвечать на каждую его фразу (замечание пользователя 23.09.2026).
         **({} if is_caller(scenario) else {"startSpeakingPlan": {"waitSeconds": 1.5}}),
+        # The server steers the people of the card mid-call (#263): misheard house, the order
+        # taken, «машин нет» — decided on the dispatcher's words, voiced by the cloud.
+        **({} if is_caller(scenario) else {"monitorPlan": {"controlEnabled": True}}),
         # A SIP call is recorded by Asterisk into storage/recordings and Vapi keeps nothing;
         # a browser call has no Asterisk, so Vapi records it and the report brings the file.
         "artifactPlan": {"recordingEnabled": recording},

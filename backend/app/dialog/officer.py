@@ -623,11 +623,19 @@ async def external_turn(
     *,
     now: datetime | None = None,
     latency_ms: int | None = None,
+    ts: TrainingSession | None = None,
+    decide: bool = False,
 ) -> tuple[dict | None, list[SessionEvent]]:
     """One phrase of a service call heard from the cloud voice (issue #59, browser calls):
     the dispatcher's own words as the provider transcribed them, or the reply of the officer
     (the squad leader on a report). Topics come from keywords, so the evaluation reads the
-    turn like any other. ``role`` is «operator» (the trainee) or «caller» (the other side)."""
+    turn like any other. ``role`` is «operator» (the trainee) or «caller» (the other side).
+
+    ``decide`` (a phrase heard live, #263): the server decides on the dispatcher's words what
+    the other side must say — the misheard house, the order taken, «машин нет», the head
+    finding a vehicle — exactly as in a call without the cloud. The decision is kept as a
+    hidden turn (``HINT_KEY``) the truth of the card reads, and ``hint_of`` hands it to the
+    cloud to say in its own words."""
     if role not in ("operator", "caller"):
         raise ValueError(f"unknown dialog role: {role!r}")
     text = text.strip()
@@ -652,7 +660,15 @@ async def external_turn(
         heard=role == "operator",
         latency_ms=latency_ms if role == "caller" else None,
     )
+    decided = None
+    if decide and role == "operator" and not is_caller(call):
+        decided = cloud_decision(lesson_scenario(scenario, ts), attempt, call, text)
     turns = [*(call.get("dialog") or []), turn]
+    if decided is not None:
+        reply, extra = decided
+        turn["topics"] = list(dict.fromkeys([*turn["topics"], *reply.operator_topics]))
+        hidden = _turn("caller", reply.text, reply.topics, now, method=reply.method, **extra)
+        turns.append({**hidden, HINT_KEY: True})
     facts = list(call.get("facts_passed") or [])
     if passes_facts(call):
         facts = engine.facts_from_dialog(
@@ -680,6 +696,42 @@ async def external_turn(
         pending_reply=False,
     )
     return turn, [event]
+
+
+# A turn the server decided for the cloud: it is not shown in the transcript, the cloud says it
+# in its own words, and the truth of the card (the misheard house, the order taken, the vehicle
+# found) reads it like any reply.
+HINT_KEY = "hint"
+# What the server decides on its own: the rest of the talk is the cloud's.
+SERVER_METHODS = frozenset({"misheard", "order", "no_vehicles", "wrong_contact"})
+
+
+def is_hint(turn: dict) -> bool:
+    return bool(turn.get(HINT_KEY))
+
+
+def hint_of(call: dict) -> str | None:
+    """The decision the cloud has to voice: the hidden turn right after the last phrase."""
+    turns = call.get("dialog") or []
+    return str(turns[-1]["text"]) if turns and is_hint(turns[-1]) else None
+
+
+def cloud_decision(
+    scenario: CardResponseScenario, attempt: Attempt, call: dict, text: str
+) -> tuple[CallerReply, dict] | None:
+    """What the other side must say to the dispatcher's phrase, decided by the server alone:
+    the same rules as a call without the cloud, with no model to ask. ``None`` leaves the
+    answer to the cloud."""
+    special = (
+        misheard_reply(scenario, attempt, call, text)
+        or head_reply(attempt, call, text)
+        or wrong_contact_reply(call, text)
+    )
+    reply, extra = special or (CallerReply(text="", topics=[], operator_topics=[]), {})
+    reply = chief_reply(scenario, attempt, call, text, reply)
+    if not reply.text or reply.method not in SERVER_METHODS:
+        return None
+    return reply, extra
 
 
 async def say(

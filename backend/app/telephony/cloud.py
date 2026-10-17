@@ -101,6 +101,8 @@ class CloudTurns(Protocol):
     operator_stopped_at: float | None
     pending_latency_ms: int | None
     latencies_ms: list[int]
+    # The server's decision to voice next (#263), set by the transcript of the dispatcher.
+    pending_hint: str | None
 
 
 @dataclass
@@ -117,6 +119,8 @@ class CloudCall(Call):
     operator_stopped_at: float | None = None
     pending_latency_ms: int | None = None
     latencies_ms: list[int] = field(default_factory=list)
+    pending_hint: str | None = None
+    control_url: str | None = None
     leg_lost: asyncio.Task | None = None
 
     def __post_init__(self) -> None:
@@ -191,7 +195,12 @@ async def _record_service_transcript(
             role,
             text,
             latency_ms=latency,
+            ts=loaded.ts,
+            decide=True,
         )
+        if turn is not None and role == "operator":
+            record = officer.find_call(loaded.attempt, call.service_call_id)
+            call.pending_hint = officer.hint_of(record)
         await session.commit()
     await publish_events(events)
     if turn is not None and role == "caller":
@@ -666,7 +675,8 @@ class CloudCallManager(CallManager):
         record = officer.find_call(loaded.attempt, call.service_call_id)
         if record.get("ended_at"):
             return {"error": "Звонок уже завершён."}
-        scenario = officer.call_scenario(loaded.scenario, record, loaded.attempt)
+        card = officer.lesson_scenario(loaded.scenario, loaded.ts)
+        scenario = officer.call_scenario(card, record, loaded.attempt)
         log.info(
             "assistant for call",
             attempt=str(call.attempt_id),
