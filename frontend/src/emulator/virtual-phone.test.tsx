@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { useState } from "react";
 import { vi } from "vitest";
 
 import type { AttemptOut } from "@/api/training";
@@ -46,6 +47,8 @@ function calls(overrides: Partial<CardCalls> = {}): CardCalls {
     dialError: null,
     resetDialError: () => {},
     canCall: true,
+    phoneOpen: false,
+    setPhoneOpen: () => {},
     call: () => {},
     dial: () => {},
     answer: () => {},
@@ -56,10 +59,16 @@ function calls(overrides: Partial<CardCalls> = {}): CardCalls {
   } as CardCalls;
 }
 
+/** The phone with the open state of the shared hook kept in a real component. */
+function Phone({ overrides = {} }: { overrides?: Partial<CardCalls> }) {
+  const [phoneOpen, setPhoneOpen] = useState(false);
+  return <VirtualPhone attempt={attempt} calls={calls({ phoneOpen, setPhoneOpen, ...overrides })} />;
+}
+
 describe("VirtualPhone", () => {
   it("opens from the green circle and dials the number typed on the keypad", () => {
     const dial = vi.fn();
-    render(<VirtualPhone attempt={attempt} calls={calls({ dial })} />);
+    render(<Phone overrides={{ dial }} />);
     expect(screen.queryByTestId("virtual-phone")).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: "Телефон" }));
@@ -70,7 +79,7 @@ describe("VirtualPhone", () => {
   });
 
   it("fills the number from the book and keeps the caller's line as a hint", () => {
-    render(<VirtualPhone attempt={attempt} calls={calls()} />);
+    render(<Phone />);
     fireEvent.click(screen.getByRole("button", { name: "Телефон" }));
     fireEvent.click(screen.getByRole("button", { name: /Руководитель организации/ }));
     expect(screen.getByLabelText("Набираемый номер")).toHaveValue("2101");
@@ -81,13 +90,13 @@ describe("VirtualPhone", () => {
 
   it("shows why a number did not go through", () => {
     const dialError = new Error("Набранный номер не существует.");
-    render(<VirtualPhone attempt={attempt} calls={calls({ dialError } as Partial<CardCalls>)} />);
+    render(<Phone overrides={{ dialError } as Partial<CardCalls>} />);
     fireEvent.click(screen.getByRole("button", { name: "Телефон" }));
     expect(screen.getByRole("alert")).toHaveTextContent("Набранный номер не существует.");
   });
 
   it("searches the book by role, name or number", () => {
-    render(<VirtualPhone attempt={attempt} calls={calls()} />);
+    render(<Phone />);
     fireEvent.click(screen.getByRole("button", { name: "Телефон" }));
     fireEvent.change(screen.getByLabelText("Поиск по справочнику"), { target: { value: "бригад" } });
     expect(screen.getByRole("button", { name: /Начальник аварийной бригады/ })).toBeInTheDocument();

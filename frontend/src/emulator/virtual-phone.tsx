@@ -1,5 +1,5 @@
 import { Delete, Phone, PhoneIncoming, X } from "lucide-react";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 
 import { usePhoneBook } from "@/api/phones";
 import type { AttemptOut } from "@/api/training";
@@ -13,6 +13,8 @@ const REPORTING_STATUSES = new Set(["accepted", "response_started", "arrived", "
 const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"];
 const RECENT_CALLS = 5;
 
+// The circle sits 48 px from the right edge — clear of the folded trainer panel (36 px) — and
+// above the services strip.
 /**
  * The virtual phone of the dispatcher (#263, рекомендации заказчика п. 8): the green circle in
  * the corner of the work panel opens a phone with a keypad, the book of the service from the
@@ -20,19 +22,14 @@ const RECENT_CALLS = 5;
  * the conversation, a squad's incoming report included, goes on in the same window.
  */
 export function VirtualPhone({ attempt, calls }: { attempt: AttemptOut; calls: CardCalls }) {
-  const [open, setOpen] = useState(false);
+  const open = calls.phoneOpen;
+  const setOpen = calls.setPhoneOpen;
   const [number, setNumber] = useState("");
   const [search, setSearch] = useState("");
   const book = usePhoneBook(attempt.id);
   const { openCall, shownCall } = calls;
   const ringing = Boolean(openCall && openCall.kind === "report" && !openCall.answered);
   const ownService = attempt.card.services.find((s) => s.is_own)?.code;
-
-  // A call started from a handset of the card, or a report ringing, shows in the phone.
-  const openCallId = openCall?.id ?? null;
-  useEffect(() => {
-    if (openCallId) setOpen(true);
-  }, [openCallId]);
 
   const entries = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -57,13 +54,13 @@ export function VirtualPhone({ attempt, calls }: { attempt: AttemptOut; calls: C
     <>
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => setOpen(!open)}
         aria-label={ringing ? "Телефон: входящий вызов" : "Телефон"}
         aria-expanded={open}
         title={ringing ? "Входящий вызов" : "Телефон"}
         data-testid="virtual-phone-button"
         className={cn(
-          "fixed bottom-20 right-4 z-40 flex size-14 items-center justify-center rounded-full text-white shadow-lg hover:brightness-110",
+          "fixed bottom-[72px] right-12 z-40 flex size-14 items-center justify-center rounded-full text-white shadow-lg hover:brightness-110",
           "bg-[var(--arm-green)]",
           ringing && "ring-4 ring-[var(--arm-red)]",
         )}
@@ -75,7 +72,7 @@ export function VirtualPhone({ attempt, calls }: { attempt: AttemptOut; calls: C
         <section
           aria-label="Виртуальный телефон"
           data-testid="virtual-phone"
-          className="fixed bottom-36 right-4 z-40 flex max-h-[calc(100vh-10rem)] w-[360px] flex-col overflow-hidden rounded-md border border-[var(--arm-dark)] bg-[var(--arm-panel)] text-[var(--arm-text)] shadow-xl"
+          className="fixed bottom-[140px] right-12 z-40 flex max-h-[calc(100vh-10rem)] w-[360px] flex-col overflow-hidden rounded-md border border-[var(--arm-dark)] bg-[var(--arm-panel)] text-[var(--arm-text)] shadow-xl"
         >
           <header className="flex items-center justify-between bg-[var(--arm-dark)] px-3 py-2 text-sm text-[var(--arm-on-dark)]">
             <span className="font-medium">Телефон</span>

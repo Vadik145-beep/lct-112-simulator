@@ -92,11 +92,20 @@ export function useCardCalls(attempt: AttemptOut) {
   const [sttAvailable, setSttAvailable] = useState(false);
   const openCall = attempt.service_calls.find((c) => c.ended_at === null) ?? null;
   const [shownCallId, setShownCallId] = useState<string | null>(null);
+  // The window of the virtual phone: a call started or ringing opens it.
+  const [phoneOpen, setPhoneOpen] = useState(false);
   // The call on the line stays shown when it ends; a line of the history opens an earlier one.
   const openCallId = openCall?.id ?? null;
   useEffect(() => {
-    if (openCallId) setShownCallId(openCallId);
+    if (!openCallId) return;
+    setShownCallId(openCallId);
+    setPhoneOpen(true);
   }, [openCallId]);
+  /** Shows a call of the card in the phone (``null`` — back to the keypad). */
+  const showCall = (id: string | null) => {
+    setShownCallId(id);
+    if (id) setPhoneOpen(true);
+  };
   const shownCall =
     openCall ?? attempt.service_calls.find((c) => c.id === shownCallId) ?? null;
 
@@ -171,7 +180,9 @@ export function useCardCalls(attempt: AttemptOut) {
     sttAvailable,
     openCall,
     shownCall,
-    showCall: setShownCallId,
+    showCall,
+    phoneOpen,
+    setPhoneOpen,
     busy,
     replying: sayToOfficer.isPending || speakToOfficer.isPending,
     error,
