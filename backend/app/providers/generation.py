@@ -27,6 +27,7 @@ from pydantic import BaseModel, ValidationError
 from app.config import get_settings
 from app.domain.evaluation.schemas import Address
 from app.domain.scenarios import distort, examples, template
+from app.domain.scenarios.callers import Caller, pick_caller
 from app.domain.scenarios.classify import rank_types
 from app.domain.scenarios.facts import TicketFacts, parse_ticket
 from app.domain.scenarios.generated import (
@@ -76,6 +77,9 @@ class GenerationRequest:
     # A real address for a card without a ticket (a street of the reference list); the model
     # writes the description around it and the card keeps it, so nothing is invented.
     address: Address | None = None
+    # Who called, for a card whose source does not say (a phrase, a ticket without a name or
+    # a phone): every card of АРМ-112 names the caller and the number (АОН).
+    caller: Caller | None = None
     # Kinds of operator mistakes to plant first (``distort``): the trainee's weak spots.
     mistakes_first: list[str] = field(default_factory=list)
     # The service the card is for (the trainee's own); empty = the first notified on АРМ-112.
@@ -85,14 +89,21 @@ class GenerationRequest:
     wrong_service: bool = False
 
     def facts_or_phrase(self) -> TicketFacts:
-        if self.facts is not None:
-            return self.facts
-        facts = parse_ticket(self.phrase or "", "")
-        if self.address is None:
+        facts = self.facts if self.facts is not None else parse_ticket(self.phrase or "", "")
+        if self.facts is None and self.address is not None:
+            facts = dataclasses.replace(
+                facts, address=self.address, address_text=address_text(self.address)
+            )
+        known = facts.caller
+        if self.caller is None or (known.name and known.phone):
             return facts
-        return dataclasses.replace(
-            facts, address=self.address, address_text=address_text(self.address)
+        caller = dataclasses.replace(
+            known,
+            name=known.name or self.caller.name,
+            phone=known.phone or self.caller.phone,
+            gender=known.gender if known.name else self.caller.gender,
         )
+        return dataclasses.replace(facts, caller=caller)
 
 
 @dataclass
@@ -128,6 +139,15 @@ def with_real_address(request: GenerationRequest, ctx: GenerationContext) -> Gen
     street = rng.choice(streets)
     house = str(rng.randint(*HOUSE_NUMBERS))
     return dataclasses.replace(request, address=Address(street=street, house=house))
+
+
+def with_caller(request: GenerationRequest) -> GenerationRequest:
+    """A full name and a mobile number for the card (stable per request); used where its
+    source has none."""
+    if request.caller is not None:
+        return request
+    seed = f"{request.phrase}|{request.ticket_ref}|{request.incident_type}|{request.difficulty}"
+    return dataclasses.replace(request, caller=pick_caller(seed))
 
 
 def plant_mistakes(
@@ -233,7 +253,7 @@ class TemplateGeneration:
         self, request: GenerationRequest, ctx: GenerationContext
     ) -> GenerationResult:
         started = time.perf_counter()
-        request = with_real_address(request, ctx)
+        request = with_caller(with_real_address(request, ctx))
         facts = request.facts_or_phrase()
         row = choose_row(request, ctx.type_rows)
         if request.kind == "call_intake":
@@ -302,6 +322,12 @@ def build_messages(
             f" Адрес происшествия: «{address_text(request.address)}» — используй его без "
             "изменений, другой адрес не придумывай."
             if request.address is not None
+            else ""
+        )
+        + (
+            f" Заявитель: {request.caller.name}, телефон {request.caller.phone} — других имён "
+            "и номеров не придумывай."
+            if request.caller is not None
             else ""
         )
     )
@@ -404,15 +430,17 @@ def _card_address(generated: BaseModel, request: GenerationRequest) -> dict:
 
 
 def _card_caller(generated: BaseModel, request: GenerationRequest) -> dict:
-    """Name, role and phone of the caller — also from the ticket when there is one."""
-    if request.facts is None:
-        return _address(generated)
-    caller = request.facts.caller
+    """Name, role and phone of the caller from the ticket or chosen for the card, not the
+    model's: the model leaves them out at times, and the card must name who called."""
+    caller = request.facts_or_phrase().caller
     if not (caller.name or caller.phone):
         return _address(generated)
+    written = _address(generated)
     return {
         "name": caller.name,
-        "role": caller.relation or caller.role,
+        "role": caller.relation
+        or (written.get("role") if request.facts is None else None)
+        or caller.role,
         "phone": caller.phone,
     }
 
@@ -545,7 +573,7 @@ class LlmGeneration:
         self, request: GenerationRequest, ctx: GenerationContext
     ) -> GenerationResult:
         started = time.perf_counter()
-        request = with_real_address(request, ctx)
+        request = with_caller(with_real_address(request, ctx))
         rows = candidate_rows(request, ctx.type_rows)
         by_code = {str(r["code"]): r for r in rows}
         codes = list(by_code)
