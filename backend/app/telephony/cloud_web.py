@@ -143,6 +143,7 @@ class CloudWebCalls:
             scenario,
             key=call_id,
             service_call_id=call_id,
+            vocabulary=officer.stt_terms(card),
         )
 
     async def _prepare(
@@ -154,6 +155,7 @@ class CloudWebCalls:
         *,
         key: str,
         service_call_id: str | None = None,
+        vocabulary: list[str] | None = None,
     ) -> WebCallStart:
         s = get_settings()
         if self.vapi is None or not s.vapi_public_key:
@@ -163,7 +165,7 @@ class CloudWebCalls:
         existing = self.calls.get(key)
         if existing is not None and not existing.ended:
             return self._start_of(existing, s)
-        assistant = build_assistant(scenario, s, recording=True)
+        assistant = build_assistant(scenario, s, recording=True, vocabulary=vocabulary or ())
         assistant["name"] = f"web-{key[:12]}"
         assistant_id = await self.vapi.create_assistant(assistant)
         call = WebCall(

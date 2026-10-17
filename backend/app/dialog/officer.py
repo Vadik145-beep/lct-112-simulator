@@ -1075,6 +1075,35 @@ def _said_by_dispatcher(calls: list[dict]) -> list[str]:
     ]
 
 
+# Services by the name the dispatcher says (the vocabulary of the recognizer).
+SAID_SERVICE_NAMES: dict[str, str] = {
+    "gkh": "ЕДЦ ЖКХ",
+    "moek": "МОЭК",
+    "mosvodokanal": "Мосводоканал",
+    "mosgaz": "Мосгаз",
+    "gormost": "Гормост",
+    "moslift": "Мослифт",
+    "territorial_oiv": "управа",
+    "101": "пожарная охрана",
+    "102": "полиция",
+    "103": "скорая помощь",
+}
+STT_TERMS_MAX = 20
+
+
+def stt_terms(scenario: CardResponseScenario) -> list[str]:
+    """Words of the card for the recognizer of a cloud call (stand 18.10.2026: «улица Доктора
+    Гааза» came as «доктора. Газ.»): the street as the card shows it and as the caller gave it,
+    the services, the incident. No house numbers — a wrong house must be heard as said."""
+    truth = engine.true_card(scenario)
+    terms = [scenario.card.address.street or "", truth.address.street or ""]
+    services = [scenario.service, *(n.service for n in scenario.card.notified)]
+    terms += [SAID_SERVICE_NAMES[s] for s in services if s in SAID_SERVICE_NAMES]
+    if scenario.title and not re.search(r"\d", scenario.title):
+        terms.append(scenario.title)
+    return list(dict.fromkeys(t.strip() for t in terms if t and t.strip()))[:STT_TERMS_MAX]
+
+
 def squad_order(scenario: CardResponseScenario) -> str:
     """The number of the own service's squad, as its chief knows it."""
     ref = reference_for(scenario, scenario.service)

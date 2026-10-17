@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import hashlib
 import secrets
+from collections.abc import Sequence
 from typing import Any
 
 import httpx
@@ -495,9 +496,23 @@ def voice_config(scenario: CallIntakeScenario, settings: Settings | None = None)
     return voice
 
 
-def transcriber_config(settings: Settings | None = None) -> dict[str, Any]:
+# What the call is about, for the recognizer (Soniox ``context.general``) — with the words of
+# the card it stops writing «доктора. Газ.» for «Доктора Гааза» (stand 18.10.2026).
+SONIOX_CONTEXT = [
+    {
+        "key": "domain",
+        "value": "учебный звонок диспетчера дежурно-диспетчерской службы: адрес происшествия "
+        "(улица и номер дома), что случилось, есть ли пострадавшие, распоряжение на выезд",
+    }
+]
+
+
+def transcriber_config(
+    settings: Settings | None = None, vocabulary: Sequence[str] = ()
+) -> dict[str, Any]:
     """The transcriber of the caller's side. Soniox takes a list of languages, the other
-    providers a single language code."""
+    providers a single language code. ``vocabulary``: the words of the card the dispatcher is
+    about to say (Soniox only); no house numbers in it, so a wrong house is heard as said."""
     s = settings or get_settings()
     config: dict[str, Any] = {
         "provider": s.cloud_voice_transcriber_provider,
@@ -505,6 +520,9 @@ def transcriber_config(settings: Settings | None = None) -> dict[str, Any]:
     }
     if s.cloud_voice_transcriber_provider == "soniox":
         config["languages"] = [s.cloud_voice_language]
+        if vocabulary:
+            config["customVocabulary"] = list(vocabulary)
+            config["contextGeneral"] = SONIOX_CONTEXT
     else:
         config["language"] = s.cloud_voice_language
     return config
@@ -655,7 +673,11 @@ def is_squad_chief(scenario: CallIntakeScenario) -> bool:
 
 
 def build_assistant(
-    scenario: CallIntakeScenario, settings: Settings | None = None, *, recording: bool = False
+    scenario: CallIntakeScenario,
+    settings: Settings | None = None,
+    *,
+    recording: bool = False,
+    vocabulary: Sequence[str] = (),
 ) -> dict[str, Any]:
     """The transient assistant of one call: what ``assistant-request`` is answered with, or
     what the browser call is created from. ``recording``: Vapi records the call (browser
@@ -665,7 +687,7 @@ def build_assistant(
         "name": f"trainer-{scenario.ticket_ref or 'call'}"[:40],
         "firstMessage": scenario.caller.opening,
         "firstMessageMode": "assistant-speaks-first",
-        "transcriber": transcriber_config(s),
+        "transcriber": transcriber_config(s, vocabulary),
         "model": {
             "provider": s.cloud_voice_model_provider,
             "model": s.cloud_voice_model,

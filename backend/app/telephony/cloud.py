@@ -705,7 +705,7 @@ class CloudCallManager(CallManager):
             call=call.service_call_id,
             vapi_call=call.vapi_call_id,
         )
-        return {"assistant": build_assistant(scenario)}
+        return {"assistant": build_assistant(scenario, vocabulary=officer.stt_terms(card))}
 
     # ------------------------------------------------------------ teardown
 

@@ -192,3 +192,22 @@ def test_the_form_knows_who_is_the_dispatcher() -> None:
     assert "«User»" in plan["messages"][0]["content"]
     assert "{{schema}}" in plan["messages"][0]["content"]
     assert "{{transcript}}" in plan["messages"][1]["content"]
+
+
+def test_the_recognizer_gets_the_words_of_the_card_but_no_house() -> None:
+    """Stand 18.10.2026: «улица Доктора Гааза» came as «доктора. Газ.»."""
+    from app.dialog import officer
+    from app.telephony import vapi
+    from tests.domain.evaluation.helpers import card_scenario
+
+    scenario = card_scenario("card_gkh_1_tech_v_podezde")
+    terms = officer.stt_terms(scenario)
+    assert scenario.card.address.street in terms
+    assert "ЕДЦ ЖКХ" in terms
+    assert not any(ch.isdigit() for t in terms for ch in t if t != scenario.card.address.street)
+    assert scenario.card.address.house not in terms
+    config = vapi.transcriber_config(None, terms)
+    if config["provider"] == "soniox":
+        assert config["customVocabulary"] == terms
+        assert config["contextGeneral"] == vapi.SONIOX_CONTEXT
+    assert "customVocabulary" not in vapi.transcriber_config(None)
