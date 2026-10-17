@@ -4,7 +4,14 @@ the operator's mistakes found and the trend of the score."""
 
 from __future__ import annotations
 
-from app.domain.evaluation.advice import ERROR_ADVICE, MAX_POINTS, card_advice, session_advice
+from app.domain.evaluation.advice import (
+    ERROR_ADVICE,
+    MAX_POINTS,
+    SKIP_ERRORS,
+    card_advice,
+    session_advice,
+)
+from app.domain.evaluation.detectors import CARD_DETECTORS
 
 
 def _result(*, errors=(), items=(), passed=False, total=50.0) -> dict:
@@ -66,13 +73,25 @@ def test_critical_errors_first_at_most_five_points() -> None:
     assert advice[0] == ERROR_ADVICE["empty_reject_comment"]
 
 
-def test_unknown_error_falls_back_to_its_title_and_memo() -> None:
+def test_unknown_error_falls_back_to_its_title_and_memo_page_only() -> None:
     advice = card_advice(
         _result(
-            errors=[{"code": "new_one", "title": "Что-то не так", "memo_ref": "Памятка, стр. 3"}]
+            errors=[
+                {"code": "new_one", "title": "Что-то не так", "memo_ref": "стр. 3", "penalty": 2},
+                {
+                    "code": "other",
+                    "title": "Ещё ошибка",
+                    "memo_ref": "ответ от 20.09",
+                    "penalty": 1,
+                },
+            ]
         )
     )
-    assert advice == ["Что-то не так: см. Памятка, стр. 3."]
+    assert advice == ["Что-то не так: перечитайте памятку, стр. 3.", "Ещё ошибка."]
+
+
+def test_every_card_error_has_its_own_advice() -> None:
+    assert set(CARD_DETECTORS) - SKIP_ERRORS <= set(ERROR_ADVICE)
 
 
 def test_clean_card_gets_one_encouraging_point() -> None:
