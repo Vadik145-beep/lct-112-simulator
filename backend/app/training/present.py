@@ -355,6 +355,7 @@ def journal_item(
         incident_title=incident.final_title,
         incident_group=incident.group_title,
         injured=bool(flags.get(FLAG_INJURED)),
+        emergency=bool(flags.get(FLAG_EMERGENCY)),
         address=format_address(card.get("address") or {}),
         caller=_caller_out(card.get("caller") or {}),
         description=str(card.get("description") or ""),

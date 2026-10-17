@@ -271,7 +271,7 @@ function MonitorBoard({
   const snap = state.snapshot;
   const summaries = snap.students.map((s) => ({
     student: s,
-    summary: summarize(s, snap.norm_seconds, snap.pass_threshold, now, snap.cards_total, state.stages[s.student_id], session.mode),
+    summary: summarize(s, snap.norm_seconds, snap.pass_threshold, now, s.cards_total ?? snap.cards_total, state.stages[s.student_id], session.mode),
   }));
   const working = summaries.filter((s) => s.summary.status === "working" || s.summary.status === "waiting").length;
   const done = summaries.filter((s) => s.summary.status === "done").length;

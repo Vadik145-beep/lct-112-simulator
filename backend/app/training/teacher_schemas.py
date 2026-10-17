@@ -233,6 +233,8 @@ class MonitorStudent(BaseModel):
     average: float | None
     last_total: float | None
     last_attempt_id: uuid.UUID | None
+    # Cards this trainee gets in the lesson (his stream schedule differs from the others').
+    cards_total: int | None = None
 
 
 class MonitorOut(BaseModel):
