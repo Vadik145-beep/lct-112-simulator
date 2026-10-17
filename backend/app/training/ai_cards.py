@@ -66,6 +66,11 @@ EMERGENCY_DIFFICULTY = 3
 FLAG_EMERGENCY = "emergency"
 
 _tasks: set[asyncio.Task] = set()
+# Cards of one lesson are planned one after another, so two trainees whose cards are written at
+# the same time (the first ones, at the start) still get different incident types: a planned
+# type counts as taken before its card is stored.
+_plan_locks: dict[uuid.UUID, asyncio.Lock] = {}
+_planned: dict[uuid.UUID, set[str]] = {}
 
 
 def is_ai(ts: TrainingSession) -> bool:
@@ -217,21 +222,24 @@ async def _write_into(session: AsyncSession, row: AiCard, *, template_only: bool
         raise ApiError(404, "session_not_found", "Занятие не найдено.")
     refs = await scenarios.load_refs(session)
     catalogue = await scenarios.load_catalogue(session)
-    plan = plan_next(
-        PlanInput(
-            difficulty=ts.difficulty,
-            seq=row.seq,
-            trainee_key=f"{ts.id}|{row.student_id}",
-            type_rows=list(refs.incident_types.values()),
-            catalogue=catalogue,
-            group_titles=await _group_titles(session),
-            ratings=await _ratings(session, row.student_id),
-            earlier=await _earlier_cards(session, ts.id, row.student_id),
-            allowed_groups=list(ts.incident_groups or []),
-            services=list(ts.service_profile or []),
-            taken_types=await _taken_types(session, ts.id),
+    async with _plan_locks.setdefault(ts.id, asyncio.Lock()):
+        taken = [*await _taken_types(session, ts.id), *_planned.get(ts.id, set())]
+        plan = plan_next(
+            PlanInput(
+                difficulty=ts.difficulty,
+                seq=row.seq,
+                trainee_key=f"{ts.id}|{row.student_id}",
+                type_rows=list(refs.incident_types.values()),
+                catalogue=catalogue,
+                group_titles=await _group_titles(session),
+                ratings=await _ratings(session, row.student_id),
+                earlier=await _earlier_cards(session, ts.id, row.student_id),
+                allowed_groups=list(ts.incident_groups or []),
+                services=list(ts.service_profile or []),
+                taken_types=taken,
+            )
         )
-    )
+        _planned.setdefault(ts.id, set()).add(str(plan.request.incident_type))
     request = dataclasses.replace(plan.request, mistakes_first=plan.prefer)
     ctx = await scenarios._generation_context(session, refs, request.phrase or "")
     ctx = dataclasses.replace(ctx, services=list(ts.service_profile or []))

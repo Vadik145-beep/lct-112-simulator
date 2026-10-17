@@ -97,6 +97,9 @@ const isStream = (mode: string, difficulty: number) =>
 const cardsFor = (difficulty: number, mode: string) =>
   isStream(mode, difficulty) ? STREAM.perMinute * STREAM.minutes : (CARDS_AT_ONCE[difficulty] ?? 1);
 const NORM_DEFAULT = { card_response: 30, call_intake: 60 } as const;
+// «Задания формирует ИИ» (issue #265): each trainee gets his own cards written during the lesson,
+// one at a time, the next by the mistakes of the previous one; ДДС lessons only.
+const AI_CARDS = { source: "ai", perTrainee: 5 } as const;
 
 const selectClass =
   "flex h-9 w-full rounded-md border border-input bg-background text-foreground px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50";
@@ -120,7 +123,7 @@ function toInput(s: SessionOut): SessionIn {
     title: s.title,
     mode: s.mode,
     group_id: s.group_id ?? "",
-    card_source: "scenarios",
+    card_source: s.card_source === AI_CARDS.source ? AI_CARDS.source : "scenarios",
     scenario_ids: s.scenario_ids,
     incident_groups: s.incident_groups,
     difficulty: s.difficulty,
@@ -150,6 +153,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
   const update = useUpdateSession(existing?.id ?? "");
   const [form, setForm] = useState<SessionIn>(() => (existing ? toInput(existing) : { ...DEFAULTS, group_id: "" }));
   const isCall = form.mode === "call_intake";
+  const aiCards = !isCall && form.card_source === AI_CARDS.source;
   // The 112 operator mode is offered only to teachers the administrator opened it for.
   const { user } = useAuth();
   const showMode = (user?.call_intake_access ?? false) || isCall;
@@ -206,7 +210,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
     e.preventDefault();
     const body: SessionIn = {
       ...form,
-      cards_per_student: cardsFor(form.difficulty, form.mode),
+      cards_per_student: aiCards ? AI_CARDS.perTrainee : cardsFor(form.difficulty, form.mode),
       title: form.title.trim(),
       group_id: groupId,
       // «Не завершено» через: поля в форме нет, остаётся значение занятия (по умолчанию 48 ч).
@@ -254,7 +258,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                 type="radio"
                 name="mode"
                 checked={form.mode === "call_intake"}
-                onChange={() => patch({ mode: "call_intake", service_profile: [], norm_seconds: form.norm_seconds === NORM_DEFAULT.card_response ? NORM_DEFAULT.call_intake : form.norm_seconds })}
+                onChange={() => patch({ mode: "call_intake", card_source: "scenarios", service_profile: [], norm_seconds: form.norm_seconds === NORM_DEFAULT.card_response ? NORM_DEFAULT.call_intake : form.norm_seconds })}
               />
               Приём вызова (оператор 112)
             </label>
@@ -361,6 +365,23 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-6 lg:grid-cols-2">
+          {!isCall && (
+            <div className="space-y-1 lg:col-span-2">
+              <label className="flex items-center gap-2 text-sm font-medium">
+                <input
+                  type="checkbox"
+                  checked={aiCards}
+                  onChange={(e) => patch({ card_source: e.target.checked ? AI_CARDS.source : "scenarios" })}
+                  data-testid="ai-cards"
+                />
+                Задания формирует ИИ
+              </label>
+              <p className="text-xs text-muted-foreground">
+                Каждому обучающемуся система сама пишет свои карточки — {AI_CARDS.perTrainee} по одной, следующую под
+                ошибки предыдущей, — оценивает их и даёт советы. Группы и службы ниже сужают выбор, если отмечены.
+              </p>
+            </div>
+          )}
           {/* Списки групп и служб — на всю ширину друг под другом, по четыре колонки. */}
           <fieldset className="lg:col-span-2">
             <legend className="mb-2 text-sm font-medium">Группы происшествий</legend>
@@ -404,7 +425,9 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
           </fieldset>
           )}
           <div className="lg:col-span-2" data-testid="queue-preview" aria-live="polite">
-            {preview.isPending ? (
+            {aiCards ? (
+              <p className="text-sm">Карточки будут написаны во время занятия — готовые сценарии не нужны.</p>
+            ) : preview.isPending ? (
               <p className="text-xs text-muted-foreground">Считаем подходящие карточки…</p>
             ) : preview.isError ? (
               <p className="text-xs text-destructive">Не удалось посчитать карточки: {preview.error.message}</p>
@@ -437,7 +460,9 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                 ? cardsFor(form.difficulty, form.mode) === 1
                   ? "Каждый обучающийся получит один вызов."
                   : `Каждый обучающийся получит ${cardsFor(form.difficulty, form.mode)} вызова подряд.`
-                : isStream(form.mode, form.difficulty)
+                : aiCards
+                  ? `Каждый обучающийся получит ${AI_CARDS.perTrainee} своих карточек по одной${form.difficulty === STREAM.difficulty ? ": ЧС, по две ошибки оператора 112 в карточке" : ""}.`
+                  : isStream(form.mode, form.difficulty)
                   ? `Вал: карточки приходят сами, около ${STREAM.perMinute} в минуту в течение ${STREAM.minutes} минут, каждому до ${cardsFor(form.difficulty, form.mode)}.`
                   : "Каждый обучающийся получит одну карточку."}
             </p>

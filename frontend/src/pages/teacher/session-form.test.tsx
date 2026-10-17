@@ -129,3 +129,38 @@ describe("Card stream at difficulty 3", () => {
     expect(screen.getByText("Каждый обучающийся получит одну карточку.")).toBeInTheDocument();
   });
 });
+
+describe("«Задания формирует ИИ»", () => {
+  it("sends the lesson as written for each trainee, five cards, one at a time, no stream", () => {
+    existing.current = null;
+    mutation.mutate.mockClear();
+    renderForm("/teacher/sessions/new", false);
+    fireEvent.change(screen.getByLabelText("Название"), { target: { value: "ИИ" } });
+    fireEvent.click(screen.getByLabelText("Задания формирует ИИ"));
+    fireEvent.change(screen.getByLabelText("Сложность"), { target: { value: "3" } });
+    expect(
+      screen.getByText("Каждый обучающийся получит 5 своих карточек по одной: ЧС, по две ошибки оператора 112 в карточке."),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Вал: карточки приходят сами/)).not.toBeInTheDocument();
+    expect(screen.getByText(/готовые сценарии не нужны/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Создать занятие" }));
+    expect(mutation.mutate).toHaveBeenCalledWith(
+      expect.objectContaining({ card_source: "ai", cards_per_student: 5, difficulty: 3 }),
+      expect.anything(),
+    );
+  });
+
+  it("keeps the choice when a draft is edited", () => {
+    existing.current = { ...draft("select"), mode: "card_response", card_source: "ai" };
+    renderForm("/teacher/sessions/s1/edit");
+    expect(screen.getByLabelText("Задания формирует ИИ")).toBeChecked();
+  });
+
+  it("is not offered for the 112 operator mode", () => {
+    existing.current = null;
+    renderForm("/teacher/sessions/new");
+    expect(screen.getByLabelText("Задания формирует ИИ")).toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText(/Приём вызова/));
+    expect(screen.queryByLabelText("Задания формирует ИИ")).not.toBeInTheDocument();
+  });
+});

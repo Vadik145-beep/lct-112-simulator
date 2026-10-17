@@ -3985,6 +3985,11 @@ export interface components {
             /** Overridden */
             overridden: number;
             stream?: components["schemas"]["StreamSummary"] | null;
+            /**
+             * Advice
+             * @default []
+             */
+            advice: string[];
         };
         /** PublicConfig */
         PublicConfig: {
@@ -4371,6 +4376,11 @@ export interface components {
             /** Grammar Percent */
             grammar_percent: number | null;
             stream?: components["schemas"]["StreamSummary"] | null;
+            /**
+             * Advice
+             * @default []
+             */
+            advice: string[];
         };
         /** ReportSummary */
         ReportSummary: {
