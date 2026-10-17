@@ -39,6 +39,16 @@
 | Pillow, NumPy | MIT-CMU / BSD | поиск сетки таблицы на скане |
 | Shapely | BSD | привязка улиц к районам по геометрии границ |
 
+Сборка документации (`scripts/build_docs.py`, `scripts/guide_screenshots.py`; только машина, где
+собирают PDF, в продукт не входит):
+
+| Библиотека | Лицензия | Зачем |
+|---|---|---|
+| python-docx | MIT | общий комплект документации в DOCX |
+| playwright (Python) + Chromium 131 и новее | Apache 2.0 / BSD | печать руководств в PDF (номера страниц, закладки), снимки экрана со стенда |
+| pypdf | BSD | номера страниц для оглавления PDF по закладкам |
+| Шрифты PT Sans, PT Mono (`docs/fonts`) | SIL Open Font License 1.1 (`docs/fonts/OFL.txt`) | кириллица в PDF без системных шрифтов и без загрузки из интернета |
+
 Сервис `asterisk` (`deploy/asterisk`, образ `andrius/asterisk` 22.10.1 на Debian):
 
 | Компонент | Лицензия | Зачем |
