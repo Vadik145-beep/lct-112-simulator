@@ -120,6 +120,8 @@ assert FACT_REQUESTS <= {text for _, text in GENERIC_REPLIES}
 # delivered: none yet → the squad is being sent; the report of «Начало реагирования» → on the
 # way; «Прибытие» → on site; «Проведение работ» → working; «Работы завершены» → done.
 SQUAD_STATE_PENDING = "pending"
+# Not sent yet: the squad chief has not had the order to go (#263).
+SQUAD_STATE_WAITING = "waiting"
 # No vehicles to send (#263): the squad stays until the head of the organization finds one.
 SQUAD_STATE_NO_VEHICLES = "no_vehicles"
 PROGRESS_REPLIES: dict[str, str] = {
@@ -129,6 +131,7 @@ PROGRESS_REPLIES: dict[str, str] = {
     "works_started": "Работы ведутся, пока без замечаний. По окончании доложу.",
     "works_done": "Работы завершены, докладывал. Всё по карточке отражено.",
     SQUAD_STATE_NO_VEHICLES: "Машин так и нет, все на выездах.",
+    SQUAD_STATE_WAITING: "Бригада на базе, ждём вашего распоряжения.",
 }
 # Состояния, в которых бригаду уже видно на месте: это знает и заявитель, если ему позвонить
 # (app.domain.scenarios.caller_back).

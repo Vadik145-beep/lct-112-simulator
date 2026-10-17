@@ -31,7 +31,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.evaluation import status_machine as machine
 from app.domain.evaluation.schemas import BrigadeReport, CardResponseScenario
-from app.domain.evaluation.service_call import address_named
+from app.domain.evaluation.service_call import address_named, gives_order
 from app.domain.scenarios import complication, no_vehicles
 from app.models import (
     ACTIVE_ATTEMPT_STATES,
@@ -66,9 +66,10 @@ def dispatched_at(scenario: CardResponseScenario, attempt: Attempt) -> datetime 
     """When the squad got its task and could leave, or ``None`` while it has none.
 
     A card the reference sends nobody to call is dispatched by «Принята» alone. Where the card
-    does require a call to the service officer, the squad leaves at the end of the call in
-    which the dispatcher named the address: a squad that was not told where to go does not
-    depart, however long the dispatcher held the line (issue #127). When the squad chief said
+    does require a call to the squad chief, the squad leaves at the end of the call by which
+    the dispatcher has named the address and given the order to go: a squad that was not told
+    where to go (issue #127) or was never sent (#263) does not depart, however long the
+    dispatcher held the line. When the squad chief said
     there are no vehicles, the squad leaves at the end of the call in which the head of the
     organization found one (#263), and stays put until then.
     """
@@ -83,22 +84,23 @@ def dispatched_at(scenario: CardResponseScenario, attempt: Attempt) -> datetime 
         return max(released, accepted) if released is not None else None
     if not scenario.reference.service_calls:
         return accepted
-    told: list[datetime] = []
-    for call in officer.calls_of(attempt):
-        if call.get("kind") != officer.KIND_OUTGOING or not call.get("answered"):
-            continue
-        ended = _at(call.get("ended_at"))
-        if ended is None or ended < accepted:
+    told = ordered = False
+    for call in officer.chief_calls(attempt, scenario):
+        if not call.get("answered"):
             continue
         # The stored turns carry more than the evaluation schema (the voicing, the method), so
         # they are read as they are written.
-        if any(
-            turn.get("role") == "operator"
-            and address_named(scenario.card, str(turn.get("text") or ""))
+        said = [
+            str(turn.get("text") or "")
             for turn in call.get("dialog") or []
-        ):
-            told.append(ended)
-    return min(told) if told else None
+            if turn.get("role") == "operator"
+        ]
+        told = told or any(address_named(scenario.card, text) for text in said)
+        ordered = ordered or any(gives_order(text) for text in said)
+        ended = _at(call.get("ended_at"))
+        if told and ordered and ended is not None and ended >= accepted:
+            return ended
+    return None
 
 
 def next_report(
@@ -195,7 +197,9 @@ async def sweep_reports(
         card = await training.load_scenario_card(
             session, attempt.scenario_id, attempt.scenario_version
         )
-        scenario = CardResponseScenario.model_validate(card.body)
+        scenario = officer.lesson_scenario(
+            CardResponseScenario.model_validate(card.body), lessons[attempt.session_id]
+        )
         if titles is None:
             services = await training.load_services(session)
             titles = {code: s.title for code, s in services.items()}

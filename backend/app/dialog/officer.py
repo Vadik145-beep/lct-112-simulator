@@ -28,6 +28,7 @@ Every function works inside the caller's transaction and returns the events it a
 from __future__ import annotations
 
 import hashlib
+import re
 import uuid
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
@@ -158,10 +159,32 @@ def delivered_reports(attempt: Attempt) -> list[str]:
 
 def squad_state(attempt: Attempt) -> str:
     """Where the squad is, one truth for every answer: no vehicles while the head has not
-    found one (``no_vehicles``), else by the reports delivered."""
+    found one (``no_vehicles``), waiting for the order to go while nobody gave it, else by the
+    reports delivered."""
     if no_vehicles.blocked(calls_of(attempt)):
         return officers.SQUAD_STATE_NO_VEHICLES
-    return officers.squad_state(delivered_reports(attempt))
+    state = officers.squad_state(delivered_reports(attempt))
+    ordered = any(
+        engine.gives_order(str(t.get("text") or ""))
+        for c in calls_of(attempt)
+        if (c.get("kind") or KIND_OUTGOING) == KIND_OUTGOING
+        for t in c.get("dialog") or []
+        if t.get("role") == "operator"
+    )
+    if state == officers.SQUAD_STATE_PENDING and not ordered:
+        return officers.SQUAD_STATE_WAITING
+    return state
+
+
+def lesson_scenario(
+    scenario: CardResponseScenario, ts: TrainingSession | None
+) -> CardResponseScenario:
+    """The card at the difficulty of the lesson when the lesson is harder: the people on the
+    phone behave by the difficulty the teacher chose, whatever card the queue drew (#263)."""
+    level = max(scenario.difficulty, (ts.difficulty if ts is not None else 1) or 1)
+    if level == scenario.difficulty:
+        return scenario
+    return scenario.model_copy(update={"difficulty": level})
 
 
 def _store(attempt: Attempt, call: dict) -> None:
@@ -361,6 +384,7 @@ async def start(
     call to the squad chief of a card of difficulty 3 fixes its turn (``no_vehicles``)."""
     if attempt.state in training.CLOSED_STATES:
         raise ApiError(409, "card_closed", "Работа с карточкой завершена: звонить уже нельзя.")
+    scenario = lesson_scenario(scenario, ts)
     current = open_call(attempt)
     if current is not None:
         raise ApiError(
@@ -374,7 +398,11 @@ async def start(
         # Calling from a card not opened yet still means it was received.
         events += await training.open_attempt(session, attempt, ts)
     call = _new_call(service, service_title, now, telephony=telephony, kind=kind)
-    if kind == KIND_OUTGOING and card_passed_to(attempt, service):
+    # The squad chief has the card once he has the order to go too; a duty officer, once told.
+    passed = card_passed_to(attempt, service)
+    if service == scenario.service and not order_given(attempt, scenario):
+        passed = False
+    if kind == KIND_OUTGOING and passed:
         call["repeat"] = True
     if kind == KIND_STAFF:
         call[no_vehicles.ROLE_KEY] = role
@@ -494,6 +522,7 @@ async def answer(
         raise ApiError(409, "call_ended", "Звонок уже завершён.")
     if call.get("answered"):
         return call, []
+    scenario = lesson_scenario(scenario, ts)
     now = now or training.utcnow()
     officer = call_scenario(scenario, call, attempt)
     # В облачном звонке первую фразу говорит сам провайдер: своей реплики не пишем и не озвучиваем.
@@ -679,6 +708,7 @@ async def say(
     retry = _find_retry(call, action_id)
     if retry is not None:
         return retry
+    scenario = lesson_scenario(scenario, ts)
     now = training.utcnow()
     officer = call_scenario(scenario, call, attempt)
     special = special_reply(scenario, attempt, call, text)
@@ -687,7 +717,7 @@ async def say(
     else:
         reply = await dialog.provider_for(ts).reply(_context(attempt, call, officer), text)
         extra = {}
-    reply = no_vehicles_reply(scenario, attempt, call, text, reply)
+    reply = chief_reply(scenario, attempt, call, text, reply)
     operator = _turn("operator", text, reply.operator_topics, now, action_id=action_id, heard=heard)
     audio = await dialog.reply_audio(None, version, officer, reply, stem=_reply_stem(call, reply))
     officer_turn = _turn(
@@ -781,40 +811,114 @@ def wrong_contact_reply(call: dict, text: str) -> tuple[CallerReply, dict] | Non
     return reply, {}
 
 
-def no_vehicles_reply(
+# The squad chief's line that sends the squad or names it: said only once the dispatcher has
+# given the order to go (decision of 17.10.2026: «номер наряда и выезд — только после
+# распоряжения»).
+_DISPATCHING = re.compile(r"наряд|выезж|выезд|направля|на месте")
+TOPIC_ORDER_TAKEN = "order_taken"
+ASK_ORDER = "Так что делаем-то?"
+ASK_ADDRESS = "Куда выезжать? Назовите адрес."
+TAKEN = "Принял."
+
+
+def _dispatching(reply: CallerReply) -> bool:
+    text = reply.text.strip()
+    return not text.endswith("?") and bool(_DISPATCHING.search(text.lower()))
+
+
+def chief_calls(attempt: Attempt, scenario: CardResponseScenario) -> list[dict]:
+    """The dispatcher's calls to the squad chief of the own service, in order."""
+    return [
+        c
+        for c in calls_of(attempt)
+        if (c.get("kind") or KIND_OUTGOING) == KIND_OUTGOING
+        and c.get("service") == scenario.service
+    ]
+
+
+def _said_by_dispatcher(calls: list[dict]) -> list[str]:
+    return [
+        str(t.get("text") or "")
+        for c in calls
+        for t in c.get("dialog") or []
+        if t.get("role") == "operator"
+    ]
+
+
+def order_given(attempt: Attempt, scenario: CardResponseScenario) -> bool:
+    """The dispatcher has told the squad chief to go (in any call to him)."""
+    return any(
+        engine.gives_order(text) for text in _said_by_dispatcher(chief_calls(attempt, scenario))
+    )
+
+
+def chief_reply(
     scenario: CardResponseScenario, attempt: Attempt, call: dict, text: str, reply: CallerReply
 ) -> CallerReply:
-    """On a «машин нет» card the squad chief's answer, once the address is with him and no
-    question about the house is open, becomes «машин нет»; while the head has found nothing,
-    a confirmation or a word about the squad turns into «машин так и нет»."""
-    if call.get("kind") != KIND_OUTGOING or call.get("service") != scenario.service:
+    """The squad chief's answer follows the order of the dispatcher and the one truth about the
+    squad (#263):
+
+    * no squad number and no «выезжаем» before the order to go: when the card has been told,
+      «Так что делаем-то?», otherwise a plain «Принял.»;
+    * the order taken: «Принял, выезжаем. Наряд 5600.» — or, on a «машин нет» card, «машин
+      нет»; an order with no address yet gets «Куда выезжать?»;
+    * while the head of the organization has found no vehicle, «машин так и нет».
+
+    The question about the house and the cut-in of a hurried chief stay as they are."""
+    if (call.get("kind") or KIND_OUTGOING) != KIND_OUTGOING:
         return reply
-    calls = calls_of(attempt)
-    if no_vehicles.plan_of(calls) != no_vehicles.PLAN_NO_VEHICLES:
+    if call.get("service") != scenario.service:
         return reply
     if misheard.TOPIC_MISHEARD in reply.topics or rush.TOPIC_RUSH in reply.topics:
         return reply
-    if no_vehicles.announced(calls):
-        if not no_vehicles.blocked(calls):
-            return reply
-        if not ({"confirm", "order_number", "progress"} & set(reply.topics)):
-            return reply
-        said = no_vehicles.STILL_NONE
-    else:
-        phrases = [text] + [
-            t["text"] for t in call.get("dialog") or [] if t.get("role") == "operator"
-        ]
-        if not any(engine.address_named(scenario.card, p) for p in phrases):
-            return reply
-        # The house just corrected stays acknowledged: «Понял, дом 42… Только машин нет».
-        fixed = reply.method == "misheard" and "confirm" in reply.topics
-        said = f"{reply.text} {no_vehicles.SHORTAGE}" if fixed else no_vehicles.ANNOUNCE
-    return CallerReply(
-        text=said,
-        topics=[no_vehicles.TOPIC_NO_VEHICLES],
-        operator_topics=reply.operator_topics,
-        method="no_vehicles",
+    calls = chief_calls(attempt, scenario)
+    said = [*_said_by_dispatcher(calls), text]
+    ordered = any(engine.gives_order(phrase) for phrase in said)
+    told = any(engine.address_named(scenario.card, phrase) for phrase in said)
+    taken = any(
+        TOPIC_ORDER_TAKEN in (t.get("topics") or [])
+        for c in calls
+        for t in c.get("dialog") or []
+        if t.get("role") == "caller"
     )
+    everything = calls_of(attempt)
+    no_cars = no_vehicles.plan_of(everything) == no_vehicles.PLAN_NO_VEHICLES
+    # The house just corrected stays acknowledged: «Понял, дом 42. Исправил, записал. …».
+    fixed = reply.text if reply.method == "misheard" and "confirm" in reply.topics else ""
+
+    def answer(line: str, topics: list[str], method: str) -> CallerReply:
+        return CallerReply(
+            text=f"{fixed} {line}".strip() if fixed else line,
+            topics=topics,
+            operator_topics=reply.operator_topics,
+            method=method,
+        )
+
+    if not ordered:
+        if not _dispatching(reply):
+            return reply
+        required = list(reference_for(scenario, scenario.service).required_facts)
+        turns = [DialogTurn(role="operator", text=phrase, topics=[]) for phrase in said]
+        passed = engine.facts_from_dialog(scenario.card, turns)
+        complete = all(f in passed for f in required)
+        return answer(ASK_ORDER if complete else TAKEN, ["confirm"], "order")
+    if not told:
+        return answer(ASK_ADDRESS, ["address"], "order")
+    if no_cars:
+        if not no_vehicles.announced(everything):
+            line = no_vehicles.SHORTAGE if fixed else no_vehicles.ANNOUNCE
+            return answer(line, [no_vehicles.TOPIC_NO_VEHICLES], "no_vehicles")
+        if no_vehicles.blocked(everything) and (engine.gives_order(text) or _dispatching(reply)):
+            return answer(no_vehicles.STILL_NONE, [no_vehicles.TOPIC_NO_VEHICLES], "no_vehicles")
+        if no_vehicles.blocked(everything):
+            return reply
+    if not taken or engine.gives_order(text):
+        order = reference_for(scenario, scenario.service).order_number or officers.order_number(
+            scenario, scenario.service
+        )
+        line = f"Выезжаем, наряд {order}." if fixed else f"Принял, выезжаем. Наряд {order}."
+        return answer(line, ["confirm", "order_number", TOPIC_ORDER_TAKEN], "order")
+    return reply
 
 
 def rush_reply(

@@ -29,7 +29,7 @@ TOPIC_VEHICLES_FOUND = "vehicles_found"
 ROLE_KEY = "role"
 
 SHORTAGE = "Только машин нет, все на выездах. Ближайшая освободится часа через полтора."
-ANNOUNCE = f"Адрес принял. {SHORTAGE}"
+ANNOUNCE = f"Принял. {SHORTAGE}"
 STILL_NONE = "Машин так и нет, все на выездах."
 RESOLVED = (
     "Понял. Снимаю машину с планового выезда, бригада выедет через десять минут. "

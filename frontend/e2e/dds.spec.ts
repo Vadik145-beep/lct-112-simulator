@@ -653,14 +653,14 @@ test.describe("Задача #36: звонок диспетчера в служб
     await expect(
       panel.getByRole("button", { name: "Удерживайте и говорите" }),
     ).toBeEnabled();
-    const input = panel.getByLabel("Сказать: дежурный");
+    const input = panel.getByLabel("Сказать: начальник аварийной бригады");
     for (const phrase of [
       "Передаю карточку: улица Молостовых, дом 10, корпус 1",
       "Нет отопления в трёх домах, горячая вода есть, пострадавших нет",
       "Наряд МОЭК-4127, выезжайте",
     ]) {
       await input.fill(phrase);
-      await panel.getByRole("button", { name: "Отправить: дежурный" }).click();
+      await panel.getByRole("button", { name: "Отправить: начальник аварийной бригады" }).click();
       await expect(
         panel.locator("li[data-role=dispatcher]").last(),
       ).toContainText(phrase.slice(0, 20));
@@ -869,7 +869,7 @@ test.describe("Доклады бригады диспетчеру по теле�
       page.getByText(/Старший группы реагирования будет звонить с докладами/),
     ).toBeVisible();
 
-    // The squad leaves once the officer was told the address (#127): the dispatcher calls.
+    // The squad leaves once its chief was told the address (#127) and sent (#263).
     const { street, house } = seed.body.card.address;
     await page
       .getByRole("button", { name: /Позвонить: .*ЕДЦ ЖКХ/ })
@@ -880,9 +880,9 @@ test.describe("Доклады бригады диспетчеру по теле�
     );
     await expect(call).toHaveAttribute("data-state", "talking");
     await call
-      .getByLabel("Сказать: дежурный")
-      .fill(`${street}, дом ${house}, течь стояка в подъезде, пострадавших нет`);
-    await call.getByRole("button", { name: "Отправить: дежурный" }).click();
+      .getByLabel("Сказать: начальник аварийной бригады")
+      .fill(`${street}, дом ${house}, течь стояка в подъезде, пострадавших нет, выезжайте`);
+    await call.getByRole("button", { name: "Отправить: начальник аварийной бригады" }).click();
     await expect(call.locator("li[data-role=officer]")).toHaveCount(2, {
       timeout: 30_000,
     });
