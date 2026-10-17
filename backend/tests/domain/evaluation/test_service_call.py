@@ -9,7 +9,7 @@ import pytest
 
 from app.domain.evaluation.card_response import evaluate_card_response
 from app.domain.evaluation.schemas import CardResponseAttempt, CardResponseScenario
-from app.domain.evaluation.service_call import facts_from_dialog
+from app.domain.evaluation.service_call import address_named, facts_from_dialog, true_card
 from tests.domain.evaluation.helpers import (
     at,
     card_scenario,
@@ -221,3 +221,23 @@ def test_open_call_uses_the_last_turn_for_its_length() -> None:
     item = result.components["service_call"].items[0]
     assert item["seconds"] is not None and item["within_norm"] is True
     assert timedelta(seconds=item["seconds"]) < timedelta(seconds=120)
+
+
+@pytest.mark.parametrize(
+    "said",
+    [
+        "Нет отопления, дом 17 по Зелёному проспекту",
+        "по Зелёному проспекту, дом 17",
+        "Зелёный проспект 17",
+        "Зелёный проспект, дом семнадцать",
+    ],
+)
+def test_address_in_any_case_and_order_is_the_true_one(said: str) -> None:
+    """The dispatcher speaks, not reads (#263): the street in any case and order, the house in
+    digits or words. The card says house 19 by mistake, the caller says 17."""
+    scenario = card_scenario("card_err_2_moek_dom")
+    assert address_named(true_card(scenario), said)
+    assert not address_named(
+        true_card(scenario), said.replace("17", "19").replace("семнадцать", "девятнадцать")
+    )
+    assert not address_named(true_card(scenario), "Дом 17 по Красному проспекту")

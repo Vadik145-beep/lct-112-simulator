@@ -98,8 +98,9 @@ def dispatched_at(scenario: CardResponseScenario, attempt: Attempt) -> datetime 
         told = told or any(address_told(scenario, text) for text in said)
         ordered = ordered or any(gives_order(text) for text in said)
         ended = _at(call.get("ended_at"))
-        if told and ordered and ended is not None and ended >= accepted:
-            return ended
+        if told and ordered and ended is not None:
+            # Sent before «Принята» (#263): the squad leaves once the card is accepted.
+            return max(ended, accepted)
     return None
 
 
