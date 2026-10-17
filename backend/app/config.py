@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     # «Войти как преподаватель / обучающийся» without a password for the stand's teacher and
     # student (showing the stand to the experts). Ignored in the demo mode: it has its buttons.
     quick_login: bool = False
+    # The login page lists the stand's accounts by role with SEED_PASSWORD (the customer's
+    # recommendation 2: temporary logins and passwords on the main panel). Showing the stand only.
+    show_demo_credentials: bool = False
     allow_external_ai: bool = False
     tz: str = "Europe/Moscow"
     log_level: str = "INFO"

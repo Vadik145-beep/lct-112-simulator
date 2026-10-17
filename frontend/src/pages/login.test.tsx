@@ -1,4 +1,4 @@
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Route } from "react-router-dom";
 
@@ -71,6 +71,38 @@ describe("LoginPage", () => {
     expect(screen.getByText("Вход в демонстрационный стенд без пароля")).toBeInTheDocument();
     await userEvent.click(teacher);
     expect(auth.demoLogin).toHaveBeenCalledWith("teacher");
+  });
+
+  it("lists logins and passwords by role with a one-click entry for each", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () =>
+        new Response(
+          JSON.stringify({
+            demo_mode: false,
+            quick_login_roles: ["teacher", "student", "admin"],
+            demo_credentials: [
+              { role: "admin", login: "admin", password: "112112112" },
+              { role: "teacher", login: "teacher", password: "112112112" },
+              { role: "student", login: "student", password: "112112112" },
+            ],
+            external_ai: false,
+            app_env: "test",
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        ),
+      ),
+    );
+    const auth = makeAuth();
+    renderAt(loginRoute, "/login", auth);
+    const table = await screen.findByRole("table");
+    const rows = within(table).getAllByRole("row").slice(1).map((r) => r.textContent);
+    expect(rows[0]).toContain("Преподаватель");
+    expect(rows[0]).toContain("teacher");
+    expect(rows[2]).toContain("Администратор");
+    expect(screen.getAllByText("112112112")).toHaveLength(3);
+    await userEvent.click(screen.getByRole("button", { name: "Войти как администратор" }));
+    expect(auth.demoLogin).toHaveBeenCalledWith("admin");
   });
 
   it("submits login and password and shows the server message on failure", async () => {
