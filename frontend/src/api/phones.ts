@@ -76,6 +76,6 @@ export function useDial(attemptId: string) {
           body: { number },
         }),
       ),
-    onSuccess: () => void client.invalidateQueries({ queryKey: attemptKey(attemptId) }),
+    onSuccess: (data) => client.setQueryData(attemptKey(attemptId), data.attempt),
   });
 }
