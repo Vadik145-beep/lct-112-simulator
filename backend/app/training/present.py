@@ -176,6 +176,22 @@ def _caller_out(caller: dict) -> CallerOut:
     )
 
 
+def _contact(call: dict, own_service: str | None) -> str:
+    """Who answers the call, as the transcript names him (#263): the squad chief on the own
+    service's line and on the squad's reports, the specialist with a complication, the person
+    of the directory, the caller, or the duty officer of another service."""
+    kind = call.get("kind") or "outgoing"
+    if kind == "caller":
+        return "заявитель"
+    if kind == "staff":
+        return staff.ROLE_TITLES.get(call.get("role") or "", "сотрудник").lower()
+    if kind == "report" and call.get("report_status") == complication.STATUS:
+        return staff.ROLE_TITLES[staff.ROLE_SQUAD_SPECIALIST].lower()
+    if kind == "report" or call.get("service") == own_service:
+        return staff.ROLE_TITLES[staff.ROLE_SQUAD_CHIEF].lower()
+    return "дежурный"
+
+
 def _status_title(code: str, lookups: Lookups) -> str:
     del lookups  # titles come from the memo constants, kept for symmetry with the others
     if code == complication.STATUS:  # a squad's call, not a status of the card
@@ -422,6 +438,7 @@ def service_call_out(attempt: Attempt, body: dict, call: dict, lookups: Lookups)
         kind=call.get("kind") or "outgoing",
         role=call.get("role"),
         role_title=staff.ROLE_TITLES.get(call.get("role") or ""),
+        contact=_contact(call, body.get("service")),
         report_status=report_status,
         report_status_title=_status_title(report_status, lookups) if report_status else None,
         started_at=started,

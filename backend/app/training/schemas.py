@@ -283,6 +283,9 @@ class ServiceCallOut(BaseModel):
     kind: Literal["outgoing", "report", "caller", "staff"] = "outgoing"
     role: str | None = None  # who answers a «staff» call
     role_title: str | None = None
+    # Who is on the other end, in lower case for the transcript: «начальник аварийной
+    # бригады», «дежурный», «руководитель организации», «заявитель» (#263).
+    contact: str = "дежурный"
     report_status: str | None = None
     report_status_title: str | None = None
     started_at: datetime

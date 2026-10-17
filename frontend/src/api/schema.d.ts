@@ -4670,6 +4670,11 @@ export interface components {
             role?: string | null;
             /** Role Title */
             role_title?: string | null;
+            /**
+             * Contact
+             * @default дежурный
+             */
+            contact: string;
             /** Report Status */
             report_status?: string | null;
             /** Report Status Title */

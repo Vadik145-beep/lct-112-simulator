@@ -198,7 +198,7 @@ def _attach_audio(body: dict, key: str, data_dir: Path, storage_dir: Path) -> in
         return None
 
     if body.get("kind") == MODE_CARD_RESPONSE:
-        return _attach_report_audio(body, link)
+        return _attach_report_audio(body, link, _recorded_texts(source))
     if body.get("kind") != MODE_CALL_INTAKE:
         return 0
     linked = 0
@@ -230,14 +230,33 @@ def _attach_audio(body: dict, key: str, data_dir: Path, storage_dir: Path) -> in
     return linked
 
 
-def _attach_report_audio(body: dict, link: Callable[[str], str | None]) -> int:
+def _recorded_texts(source: Path) -> dict[str, str]:
+    """What each recording of a folder says (``index.json`` of the voicing script)."""
+    index = source / "index.json"
+    if not index.is_file():
+        return {}
+    rows = json.loads(index.read_text(encoding="utf-8"))
+    return {stem: str(row.get("text") or "") for stem, row in rows.items() if isinstance(row, dict)}
+
+
+def _attach_report_audio(
+    body: dict, link: Callable[[str], str | None], recorded: dict[str, str] | None = None
+) -> int:
     """Recordings of the squad's reports (``report-<status>``) on a card-response body: the
-    squad leader speaks the studio voice instead of the stand's synthesizer (issue #67)."""
+    squad leader speaks the studio voice instead of the stand's synthesizer (issue #67). A
+    recording of other words (the report was reworded since, #263) is left out: the stand
+    voices the new text instead of playing the old one."""
     reference = dict(body.get("reference") or {})
     reports = []
     linked = 0
     for report in reference.get("reports") or []:
-        audio = link(f"report-{report.get('status')}")
+        stem = f"report-{report.get('status')}"
+        said = (recorded or {}).get(stem)
+        if said is not None and said.strip() != str(report.get("text") or "").strip():
+            report = {k: v for k, v in report.items() if k != "audio"}
+            reports.append(report)
+            continue
+        audio = link(stem)
         if audio:
             report = {**report, "audio": audio}
             linked += 1

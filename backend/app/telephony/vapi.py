@@ -268,9 +268,9 @@ OFFICER_REPEAT_PROMPT = """Ты дежурный службы: {service}. Теб
 - Данные карточки — адрес, происшествие, пострадавших, доступ — НЕ спрашиваешь и не
   повторяешь: они у тебя уже есть.
 - На вопрос о ходе работ отвечаешь одной фразой по строке «где бригада» ниже и говоришь, что
-  старший группы доложит сам.
+  бригада доложит сама.
 - Если диспетчер сообщает новое (появились пострадавшие, изменилась обстановка), одной фразой
-  подтверждаешь: «Принял, передам старшему группы».
+  подтверждаешь: «Принял, бригаде передам».
 - На «хорошо», «понял», «принято», «спасибо» не отвечаешь ничего.
 
 Чего не делаешь: не придумываешь того, чего нет в списке ниже; не кладёшь трубку и не
@@ -282,7 +282,7 @@ OFFICER_REPEAT_PROMPT = """Ты дежурный службы: {service}. Теб
 {facts}
 """
 
-SQUAD_PROMPT = """Ты старший группы реагирования службы {service}. Ты сам позвонил диспетчеру
+SQUAD_PROMPT = """Ты начальник аварийной бригады службы {service}. Ты сам позвонил диспетчеру
 ДДС с места происшествия и докладываешь обстановку. Это рабочий доклад по телефону.
 
 Твоя первая фраза — сам доклад, ты её уже сказал. Дальше:
@@ -304,15 +304,39 @@ SQUAD_PROMPT = """Ты старший группы реагирования сл
 """
 
 
+def _staff_personas() -> set[str]:
+    """Сотрудники своей организации по телефону (#263) и специалист бригады с осложнением."""
+    from app.domain.scenarios import complication, staff
+
+    return {p.persona for p in staff.PERSONS.values()} | {complication.SPECIALIST_PERSONA}
+
+
+STAFF_PROMPT = """Ты сотрудник городской службы, разговор по рабочему телефону с диспетчером
+дежурно-диспетчерской службы (ДДС) своей организации. {title}.
+
+Кто ты и как себя ведёшь: {behaviour}.
+
+Твоя первая фраза уже сказана. Дальше:
+- Отвечаешь на последнюю фразу диспетчера одним-двумя короткими предложениями.
+- Не выдумываешь того, чего нет в списке ниже; не кладёшь трубку и не прощаешься —
+  разговор заканчивает диспетчер; не переходишь на другой язык ни в одном слове.
+
+Что ты знаешь:
+{facts}
+"""
+
+
 def is_caller(scenario: CallIntakeScenario) -> bool:
     """Роль собеседника — заявитель (приём вызова), а не служебный звонок ДДС."""
     from app.domain.scenarios.officers import OFFICER_PERSONA, SQUAD_LEADER_PERSONA
 
-    return scenario.caller.persona not in (OFFICER_PERSONA, SQUAD_LEADER_PERSONA)
+    official = {OFFICER_PERSONA, SQUAD_LEADER_PERSONA} | _staff_personas()
+    return scenario.caller.persona not in official
 
 
 def role_prompt(scenario: CallIntakeScenario) -> str:
-    """Инструкция облаку по роли собеседника: дежурный службы, старший группы или заявитель."""
+    """Инструкция облаку по роли собеседника: дежурный службы, начальник аварийной бригады,
+    сотрудник своей организации или заявитель."""
     from app.domain.scenarios.officers import OFFICER_PERSONA, SQUAD_LEADER_PERSONA
 
     caller = scenario.caller
@@ -325,6 +349,12 @@ def role_prompt(scenario: CallIntakeScenario) -> str:
         return template.format(service=service, facts=facts or "- ничего особенного")
     if caller.persona == SQUAD_LEADER_PERSONA:
         return SQUAD_PROMPT.format(service=service, facts=facts or "- ничего особенного")
+    if caller.persona in _staff_personas():
+        return STAFF_PROMPT.format(
+            title=scenario.title,
+            behaviour=caller.behaviour or "",
+            facts=facts or "- ничего особенного",
+        )
     return caller_prompt(scenario)
 
 

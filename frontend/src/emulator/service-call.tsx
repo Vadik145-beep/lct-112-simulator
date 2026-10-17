@@ -323,7 +323,7 @@ export function ServiceCallPanel({
         {call.turns.length === 0 && (
           <li className="text-[var(--arm-text-muted)]">
             {isReport(call)
-              ? "Звонит старший группы: ответьте, чтобы выслушать доклад."
+              ? `Звонит ${otherSide(call)}: ответьте, чтобы выслушать доклад.`
               : isCaller(call)
                 ? "Звоним заявителю…"
                 : "Соединение со службой…"}
@@ -527,7 +527,7 @@ export function ServiceCallPanel({
       )}
       {!open && awaitingReport && call.end_reason === "hangup" && (
         <span className="font-semibold text-[var(--arm-blue-dark)]" data-testid="await-report">
-          Ожидайте доклад: старший группы позвонит сам.
+          Ожидайте доклад: начальник аварийной бригады позвонит сам.
         </span>
       )}
       {error && !recording && (

@@ -230,6 +230,7 @@ def officer_scenario(
         service_title,
         squad_state(attempt),
         repeat=repeat,
+        chief=service == scenario.service,
     )
     if service == scenario.service and not repeat and rush.applies(scenario.difficulty):
         hurried = built.caller.model_copy(update={"opening": rush.opening(built.caller.opening)})
@@ -282,9 +283,11 @@ def _report_of(scenario: CardResponseScenario, call: dict) -> BrigadeReport:
 
 def _report_for(scenario: CardResponseScenario, call: dict, attempt: Attempt) -> BrigadeReport:
     """The report as the squad says it now: a squad sent to a misheard house names that house
-    (``misheard``), and its recording no longer matches the words."""
+    (``misheard``), a report worded before #263 calls him by the customer's title, and a
+    recording that no longer matches the words is dropped."""
     report = _report_of(scenario, call)
-    text = misheard.report_text(report.text, scenario.card, misheard.state(calls_of(attempt)))
+    text = officers.renamed(report.text)
+    text = misheard.report_text(text, scenario.card, misheard.state(calls_of(attempt)))
     if text == report.text:
         return report
     return report.model_copy(update={"text": text, "audio": None})
@@ -458,7 +461,9 @@ async def start_report(
     if open_call(attempt) is not None:
         raise ApiError(409, "call_in_progress", "Уже идёт разговор.")
     now = now or training.utcnow()
-    opening = misheard.report_text(report.text, scenario.card, misheard.state(calls_of(attempt)))
+    opening = misheard.report_text(
+        officers.renamed(report.text), scenario.card, misheard.state(calls_of(attempt))
+    )
     call = {
         **_new_call(scenario.service, service_title, now, telephony=telephony),
         "kind": KIND_REPORT,

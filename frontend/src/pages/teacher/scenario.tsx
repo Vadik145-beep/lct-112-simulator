@@ -863,7 +863,7 @@ function Reference({ scenario }: { scenario: ScenarioOut }) {
                       <Input
                         className="min-w-64 flex-1"
                         value={report.text}
-                        aria-label="Что докладывает старший группы"
+                        aria-label="Что докладывает начальник аварийной бригады"
                         onChange={(e) =>
                           patchReport(i, { text: e.target.value })
                         }
