@@ -103,6 +103,8 @@ test.describe("Задача #263: виртуальный телефон", () => 
     await page.getByLabel("Логин").fill("teacher1");
     await page.getByLabel("Пароль").fill(PASSWORD);
     await page.getByRole("button", { name: "Войти", exact: true }).click();
+    // Signed in once the page leaves the login screen.
+    await expect(page).not.toHaveURL(/\/login/);
     await page.getByRole("link", { name: "Справочник телефонов" }).click();
     await expect(
       page.getByRole("heading", { name: "Справочник телефонов" }),
@@ -122,6 +124,8 @@ test.describe("Задача #263: виртуальный телефон", () => 
     await page.getByLabel("Логин").fill("student3");
     await page.getByLabel("Пароль").fill(PASSWORD);
     await page.getByRole("button", { name: "Войти", exact: true }).click();
+    // Signed in once the page leaves the login screen.
+    await expect(page).not.toHaveURL(/\/login/);
     await page.goto(`/student/sessions/${sessionId}/journal`);
     await page
       .getByRole("link", {

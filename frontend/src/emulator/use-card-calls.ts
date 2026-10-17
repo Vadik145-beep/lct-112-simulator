@@ -101,6 +101,10 @@ export function useCardCalls(attempt: AttemptOut) {
     setShownCallId(openCallId);
     setPhoneOpen(true);
   }, [openCallId]);
+  // A closed card has nothing to call about: the phone folds and leaves the result in view.
+  useEffect(() => {
+    if (finished) setPhoneOpen(false);
+  }, [finished]);
   /** Shows a call of the card in the phone (``null`` — back to the keypad). */
   const showCall = (id: string | null) => {
     setShownCallId(id);
