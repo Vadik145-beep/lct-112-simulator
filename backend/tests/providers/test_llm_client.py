@@ -33,6 +33,10 @@ def _server(content: str, slots: int = 4, status: int = 200) -> tuple[httpx.Mock
             return httpx.Response(status, json={"status": "ok"})
         if request.url.path == "/props":
             return httpx.Response(200, json={"total_slots": slots})
+        if request.url.path == "/v1/models":
+            if request.headers.get("Authorization") != "Bearer k-123":
+                return httpx.Response(401, json={"error": "bad key"})
+            return httpx.Response(status, json={"data": [{"id": "vendor/model"}]})
         assert request.url.path == "/v1/chat/completions"
         if status != 200:
             return httpx.Response(status, text="boom")
@@ -145,9 +149,9 @@ async def test_hosted_model_gets_key_model_and_json_schema() -> None:
     schema = {"type": "object", "properties": {"reply_id": {"type": "integer"}}}
     answer = await client.complete_json([], schema, max_tokens=7, slot_key="attempt-1")
     assert answer == {"reply_id": 2}
-    # No /health and no /props: such services have neither.
-    assert [r.url.path for r in seen] == ["/v1/chat/completions"]
-    request = seen[0]
+    # No /health and no /props: such services have neither; availability is the model list.
+    assert [r.url.path for r in seen] == ["/v1/models", "/v1/chat/completions"]
+    request = seen[1]
     assert request.headers["Authorization"] == "Bearer k-123"
     payload = json.loads(request.content)
     assert payload["model"] == "vendor/model"
@@ -157,6 +161,25 @@ async def test_hosted_model_gets_key_model_and_json_schema() -> None:
     }
     assert "id_slot" not in payload
     assert "cache_prompt" not in payload
+
+
+async def test_hosted_model_with_a_wrong_key_is_unavailable() -> None:
+    transport, seen = _server('{"reply_id": 2}')
+    client = OpenAiCompatibleChat(
+        "https://models.example.com", api_key="wrong", model="m", transport=transport
+    )
+    assert not await client.available()
+    assert [r.url.path for r in seen] == ["/v1/models"]
+
+
+async def test_hosted_model_availability_is_remembered_for_a_while() -> None:
+    transport, seen = _server('{"reply_id": 2}')
+    client = OpenAiCompatibleChat(
+        "https://models.example.com", api_key="k-123", model="m", transport=transport
+    )
+    assert await client.available()
+    assert await client.available()
+    assert [r.url.path for r in seen] == ["/v1/models"]
 
 
 async def test_hosted_model_failure_backs_off() -> None:
@@ -223,3 +246,23 @@ def test_no_ai_addresses_is_fine() -> None:
     settings = Settings(**BASE_ENV, allow_external_ai=False)
     settings.check_external_ai()
     assert settings.ai_service_urls() == {}
+
+
+def test_health_asks_a_hosted_model_for_its_model_list(monkeypatch: pytest.MonkeyPatch) -> None:
+    from app.admin import health
+
+    hosted = Settings(
+        **BASE_ENV,
+        llm_gen_url="https://models.example.com/",
+        llm_gen_api_key="k-123",
+        llm_gen_api_model="vendor/model",
+    )
+    monkeypatch.setattr(health, "get_settings", lambda: hosted)
+    assert health._generation_probe() == (
+        "https://models.example.com/v1/models",
+        None,
+        {"Authorization": "Bearer k-123"},
+    )
+    local = Settings(**BASE_ENV, llm_gen_url="http://llm-gen:8080")
+    monkeypatch.setattr(health, "get_settings", lambda: local)
+    assert health._generation_probe() == ("http://llm-gen:8080/health", None, None)

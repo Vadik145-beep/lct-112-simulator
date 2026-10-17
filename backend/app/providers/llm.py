@@ -29,6 +29,10 @@ log = get_logger(__name__)
 
 REQUEST_TIMEOUT_SECONDS = 60.0
 RETRY_AFTER_SECONDS = 15.0
+PROBE_TIMEOUT_SECONDS = 10.0  # the first request to a hosted API may take a few seconds
+# A hosted model that has just answered the probe is not asked again for this long: the
+# teacher's forms ask for availability on every opening.
+AVAILABLE_FOR_SECONDS = 60.0
 DEFAULT_TEMPERATURE = 0.0
 
 Message = dict[str, str]  # {"role": "system" | "user" | "assistant", "content": "..."}
@@ -200,8 +204,9 @@ class OpenAiCompatibleChat(LlamaCppChat):
     The same endpoint as llama.cpp, so the base address is given without ``/v1``. Differences:
     the key goes in the ``Authorization`` header, the model is named in the request, the schema
     is passed as ``json_schema`` (structured outputs) and there are no slots or prompt cache
-    of llama.cpp. Such services have no ``/health``: the model counts as available unless a
-    request has just failed. Outside the closed contour only (``ALLOW_EXTERNAL_AI``).
+    of llama.cpp. Such services have no ``/health``: availability is the list of models
+    (``/v1/models``) answering for the key, so a wrong key or an unpaid account shows as
+    unavailable. Outside the closed contour only (``ALLOW_EXTERNAL_AI``).
     """
 
     def __init__(
@@ -217,6 +222,7 @@ class OpenAiCompatibleChat(LlamaCppChat):
         super().__init__(base_url, name=name or model, timeout=timeout, transport=transport)
         self._api_key = api_key
         self._model = model
+        self._available_until = 0.0
 
     def _client(self) -> httpx.AsyncClient:
         return httpx.AsyncClient(
@@ -227,7 +233,21 @@ class OpenAiCompatibleChat(LlamaCppChat):
         )
 
     async def available(self) -> bool:
-        return time.monotonic() >= self._unavailable_until
+        now = time.monotonic()
+        if now < self._unavailable_until:
+            return False
+        if now < self._available_until:
+            return True
+        try:
+            async with self._client() as client:
+                response = await client.get("/v1/models", timeout=PROBE_TIMEOUT_SECONDS)
+                response.raise_for_status()
+        except httpx.HTTPError as exc:
+            self._unavailable_until = now + RETRY_AFTER_SECONDS
+            log.warning("hosted model unavailable", model=self.name, error=str(exc))
+            return False
+        self._available_until = now + AVAILABLE_FOR_SECONDS
+        return True
 
     async def _slot_for(self, client: httpx.AsyncClient, slot_key: str | None) -> int | None:
         return None
