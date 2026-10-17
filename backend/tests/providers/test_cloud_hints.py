@@ -93,3 +93,44 @@ def test_the_people_of_the_card_take_control_and_know_their_duties() -> None:
     head_call = {**new_call("moek"), "kind": officer.KIND_STAFF, "role": staff.ROLE_HEAD}
     head = officer.call_scenario(scenario, head_call, Attempt(service_calls=[]))
     assert "сверх" in vapi.role_prompt(head) or "не по силам" in vapi.role_prompt(head)
+
+
+def test_misheard_house_and_no_vehicles_are_said_word_for_word() -> None:
+    """On the stand the cloud ignored these two notes (17.10.2026): they go as «say»."""
+    misheard_call = {
+        "dialog": [
+            {"role": "operator", "text": ADDRESS},
+            {"role": "caller", "text": "Записал: …, дом 12?", "topics": ["misheard"], "hint": True},
+        ]
+    }
+    assert officer.hint_is_verbatim(misheard_call)
+    order_call = {
+        "dialog": [
+            {"role": "operator", "text": "Выезжайте."},
+            {"role": "caller", "text": "Принял, выезжаем.", "topics": ["confirm"], "hint": True},
+        ]
+    }
+    assert not officer.hint_is_verbatim(order_call)
+    assert vapi.say_message("Записал: дом 12?") == {
+        "type": "say",
+        "content": "Записал: дом 12?",
+        "endCallAfterSpoken": False,
+    }
+    note = vapi.said_note("Записал: дом 12?")
+    assert note["type"] == "add-message" and note["triggerResponseEnabled"] is False
+    assert "Ты только что сказал диспетчеру: «Записал: дом 12?»" in note["message"]["content"]
+
+
+def test_the_chief_knows_his_truth_from_the_prompt() -> None:
+    scenario = card_scenario(NAME).model_copy(update={"difficulty": 2})
+    chief_call = {**new_call("moek"), no_vehicles.PLAN_KEY: no_vehicles.PLAN_NO_VEHICLES}
+    attempt = Attempt(service_calls=[chief_call])
+    chief = officer.call_scenario(scenario, chief_call, attempt)
+    assert chief.caller.facts[no_vehicles.FACT_KEY] == no_vehicles.FACT
+    prompt = vapi.role_prompt(chief)
+    assert "свободных машин нет" in prompt
+    # From difficulty 2 the misheard house is the server's to say, not the cloud's.
+    assert vapi.CHIEF_LEAVES_ADDRESS in prompt
+    easy = officer.call_scenario(card_scenario(NAME), new_call("moek"), Attempt(service_calls=[]))
+    assert no_vehicles.FACT_KEY not in easy.caller.facts
+    assert "ОДИН раз повторяешь вслух адрес" in vapi.role_prompt(easy)

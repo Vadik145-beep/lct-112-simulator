@@ -273,8 +273,7 @@ CHIEF_PROMPT = """Ты начальник аварийной бригады сл
 1. Впитываешь информацию как губка. Диспетчер говорит кусками, с паузами и оговорками —
    молчишь и ждёшь, пока он выговорится весь. Не перебиваешь, не поддакиваешь, не отвечаешь
    на каждую фразу. Пауза в его речи — это не конец, а он подбирает слова.
-2. Когда он закончил передавать карточку, ОДИН раз повторяешь вслух адрес и происшествие,
-   чтобы он услышал, что ты записал верно. Второй раз адрес не проговариваешь НИКОГДА —
+2. {address_rule} Второй раз адрес не проговариваешь НИКОГДА —
    ни через реплику, ни в конце разговора, ни «для верности».
 3. Если чего-то не назвали, спрашиваешь одним вопросом: пострадавшие, доступ на объект,
    кто встретит бригаду. Про уже названное не переспрашиваешь.
@@ -301,6 +300,11 @@ CHIEF_PROMPT = """Ты начальник аварийной бригады сл
 Что ты знаешь о себе и о бригаде:
 {facts}
 """
+CHIEF_REPEATS_ADDRESS = """Когда он закончил передавать карточку, ОДИН раз повторяешь вслух адрес и
+   происшествие, чтобы он услышал, что ты записал верно."""
+# From difficulty 2 the server says how the chief repeats the address (the misheard house).
+CHIEF_LEAVES_ADDRESS = """Адрес вслух сам не повторяешь: если нужно, тренажёр скажет это за тебя."""
+MISHEARD_DIFFICULTY = 2
 CHIEF_HURRY = """
 Ты торопишься, у тебя ещё вызовы: говоришь резко и коротко. Если диспетчер говорит долго —
 обрываешь: «Стоп, короче. Адрес и что случилось»."""
@@ -412,6 +416,9 @@ def role_prompt(scenario: CallIntakeScenario) -> str:
         repeat = REPEAT_FACT_KEY in caller.facts
         if scenario.title.startswith(SQUAD_CHIEF_TITLE) and not repeat:
             return CHIEF_PROMPT.format(
+                address_rule=CHIEF_LEAVES_ADDRESS
+                if scenario.difficulty >= MISHEARD_DIFFICULTY
+                else CHIEF_REPEATS_ADDRESS,
                 service=service,
                 facts=facts or "- ничего особенного",
                 hurry=CHIEF_HURRY if scenario.difficulty >= HURRY_DIFFICULTY else "",
@@ -517,6 +524,26 @@ def hint_message(decision: str) -> dict[str, Any]:
             ),
         },
         "triggerResponseEnabled": HINT_TRIGGERS_RESPONSE,
+    }
+
+
+def say_message(line: str) -> dict[str, Any]:
+    """The control message that makes the assistant say ``line`` word for word."""
+    return {"type": "say", "content": line, "endCallAfterSpoken": False}
+
+
+def said_note(line: str) -> dict[str, Any]:
+    """After a line said word for word: the assistant knows it said it and keeps to it."""
+    return {
+        "type": "add-message",
+        "message": {
+            "role": "system",
+            "content": (
+                f"{HINT_PREFIX} Ты только что сказал диспетчеру: «{line}». Это твоя реплика: "
+                "дальше говори в согласии с ней, не повторяй её и не противоречь ей."
+            ),
+        },
+        "triggerResponseEnabled": False,
     }
 
 

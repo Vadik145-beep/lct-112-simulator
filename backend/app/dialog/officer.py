@@ -258,6 +258,17 @@ def officer_scenario(
     if service == scenario.service and not repeat and rush.applies(scenario.difficulty):
         hurried = built.caller.model_copy(update={"opening": rush.opening(built.caller.opening)})
         built = built.model_copy(update={"caller": hurried})
+    calls = calls_of(attempt)
+    if (
+        service == scenario.service
+        and no_vehicles.plan_of(calls) == no_vehicles.PLAN_NO_VEHICLES
+        and no_vehicles.resolving_call(calls) is None
+    ):
+        # One truth for the cloud too (#263): the chief knows he has no vehicles.
+        facts = {**built.caller.facts, no_vehicles.FACT_KEY: no_vehicles.FACT}
+        built = built.model_copy(
+            update={"caller": built.caller.model_copy(update={"facts": facts})}
+        )
     return with_studio_audio(built, service)
 
 
@@ -710,10 +721,23 @@ def is_hint(turn: dict) -> bool:
     return bool(turn.get(HINT_KEY))
 
 
+# Where the cloud ignored the note on the stand (17.10.2026): the squad chief repeated the
+# house right and sent the squad with no vehicles. These lines are said word for word.
+VERBATIM_TOPICS = frozenset({misheard.TOPIC_MISHEARD, no_vehicles.TOPIC_NO_VEHICLES})
+
+
 def hint_of(call: dict) -> str | None:
     """The decision the cloud has to voice: the hidden turn right after the last phrase."""
     turns = call.get("dialog") or []
     return str(turns[-1]["text"]) if turns and is_hint(turns[-1]) else None
+
+
+def hint_is_verbatim(call: dict) -> bool:
+    """The decision must be said word for word, not in the cloud's own words."""
+    turns = call.get("dialog") or []
+    if not turns or not is_hint(turns[-1]):
+        return False
+    return bool(VERBATIM_TOPICS & set(turns[-1].get("topics") or []))
 
 
 def cloud_decision(

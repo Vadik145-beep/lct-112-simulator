@@ -101,8 +101,10 @@ class CloudTurns(Protocol):
     operator_stopped_at: float | None
     pending_latency_ms: int | None
     latencies_ms: list[int]
-    # The server's decision to voice next (#263), set by the transcript of the dispatcher.
+    # The server's decision to voice next (#263), set by the transcript of the dispatcher;
+    # ``pending_say``: word for word, not in the cloud's own words.
     pending_hint: str | None
+    pending_say: bool
 
 
 @dataclass
@@ -120,6 +122,7 @@ class CloudCall(Call):
     pending_latency_ms: int | None = None
     latencies_ms: list[int] = field(default_factory=list)
     pending_hint: str | None = None
+    pending_say: bool = False
     control_url: str | None = None
     leg_lost: asyncio.Task | None = None
 
@@ -201,6 +204,7 @@ async def _record_service_transcript(
         if turn is not None and role == "operator":
             record = officer.find_call(loaded.attempt, call.service_call_id)
             call.pending_hint = officer.hint_of(record)
+            call.pending_say = officer.hint_is_verbatim(record)
         await session.commit()
     await publish_events(events)
     if turn is not None and role == "caller":
