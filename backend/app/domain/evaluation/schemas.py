@@ -200,14 +200,16 @@ class FlaggedField(BaseModel):
 
 class ServiceCallLog(BaseModel):
     """One call on the card (``attempts.service_calls[]``): the dispatcher's call to a service
-    officer (``outgoing``), the squad leader's report to the dispatcher (``report``) or the
-    dispatcher's call back to the person who reported the incident (``caller``)."""
+    officer (``outgoing``), the squad leader's report to the dispatcher (``report``), the
+    dispatcher's call back to the person who reported the incident (``caller``) or to a person
+    of the own organization by the phone (``staff``, with ``role``)."""
 
     model_config = STRICT
 
     service: str
     started_at: datetime
-    kind: Literal["outgoing", "report", "caller"] = "outgoing"
+    kind: Literal["outgoing", "report", "caller", "staff"] = "outgoing"
+    role: str | None = None  # who answers a «staff» call (``app.domain.scenarios.staff``)
     report_status: str | None = None  # the status a report stands for
     answered: bool = False
     ended_at: datetime | None = None

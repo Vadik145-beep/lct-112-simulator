@@ -747,6 +747,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/attempts/{attempt_id}/dial": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Dial Number
+         * @description The virtual phone of the card (#263): the number dialled tells who answers. A number of
+         *     the card's service in the directory reaches that person — the squad chief is the officer
+         *     of the own service's tab; the caller's number from the card rings only when the lesson
+         *     allows it; anything else does not exist.
+         */
+        post: operations["dial_number_api_attempts__attempt_id__dial_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/attempts/{attempt_id}/service-call/{call_id}/say": {
         parameters: {
             query?: never;
@@ -1486,6 +1509,66 @@ export interface paths {
          * @description Where to download the report from (the typed counterpart of the file endpoint).
          */
         post: operations["export_link_api_sessions__session_id__export_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/phone-directory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Directory */
+        get: operations["list_directory_api_phone_directory_get"];
+        put?: never;
+        /** Add Entry */
+        post: operations["add_entry_api_phone_directory_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/phone-directory/{entry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete Entry
+         * @description Removes the number and returns what was removed.
+         */
+        delete: operations["delete_entry_api_phone_directory__entry_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Entry */
+        patch: operations["update_entry_api_phone_directory__entry_id__patch"];
+        trace?: never;
+    };
+    "/api/attempts/{attempt_id}/phone-book": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Phone Book
+         * @description The book of the virtual phone on a card: the people of the card's service and, when
+         *     the lesson allows it, the line of the caller.
+         */
+        get: operations["phone_book_api_attempts__attempt_id__phone_book_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2930,6 +3013,14 @@ export interface components {
             /** Password */
             password: string;
         };
+        /**
+         * DialRequest
+         * @description A number dialled on the virtual phone (#263): digits, spaces and «+» are fine.
+         */
+        DialRequest: {
+            /** Number */
+            number: string;
+        };
         /** DialogOut */
         DialogOut: {
             /** Attempt Id */
@@ -3707,6 +3798,71 @@ export interface components {
             /** Style */
             style: string;
         };
+        /** PhoneBookEntryOut */
+        PhoneBookEntryOut: {
+            /** Role */
+            role: string;
+            /** Role Title */
+            role_title: string;
+            /** Name */
+            name: string;
+            /** Number */
+            number: string | null;
+        };
+        /** PhoneBookOut */
+        PhoneBookOut: {
+            /** Service */
+            service: string;
+            /** Entries */
+            entries: components["schemas"]["PhoneBookEntryOut"][];
+        };
+        /** PhoneDirectoryOut */
+        PhoneDirectoryOut: {
+            /** Entries */
+            entries: components["schemas"]["PhoneEntryOut"][];
+            /** Roles */
+            roles: components["schemas"]["PhoneRoleOut"][];
+            /** Max Per Service */
+            max_per_service: number;
+        };
+        /** PhoneEntryIn */
+        PhoneEntryIn: {
+            /** Service Code */
+            service_code: string;
+            /** Role */
+            role: string;
+            /** Name */
+            name: string;
+            /** Number */
+            number: string;
+        };
+        /** PhoneEntryOut */
+        PhoneEntryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Service Code */
+            service_code: string;
+            /** Role */
+            role: string;
+            /** Role Title */
+            role_title: string;
+            /** Name */
+            name: string;
+            /** Number */
+            number: string;
+        };
+        /** PhoneEntryPatch */
+        PhoneEntryPatch: {
+            /** Role */
+            role?: string | null;
+            /** Name */
+            name?: string | null;
+            /** Number */
+            number?: string | null;
+        };
         /** PhoneIn */
         PhoneIn: {
             /**
@@ -3714,6 +3870,13 @@ export interface components {
              * @default
              */
             phone: string;
+        };
+        /** PhoneRoleOut */
+        PhoneRoleOut: {
+            /** Code */
+            code: string;
+            /** Title */
+            title: string;
         };
         /** PreviewIn */
         PreviewIn: {
@@ -4487,7 +4650,8 @@ export interface components {
          * @description A call on the card: the dispatcher's call to a service officer (issue #36, ``outgoing``),
          *     the squad leader's report to the dispatcher (``report``, customer 21.09.2026) or the
          *     dispatcher's call back to the person who reported the incident (``caller``, customer
-         *     23.09.2026).
+         *     23.09.2026) or a call to a person of the own organization by the phone (``staff``,
+         *     #263).
          */
         ServiceCallOut: {
             /** Id */
@@ -4501,7 +4665,16 @@ export interface components {
              * @default outgoing
              * @enum {string}
              */
-            kind: "outgoing" | "report" | "caller";
+            kind: "outgoing" | "report" | "caller" | "staff";
+            /** Role */
+            role?: string | null;
+            /** Role Title */
+            role_title?: string | null;
+            /**
+             * Contact
+             * @default дежурный
+             */
+            contact: string;
             /** Report Status */
             report_status?: string | null;
             /** Report Status Title */
@@ -4761,6 +4934,11 @@ export interface components {
             phone_calls: boolean;
             /** Phone */
             phone?: string | null;
+            /**
+             * Allow Caller Call
+             * @default false
+             */
+            allow_caller_call: boolean;
         };
         /** SessionInfo */
         SessionInfo: {
@@ -4900,6 +5078,11 @@ export interface components {
             phone_calls: boolean;
             /** Phone */
             phone?: string | null;
+            /**
+             * Allow Caller Call
+             * @default false
+             */
+            allow_caller_call: boolean;
             /** Members */
             members: components["schemas"]["StudentOut"][];
             /** Queue */
@@ -4949,6 +5132,8 @@ export interface components {
             phone_calls?: boolean | null;
             /** Phone */
             phone?: string | null;
+            /** Allow Caller Call */
+            allow_caller_call?: boolean | null;
         };
         /**
          * SessionsDeleteIn
@@ -6503,6 +6688,41 @@ export interface operations {
             };
         };
     };
+    dial_number_api_attempts__attempt_id__dial_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DialRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceCallResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     say_to_officer_api_attempts__attempt_id__service_call__call_id__say_post: {
         parameters: {
             query?: never;
@@ -7945,6 +8165,156 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ExportRequest"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_directory_api_phone_directory_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhoneDirectoryOut"];
+                };
+            };
+        };
+    };
+    add_entry_api_phone_directory_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PhoneEntryIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhoneEntryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_entry_api_phone_directory__entry_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhoneEntryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_entry_api_phone_directory__entry_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PhoneEntryPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhoneEntryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    phone_book_api_attempts__attempt_id__phone_book_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attempt_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PhoneBookOut"];
                 };
             };
             /** @description Validation Error */

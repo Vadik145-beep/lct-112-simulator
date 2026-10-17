@@ -20,17 +20,11 @@ import {
   attemptKey,
   NetworkError,
   useAttempt,
-  useAnswerServiceCall,
-  useEndServiceCall,
-  useServiceCloudCall,
   useFinishAttempt,
   useFlagField,
   useOpenAttempt,
   useProgressReporter,
-  useSayToOfficer,
   useSetStatus,
-  useSpeakToOfficer,
-  useStartServiceCall,
   useUnflagField,
   type AttemptOut,
   type TransitionOut,
@@ -43,9 +37,9 @@ import {
   FIELD_TITLES,
   type FlagRequest,
 } from "@/emulator/flag-field-model";
-import { ServiceCallPanel } from "@/emulator/service-call";
-import { CloudCall } from "@/softphone/cloud-call";
 import { CALLER_TARGET, describeCall } from "@/emulator/service-call-model";
+import { useCardCalls } from "@/emulator/use-card-calls";
+import { VirtualPhone } from "@/emulator/virtual-phone";
 import {
   acceptanceTimer,
   formatDate,
@@ -57,7 +51,6 @@ import {
 import { ArmButton, TimerBadge, TrainerPanel } from "@/emulator/widgets";
 import { useSessionEvents, type SessionEvent } from "@/emulator/ws";
 import { cn } from "@/lib/utils";
-import { useSoftphone } from "@/softphone/context";
 
 const STATUS_ACCEPTED = "accepted";
 const STATUS_REJECTED = "rejected";
@@ -90,10 +83,6 @@ const REPORT_HINTS: Record<string, string> = {
   works_started:
     "Работы идут. По докладу о завершении — «Работы завершены» с результатом из доклада: статус закрывает карточку.",
 };
-
-// Statuses after which the squad leader still calls with reports (sweep_reports on the
-// server): from «Принята» until «Работы завершены».
-const REPORTING_STATUSES = new Set(["accepted", "response_started", "arrived", "works_started"]);
 
 function hintFor(attempt: AttemptOut): string {
   const table = attempt.reports_expected ? REPORT_HINTS : HINTS;
@@ -189,145 +178,20 @@ function CardView({
   const card = attempt.card;
   const finished =
     attempt.state === "finished" || attempt.state === "evaluated";
-  // Calls to service officers (issue #36): one open at a time; the softphone carries the
-  // voice when telephony is on, the panel below the card shows the conversation either way.
-  const softphone = useSoftphone();
-  const startCall = useStartServiceCall(attempt.id);
-  const sayToOfficer = useSayToOfficer(attempt.id);
-  const speakToOfficer = useSpeakToOfficer(attempt.id);
-  const endCall = useEndServiceCall(attempt.id);
-  const answerCall = useAnswerServiceCall(attempt.id);
-  const cloudKeys = useServiceCloudCall(attempt.id);
-  // Занятие с облачным голосом: дежурного службы и старшего группы играет Vapi прямо из
-  // браузера, как заявителя в приёме вызова (plan/track-c-vapi.md).
-  const cloudLesson = attempt.session.dialog_mode === "cloud";
-  const cloudCall = useRef<CloudCall | null>(null);
-  const [cloudState, setCloudState] = useState<"off" | "connecting" | "live" | "failed">("off");
-  // Микрофон диспетчера в облачном звонке: выключается кнопкой, как в карточке 112.
-  const [cloudMuted, setCloudMuted] = useState(false);
-  const toggleCloudMute = () => {
-    const next = !cloudMuted;
-    cloudCall.current?.setMuted(next);
-    setCloudMuted(next);
-  };
-  const stopCloudCall = useCallback(async () => {
-    const call = cloudCall.current;
-    cloudCall.current = null;
-    setCloudState("off");
-    setCloudMuted(false);
-    if (call) await call.stop();
-  }, []);
-  const startCloudCall = useCallback(
-    async (callId: string) => {
-      if (cloudCall.current) return;
-      setCloudState("connecting");
-      setCloudMuted(false);
-      let keys;
-      try {
-        keys = await cloudKeys.mutateAsync(callId);
-      } catch {
-        // 503 или 409: облака нет. Звонок нельзя оставить неотвеченным — иначе в панели
-        // ни собеседника, ни поля ввода; отвечаем локально, дальше разговор текстом.
-        setCloudState("failed");
-        answerCall.mutate(callId);
-        return;
-      }
-      const call = new CloudCall();
-      cloudCall.current = call;
-      call
-        .on("started", () => setCloudState("live"))
-        .on("failed", () => {
-          if (cloudCall.current !== call) return;
-          void call.stop();
-          cloudCall.current = null;
-          setCloudState("failed");
-          // Медиа не поднялось: возвращаем разговор в текст, чтобы карточка не зависла.
-          answerCall.mutate(callId);
-        })
-        .on("ended", () => {
-          if (cloudCall.current !== call) return;
-          cloudCall.current = null;
-          setCloudState("off");
-        });
-      try {
-        await call.start(keys);
-      } catch {
-        /* о причине сообщит событие failed */
-      }
-    },
-    [cloudKeys, answerCall],
-  );
-  // Whether the stt service answers comes with every service-call response.
-  const [sttAvailable, setSttAvailable] = useState(false);
-  const openCall =
-    attempt.service_calls.find((c) => c.ended_at === null) ?? null;
-  const [shownCallId, setShownCallId] = useState<string | null>(null);
-  // The call on the line stays in the panel when it ends — a report of the squad included, not
-  // only the calls the dispatcher dialled; a line of the history opens any earlier one.
-  const openCallId = openCall?.id ?? null;
-  useEffect(() => {
-    if (openCallId) setShownCallId(openCallId);
-  }, [openCallId]);
-  const shownCall =
-    openCall ?? attempt.service_calls.find((c) => c.id === shownCallId) ?? null;
-  const callBusy =
-    startCall.isPending ||
-    sayToOfficer.isPending ||
-    speakToOfficer.isPending ||
-    answerCall.isPending ||
-    endCall.isPending;
-  const callError =
-    startCall.error ??
-    sayToOfficer.error ??
-    speakToOfficer.error ??
-    answerCall.error ??
-    endCall.error;
+  // Calls of the card (issue #36, #103, #263): one at a time, all in the window of the
+  // virtual phone; the handsets of the card start them there.
+  const calls = useCardCalls(attempt);
   const callsByService = useMemo(() => {
     const map = new Map<string, AttemptOut["service_calls"]>();
     for (const c of attempt.service_calls)
       map.set(c.service, [...(map.get(c.service) ?? []), c]);
     return map;
   }, [attempt.service_calls]);
-  const dial = (service: string) => {
-    if (finished || openCall || callBusy) return;
-    startCall.mutate(service, {
-      onSuccess: (data) => {
-        setShownCallId(data.call.id);
-        setSttAvailable(data.stt_available);
-        if (cloudLesson && !data.call.telephony) void startCloudCall(data.call.id);
-      },
-    });
-  };
-  // Звонок самому заявителю по номеру из карточки (ответ заказчика 23.09.2026): тот же
-  // разговор, что и со службой, только на другом конце — заявитель.
-  const callDisabled = finished || Boolean(openCall) || callBusy;
+  const dial = calls.call;
+  const callDisabled = !calls.canCall;
+  // Звонок самому заявителю по номеру из карточки (ответ заказчика 23.09.2026), только если
+  // преподаватель разрешил его в занятии (#263).
   const callerBack = () => dial(CALLER_TARGET);
-  // The squad's report is an incoming call (issue #103): the trainee answers it. The phone
-  // carries the voice when it is the one ringing; otherwise the card answers over the API.
-  const answerReport = () => {
-    if (!openCall || callBusy) return;
-    if (softphone?.serviceCallId === openCall.id) {
-      void softphone.answer();
-      return;
-    }
-    if (cloudLesson && !openCall.telephony) {
-      void startCloudCall(openCall.id);
-      return;
-    }
-    answerCall.mutate(openCall.id, {
-      onSuccess: (data) => setSttAvailable(data.stt_available),
-    });
-  };
-  const hangUpService = () => {
-    if (!openCall) return;
-    void stopCloudCall();
-    endCall.mutate(openCall.id, {
-      onSuccess: () => {
-        // The SIP leg of the officer's call goes down with the record.
-        if (softphone?.serviceCallId) void softphone.hangup();
-      },
-    });
-  };
   const flagsByField = useMemo(
     () => new Map(attempt.flagged_fields.map((f) => [f.field, f])),
     [attempt.flagged_fields],
@@ -826,7 +690,7 @@ function CardView({
                     <button
                       type="button"
                       className="text-left font-medium underline-offset-2 hover:underline"
-                      onClick={() => setShownCallId(c.id)}
+                      onClick={() => calls.showCall(c.id)}
                     >
                       {describeCall(c)}
                     </button>
@@ -1000,7 +864,7 @@ function CardView({
                   <CallButton
                     service={ownService}
                     calls={callsByService.get(ownService.code) ?? []}
-                    disabled={finished || Boolean(openCall) || callBusy}
+                    disabled={callDisabled}
                     onClick={() => dial(ownService.code)}
                   />
                 </div>
@@ -1031,7 +895,7 @@ function CardView({
                   <CallButton
                     service={s}
                     calls={callsByService.get(s.code) ?? []}
-                    disabled={finished || Boolean(openCall) || callBusy}
+                    disabled={callDisabled}
                     onClick={() => dial(s.code)}
                   />
                 </div>
@@ -1083,8 +947,9 @@ function CardView({
       <TrainerPanel
         connection={connection}
         collapsedByDefault
-        // The conversation and the result of the card live in the panel: it opens for them.
-        expand={Boolean(openCall) || finished}
+        // The result of the card lives in the panel: it opens for it. The conversation is in
+        // the virtual phone (#263).
+        expand={finished}
         footer={
           <button
             type="button"
@@ -1174,41 +1039,6 @@ function CardView({
               </p>
             )}
           </div>
-        )}
-        {shownCall && (
-          <ServiceCallPanel
-            call={shownCall}
-            telephony={Boolean(
-              shownCall.telephony && softphone?.mode === "sip",
-            )}
-            sttAvailable={sttAvailable}
-            micDeviceId={softphone?.micDeviceId ?? null}
-            devices={softphone?.devices ?? []}
-            onMicDevice={(id) => softphone?.setMicDevice(id)}
-            onMicOpened={() => void softphone?.refreshDevices()}
-            pending={callBusy}
-            replying={sayToOfficer.isPending || speakToOfficer.isPending}
-            awaitingReport={
-              !finished &&
-              attempt.reports_expected &&
-              REPORTING_STATUSES.has(attempt.response_status) &&
-              shownCall.kind === "outgoing" &&
-              shownCall.service === ownService?.code
-            }
-            error={callError ? callError.message : null}
-            onSay={(text, actionId) =>
-              sayToOfficer.mutate({ callId: shownCall.id, text, actionId })
-            }
-            onSpeak={(blob, actionId) =>
-              speakToOfficer.mutate({ callId: shownCall.id, blob, actionId })
-            }
-            onAnswer={answerReport}
-            cloud={cloudLesson ? cloudState : "off"}
-            cloudOnly={cloudLesson && !shownCall.telephony}
-            muted={cloudMuted}
-            onToggleMute={toggleCloudMute}
-            onEnd={hangUpService}
-          />
         )}
         {attempt.flagged_fields.length > 0 && (
           <div className="text-xs" data-testid="flag-count">
@@ -1335,6 +1165,7 @@ function CardView({
       </TrainerPanel>
       </div>
 
+      <VirtualPhone attempt={attempt} calls={calls} />
       {showHelp && <HotkeysHelp onClose={() => setShowHelp(false)} />}
     </div>
   );

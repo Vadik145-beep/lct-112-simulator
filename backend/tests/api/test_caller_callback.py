@@ -27,7 +27,10 @@ CARD = "card_moek_1_net_otopleniya"
 
 
 async def caller_attempt() -> uuid.UUID:
-    return await make_attempt(CARD, mode=MODE_CARD_RESPONSE, dialog_mode="select")
+    # Звонок заявителю разрешает преподаватель в занятии (#263).
+    return await make_attempt(
+        CARD, mode=MODE_CARD_RESPONSE, dialog_mode="select", allow_caller_call=True
+    )
 
 
 async def current_body() -> tuple[ScenarioVersion, dict]:

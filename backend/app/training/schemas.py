@@ -274,12 +274,18 @@ class ServiceCallOut(BaseModel):
     """A call on the card: the dispatcher's call to a service officer (issue #36, ``outgoing``),
     the squad leader's report to the dispatcher (``report``, customer 21.09.2026) or the
     dispatcher's call back to the person who reported the incident (``caller``, customer
-    23.09.2026)."""
+    23.09.2026) or a call to a person of the own organization by the phone (``staff``,
+    #263)."""
 
     id: str
     service: str
     service_title: str
-    kind: Literal["outgoing", "report", "caller"] = "outgoing"
+    kind: Literal["outgoing", "report", "caller", "staff"] = "outgoing"
+    role: str | None = None  # who answers a «staff» call
+    role_title: str | None = None
+    # Who is on the other end, in lower case for the transcript: «начальник аварийной
+    # бригады», «дежурный», «руководитель организации», «заявитель» (#263).
+    contact: str = "дежурный"
     report_status: str | None = None
     report_status_title: str | None = None
     started_at: datetime
@@ -297,6 +303,12 @@ class ServiceCallOut(BaseModel):
 
 class ServiceCallRequest(BaseModel):
     service: str = Field(min_length=1, max_length=32)
+
+
+class DialRequest(BaseModel):
+    """A number dialled on the virtual phone (#263): digits, spaces and «+» are fine."""
+
+    number: str = Field(min_length=1, max_length=20)
 
 
 class ServiceCallSayRequest(BaseModel):

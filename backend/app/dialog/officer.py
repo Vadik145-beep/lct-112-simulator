@@ -32,6 +32,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.attributes import flag_modified
 
@@ -45,7 +46,15 @@ from app.domain.evaluation.schemas import (
     ServiceCallRef,
 )
 from app.domain.evaluation.text import detect_topics
-from app.domain.scenarios import caller_back, officers
+from app.domain.scenarios import (
+    caller_back,
+    complication,
+    misheard,
+    no_vehicles,
+    officers,
+    rush,
+    staff,
+)
 from app.errors import ApiError
 from app.events import append_event
 from app.models import (
@@ -81,12 +90,16 @@ KIND_REPORT = "report"
 # Собеседник не служба, поэтому у записи звонка служебный код-заглушка.
 KIND_CALLER = "caller"
 CALLER_TARGET = "caller"
+# Звонок своему сотруднику по телефону (руководитель организации, начальник отдела
+# реагирования; #263): не вызов бригады, факты карточки ему не «передаются» как службе.
+KIND_STAFF = "staff"
 # Studio recordings of the built-in banks in STORAGE_DIR (app.seed, issue #59): one folder
 # per service for the duty officers, one shared for the squad leader — his answers are the
 # same whatever the service.
 STUDIO_OFFICERS_DIR = "tts/seed/_officers"
 STUDIO_SQUAD_KEY = "_squad"
 STUDIO_CALLER_KEY = "_caller"
+STUDIO_STAFF_KEY = "_staff"
 _RETRY_WINDOW = 5
 
 
@@ -129,6 +142,11 @@ def is_caller(call: dict) -> bool:
     return call.get("kind") == KIND_CALLER
 
 
+def is_staff(call: dict) -> bool:
+    """A call to a person of the own organization by the phone, not to a service."""
+    return call.get("kind") == KIND_STAFF
+
+
 def reports_of(attempt: Attempt) -> list[dict]:
     return [c for c in calls_of(attempt) if is_report(c)]
 
@@ -139,6 +157,10 @@ def delivered_reports(attempt: Attempt) -> list[str]:
 
 
 def squad_state(attempt: Attempt) -> str:
+    """Where the squad is, one truth for every answer: no vehicles while the head has not
+    found one (``no_vehicles``), else by the reports delivered."""
+    if no_vehicles.blocked(calls_of(attempt)):
+        return officers.SQUAD_STATE_NO_VEHICLES
     return officers.squad_state(delivered_reports(attempt))
 
 
@@ -200,14 +222,19 @@ def officer_scenario(
 ) -> CallIntakeScenario:
     """The officer of ``service`` as he is now: the progress answer follows the squad, the
     built-in replies carry their studio recordings when the installation has them. On a
-    repeat call the card is with him already (``officers.officer_scenario``)."""
+    repeat call the card is with him already (``officers.officer_scenario``). On a card of
+    difficulty 3 the squad chief of the own service picks up in a hurry (``rush``)."""
     built = officers.officer_scenario(
         scenario,
         reference_for(scenario, service),
         service_title,
         squad_state(attempt),
         repeat=repeat,
+        chief=service == scenario.service,
     )
+    if service == scenario.service and not repeat and rush.applies(scenario.difficulty):
+        hurried = built.caller.model_copy(update={"opening": rush.opening(built.caller.opening)})
+        built = built.model_copy(update={"caller": hurried})
     return with_studio_audio(built, service)
 
 
@@ -224,9 +251,22 @@ def call_scenario(
         # Записи заявителя лежат по голосам: одна и та же фраза мужским и женским голосом
         # это два разных файла.
         return with_studio_audio(built, f"{STUDIO_CALLER_KEY}/{built.caller.voice}")
+    if is_staff(call):
+        role = call.get(no_vehicles.ROLE_KEY) or staff.ROLE_HEAD
+        org = officers.spoken_service(scenario.service, title)
+        state = squad_state(attempt)
+        progress = (
+            staff.SPECIALIST_PROGRESS.get(state, "")
+            if role == staff.ROLE_SQUAD_SPECIALIST
+            else officers.PROGRESS_REPLIES[state]
+        )
+        person = staff.person_scenario(role, scenario, org, progress)
+        return with_studio_audio(person, f"{STUDIO_STAFF_KEY}/{role}")
     if is_report(call):
-        report = _report_of(scenario, call)
+        report = _report_for(scenario, call, attempt)
         leader = officers.report_scenario(scenario, report, title)
+        if report.status == complication.STATUS:
+            return with_studio_audio(complication.specialist(leader), complication.STUDIO_KEY)
         return with_studio_audio(leader, STUDIO_SQUAD_KEY)
     return officer_scenario(scenario, call["service"], title, attempt, repeat=is_repeat(call))
 
@@ -241,10 +281,23 @@ def _report_of(scenario: CardResponseScenario, call: dict) -> BrigadeReport:
     )
 
 
+def _report_for(scenario: CardResponseScenario, call: dict, attempt: Attempt) -> BrigadeReport:
+    """The report as the squad says it now: a squad sent to a misheard house names that house
+    (``misheard``), a report worded before #263 calls him by the customer's title, and a
+    recording that no longer matches the words is dropped."""
+    report = _report_of(scenario, call)
+    text = officers.renamed(report.text)
+    text = misheard.report_text(text, scenario.card, misheard.state(calls_of(attempt)))
+    if text == report.text:
+        return report
+    return report.model_copy(update={"text": text, "audio": None})
+
+
 def passes_facts(call: dict) -> bool:
     """Facts are passed to a duty officer only: a report brings them, and a call back to the
-    caller of the card is not about passing anything (ответ заказчика 23.09.2026)."""
-    return not is_report(call) and not is_caller(call)
+    caller of the card is not about passing anything (ответ заказчика 23.09.2026), and a
+    report to the own head is not a call to a service (#263)."""
+    return not is_report(call) and not is_caller(call) and not is_staff(call)
 
 
 def _context(attempt: Attempt, call: dict, officer: CallIntakeScenario) -> DialogContext:
@@ -297,12 +350,15 @@ async def start(
     telephony: bool,
     answer_now: bool = True,
     kind: str = KIND_OUTGOING,
+    role: str | None = None,
 ) -> tuple[dict, list[SessionEvent]]:
     """«Позвонить»: a new call record. Without telephony the other side answers at once and
     the greeting is turn 0; with telephony the record waits for the SIP leg (``answer``). In a
     cloud lesson the browser call answers it instead (``answer_now=False``): the first phrase
     is said by the cloud, and writing our own greeting would double it. ``kind`` tells a call
-    to a service officer from a call back to the caller of the card (``KIND_CALLER``)."""
+    to a service officer from a call back to the caller of the card (``KIND_CALLER``) and
+    from a call to a person of the own organization (``KIND_STAFF`` with ``role``). The first
+    call to the squad chief of a card of difficulty 3 fixes its turn (``no_vehicles``)."""
     if attempt.state in training.CLOSED_STATES:
         raise ApiError(409, "card_closed", "Работа с карточкой завершена: звонить уже нельзя.")
     current = open_call(attempt)
@@ -320,6 +376,12 @@ async def start(
     call = _new_call(service, service_title, now, telephony=telephony, kind=kind)
     if kind == KIND_OUTGOING and card_passed_to(attempt, service):
         call["repeat"] = True
+    if kind == KIND_STAFF:
+        call[no_vehicles.ROLE_KEY] = role
+    if kind == KIND_OUTGOING and service == scenario.service:
+        plan = await _squad_plan(session, attempt, scenario)
+        if plan is not None:
+            call[no_vehicles.PLAN_KEY] = plan
     attempt.service_calls = [*calls_of(attempt), call]
     flag_modified(attempt, "service_calls")
     events.append(await _event(session, attempt, EVENT_STARTED, call))
@@ -329,6 +391,27 @@ async def start(
         call = answered[0]
     await session.flush()
     return call, events
+
+
+async def _squad_plan(
+    session: AsyncSession, attempt: Attempt, scenario: CardResponseScenario
+) -> str | None:
+    """The turn of a card of difficulty 3, once per card: «машин нет» or a complication,
+    alternating over the trainee's cards of the lesson in the order he calls on them,
+    «машин нет» first."""
+    if not no_vehicles.applies(scenario.difficulty):
+        return None
+    if no_vehicles.plan_of(calls_of(attempt)) is not None:
+        return None
+    others = await session.scalars(
+        select(Attempt.service_calls).where(
+            Attempt.session_id == attempt.session_id,
+            Attempt.student_id == attempt.student_id,
+            Attempt.id != attempt.id,
+        )
+    )
+    plans = [p for calls in others if (p := no_vehicles.plan_of(calls or []))]
+    return no_vehicles.plan_after(plans)
 
 
 def _new_call(
@@ -376,11 +459,14 @@ async def start_report(
     if open_call(attempt) is not None:
         raise ApiError(409, "call_in_progress", "Уже идёт разговор.")
     now = now or training.utcnow()
+    opening = misheard.report_text(
+        officers.renamed(report.text), scenario.card, misheard.state(calls_of(attempt))
+    )
     call = {
         **_new_call(scenario.service, service_title, now, telephony=telephony),
         "kind": KIND_REPORT,
         "report_status": report.status,
-        "opening": report.text,
+        "opening": opening,
     }
     attempt.service_calls = [*calls_of(attempt), call]
     flag_modified(attempt, "service_calls")
@@ -414,11 +500,13 @@ async def answer(
     if not with_opening:
         audio, topics = None, []
     elif is_report(call):
-        audio = await _report_audio(version, officer, _report_of(scenario, call))
+        audio = await _report_audio(version, officer, _report_for(scenario, call, attempt))
         topics = ["report", call.get("report_status") or ""]
     else:
         # A call back uses the caller's own folder of recordings, split by voice.
         key = f"{STUDIO_CALLER_KEY}/{officer.caller.voice}" if is_caller(call) else call["service"]
+        if is_staff(call):
+            key = f"{STUDIO_STAFF_KEY}/{call.get(no_vehicles.ROLE_KEY)}"
         audio = await _greeting_audio(version, officer, key, repeat=is_repeat(call))
         topics = ["greeting"]
     opening = (
@@ -593,7 +681,13 @@ async def say(
         return retry
     now = training.utcnow()
     officer = call_scenario(scenario, call, attempt)
-    reply = await dialog.provider_for(ts).reply(_context(attempt, call, officer), text)
+    special = special_reply(scenario, attempt, call, text)
+    if special is not None:
+        reply, extra = special
+    else:
+        reply = await dialog.provider_for(ts).reply(_context(attempt, call, officer), text)
+        extra = {}
+    reply = no_vehicles_reply(scenario, attempt, call, text, reply)
     operator = _turn("operator", text, reply.operator_topics, now, action_id=action_id, heard=heard)
     audio = await dialog.reply_audio(None, version, officer, reply, stem=_reply_stem(call, reply))
     officer_turn = _turn(
@@ -605,6 +699,7 @@ async def say(
         method=reply.method,
         audio=audio,
         generated=reply.generated,
+        **extra,
     )
     turns = [*(call.get("dialog") or []), operator, officer_turn]
     facts: list[str] = []
@@ -643,6 +738,153 @@ async def say(
     )
 
 
+def special_reply(
+    scenario: CardResponseScenario, attempt: Attempt, call: dict, text: str
+) -> tuple[CallerReply, dict] | None:
+    """The scripted moves of the squad chief that the dialog provider does not make: cutting a
+    long phrase short (``rush``), mishearing the house (``misheard``). ``None`` leaves the
+    phrase to the provider; the fields of the officer's turn come second."""
+    return (
+        rush_reply(scenario, call, text)
+        or misheard_reply(scenario, attempt, call, text)
+        or head_reply(attempt, call, text)
+        or wrong_contact_reply(call, text)
+    )
+
+
+def head_reply(attempt: Attempt, call: dict, text: str) -> tuple[CallerReply, dict] | None:
+    """The head of the organization hears that there are no vehicles and finds one."""
+    if not is_staff(call) or call.get(no_vehicles.ROLE_KEY) != staff.ROLE_HEAD:
+        return None
+    if not no_vehicles.blocked(calls_of(attempt)) or not no_vehicles.mentions_shortage(text):
+        return None
+    reply = CallerReply(
+        text=no_vehicles.RESOLVED,
+        topics=[no_vehicles.TOPIC_VEHICLES_FOUND],
+        operator_topics=[],
+        method="no_vehicles",
+    )
+    return reply, {}
+
+
+def wrong_contact_reply(call: dict, text: str) -> tuple[CallerReply, dict] | None:
+    """A person of the organization told to send the squad sends the dispatcher to its chief:
+    only he gives the squad its order (#263)."""
+    if not is_staff(call) or not engine.gives_order(text):
+        return None
+    reply = CallerReply(
+        text=staff.WRONG_CONTACT,
+        topics=[staff.TOPIC_WRONG_CONTACT],
+        operator_topics=[],
+        method="wrong_contact",
+    )
+    return reply, {}
+
+
+def no_vehicles_reply(
+    scenario: CardResponseScenario, attempt: Attempt, call: dict, text: str, reply: CallerReply
+) -> CallerReply:
+    """On a «машин нет» card the squad chief's answer, once the address is with him and no
+    question about the house is open, becomes «машин нет»; while the head has found nothing,
+    a confirmation or a word about the squad turns into «машин так и нет»."""
+    if call.get("kind") != KIND_OUTGOING or call.get("service") != scenario.service:
+        return reply
+    calls = calls_of(attempt)
+    if no_vehicles.plan_of(calls) != no_vehicles.PLAN_NO_VEHICLES:
+        return reply
+    if misheard.TOPIC_MISHEARD in reply.topics or rush.TOPIC_RUSH in reply.topics:
+        return reply
+    if no_vehicles.announced(calls):
+        if not no_vehicles.blocked(calls):
+            return reply
+        if not ({"confirm", "order_number", "progress"} & set(reply.topics)):
+            return reply
+        said = no_vehicles.STILL_NONE
+    else:
+        phrases = [text] + [
+            t["text"] for t in call.get("dialog") or [] if t.get("role") == "operator"
+        ]
+        if not any(engine.address_named(scenario.card, p) for p in phrases):
+            return reply
+        # The house just corrected stays acknowledged: «Понял, дом 42… Только машин нет».
+        fixed = reply.method == "misheard" and "confirm" in reply.topics
+        said = f"{reply.text} {no_vehicles.SHORTAGE}" if fixed else no_vehicles.ANNOUNCE
+    return CallerReply(
+        text=said,
+        topics=[no_vehicles.TOPIC_NO_VEHICLES],
+        operator_topics=reply.operator_topics,
+        method="no_vehicles",
+    )
+
+
+def rush_reply(
+    scenario: CardResponseScenario, call: dict, text: str
+) -> tuple[CallerReply, dict] | None:
+    """On difficulty 3 the squad chief cuts a long phrase short, once per call (``rush``)."""
+    if is_caller(call) or is_report(call) or is_repeat(call):
+        return None
+    if call.get("service") != scenario.service or not rush.applies(scenario.difficulty):
+        return None
+    if not rush.is_long(text) or rush.cut_in_already(call.get("dialog") or []):
+        return None
+    reply = CallerReply(
+        text=rush.CUT_IN,
+        topics=[rush.TOPIC_RUSH],
+        operator_topics=detect_officer_topics(text),
+        method="rush",
+    )
+    return reply, {}
+
+
+def misheard_reply(
+    scenario: CardResponseScenario, attempt: Attempt, call: dict, text: str
+) -> tuple[CallerReply, dict] | None:
+    """The squad chief mishears the house, or takes the correction (``misheard``); ``None``
+    leaves the phrase to the dialog provider. The fields of the officer's turn come second.
+
+    * The first time the dispatcher names the address to their own service (not a repeat
+      call) on a card of difficulty 2 and up, the officer repeats it with a wrong house.
+    * The house of the card named after that, in this call or any later one with the
+      squad, corrects him.
+    * Right after his question a bare «нет» gets «Какой дом тогда?», a bare «да» is taken.
+    """
+    if is_caller(call) or call.get("service") != scenario.service:
+        return None
+    card = scenario.card
+    heard = detect_officer_topics(text)
+    current = misheard.state(calls_of(attempt))
+
+    def answer(said: str, topics: list[str], operator_topics: list[str]) -> CallerReply:
+        return CallerReply(
+            text=said, topics=topics, operator_topics=operator_topics, method="misheard"
+        )
+
+    if current is None:
+        if is_report(call) or is_repeat(call):
+            return None
+        if not misheard.applies(scenario.difficulty, card):
+            return None
+        if not engine.address_named(card, text):
+            return None
+        said = misheard.wrong_house(card.address.house)
+        reply = answer(misheard.question(card), [misheard.TOPIC_MISHEARD], heard)
+        return reply, {misheard.HOUSE_KEY: said}
+    if not current.squad_has_wrong_house:
+        return None
+    if misheard.names_house(card, text):
+        squad_out = call["id"] != current.call_id
+        said = misheard.fixed_reply(card, squad_out=squad_out)
+        return answer(said, ["confirm"], [*heard, misheard.TOPIC_FIXED]), {}
+    officer_turns = [t for t in call.get("dialog") or [] if t.get("role") == "caller"]
+    if not officer_turns or misheard.TOPIC_MISHEARD not in (officer_turns[-1].get("topics") or []):
+        return None
+    if misheard.denies(text):
+        return answer(misheard.ASK_HOUSE, [misheard.TOPIC_MISHEARD], heard), {}
+    if misheard.agrees(text) and not heard:
+        return answer(misheard.AGREED, ["confirm"], heard), {}
+    return None
+
+
 def _text_key(text: str) -> str:
     """Short digest of a phrase: the voice file of an edited text is a different file."""
     return hashlib.sha1(text.encode()).hexdigest()[:8]  # noqa: S324 - a cache key, not security
@@ -676,6 +918,9 @@ def _reply_stem(call: dict, reply: CallerReply) -> str:
         # Report replies quote the report itself: cache per phrase, so every trainee who
         # hears the same squad leader gets the same file instead of a fresh synthesis.
         return f"report-{call.get('report_status') or 'report'}-{_text_key(reply.text)}"
+    if is_staff(call):
+        # Some replies say where the squad is: cache per phrase, not per reply.
+        return f"staff-{call.get(no_vehicles.ROLE_KEY)}-{_text_key(reply.text)}"
     if reply.reply_id:
         return f"officer-{call['service']}-r{reply.reply_id}"
     return f"officer-{call['service']}-{_text_key(reply.text)}"
@@ -699,11 +944,16 @@ async def _greeting_audio(
     opening = officer.caller.opening
     # The repeat call opens with where the squad is: its own file per phrase, so the cached
     # greeting of the first call is neither played here nor overwritten.
-    stem = (
-        f"officer-{service}-repeat-{_text_key(opening)}"
-        if repeat
-        else f"officer-{service}-greeting"
-    )
+    if service.startswith(STUDIO_STAFF_KEY):
+        # A person of the organization: the greeting may name where the squad is.
+        stem = f"staff-{service.rsplit('/', 1)[-1]}-{_text_key(opening)}"
+    elif repeat:
+        stem = f"officer-{service}-repeat-{_text_key(opening)}"
+    elif opening.endswith(rush.OPENING_TAIL):
+        # The hurried greeting of difficulty 3 is its own file next to the calm one.
+        stem = f"officer-{service}-greeting-{_text_key(opening)}"
+    else:
+        stem = f"officer-{service}-greeting"
     reply = CallerReply(
         text=opening,
         topics=["greeting"],

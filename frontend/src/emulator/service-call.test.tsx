@@ -33,6 +33,7 @@ function makeCall(
     service,
     service_title: service,
     kind,
+    contact: kind === "report" ? "начальник аварийной бригады" : "дежурный",
     started_at: "2026-09-25T08:40:00Z",
     answered: true,
     answered_at: "2026-09-25T08:40:01Z",

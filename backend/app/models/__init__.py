@@ -16,6 +16,7 @@ from app.models.cabinets import (
     Comment,
     EvaluationOverride,
 )
+from app.models.phones import MAX_PHONE_ENTRIES, PHONE_NUMBER_DIGITS, PhoneEntry
 from app.models.reference import (
     CallerTopic,
     CardStatus,
@@ -102,11 +103,13 @@ __all__ = [
     "CALL_END_SILENCE",
     "CALL_IDLE",
     "CALL_RINGING",
+    "MAX_PHONE_ENTRIES",
     "MODE_CALL_INTAKE",
     "MODE_CARD_RESPONSE",
     "NOTIFY_BACKUP_FAILED",
     "NOTIFY_PROVIDER_UNAVAILABLE",
     "NOTIFY_SERVICE_DOWN",
+    "PHONE_NUMBER_DIGITS",
     "SCENARIO_APPROVED",
     "SCENARIO_ARCHIVED",
     "SCENARIO_DRAFT",
@@ -131,6 +134,7 @@ __all__ = [
     "IncidentFlag",
     "IncidentGroup",
     "IncidentType",
+    "PhoneEntry",
     "RejectReason",
     "ResponseStatus",
     "Role",

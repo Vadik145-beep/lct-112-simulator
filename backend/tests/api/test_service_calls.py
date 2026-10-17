@@ -124,7 +124,10 @@ async def test_call_is_voiced_even_when_the_old_flag_is_off(client: AsyncClient)
         CARD, mode=MODE_CARD_RESPONSE, dialog_mode="buttons", voice_enabled=False
     )
     token = await login(client, "student1")
-    r = await start(client, token, attempt_id)
+    # The duty officer of another service: his greeting has a studio recording, so the call
+    # is voiced even where the stand's synthesizer is not installed. The squad chief of the own
+    # service (#263) is voiced by the synthesizer until his phrases are recorded.
+    r = await start(client, token, attempt_id, service="gkh")
     assert r.status_code == 200, r.text
     greeting = r.json()["call"]["turns"][0]
     assert "слушаю" in greeting["text"]
@@ -168,7 +171,8 @@ async def test_text_call_passes_facts_and_lands_in_the_evaluation(client: AsyncC
         client, token, attempt_id, call_id, "Нет отопления в трёх домах, пострадавших нет"
     )
     assert set(r.json()["call"]["facts_passed"]) == {"address", "incident_type", "injured"}
-    r = await say(client, token, attempt_id, call_id, "Наряд МОЭК-4127")
+    # The order to go (#263): without it the squad chief's call is not complete.
+    r = await say(client, token, attempt_id, call_id, "Наряд МОЭК-4127, выезжайте")
     assert r.json()["call"]["facts_passed"] == [
         "address",
         "incident_type",
@@ -378,7 +382,8 @@ async def test_repeat_call_does_not_take_the_card_again(client: AsyncClient) -> 
     assert r.status_code == 200, r.text
     again = r.json()["call"]
     opening = again["turns"][0]["text"]
-    assert "уже приняли" in opening and "слушаю" in opening
+    # The own service's line is the squad chief (#263): he has the order already.
+    assert "уже получил" in opening and "слушаю" in opening
     assert again["facts_required"] == []
     # Whatever the dispatcher says, the officer does not ask for the card again.
     for text in ("Алло, как там у вас?", "Улица Молостовых, дом 10", "Пострадавших нет"):

@@ -384,7 +384,8 @@ class CallManager:
             service=service,
             service_title=service_title,
             phone=phone,
-            ringback=bool(phone) and kind in (officer.KIND_OUTGOING, officer.KIND_CALLER),
+            ringback=bool(phone)
+            and kind in (officer.KIND_OUTGOING, officer.KIND_CALLER, officer.KIND_STAFF),
         )
         self.calls[call.key] = call
         self._by_channel[call.channel_id] = call

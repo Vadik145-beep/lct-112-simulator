@@ -8,6 +8,7 @@ const call: ServiceCallOut = {
   service: "mosgaz",
   service_title: "Мосгаз",
   kind: "outgoing",
+  contact: "дежурный",
   started_at: "2026-09-25T08:40:00Z",
   answered: true,
   answered_at: "2026-09-25T08:40:01Z",

@@ -30,6 +30,7 @@ from app.domain.evaluation.schemas import (
     Reply,
     ServiceCallRef,
 )
+from app.domain.scenarios import misheard
 
 # How the duty officer names his own service out loud. The reference titles come from the
 # classifier and carry the paperwork («Территориальные ОИВ (управы, префектуры)»), which a
@@ -54,12 +55,25 @@ OFFICER_BEHAVIOUR = (
     "спокойный дежурный службы: говорит коротко и по делу, уточняет адрес, тип происшествия, "
     "есть ли пострадавшие, просит номер наряда, подтверждает приём информации"
 )
+# The officer of the dispatcher's own service is the chief of its emergency squad (#263,
+# decision of 17.10.2026): he takes the order to go, mishears and hurries on difficulty 2–3,
+# and reports from the site himself. Same voice and replies, his own title and manner.
+SQUAD_CHIEF_TITLE = "Начальник аварийной бригады"
+SQUAD_CHIEF_BEHAVIOUR = (
+    "начальник аварийной бригады своей организации: принимает от диспетчера распоряжение на "
+    "выезд, уточняет адрес, доступ и пострадавших, называет номер наряда, докладывает сам"
+)
+SQUAD_CHIEF_REPEAT_BEHAVIOUR = (
+    "начальник аварийной бригады: распоряжение по этой карточке уже получил от диспетчера, "
+    "бригада работает по ней; коротко говорит, где бригада, и что доложит сам; данные карточки "
+    "не переспрашивает"
+)
 # A repeat call: the dispatcher calls the same service again after the card was passed
 # (замечание пользователя 27.09.2026 — дежурный заново спрашивал адрес). The officer does not
 # take the card again: he says where the squad is and that the squad leader will report.
 OFFICER_REPEAT_BEHAVIOUR = (
     "спокойный дежурный службы: карточку уже принял от этого диспетчера в прошлом звонке, "
-    "бригада работает по ней; коротко говорит, где бригада, и что старший группы доложит сам; "
+    "бригада работает по ней; коротко говорит, где бригада, и что бригада доложит сама; "
     "данные карточки не переспрашивает"
 )
 REPEAT_FACT_KEY = "карточка"
@@ -106,12 +120,15 @@ assert FACT_REQUESTS <= {text for _, text in GENERIC_REPLIES}
 # delivered: none yet → the squad is being sent; the report of «Начало реагирования» → on the
 # way; «Прибытие» → on site; «Проведение работ» → working; «Работы завершены» → done.
 SQUAD_STATE_PENDING = "pending"
+# No vehicles to send (#263): the squad stays until the head of the organization finds one.
+SQUAD_STATE_NO_VEHICLES = "no_vehicles"
 PROGRESS_REPLIES: dict[str, str] = {
     SQUAD_STATE_PENDING: "Бригаду собираем, выезжаем. Как выедем — доложу.",
     "response_started": "Бригада в пути, едем на адрес. По прибытии доложим.",
     "arrived": "Бригада на месте, осматриваемся. Как начнём работы — доложу.",
     "works_started": "Работы ведутся, пока без замечаний. По окончании доложу.",
     "works_done": "Работы завершены, докладывал. Всё по карточке отражено.",
+    SQUAD_STATE_NO_VEHICLES: "Машин так и нет, все на выездах.",
 }
 # Состояния, в которых бригаду уже видно на месте: это знает и заявитель, если ему позвонить
 # (app.domain.scenarios.caller_back).
@@ -141,11 +158,11 @@ REPORT_REPLIES: list[tuple[str, str]] = [
     ("access", "Доступ есть, заявитель встретил."),
     ("access", "В подъезд попали, открыл консьерж."),
     ("repeat", "Повторяю: {report}"),
-    ("unknown", "Диспетчер, это старший группы, докладываю по происшествию."),
+    ("unknown", "Диспетчер, это начальник аварийной бригады, докладываю по происшествию."),
 ]
 SQUAD_LEADER_PERSONA = "squad_leader"
 SQUAD_LEADER_BEHAVIOUR = (
-    "старший группы реагирования на месте: докладывает коротко, по делу, отвечает "
+    "начальник аварийной бригады на месте: докладывает коротко, по делу, отвечает "
     "на уточняющие вопросы "
     "диспетчера, повторяет доклад по просьбе"
 )
@@ -156,12 +173,35 @@ DEFAULT_REPORTS: list[tuple[str, int, str]] = [
     (
         "response_started",
         30,
-        "Алло, диспетчер? Это старший группы реагирования. Выехали по адресу: {address}.",
+        "Алло, диспетчер? Это начальник аварийной бригады. Выехали по адресу: {address}.",
     ),
-    ("arrived", 45, "Алло, это снова старший группы. Прибыли по адресу: {address}, приступаем."),
-    ("works_started", 30, "Алло, диспетчер, старший группы. Докладываю: {comment}"),
-    ("works_done", 60, "Алло, диспетчер? Старший группы. Работы завершены: {comment}"),
+    (
+        "arrived",
+        45,
+        "Алло, это снова начальник аварийной бригады. Прибыли по адресу: {address}, приступаем.",
+    ),
+    ("works_started", 30, "Алло, диспетчер, начальник аварийной бригады. Докладываю: {comment}"),
+    ("works_done", 60, "Алло, диспетчер? Начальник аварийной бригады. Работы завершены: {comment}"),
 ]
+# Reports worded before #263 name the squad leader «старший группы»; the customer's role is the
+# chief of the emergency squad. Stored cards are renamed on the fly (``renamed``).
+_OLD_TITLES: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r"старш(ий|его|ему) группы реагирования"), "начальник аварийной бригады"),
+    (re.compile(r"Старший группы реагирования"), "Начальник аварийной бригады"),
+    (re.compile(r"старший группы"), "начальник аварийной бригады"),
+    (re.compile(r"Старший группы"), "Начальник аварийной бригады"),
+    (re.compile(r"старшему группы"), "начальнику аварийной бригады"),
+    (re.compile(r"старшего группы"), "начальника аварийной бригады"),
+]
+
+
+def renamed(text: str) -> str:
+    """The squad leader of an older wording called by the customer's title."""
+    for pattern, title in _OLD_TITLES:
+        text = pattern.sub(title, text)
+    return text
+
+
 DEFAULT_WORK_COMMENTS: dict[str, str] = {
     "works_started": "Приступили к работам на месте.",
     "works_done": "Работы выполнены, пострадавших нет.",
@@ -272,18 +312,24 @@ def officer_replies(
     return [*own, *builtin_replies(service, service_title, state, order)]
 
 
-def greeting(service: str, service_title: str) -> str:
-    return GENERIC_REPLIES[0][1].format(service=spoken_service(service, service_title))
+def greeting(service: str, service_title: str, *, chief: bool = False) -> str:
+    spoken = spoken_service(service, service_title)
+    if chief:
+        return f"{SQUAD_CHIEF_TITLE} {spoken}, слушаю."
+    return GENERIC_REPLIES[0][1].format(service=spoken)
 
 
-def repeat_opening(service: str, service_title: str, state: str = SQUAD_STATE_PENDING) -> str:
+def repeat_opening(
+    service: str, service_title: str, state: str = SQUAD_STATE_PENDING, *, chief: bool = False
+) -> str:
     """The officer's first phrase on a repeat call: the card is with the service already, the
     squad is where the reports put it."""
-    first = greeting(service, service_title)
-    return f"{first} Карточку от вас уже приняли. {PROGRESS_REPLIES[state]}"
+    first = greeting(service, service_title, chief=chief)
+    passed = "Распоряжение от вас уже получил." if chief else "Карточку от вас уже приняли."
+    return f"{first} {passed} {PROGRESS_REPLIES[state]}"
 
 
-def _reference_card(scenario: CardResponseScenario) -> ReferenceCard:
+def reference_card_of(scenario: CardResponseScenario) -> ReferenceCard:
     card = scenario.card
     return ReferenceCard(
         incident_type=card.incident_type,
@@ -302,13 +348,15 @@ def officer_scenario(
     service_title: str,
     state: str = SQUAD_STATE_PENDING,
     repeat: bool = False,
+    chief: bool = False,
 ) -> CallIntakeScenario:
     """The officer as the dialog engine sees him: the same shape as a caller scenario, so the
     select / hybrid / generate providers and the voice pipeline work unchanged. The «caller»
     side is the officer, the «operator» side the dispatcher. ``state`` is the squad's state
     (``squad_state``): the officer answers about the progress from it. ``repeat``: the card was
     passed on an earlier call — the officer opens with where the squad is, asks for no fact of
-    the card and requires none."""
+    the card and requires none. ``chief``: the officer of the dispatcher's own service, the
+    chief of its emergency squad (#263)."""
     facts = {
         "служба": service_title,
         "твой наряд": ref.order_number or order_number(scenario, ref.service),
@@ -316,19 +364,21 @@ def officer_scenario(
         "где бригада": PROGRESS_REPLIES[state],
     }
     replies = officer_replies(scenario, ref.service, service_title, state)
-    opening = greeting(ref.service, service_title)
-    behaviour = OFFICER_BEHAVIOUR
+    opening = greeting(ref.service, service_title, chief=chief)
+    behaviour = SQUAD_CHIEF_BEHAVIOUR if chief else OFFICER_BEHAVIOUR
     required = list(ref.required_facts)
     if repeat:
         facts[REPEAT_FACT_KEY] = REPEAT_FACT
-        opening = repeat_opening(ref.service, service_title, state)
-        behaviour = OFFICER_REPEAT_BEHAVIOUR
+        opening = repeat_opening(ref.service, service_title, state, chief=chief)
+        behaviour = SQUAD_CHIEF_REPEAT_BEHAVIOUR if chief else OFFICER_REPEAT_BEHAVIOUR
         required = []
         # The officer's questions about the card («Назовите адрес…», «Где запах газа?»).
         replies = [r for r in replies if not r.text.rstrip().endswith("?")]
     return CallIntakeScenario(
         kind="call_intake",
-        title=f"Звонок дежурному: {service_title}",
+        title=f"{SQUAD_CHIEF_TITLE}: {service_title}"
+        if chief
+        else f"Звонок дежурному: {service_title}",
         ticket_ref=scenario.ticket_ref,
         difficulty=scenario.difficulty,
         norm_seconds=ref.norm_seconds,
@@ -342,7 +392,7 @@ def officer_scenario(
         ),
         replies=replies,
         required_topics=required,
-        reference_card=_reference_card(scenario),
+        reference_card=reference_card_of(scenario),
     )
 
 
@@ -388,19 +438,8 @@ def report_scenario(
         ),
         replies=report_replies(report, order_number(scenario, scenario.service)),
         required_topics=[],
-        reference_card=_reference_card(scenario),
+        reference_card=reference_card_of(scenario),
     )
-
-
-def _spoken_address(card: Mapping) -> str:
-    address = card.get("address") or {}
-    parts = [address.get("street") or ""]
-    if address.get("house"):
-        parts.append(f"дом {address['house']}")
-    if address.get("building"):
-        parts.append(f"корпус {address['building']}")
-    text = ", ".join(p for p in parts if p)
-    return text or (address.get("descriptive") or "адрес по карточке")
 
 
 def default_reports(scenario_body: Mapping) -> list[dict]:
@@ -412,7 +451,7 @@ def default_reports(scenario_body: Mapping) -> list[dict]:
         return []
     chain = {s.get("status"): s for s in reference.get("status_chain") or [] if s.get("status")}
     card = scenario_body.get("card") or {}
-    address = _spoken_address(card)
+    address = misheard.spoken_address(card.get("address") or {})
     reports: list[dict] = []
     for status, after, template in DEFAULT_REPORTS:
         if status not in chain:

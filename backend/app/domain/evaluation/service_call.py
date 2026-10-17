@@ -8,6 +8,12 @@ share), 20 % for staying within the norm — but a call that passed none of the 
 scores nothing at all, because reaching the officer and saying nothing leaves the service
 knowing nothing.
 
+The call to the dispatcher's own service is the call to the chief of its emergency squad
+(#263) and is scored by the weights of the issue: the right people reached 25 % (the squad
+chief; the head of the organization too when there were no vehicles), the facts passed 30 %,
+the misheard house corrected 15 %, the order to go given and the squad's number taken 15 %,
+within the norm 15 %. A call to the duty officer of another service keeps the shares above.
+
 Facts are read from the dispatcher's turns by keywords (``detect_service_facts``); the address
 counts only when the street and the house of the card are actually named, not just the word
 «адрес», and the incident when the phrase shares a word with the card itself
@@ -17,6 +23,7 @@ speaks.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 from rapidfuzz import fuzz
@@ -43,6 +50,7 @@ from app.domain.evaluation.text import (
 )
 from app.domain.evaluation.timing import seconds_between
 from app.domain.reference_data import SERVICE_CALL_FACTS
+from app.domain.scenarios import misheard, no_vehicles, officers
 
 KEY = "service_call"
 TITLE = "Звонки в службы"
@@ -50,6 +58,17 @@ REACHED_SHARE = 0.3
 FACTS_SHARE = 0.5
 NORM_SHARE = 0.2
 STREET_THRESHOLD = 85.0
+# The call to the squad chief of the own service (#263).
+CHIEF_ROLES_SHARE = 0.25
+CHIEF_FACTS_SHARE = 0.3
+CHIEF_MISHEARD_SHARE = 0.15
+CHIEF_ORDER_SHARE = 0.15
+CHIEF_NORM_SHARE = 0.15
+# The dispatcher sends the squad: «выезжайте», «направляйте бригаду», «высылайте наряд».
+_ORDER = re.compile(
+    r"\b(выезж\w*|выезд\w*|выехать|высыл\w*|вышлите|направ\w*|отправ\w*|выдвига\w*|"
+    r"езжайте|поезжайте)\b"
+)
 FACT_TITLES = {f["code"]: f["title"] for f in SERVICE_CALL_FACTS}
 
 
@@ -131,6 +150,25 @@ def facts_from_dialog(card: Card, dialog: list[DialogTurn]) -> list[str]:
     return [f["code"] for f in SERVICE_CALL_FACTS if f["code"] in found]
 
 
+def gives_order(text: str) -> bool:
+    """The phrase sends the squad out (the dispatcher's order, #263)."""
+    return bool(_ORDER.search(normalize_text(text)))
+
+
+def _as_rows(attempt: CardResponseAttempt) -> list[dict]:
+    """The calls as the dialog layer stores them, for the shared readers of the truth."""
+    return [
+        {
+            "id": str(i),
+            "kind": c.kind,
+            "role": c.role,
+            "dialog": [t.model_dump() for t in c.dialog],
+            "ended_at": c.ended_at,
+        }
+        for i, c in enumerate(attempt.service_calls)
+    ]
+
+
 def call_seconds(log: ServiceCallLog) -> float | None:
     if log.ended_at is None:
         last = [t.at for t in log.dialog if t.at is not None]
@@ -149,6 +187,11 @@ class CallOutcome:
     seconds: float | None
     within_norm: bool
     fraction: float
+    # The call to the squad chief only (#263); ``None`` for another service's duty officer.
+    order_given: bool | None = None
+    order_number_taken: bool | None = None
+    misheard_fixed: bool | None = None
+    head_told: bool | None = None
 
 
 def outgoing_calls(attempt: CardResponseAttempt) -> list[ServiceCallLog]:
@@ -189,8 +232,66 @@ def outcomes(scenario: CardResponseScenario, attempt: CardResponseAttempt) -> li
             if best is None or outcome.fraction > best.fraction:
                 best = outcome
         assert best is not None
+        if ref.service == scenario.service:
+            best = _chief_outcome(scenario, attempt, best, candidates)
         result.append(best)
     return result
+
+
+def _chief_outcome(
+    scenario: CardResponseScenario,
+    attempt: CardResponseAttempt,
+    best: CallOutcome,
+    candidates: list[ServiceCallLog],
+) -> CallOutcome:
+    """The call to the squad chief by the weights of #263. Said over several calls, the order
+    and the number count wherever they were said."""
+    rows = _as_rows(attempt)
+    said = [t.text for log in candidates for t in log.dialog if t.role == "operator"]
+    heard = [t.text for log in candidates for t in log.dialog if t.role == "caller"]
+    order = best.ref.order_number or officers.order_number(scenario, best.ref.service)
+    order_given = any(gives_order(text) for text in said)
+    number_taken = any(order in text for text in heard) or any(
+        (e.order_number or "").strip() for e in attempt.status_log
+    )
+    mistake = misheard.state(rows)
+    fixed = mistake is None or mistake.fixed
+    reached = 1
+    required = 1
+    head_told: bool | None = None
+    if no_vehicles.announced(rows):
+        required += 1
+        head_told = no_vehicles.resolving_call(rows) is not None
+        reached += int(head_told)
+    required_facts = list(best.ref.required_facts)
+    facts_fraction = (
+        (len(required_facts) - len(best.facts_missing)) / len(required_facts)
+        if required_facts
+        else 1.0
+    )
+    if required_facts and not best.facts_passed:
+        fraction = 0.0  # reaching him and saying nothing sends nobody anywhere (issue #127)
+    else:
+        fraction = (
+            CHIEF_ROLES_SHARE * reached / required
+            + CHIEF_FACTS_SHARE * facts_fraction
+            + CHIEF_MISHEARD_SHARE * int(fixed)
+            + CHIEF_ORDER_SHARE * (int(order_given) + int(number_taken)) / 2
+            + (CHIEF_NORM_SHARE if best.within_norm else 0.0)
+        )
+    return CallOutcome(
+        best.ref,
+        best.log,
+        best.facts_passed,
+        best.facts_missing,
+        best.seconds,
+        best.within_norm,
+        fraction,
+        order_given=order_given,
+        order_number_taken=number_taken,
+        misheard_fixed=fixed,
+        head_told=head_told,
+    )
 
 
 def service_call_component(
@@ -211,6 +312,10 @@ def service_call_component(
             "facts_passed": c.facts_passed,
             "facts_missing": c.facts_missing,
             "fraction": round(c.fraction, 2),
+            "order_given": c.order_given,
+            "order_number_taken": c.order_number_taken,
+            "misheard_fixed": c.misheard_fixed,
+            "head_told": c.head_told,
         }
         for c in calls
     ]

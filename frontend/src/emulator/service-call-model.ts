@@ -37,17 +37,32 @@ export function isCaller(call: ServiceCallOut): boolean {
   return call.kind === "caller";
 }
 
-/** «Старший группы» for a report, «заявитель» for a call back, «дежурный» otherwise. */
+/** A call to a person of the own organization by the virtual phone (#263). */
+export function isStaff(call: ServiceCallOut): boolean {
+  return call.kind === "staff";
+}
+
+const SQUAD_CHIEF = "начальник аварийной бригады";
+
+/** Who is on the other end, as the server names him (#263): «начальник аварийной бригады»,
+ * «специалист аварийной бригады», «руководитель организации», «заявитель», «дежурный». */
 export function otherSide(call: ServiceCallOut): string {
-  if (isReport(call)) return "старший группы";
+  if (call.contact) return call.contact;
+  if (isReport(call)) return SQUAD_CHIEF;
   return isCaller(call) ? "заявитель" : "дежурный";
 }
 
-/** «Доклад бригады: ОДС ЖКХ» / «Звонок заявителю: Ким О. Ю.» / «Звонок в службу: ОДС ЖКХ». */
+/** «Доклад бригады: ОДС ЖКХ» / «Звонок заявителю: Ким О. Ю.» / «Начальник аварийной бригады:
+ * ОДС ЖКХ» / «Звонок: Руководитель организации» / «Звонок в службу: МОЭК». */
 export function callTitle(call: ServiceCallOut): string {
-  if (isReport(call)) return `Доклад бригады: ${call.service_title}`;
-  const what = isCaller(call) ? "Звонок заявителю" : "Звонок в службу";
-  return `${what}: ${call.service_title}`;
+  if (isReport(call)) {
+    const who = call.report_status === "complication" ? "Звонок специалиста бригады" : "Доклад бригады";
+    return `${who}: ${call.service_title}`;
+  }
+  if (isStaff(call)) return `Звонок: ${call.role_title ?? otherSide(call)}`;
+  if (isCaller(call)) return `Звонок заявителю: ${call.service_title}`;
+  if (call.contact === SQUAD_CHIEF) return `Начальник аварийной бригады: ${call.service_title}`;
+  return `Звонок в службу: ${call.service_title}`;
 }
 
 export function factTitle(code: string): string {
@@ -68,6 +83,7 @@ export function describeCall(call: ServiceCallOut): string {
     if (call.ended_at && !call.answered) return "Заявитель не ответил";
     return `Звонок заявителю ${length}`;
   }
+  if (isStaff(call)) return `Звонок ${length}`;
   const passed = call.facts_passed.map(factTitle).join(", ") || "ничего";
   return `Звонок ${length}, переданы: ${passed}`;
 }

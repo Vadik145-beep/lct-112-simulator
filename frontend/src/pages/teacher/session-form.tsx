@@ -42,6 +42,7 @@ const DEFAULTS: Omit<SessionIn, "group_id"> = {
   adaptive: false,
   phone_calls: false,
   phone: "",
+  allow_caller_call: false,
 };
 
 // PRD 9.3: the caller answers with an approved reply (select), may improvise with the
@@ -62,7 +63,7 @@ const DIALOG_MODES: { code: string; title: string; hint: string; dds?: string }[
     code: "generate",
     title: "Свободная генерация речи (без интернета)",
     hint: "модель сочиняет каждую реплику; медленнее и менее предсказуемо",
-    dds: "дежурный и старший группы отвечают свободно; медленнее и менее предсказуемо",
+    dds: "дежурный и начальник аварийной бригады отвечают свободно; медленнее и менее предсказуемо",
   },
 ];
 // Not offered for new lessons any more; kept in the list of a lesson that already has it, so its
@@ -134,6 +135,7 @@ function toInput(s: SessionOut): SessionIn {
     dialog_mode: s.dialog_mode,
     adaptive: s.adaptive,
     phone_calls: s.phone_calls ?? false,
+    allow_caller_call: s.allow_caller_call ?? false,
     phone: s.phone ?? "",
   };
 }
@@ -472,6 +474,20 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               Подбирать карточки под слабые места
             </label>
           </div>
+          {!isCall && (
+            <div className="space-y-1.5">
+              <span className="text-sm font-medium">Звонок заявителю</span>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={form.allow_caller_call ?? false}
+                  onChange={(e) => patch({ allow_caller_call: e.target.checked })}
+                  data-testid="allow-caller-call"
+                />
+                Разрешить звонок заявителю (по номеру из карточки)
+              </label>
+            </div>
+          )}
         </CardContent>
       </Card>
 

@@ -154,6 +154,12 @@ def perfect_service_calls(scenario: CardResponseScenario) -> list[dict]:
             dialog.append(
                 {"role": "caller", "text": "Принял.", "topics": [], "at": at(start + 3 + j * 4)}
             )
+        # The order to go (#263): the squad chief is sent, not only told.
+        order_at = start + 3 + len(ref.required_facts) * 4
+        dialog.append({"role": "operator", "text": "Выезжайте.", "topics": [], "at": at(order_at)})
+        dialog.append(
+            {"role": "caller", "text": "Принял, выезжаем.", "topics": [], "at": at(order_at + 1)}
+        )
         calls.append(
             {
                 "service": ref.service,
