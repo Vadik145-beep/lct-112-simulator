@@ -187,7 +187,8 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
     mode: "card_response",
     card_source: form.card_source,
     scenario_ids: [],
-    incident_groups: form.incident_groups ?? [],
+    // With cards written by AI the service comes first and the groups depend on it.
+    incident_groups: aiCards ? [] : (form.incident_groups ?? []),
     difficulty: 3,
     service_profile: [],
   });
@@ -274,9 +275,10 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
       <div className="grid max-h-96 gap-x-4 gap-y-3 overflow-y-auto rounded-md border p-3 sm:grid-cols-2 lg:grid-cols-4">
         {services.data
           .filter((s) =>
-            aiCards
-              ? s.code in aiByService
-              : !servicesAvailable.data || servicesWithCards.has(s.code) || form.service_profile?.includes(s.code),
+            // With AI too only the services the trainer is prepared for (ready cards, voices, the
+            // phone book), not every organization of the classifier (stand 18.10.2026: «ДГП (АРМ-112)»).
+            (!aiCards || s.code in aiByService) &&
+            (!servicesAvailable.data || servicesWithCards.has(s.code) || form.service_profile?.includes(s.code)),
           )
           .map((s) => (
           <label key={s.code} className="flex items-start gap-2 text-sm">

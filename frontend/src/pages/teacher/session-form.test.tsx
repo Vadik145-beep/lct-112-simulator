@@ -19,11 +19,16 @@ vi.mock("@/api/teacher", () => ({
         { code: "13", title: "Запах газа" },
       ],
     }),
-  useServices: () => loaded([{ code: "gkh", title: "ЕДЦ ЖКХ", short_title: "ЕДЦ ЖКХ" }]),
-  useAiCardGroups: () => loaded({ by_service: { gkh: { "1": 127 } } }),
+  useServices: () =>
+    loaded([
+      { code: "gkh", title: "ЕДЦ ЖКХ", short_title: "ЕДЦ ЖКХ" },
+      { code: "dgp", title: "ДГП (АРМ-112)", short_title: "ДГП" },
+    ]),
+  useAiCardGroups: () => loaded({ by_service: { gkh: { "1": 127 }, dgp: { "1": 43 } } }),
   useModels: () =>
     loaded({ dialog: true, tts: true, stt: true, cloud: false, phone: false }),
-  useQueuePreview: () => loaded({ total: 3, harder_only: false }),
+  useQueuePreview: () =>
+    loaded({ total: 3, harder_only: false, queue: [{ service_code: "gkh", incident_type_code: "14.1" }] }),
   useCreateSession: () => mutation,
   useUpdateSession: () => mutation,
   useTeacherSession: () => loaded(existing.current),
@@ -167,6 +172,8 @@ describe("«Задания формирует ИИ»", () => {
     fireEvent.change(screen.getByLabelText("Название"), { target: { value: "ИИ" } });
     fireEvent.click(screen.getByLabelText("Задания формирует ИИ"));
     expect(screen.getByText("ДДС какой службы")).toBeInTheDocument();
+    // Only the services the trainer is prepared for, not every organization of the classifier.
+    expect(screen.queryByLabelText("ДГП (АРМ-112)")).not.toBeInTheDocument();
     expect(screen.getByText("Сначала выберите службу ДДС.")).toBeInTheDocument();
     expect(screen.queryByLabelText(/Пожары и задымления/)).not.toBeInTheDocument();
     fireEvent.click(screen.getByLabelText("ЕДЦ ЖКХ"));
