@@ -450,11 +450,14 @@ def build_card_response(
     traps: list[str],
     catalogue: Mapping[str, ServiceInfo],
     difficulty: int | None = None,
+    service: str | None = None,
 ) -> dict:
-    """PRD 9.2 body: the same situation as a filled card for a city dispatch service."""
+    """PRD 9.2 body: the same situation as a filled card for a city dispatch service —
+    ``service`` when given (the trainee's own), else the first notified one on АРМ-112."""
     flags = _flags(facts, row)
     expected = resolve_services(row.get("service_rules") or [], [k for k, v in flags.items() if v])
-    service = choose_card_service(expected, catalogue, row.get("main_service"))
+    if service not in catalogue:
+        service = choose_card_service(expected, catalogue, row.get("main_service"))
     signs = [row[k] for k in ("sign1", "sign2", "sign3") if row.get(k)]
 
     reference = card_reference(region=facts.address.region, service=service, expected=expected)

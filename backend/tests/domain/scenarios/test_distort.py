@@ -65,9 +65,8 @@ def test_difficulty_sets_the_exact_number_of_mistakes(
         errors = out.get("injected_errors") or []
         assert len(errors) == count, i
         assert len({e["field"] for e in errors}) == count
-        # One address mistake per card; the refusal kind only alone.
+        # One address mistake per card.
         assert sum(e["field"].startswith("address.") for e in errors) <= 1
-        assert count == 1 or all(e["field"] != "service" for e in errors)
 
 
 def test_preferred_kind_is_planted_first(type_rows: list[dict]) -> None:
@@ -204,3 +203,43 @@ def test_street_named_in_another_case_is_not_repeated(type_rows: list[dict]) -> 
     )
     assert card["injected_errors"][0]["field"] == "address.street"
     assert card["card"]["description"] == body["card"]["description"]
+
+
+def _refused_card() -> dict:
+    """The trainee's own service for an incident it does not serve: the reference refuses."""
+    body = {**seed_card(), "service": "moslift"}
+    body["reference"] = {
+        "decision": "reject",
+        "reject_reason": "not_in_competence",
+        "status_chain": [{"status": "rejected", "comment_example": "Не в компетенции"}],
+        "critical_errors": ["empty_reject_comment"],
+    }
+    return body
+
+
+def test_planned_wrong_service_counts_as_one_of_the_mistakes(type_rows: list[dict]) -> None:
+    for difficulty, others in ((2, 0), (3, 1)):
+        body = distort.sent_to_wrong_service(
+            {**_refused_card(), "difficulty": difficulty}, CATALOGUE
+        )
+        assert body["injected_errors"] == [
+            {
+                "field": "service",
+                "wrong_value": "moslift",
+                "correct_value": "rejected",
+                "hint_level": 1,
+                "wrong_label": "Мослифт",
+                "correct_label": "Не принята: не в компетенции службы",
+            }
+        ]
+        out = distort.inject_by_difficulty(
+            body, type_rows=type_rows, catalogue=CATALOGUE, streets=STREETS, services=["moslift"]
+        )
+        fields = [e["field"] for e in out["injected_errors"]]
+        assert fields[0] == "service" and len(fields) == 1 + others
+        assert out["service"] == "moslift"  # the trainee's desk stays his own
+
+
+def test_a_card_the_service_serves_is_not_marked(type_rows: list[dict]) -> None:
+    body = {**seed_card(), "difficulty": 2}
+    assert distort.sent_to_wrong_service(body, CATALOGUE) is body

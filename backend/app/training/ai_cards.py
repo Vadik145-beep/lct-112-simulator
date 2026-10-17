@@ -221,6 +221,7 @@ async def _write_into(session: AsyncSession, row: AiCard, *, template_only: bool
     if ts is None:
         raise ApiError(404, "session_not_found", "Занятие не найдено.")
     refs = await scenarios.load_refs(session)
+    trainee = await session.get(User, row.student_id)
     catalogue = await scenarios.load_catalogue(session)
     async with _plan_locks.setdefault(ts.id, asyncio.Lock()):
         taken = [*await _taken_types(session, ts.id), *_planned.get(ts.id, set())]
@@ -237,6 +238,7 @@ async def _write_into(session: AsyncSession, row: AiCard, *, template_only: bool
                 allowed_groups=list(ts.incident_groups or []),
                 services=list(ts.service_profile or []),
                 taken_types=taken,
+                own_service=trainee.service_code if trainee else None,
             )
         )
         _planned.setdefault(ts.id, set()).add(str(plan.request.incident_type))

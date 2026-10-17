@@ -96,3 +96,39 @@ def test_two_trainees_get_different_cards(type_rows: list[dict]) -> None:
 def test_lesson_groups_win_over_the_difficulty(type_rows: list[dict]) -> None:
     plan = plan_next(_spec(type_rows, difficulty=1, allowed_groups=["1"]))
     assert plan.request.incident_group == "1"
+
+
+def _rows_by_code(type_rows: list[dict]) -> dict[str, dict]:
+    return {str(r["code"]): r for r in type_rows}
+
+
+def test_cards_are_for_the_trainees_own_service(type_rows: list[dict]) -> None:
+    rows = _rows_by_code(type_rows)
+    for difficulty in (1, 2, 3):
+        for seq in (1, 2, 4, 5):
+            plan = plan_next(_spec(type_rows, difficulty=difficulty, seq=seq, own_service="gkh"))
+            assert plan.request.service == "gkh"
+            assert not plan.request.wrong_service
+            row = rows[str(plan.request.incident_type)]
+            assert "gkh" in resolve_services(row.get("service_rules") or [], [])
+
+
+def test_third_card_is_sent_to_the_wrong_service_from_difficulty_2(type_rows: list[dict]) -> None:
+    rows = _rows_by_code(type_rows)
+    plan = plan_next(_spec(type_rows, difficulty=2, seq=3, own_service="gkh"))
+    assert plan.request.wrong_service and plan.request.service == "gkh"
+    row = rows[str(plan.request.incident_type)]
+    assert all(rule.get("service") != "gkh" for rule in row.get("service_rules") or [])
+    assert any("не та служба" in r for r in plan.reasons)
+    assert "wrong_service" not in plan.prefer
+    # Not at difficulty 1, not twice, but again after it was missed.
+    assert not plan_next(
+        _spec(type_rows, difficulty=1, seq=3, own_service="gkh")
+    ).request.wrong_service
+    found = EarlierCard("14.2.3.0", 90, True, [{"field": "service", "verdict": "found"}])
+    again = plan_next(_spec(type_rows, seq=3, own_service="gkh", earlier=[found]))
+    assert not again.request.wrong_service
+    missed = EarlierCard("1.1.1.1", 40, False, [{"field": "service", "verdict": "missed"}])
+    assert plan_next(
+        _spec(type_rows, seq=2, own_service="gkh", earlier=[missed])
+    ).request.wrong_service

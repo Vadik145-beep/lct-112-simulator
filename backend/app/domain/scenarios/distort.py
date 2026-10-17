@@ -5,11 +5,12 @@ because the operator may have erred. A generated ``card_response`` scenario gets
 mistakes as its difficulty asks: none at 1, one at 2, two at 3. Every mistake is visible: the
 description tells the true value in a plain sentence («Заявитель уточнил, что пострадавших
 нет»), unless it already does, while the field shows the wrong one, so an attentive dispatcher
-can always find it. Small mistakes are flagged and the work goes on with
-the true value; a card sent to the wrong service (``wrong_service``, only as the single mistake)
-is refused with «Не принята» and the reason. The card keeps the wrong values, the truth goes to
-``injected_errors``. The choice is deterministic per scenario (seeded by the ticket and title),
-so regeneration gives the same card.
+can always find it. Small mistakes are flagged and the work goes on with the true value; a card
+sent to the wrong service (``wrong_service``) is refused with «Не принята» and the reason. A
+card planned as sent to the wrong service (the trainee's own service for an incident it does not
+serve, ``sent_to_wrong_service``) counts that as one of its mistakes. The card keeps the wrong
+values, the truth goes to ``injected_errors``. The choice is deterministic per scenario (seeded
+by the ticket and title), so regeneration gives the same card.
 """
 
 from __future__ import annotations
@@ -20,7 +21,11 @@ from collections.abc import Callable, Mapping, Sequence
 
 from rapidfuzz import fuzz
 
-from app.domain.evaluation.data_check import WRONG_SERVICE_ANSWER, WRONG_SERVICE_FIELD
+from app.domain.evaluation.data_check import (
+    WRONG_SERVICE_ANSWER,
+    WRONG_SERVICE_FIELD,
+    WRONG_SERVICE_REASON,
+)
 from app.domain.evaluation.text import normalize_house, normalize_text
 from app.domain.scenarios.template import ServiceInfo, card_reference
 
@@ -58,8 +63,15 @@ STEM_LENGTH = 5  # «Маршала Тимошенко» in «улице Мар�
 # Kinds that change the same part of the card: one of a group per card (the address sentence
 # of one would otherwise repeat the wrong value of the other).
 SAME_PART = {"house": "address", "street": "address"}
-# The whole card is wrong: refused, so no other mistake makes sense next to it.
-ALONE_KINDS = frozenset({"wrong_service"})
+# Kind of an already planted mistake by its field.
+KIND_BY_FIELD = {
+    "address.house": "house",
+    "address.street": "street",
+    "incident_type": "incident_type",
+    "flags.injured": "injured",
+    WRONG_SERVICE_FIELD: "wrong_service",
+}
+REFUSED_LABEL = "Не принята: не в компетенции службы"
 _HOUSE_NUMBER = re.compile(r"^(\d+)(.*)$")
 
 Distortion = Callable[[dict, random.Random, "Context"], dict | None]
@@ -89,12 +101,14 @@ def inject_by_difficulty(
     services: Sequence[str] = (),
     prefer: Sequence[str] = (),
 ) -> dict:
-    """Returns the body with exactly as many mistakes as its difficulty asks (none at 1).
-    ``prefer`` lists kinds to try first (the trainee's weak spots), in order."""
-    if body.get("kind") != "card_response" or body.get("injected_errors"):
+    """Returns the body with exactly as many mistakes as its difficulty asks (none at 1),
+    counting those already planted. ``prefer`` lists kinds to try first (the trainee's weak
+    spots), in order."""
+    if body.get("kind") != "card_response":
         return body
     count = MISTAKES_BY_DIFFICULTY.get(int(body.get("difficulty") or 1), 0)
-    if not count:
+    count -= len(body.get("injected_errors") or [])
+    if count <= 0:
         return body
     rng = random.Random(  # noqa: S311 - a stable choice per scenario, not security
         f"{body.get('ticket_ref')}|{body.get('title')}|{body.get('card', {}).get('number')}"
@@ -111,18 +125,19 @@ def inject(
     ctx: Context,
     prefer: Sequence[str] = (),
 ) -> dict:
-    """Plants up to ``count`` mistakes of different kinds; kinds that do not fit the card are
-    skipped (no house → no neighbour house). A kind of ``ALONE_KINDS`` is planted only as the
-    single mistake."""
+    """Plants up to ``count`` more mistakes of kinds the card does not have yet; kinds that do
+    not fit the card are skipped (no house → no neighbour house)."""
     result = _copy_body(body)
     result["injected_errors"] = list(body.get("injected_errors") or [])
     others = [k for k in DISTORTIONS if k not in prefer]
     rng.shuffle(others)
     kinds = [k for k in prefer if k in DISTORTIONS] + others
-    if count > 1:
-        kinds = [k for k in kinds if k not in ALONE_KINDS]
     planted = 0
-    used_parts: set[str] = set()
+    used_parts = {
+        SAME_PART.get(kind, kind)
+        for kind in (KIND_BY_FIELD.get(str(e.get("field"))) for e in result["injected_errors"])
+        if kind
+    }
     truths: list[str] = []
     for kind in kinds:
         if planted >= count:
@@ -312,8 +327,29 @@ def wrong_service(body: dict, rng: random.Random, ctx: Context) -> dict | None:
         "correct_value": WRONG_SERVICE_ANSWER,
         "hint_level": 1,
         "wrong_label": ctx.catalogue[code].title or code,
-        "correct_label": "Не принята: не в компетенции службы",
+        "correct_label": REFUSED_LABEL,
     }
+
+
+def sent_to_wrong_service(body: dict, catalogue: Mapping[str, ServiceInfo]) -> dict:
+    """Marks a card whose own service does not serve the incident (planned so) as the wrong
+    service mistake: the reference is already the refusal «не в компетенции службы»."""
+    reference = body.get("reference") or {}
+    if reference.get("decision") != "reject" or reference.get("reject_reason") != (
+        WRONG_SERVICE_REASON
+    ):
+        return body
+    service = str(body.get("service") or "")
+    info = catalogue.get(service)
+    error = {
+        "field": WRONG_SERVICE_FIELD,
+        "wrong_value": service,
+        "correct_value": WRONG_SERVICE_ANSWER,
+        "hint_level": 1,
+        "wrong_label": (info.title if info else None) or service,
+        "correct_label": REFUSED_LABEL,
+    }
+    return {**body, "injected_errors": [*(body.get("injected_errors") or []), error]}
 
 
 DISTORTIONS: dict[str, Distortion] = {
