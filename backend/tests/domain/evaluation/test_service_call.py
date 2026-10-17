@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from datetime import timedelta
 
+import pytest
+
 from app.domain.evaluation.card_response import evaluate_card_response
 from app.domain.evaluation.schemas import CardResponseAttempt, CardResponseScenario
 from app.domain.evaluation.service_call import facts_from_dialog
@@ -121,8 +123,10 @@ def test_forgotten_order_number_gives_a_partial_score() -> None:
     result = evaluate_card_response(scenario, called(scenario, FULL[:3]), grammar=grammar_ok())
     component = result.components["service_call"]
     assert component.items[0]["facts_missing"] == ["order_number"]
-    # 0.3 reached + 0.5 × 3/4 facts + 0.2 norm = 0.875
-    assert component.score == round(component.max * 0.875, 1)
+    assert component.items[0]["order_given"] is False  # «выезжайте» was in the fourth phrase
+    # #263: 0.25 reached + 0.3 × 3/4 facts + 0.15 house + 0.15 × ½ (number in the status)
+    # + 0.15 norm = 0.85
+    assert component.score == pytest.approx(component.max * 0.85, abs=0.051)
 
 
 def test_over_the_norm_loses_the_time_share() -> None:
@@ -130,7 +134,7 @@ def test_over_the_norm_loses_the_time_share() -> None:
     result = evaluate_card_response(scenario, called(scenario, FULL, seconds=200))
     component = result.components["service_call"]
     assert component.items[0]["within_norm"] is False
-    assert component.score == round(component.max * 0.8, 1)
+    assert component.score == pytest.approx(component.max * 0.85, abs=0.051)
 
 
 def test_no_call_gives_zero_and_the_detector() -> None:

@@ -750,6 +750,7 @@ def special_reply(
         rush_reply(scenario, call, text)
         or misheard_reply(scenario, attempt, call, text)
         or head_reply(attempt, call, text)
+        or wrong_contact_reply(call, text)
     )
 
 
@@ -764,6 +765,20 @@ def head_reply(attempt: Attempt, call: dict, text: str) -> tuple[CallerReply, di
         topics=[no_vehicles.TOPIC_VEHICLES_FOUND],
         operator_topics=[],
         method="no_vehicles",
+    )
+    return reply, {}
+
+
+def wrong_contact_reply(call: dict, text: str) -> tuple[CallerReply, dict] | None:
+    """A person of the organization told to send the squad sends the dispatcher to its chief:
+    only he gives the squad its order (#263)."""
+    if not is_staff(call) or not engine.gives_order(text):
+        return None
+    reply = CallerReply(
+        text=staff.WRONG_CONTACT,
+        topics=[staff.TOPIC_WRONG_CONTACT],
+        operator_topics=[],
+        method="wrong_contact",
     )
     return reply, {}
 

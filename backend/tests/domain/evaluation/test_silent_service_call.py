@@ -13,7 +13,9 @@ from tests.domain.evaluation.helpers import card_scenario
 SCENARIO = card_scenario("card_gkh_1_tech_v_podezde")  # звонок в ГКХ, четыре обязательных факта
 MAX_POINTS = 20
 T0 = datetime(2026, 9, 24, 10, 0, tzinfo=UTC)
-REPORTED = "улица Свободы, дом 42, течёт стояк холодной воды, пострадавших нет, код подъезда 5В"
+REPORTED = (
+    "улица Свободы, дом 42, течёт стояк холодной воды, пострадавших нет, код подъезда 5В, выезжайте"
+)
 
 
 def at(seconds: float) -> str:
@@ -24,6 +26,15 @@ def call(*said: str, ended: float = 30) -> dict:
     dialog = [{"role": "caller", "text": "Дежурный слушает.", "topics": ["greeting"], "at": at(15)}]
     for i, text in enumerate(said):
         dialog.append({"role": "operator", "text": text, "topics": [], "at": at(16 + i)})
+    if said:  # the squad chief names his squad (#263: the number is taken from him)
+        dialog.append(
+            {
+                "role": "caller",
+                "text": "Наряд 1438, выезжаем.",
+                "topics": [],
+                "at": at(17 + len(said)),
+            }
+        )
     return {
         "service": "gkh",
         "kind": "outgoing",

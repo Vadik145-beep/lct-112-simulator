@@ -101,6 +101,9 @@ SPECIALIST_PROGRESS: dict[str, str] = {
     "works_started": "Работаем, пока без замечаний.",
     "works_done": "Закончили, сворачиваемся.",
 }
+# The dispatcher sends the squad through the wrong person (#263, «позвонил не тому»).
+TOPIC_WRONG_CONTACT = "wrong_contact"
+WRONG_CONTACT = "Распоряжение на выезд — начальнику аварийной бригады, звоните ему."
 # Ids apart from the officers' (1000) and the caller's (2000) banks, a hundred per role.
 REPLY_ID_BASE = 3000
 

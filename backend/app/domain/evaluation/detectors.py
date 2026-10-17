@@ -23,11 +23,11 @@ from app.domain.evaluation.schemas import (
     CardResponseScenario,
     StatusEntry,
 )
-from app.domain.evaluation.service_call import facts_from_dialog
+from app.domain.evaluation.service_call import facts_from_dialog, gives_order
 from app.domain.evaluation.text import normalize_text
 from app.domain.evaluation.timing import seconds_between
 from app.domain.reference_data import TYPICAL_ERRORS
-from app.domain.scenarios import complication, misheard, no_vehicles
+from app.domain.scenarios import complication, misheard, no_vehicles, staff
 from app.domain.scenarios.officers import spoken_service
 
 ERRORS: dict[str, dict] = {e["code"]: e for e in TYPICAL_ERRORS}
@@ -541,6 +541,46 @@ def complication_not_passed(ctx: CardContext) -> ErrorItem | None:
     )
 
 
+def no_order_given(ctx: CardContext) -> ErrorItem | None:
+    """The squad chief of the own service was told about the incident but never sent (#263):
+    no «выезжайте», «направляйте бригаду» in any call to him."""
+    if not any(r.service == ctx.scenario.service for r in ctx.scenario.reference.service_calls):
+        return None
+    chief = [
+        c
+        for c in ctx.attempt.service_calls
+        if c.kind == "outgoing" and c.service == ctx.scenario.service and c.answered
+    ]
+    said = [t.text for c in chief for t in c.dialog if t.role == "operator"]
+    if not said or not facts_from_dialog(ctx.scenario.card, [t for c in chief for t in c.dialog]):
+        return None  # no call, or a silent one: those are errors of their own
+    if any(gives_order(text) for text in said):
+        return None
+    return _item(
+        "no_order_given",
+        "Начальнику аварийной бригады передали происшествие, но не дали распоряжение на "
+        "выезд. Скажите прямо: «Выезжайте» или «Направляйте бригаду» — и запишите номер наряда.",
+    )
+
+
+def wrong_contact(ctx: CardContext) -> ErrorItem | None:
+    """The order to go given to a person who does not send the squad (#263)."""
+    wrong = [
+        staff.ROLE_TITLES.get(c.role or "", "сотрудник")
+        for c in ctx.attempt.service_calls
+        if c.kind == "staff"
+        and any(t.role == "caller" and staff.TOPIC_WRONG_CONTACT in t.topics for t in c.dialog)
+    ]
+    if not wrong:
+        return None
+    whom = ", ".join(f"«{w.lower()}»" for w in dict.fromkeys(wrong))
+    return _item(
+        "wrong_contact",
+        f"Распоряжение на выезд отдано не тому: {whom}. Бригаду высылает только начальник "
+        "аварийной бригады; руководителю и начальнику отдела реагирования докладывают.",
+    )
+
+
 def no_vehicles_not_reported(ctx: CardContext) -> ErrorItem | None:
     """The squad chief said there are no vehicles and the dispatcher never got the head of
     the organization to find one (issue #263): the squad never left."""
@@ -607,6 +647,8 @@ CARD_DETECTORS: dict[str, Callable[[CardContext], ErrorItem | None]] = {
     "misheard_not_fixed": misheard_not_fixed,
     "complication_not_passed": complication_not_passed,
     "no_vehicles_not_reported": no_vehicles_not_reported,
+    "no_order_given": no_order_given,
+    "wrong_contact": wrong_contact,
 }
 
 
