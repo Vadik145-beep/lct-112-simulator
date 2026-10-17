@@ -317,10 +317,11 @@ def _report_for(scenario: CardResponseScenario, call: dict, attempt: Attempt) ->
 
 
 def passes_facts(call: dict) -> bool:
-    """Facts are passed to a duty officer only: a report brings them, and a call back to the
-    caller of the card is not about passing anything (ответ заказчика 23.09.2026), and a
-    report to the own head is not a call to a service (#263)."""
-    return not is_report(call) and not is_caller(call) and not is_staff(call)
+    """Facts are passed to a duty officer and reported to a person of the own organization
+    (#263: «переданы:» of a report to the head); a squad's report brings them, and a call back
+    to the caller of the card is not about passing anything (ответ заказчика 23.09.2026). The
+    evaluation of the service calls reads the dispatcher's calls to services only."""
+    return not is_report(call) and not is_caller(call)
 
 
 def _context(attempt: Attempt, call: dict, officer: CallIntakeScenario) -> DialogContext:
@@ -717,6 +718,7 @@ async def say(
         reply = await dialog.provider_for(ts).reply(_context(attempt, call, officer), text)
         extra = {}
     reply = known_facts_reply(scenario, call, text, reply, officer)
+    reply = report_taken_reply(scenario, call, text, reply, officer)
     reply = chief_reply(scenario, attempt, call, text, reply)
     operator = _turn("operator", text, reply.operator_topics, now, action_id=action_id, heard=heard)
     audio = await dialog.reply_audio(None, version, officer, reply, stem=_reply_stem(call, reply))
@@ -744,7 +746,7 @@ async def say(
     call = {**call, "dialog": turns, "facts_passed": facts}
     _store(attempt, call)
     pending = False
-    if reply.generated and passes_facts(call):
+    if reply.generated and passes_facts(call) and not is_staff(call):
         pending = _add_pending_reply(version, call["service"], reply)
     await session.flush()
     event = await _event(
@@ -824,6 +826,39 @@ TAKEN = "Принял."
 def _dispatching(reply: CallerReply) -> bool:
     text = reply.text.strip()
     return not text.endswith("?") and bool(_DISPATCHING.search(text.lower()))
+
+
+# A report long enough to be one, even when it names no fact the keyword table knows.
+REPORT_WORDS = 6
+
+
+def report_taken_reply(
+    scenario: CardResponseScenario,
+    call: dict,
+    text: str,
+    reply: CallerReply,
+    other_side: CallIntakeScenario,
+) -> CallerReply:
+    """A person of the organization takes a report instead of asking to repeat it (#263: the
+    head answered a full report with «Повторите, не расслышал»)."""
+    if not is_staff(call) or not ({"repeat", "unknown"} & set(reply.topics)):
+        return reply
+    said = engine.facts_from_dialog(
+        engine.true_card(scenario), [DialogTurn(role="operator", text=text, topics=[])]
+    )
+    if not said and len(text.split()) < REPORT_WORDS:
+        return reply
+    confirm = next((r for r in other_side.replies if r.topic == "confirm"), None)
+    if confirm is None:
+        return reply
+    return CallerReply(
+        text=confirm.text,
+        topics=["confirm"],
+        operator_topics=reply.operator_topics,
+        reply_id=confirm.id,
+        audio=confirm.audio,
+        method="report",
+    )
 
 
 def known_facts_reply(

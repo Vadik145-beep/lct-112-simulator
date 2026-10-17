@@ -83,7 +83,6 @@ export function describeCall(call: ServiceCallOut): string {
     if (call.ended_at && !call.answered) return "Заявитель не ответил";
     return `Звонок заявителю ${length}`;
   }
-  if (isStaff(call)) return `Звонок ${length}`;
   const passed = call.facts_passed.map(factTitle).join(", ") || "ничего";
   return `Звонок ${length}, переданы: ${passed}`;
 }
