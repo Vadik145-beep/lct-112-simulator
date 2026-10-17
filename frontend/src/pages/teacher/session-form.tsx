@@ -63,7 +63,7 @@ const DIALOG_MODES: { code: string; title: string; hint: string; dds?: string }[
     code: "generate",
     title: "Свободная генерация речи (без интернета)",
     hint: "модель сочиняет каждую реплику; медленнее и менее предсказуемо",
-    dds: "дежурный и старший группы отвечают свободно; медленнее и менее предсказуемо",
+    dds: "дежурный и начальник аварийной бригады отвечают свободно; медленнее и менее предсказуемо",
   },
 ];
 // Not offered for new lessons any more; kept in the list of a lesson that already has it, so its
