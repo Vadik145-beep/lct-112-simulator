@@ -40,12 +40,14 @@ from app.models import (
     User,
 )
 from app.telephony import settings as telephony_settings
+from app.training import ai_cards
 from app.training import service as training
 
 # Where the cards of a session come from (PRD 9.6 item 6, «источник карточек» of the ТЗ):
 # «scenarios» / «mixed» — every approved scenario; «generated» — tickets, generation and hand-made
 # ones (everything but trainees' cards); «student_made» — cards trainees saved in call intake and
-# the teacher approved as scenarios (``scenarios.source = student``).
+# the teacher approved as scenarios (``scenarios.source = student``); «ai» — each trainee gets
+# cards written for him during the lesson (app.training.ai_cards, issue #265).
 CARD_SOURCE_SCENARIOS = "scenarios"
 CARD_SOURCE_GENERATED = "generated"
 CARD_SOURCE_STUDENT_MADE = "student_made"
@@ -55,6 +57,7 @@ CARD_SOURCES = (
     CARD_SOURCE_GENERATED,
     CARD_SOURCE_STUDENT_MADE,
     CARD_SOURCE_MIXED,
+    ai_cards.CARD_SOURCE_AI,
 )
 SCENARIO_SOURCE_STUDENT = "student"
 # How the caller answers in call-intake sessions (PRD 9.3); the provider is in app.providers.dialog.
@@ -206,6 +209,13 @@ async def validate_settings(session: AsyncSession, spec: SessionSettings, teache
             "bad_card_source",
             f"Источник карточек: один из {', '.join(CARD_SOURCES)}.",
         )
+    if spec.card_source == ai_cards.CARD_SOURCE_AI and spec.mode != MODE_CARD_RESPONSE:
+        raise ApiError(
+            422,
+            "ai_cards_mode",
+            "«Задания формирует ИИ» — для занятий ДДС (реагирование на карточку): "
+            "выберите этот режим или другой источник карточек.",
+        )
     await own_group(session, spec.group_id, teacher)
     lo, hi = DIFFICULTY_RANGE
     if not lo <= spec.difficulty <= hi:
@@ -285,6 +295,11 @@ def apply_settings(ts: TrainingSession, spec: SessionSettings) -> None:
     ts.voice_enabled = spec.voice_enabled
     ts.dialog_mode = spec.dialog_mode
     ts.adaptive = spec.adaptive
+    if spec.card_source == ai_cards.CARD_SOURCE_AI:
+        # The cards are written during the lesson: no queue, a fixed number per trainee.
+        ts.scenario_ids = []
+        ts.cards_per_student = ai_cards.CARDS_PER_TRAINEE
+        ts.adaptive = False
     ts.phone_calls = spec.phone_calls
     # The number matters only with the checkbox; stored as MultiFon dials it.
     phone = telephony_settings.normalize_phone(spec.phone) if spec.phone_calls else ""
@@ -300,7 +315,12 @@ async def pick_scenarios(session: AsyncSession, ts: TrainingSession) -> list[Sce
     ``service.issue_cards``."""
     if ts.scenario_ids:
         return await training.scenario_queue(session, ts)
-    query = select(Scenario).where(Scenario.kind == ts.mode, Scenario.status == SCENARIO_APPROVED)
+    query = select(Scenario).where(
+        Scenario.kind == ts.mode,
+        Scenario.status == SCENARIO_APPROVED,
+        # Cards written for one trainee belong to their lesson.
+        Scenario.source != ai_cards.SCENARIO_SOURCE_AI,
+    )
     if ts.card_source == CARD_SOURCE_GENERATED:
         query = query.where(Scenario.source != SCENARIO_SOURCE_STUDENT)
     elif ts.card_source == CARD_SOURCE_STUDENT_MADE:
@@ -338,13 +358,19 @@ async def start_session(
         raise ApiError(
             422, "empty_group", "В группе нет обучающихся: добавьте их в разделе «Группы»."
         )
-    queue = await pick_scenarios(session, ts)
-    if not queue:
-        raise ApiError(
-            422,
-            "empty_queue",
-            "Под выбранные группы происшествий, службы и сложность нет утверждённых сценариев.",
-        )
+    if ai_cards.is_ai(ts):
+        # Each trainee's cards are written once the lesson runs (the router starts the first).
+        queue: list[Scenario] = []
+        cards = ts.cards_per_student
+    else:
+        queue = await pick_scenarios(session, ts)
+        if not queue:
+            raise ApiError(
+                422,
+                "empty_queue",
+                "Под выбранные группы происшествий, службы и сложность нет утверждённых сценариев.",
+            )
+        cards = len(queue)
     ts.scenario_ids = [s.id for s in queue]
     ts.status = SESSION_RUNNING
     ts.started_at = training.utcnow()
@@ -354,7 +380,7 @@ async def start_session(
             session,
             session_id=ts.id,
             type_="session.started",
-            payload={"session_id": ts.id, "started_at": ts.started_at, "cards": len(queue)},
+            payload={"session_id": ts.id, "started_at": ts.started_at, "cards": cards},
         )
     ]
 

@@ -31,6 +31,9 @@ from app.models.reference import (
 )
 from app.models.training import (
     ACTIVE_ATTEMPT_STATES,
+    AI_CARD_FAILED,
+    AI_CARD_GENERATING,
+    AI_CARD_READY,
     ATTEMPT_EVALUATED,
     ATTEMPT_FINISHED,
     ATTEMPT_IN_PROGRESS,
@@ -58,6 +61,7 @@ from app.models.training import (
     SESSION_FINISHED,
     SESSION_RUNNING,
     UNFINISHED_SECONDS_DEFAULT,
+    AiCard,
     Attempt,
     Evaluation,
     Group,
@@ -72,6 +76,9 @@ from app.models.user import Role, User
 
 __all__ = [
     "ACTIVE_ATTEMPT_STATES",
+    "AI_CARD_FAILED",
+    "AI_CARD_GENERATING",
+    "AI_CARD_READY",
     "ATTEMPT_EVALUATED",
     "ATTEMPT_FINISHED",
     "ATTEMPT_IN_PROGRESS",
@@ -109,6 +116,7 @@ __all__ = [
     "SESSION_RUNNING",
     "UNFINISHED_SECONDS_DEFAULT",
     "AdminNotification",
+    "AiCard",
     "Attempt",
     "AuditLog",
     "Backup",

@@ -31,6 +31,9 @@ from app.providers.tts import VOICES
 
 STATUS_CODES = {s["code"] for s in RESPONSE_STATUSES}
 REJECT_CODES = {r["code"] for r in REJECT_REASONS}
+# Marks of the card header of АРМ-112 (app.training.present: ЧС, ЧП, отказ от скорой,
+# заблокированные): set by the operator, not signs of the classifier.
+CARD_HEADER_FLAGS = frozenset({"emergency", "incident", "ambulance_refused", "blocked"})
 
 # Body keys that carry the editorial state; the evaluation engines ignore them.
 APPROVED_KEY = "approved_parts"  # {"reference": bool}
@@ -131,7 +134,7 @@ def check_body(body: Mapping, refs: ReferenceCodes) -> list[str]:
 
     if type_code not in refs.incident_types:
         problems.append(f"Тип происшествия {type_code} отсутствует в классификаторе.")
-    bad_flags = sorted(set(flags) - refs.flags)
+    bad_flags = sorted(set(flags) - refs.flags - CARD_HEADER_FLAGS)
     if bad_flags:
         problems.append(f"Неизвестные признаки: {', '.join(bad_flags)}.")
     bad_services = sorted(set(services) - refs.services)

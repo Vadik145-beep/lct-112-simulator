@@ -34,7 +34,7 @@ from app.reports import export
 from app.scenarios import jobs
 from app.scenarios import service as scenarios
 from app.telephony import service as telephony
-from app.training import present
+from app.training import ai_cards, present
 from app.training import report as reporting
 from app.training import sessions as lessons
 from app.training.teacher_schemas import (
@@ -359,6 +359,10 @@ async def start_session(
         )
         await session.commit()
         await publish_events(events)
+        if ai_cards.is_ai(ts):
+            # Each trainee's first card is written as the lesson starts (issue #265).
+            members = await lessons.group_members(session, [ts.group_id])
+            ai_cards.spawn_first(ts.id, [m.id for m in members.get(ts.group_id, [])])
     return await _session_out(session, ts)
 
 

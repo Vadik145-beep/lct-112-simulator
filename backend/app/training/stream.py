@@ -83,7 +83,7 @@ async def issue_stream_cards(session: AsyncSession, now: datetime) -> list[Sessi
     )
     events: list[SessionEvent] = []
     for ts in lessons:
-        if ts.group_id is None or ts.started_at is None:
+        if ts.group_id is None or ts.started_at is None or not training.is_stream(ts):
             continue
         elapsed = (now - ts.started_at).total_seconds()
         issued = dict(
