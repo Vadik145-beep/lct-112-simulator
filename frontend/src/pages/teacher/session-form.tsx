@@ -224,7 +224,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
       ...form,
       cards_per_student: aiCards ? AI_CARDS.perTrainee : cardsFor(form.difficulty, form.mode),
       // A group the chosen services never get would be ignored by the AI: it is not sent.
-      incident_groups: aiCards ? (form.incident_groups ?? []).filter((g) => aiGroupTypes.has(g)) : form.incident_groups,
+      incident_groups: (form.incident_groups ?? []).filter((g) => !aiCards || aiGroupTypes.has(g)),
       title: form.title.trim(),
       group_id: groupId,
       // «Не завершено» через: поля в форме нет, остаётся значение занятия (по умолчанию 48 ч).
