@@ -333,7 +333,8 @@ async def test_service_call_of_a_cloud_lesson_goes_to_vapi(
         message("transcript", call, role="user", transcript="Нет отопления на Молостовых, 10")
     )
     record = service_call_of(await load(attempt_id), call_id)
-    assert [t["role"] for t in record["dialog"]] == ["caller", "operator"]
+    # The server's decision for the cloud (#263) is kept as a hidden turn.
+    assert [t["role"] for t in record["dialog"] if not t.get("hint")] == ["caller", "operator"]
     assert (await load(attempt_id)).dialog in (None, [])
 
     # Vapi ends the call: the record is closed.
