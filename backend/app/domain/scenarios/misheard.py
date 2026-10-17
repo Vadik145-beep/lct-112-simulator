@@ -17,6 +17,7 @@ from __future__ import annotations
 import re
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
+from itertools import pairwise
 
 from app.domain.evaluation.schemas import Card
 from app.domain.evaluation.text import normalize_house, normalize_text, words_to_numbers
@@ -97,6 +98,18 @@ def names_house(card: Card, text: str) -> bool:
         return False
     spoken = words_to_numbers(normalize_text(text))
     return any(normalize_house(token) == house for token in spoken.split())
+
+
+def house_said(card: Card, text: str) -> bool:
+    """The phrase names the card's house as a house: «дом 10», «д. десять» — not any number."""
+    house = normalize_house(card.address.house)
+    if not house:
+        return False
+    spoken = words_to_numbers(normalize_text(text)).split()
+    return any(
+        word in ("дом", "доме", "дома", "д") and normalize_house(nxt) == house
+        for word, nxt in pairwise(spoken)
+    )
 
 
 def denies(text: str) -> bool:

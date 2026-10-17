@@ -580,28 +580,31 @@ CHIEF_FORM: dict[str, Any] = {
     "properties": {
         "address_named": {
             "type": "boolean",
-            "description": "Диспетчер назвал адрес происшествия: улицу и номер дома.",
+            "description": "Диспетчер (User) назвал адрес происшествия: улицу и номер дома.",
         },
         "house_named": {
             "type": "string",
-            "description": "Номер дома, который диспетчер назвал последним, цифрами (с буквой, "
-            "если была). Пустая строка, если не называл.",
+            "description": "Номер дома, который диспетчер (User) назвал последним, цифрами "
+            "(с буквой, если была). Пустая строка, если не называл.",
         },
         "incident_named": {
             "type": "boolean",
-            "description": "Диспетчер сказал, что случилось.",
+            "description": "Диспетчер (User) сказал, что случилось.",
         },
         "injured_named": {
             "type": "boolean",
-            "description": "Диспетчер сказал, есть ли пострадавшие.",
+            "description": "Диспетчер (User) сказал, есть ли пострадавшие (в том числе "
+            "«пострадавших нет»).",
         },
         "access_named": {
             "type": "boolean",
-            "description": "Диспетчер сказал про доступ на объект: код, ключи, кто встретит.",
+            "description": "Диспетчер (User) сказал про доступ на объект: код, ключи, "
+            "кто встретит.",
         },
         "order_given": {
             "type": "boolean",
-            "description": "Диспетчер распорядился выезжать — любыми словами.",
+            "description": "Диспетчер (User) распорядился выезжать — любыми словами "
+            "(«выезжайте», «высылайте», «давайте на выезд»).",
         },
         "house_corrected": {
             "type": "boolean",
@@ -619,6 +622,25 @@ CHIEF_FORM: dict[str, Any] = {
         "house_corrected",
     ],
 }
+
+
+# Who is who in the transcript the form is filled from (stand 17.10.2026: without it the form
+# answered about the wrong side and came back empty).
+CHIEF_FORM_MESSAGES: list[dict[str, str]] = [
+    {
+        "role": "system",
+        "content": (
+            "Ты проверяешь учебный звонок. Диспетчер дежурно-диспетчерской службы звонит "
+            "начальнику аварийной бригады и передаёт происшествие. В расшифровке реплики "
+            "диспетчера помечены «User», реплики начальника бригады — «AI» или «Assistant». "
+            "Заполни анкету ТОЛЬКО по репликам диспетчера (User): что он сам сказал. Смысл "
+            "важнее слов: «кипяток на газоне» — это сказано, что случилось; «пострадавших нет» — "
+            "сказано о пострадавших. Номер дома пиши цифрами.\n\nСхема ответа (JSON):\n"
+            "{{schema}}\n\nОтвечай только JSON по схеме."
+        ),
+    },
+    {"role": "user", "content": "Расшифровка звонка:\n\n{{transcript}}"},
+]
 
 
 def is_squad_chief(scenario: CallIntakeScenario) -> bool:
@@ -665,7 +687,15 @@ def build_assistant(
         **({} if is_caller(scenario) else {"monitorPlan": {"controlEnabled": True}}),
         # After a call to the squad chief the cloud fills the form the evaluation reads.
         **(
-            {"analysisPlan": {"structuredDataPlan": {"enabled": True, "schema": CHIEF_FORM}}}
+            {
+                "analysisPlan": {
+                    "structuredDataPlan": {
+                        "enabled": True,
+                        "schema": CHIEF_FORM,
+                        "messages": CHIEF_FORM_MESSAGES,
+                    }
+                }
+            }
             if is_squad_chief(scenario)
             else {}
         ),

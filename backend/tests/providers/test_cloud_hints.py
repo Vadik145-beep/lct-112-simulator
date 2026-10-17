@@ -170,3 +170,25 @@ def test_no_prompt_tells_the_cloud_to_answer_with_nothing() -> None:
     ):
         assert "не отвечаешь ничего" not in prompt.lower()
         assert "«Принято»" in prompt
+
+
+def test_the_house_alone_is_misheard_when_the_street_was_lost() -> None:
+    """Stand 17.10.2026: «Улица Молостовых,» was lost under the greeting, only «Дом 10, корпус
+    1.» reached the server — the chief still mishears the house."""
+    scenario = officer.lesson_scenario(card_scenario(NAME), SimpleNamespace(difficulty=2))
+    call = new_call("moek")
+    attempt = Attempt(service_calls=[call])
+    assert hear(scenario, attempt, call, "Дом 10, корпус 1.") == (
+        "Записал: улица Молостовых, дом 12, корпус 1?"
+    )
+    other = new_call("moek")
+    assert hear(scenario, Attempt(service_calls=[other]), other, "Будем через 10 минут.") is None
+
+
+def test_the_form_knows_who_is_the_dispatcher() -> None:
+    plan = vapi.build_assistant(
+        officer.call_scenario(card_scenario(NAME), new_call("moek"), Attempt(service_calls=[]))
+    )["analysisPlan"]["structuredDataPlan"]
+    assert "«User»" in plan["messages"][0]["content"]
+    assert "{{schema}}" in plan["messages"][0]["content"]
+    assert "{{transcript}}" in plan["messages"][1]["content"]

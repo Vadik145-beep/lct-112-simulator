@@ -1194,7 +1194,10 @@ def misheard_reply(
         if not misheard.applies(scenario.difficulty, card):
             return None
         said = [*_said_by_dispatcher([call]), text]
-        if not engine.address_in_phrases(card, said[-engine.ADDRESS_PHRASES :]):
+        # The street may be lost to the recognizer (stand 17.10.2026: «Улица Молостовых,» was
+        # swallowed by the greeting): the house said is enough to mishear it.
+        named = engine.address_in_phrases(card, said[-engine.ADDRESS_PHRASES :])
+        if not named and not misheard.house_said(card, text):
             return None
         said = misheard.wrong_house(card.address.house)
         reply = answer(misheard.question(card), [misheard.TOPIC_MISHEARD], heard)
