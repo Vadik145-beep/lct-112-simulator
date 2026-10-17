@@ -134,3 +134,15 @@ def test_the_chief_knows_his_truth_from_the_prompt() -> None:
     easy = officer.call_scenario(card_scenario(NAME), new_call("moek"), Attempt(service_calls=[]))
     assert no_vehicles.FACT_KEY not in easy.caller.facts
     assert "ОДИН раз повторяешь вслух адрес" in vapi.role_prompt(easy)
+
+
+def test_no_prompt_tells_the_cloud_to_answer_with_nothing() -> None:
+    """«Не отвечаешь ничего» made the cloud say «Молчу.» on «понял» (stand 17.10.2026)."""
+    for prompt in (
+        vapi.OFFICER_PROMPT,
+        vapi.OFFICER_REPEAT_PROMPT,
+        vapi.CHIEF_PROMPT,
+        vapi.SQUAD_PROMPT,
+    ):
+        assert "не отвечаешь ничего" not in prompt.lower()
+        assert "«Принято»" in prompt

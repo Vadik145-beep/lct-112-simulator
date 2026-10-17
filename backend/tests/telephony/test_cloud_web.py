@@ -128,7 +128,9 @@ async def test_service_call_is_played_by_the_cloud(
     # на «хорошо» дежурный молчит.
     assert "Второй раз адрес не проговариваешь НИКОГДА" in prompt
     assert "goodbye" in prompt.lower()
-    assert "НЕ отвечаешь ничего" in prompt
+    # На «понял» — «Принято», а не «Молчу.» (стенд 17.10.2026).
+    assert "одним словом: «Принято»" in prompt
+    assert "не отвечаешь ничего" not in prompt.lower()
     assert "как губка" in prompt
     assert "НИЧЕГО НЕ ПРИДУМЫВАЕШЬ" in prompt
     # Дежурный знает номер своего наряда и называет его сам.
