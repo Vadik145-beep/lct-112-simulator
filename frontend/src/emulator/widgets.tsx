@@ -82,6 +82,10 @@ export function ConnectionBadge({ state }: { state: ConnectionState }) {
 }
 
 /** Thin right-hand training panel: what is not part of the real workstation (PRD 13.1). */
+// Width of the training panel (w-9, w-64, w-80) published for the elements fixed beside it.
+const PANEL_WIDTH_VAR = "--trainer-panel-width";
+const PANEL_WIDTH_PX = { collapsed: 36, default: 256, wide: 320 } as const;
+
 export function TrainerPanel({
   connection,
   children,
@@ -104,6 +108,14 @@ export function TrainerPanel({
   useEffect(() => {
     if (expand) setCollapsed(false);
   }, [expand]);
+  // Elements fixed at the right edge (the virtual phone) keep clear of the panel.
+  useEffect(() => {
+    const px = collapsed ? PANEL_WIDTH_PX.collapsed : PANEL_WIDTH_PX[width];
+    document.documentElement.style.setProperty(PANEL_WIDTH_VAR, `${px}px`);
+    return () => {
+      document.documentElement.style.removeProperty(PANEL_WIDTH_VAR);
+    };
+  }, [collapsed, width]);
   if (collapsed) {
     return (
       <aside className="flex w-9 shrink-0 flex-col items-center gap-3 border-l border-[#a9adb2] bg-[var(--arm-panel)] py-2" aria-label="Тренажёр">

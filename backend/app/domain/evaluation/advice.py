@@ -13,6 +13,7 @@ from collections import Counter
 from collections.abc import Mapping, Sequence
 
 MAX_POINTS = 5
+MEMO_PAGE = "стр."  # a reference to a page of the customer's memo
 REPEATED = 2  # an error in this many cards of the lesson is a habit, not a slip
 
 # What to do about each error of a card (detector codes of ``detectors.CARD_DETECTORS``).
@@ -48,6 +49,18 @@ ERROR_ADVICE: dict[str, str] = {
     "report_not_reflected": "Отражайте доклад бригады в карточке: ставьте статус, о котором "
     "доложили.",
     "report_not_taken": "Отвечайте на звонки бригады: доклад о ходе работ принимается по телефону.",
+    "misheard_not_fixed": "Слушайте, как бригада повторяет адрес: если ошиблись — сразу "
+    "поправьте («Нет, дом 13»), не соглашайтесь.",
+    "complication_not_passed": "Когда бригада просит помощи другой службы, позвоните в неё "
+    "сразу после доклада и передайте адрес и что случилось.",
+    "no_vehicles_not_reported": "Если у бригады нет свободных машин, доложите руководителю "
+    "организации — он решит, откуда взять силы.",
+    "no_order_given": "В конце звонка начальнику аварийной бригады дайте распоряжение: "
+    "«Высылайте бригаду».",
+    "wrong_contact": "Бригаду высылает начальник аварийной бригады — с распоряжением на выезд "
+    "звоните ему, а не руководителю или специалисту.",
+    "wrong_address_passed": "Передавайте бригаде адрес со слов заявителя, а не из поля с "
+    "ошибкой оператора 112.",
 }
 # Covered by the specific advice on each missed operator's mistake.
 SKIP_ERRORS = frozenset({"error_missed"})
@@ -153,6 +166,9 @@ def _missed_advice(item: Mapping) -> str:
 
 
 def _from_error(error: Mapping) -> str:
+    """An error without its own advice: its name, and the memo page when there is one."""
     title = str(error.get("title") or "").rstrip(".")
-    ref = error.get("memo_ref")
-    return f"{title}: см. {ref}." if title and ref else (f"{title}." if title else "")
+    if not title:
+        return ""
+    ref = str(error.get("memo_ref") or "")
+    return f"{title}: перечитайте памятку, {ref}." if ref.startswith(MEMO_PAGE) else f"{title}."

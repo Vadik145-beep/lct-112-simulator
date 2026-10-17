@@ -80,7 +80,7 @@ export function VirtualPhone({
         title={ringing ? "Входящий вызов" : "Телефон"}
         data-testid="virtual-phone-button"
         className={cn(
-          "fixed bottom-[72px] right-12 z-40 flex size-14 items-center justify-center rounded-full text-white shadow-lg hover:brightness-110",
+          "fixed bottom-[72px] right-[calc(var(--trainer-panel-width,36px)_+_12px)] z-40 flex size-14 items-center justify-center rounded-full text-white shadow-lg hover:brightness-110",
           "bg-[var(--arm-green)]",
           ringing && "ring-4 ring-[var(--arm-red)]",
         )}
@@ -96,7 +96,7 @@ export function VirtualPhone({
         <section
           aria-label="Виртуальный телефон"
           data-testid="virtual-phone"
-          className="fixed bottom-[140px] right-12 z-40 flex max-h-[calc(100vh-10rem)] w-[360px] flex-col overflow-hidden rounded-md border border-[var(--arm-dark)] bg-[var(--arm-panel)] text-[var(--arm-text)] shadow-xl"
+          className="fixed bottom-[140px] right-[calc(var(--trainer-panel-width,36px)_+_12px)] z-40 flex max-h-[calc(100vh-10rem)] w-[360px] flex-col overflow-hidden rounded-md border border-[var(--arm-dark)] bg-[var(--arm-panel)] text-[var(--arm-text)] shadow-xl"
         >
           <header className="flex items-center justify-between bg-[var(--arm-dark)] px-3 py-2 text-sm text-[var(--arm-on-dark)]">
             <span className="font-medium">Телефон</span>
