@@ -4,10 +4,11 @@ import { useAuth } from "@/app/use-auth";
 import { FullScreenLoading } from "@/components/states";
 import { ROLE_HOME } from "@/lib/roles";
 
-/** "/" sends the user to the cabinet of their role (or to the login page). */
+/** "/" sends the user to the cabinet of their role (or to the login page). ``entry`` tells the
+ * trainee's cabinet that this is the way in, not a return from the workstation. */
 export function HomePage() {
   const { status, user } = useAuth();
   if (status === "loading") return <FullScreenLoading />;
   if (!user) return <Navigate to="/login" replace />;
-  return <Navigate to={ROLE_HOME[user.role]} replace />;
+  return <Navigate to={ROLE_HOME[user.role]} replace state={{ entry: true }} />;
 }

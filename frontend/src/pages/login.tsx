@@ -44,7 +44,9 @@ export function LoginPage() {
     // Return to the page the user came from only if it belongs to their own cabinet.
     const from = (location.state as { from?: string } | null)?.from;
     const home = ROLE_HOME[user.role];
-    return <Navigate to={from && from.startsWith(home) ? from : home} replace />;
+    if (from && from.startsWith(home)) return <Navigate to={from} replace />;
+    // Into the cabinet as a way in (HomePage does the same): a trainee may go on to the journal.
+    return <Navigate to={home} replace state={{ entry: true }} />;
   }
 
   async function run(action: () => Promise<void>, kind: "form" | Role) {

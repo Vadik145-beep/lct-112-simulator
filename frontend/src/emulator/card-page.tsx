@@ -1082,6 +1082,9 @@ function CardView({
       <div className="sticky top-0 flex h-dvh shrink-0">
       <TrainerPanel
         connection={connection}
+        collapsedByDefault
+        // The conversation and the result of the card live in the panel: it opens for them.
+        expand={Boolean(openCall) || finished}
         footer={
           <button
             type="button"

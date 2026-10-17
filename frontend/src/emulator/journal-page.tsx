@@ -14,10 +14,11 @@ import {
   Monitor,
   Search,
   Settings,
+  TrendingUp,
   Zap,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 
 import { journalKey, useJournal, type JournalItem } from "@/api/training";
 import { ErrorState, LoadingState } from "@/components/states";
@@ -121,7 +122,7 @@ function Journal({ sessionId }: { sessionId: string }) {
               </ArmButton>
             </div>
           </div>
-          <div className="flex w-[420px] items-start justify-between bg-[var(--arm-dark)] px-3 py-2 text-[var(--arm-on-dark)]">
+          <div className="flex w-[440px] items-start justify-between bg-[var(--arm-dark)] px-3 py-2 text-[var(--arm-on-dark)]">
             <div>
               <div className="text-sm font-medium">{formatLongDate(now)}</div>
               <div className="mt-1 flex items-center gap-2 text-xs text-[var(--arm-on-dark-muted)]">
@@ -132,6 +133,15 @@ function Journal({ sessionId }: { sessionId: string }) {
                   <CircleHelp className="size-3" aria-hidden />
                   <LogOut className="size-3" aria-hidden />
                 </span>
+                {/* The way from the workstation to the trainee's results and advice. */}
+                <Link
+                  to="/student/progress"
+                  title="Мой прогресс: результаты и советы"
+                  aria-label="Мой прогресс"
+                  className="rounded-sm hover:text-[var(--arm-on-dark)]"
+                >
+                  <TrendingUp className="size-3.5" aria-hidden />
+                </Link>
               </div>
             </div>
             <div className="flex items-start font-mono leading-none" aria-label="Текущее время">
@@ -251,7 +261,7 @@ function Journal({ sessionId }: { sessionId: string }) {
         </section>
       </div>
 
-      <TrainerPanel connection={connection}>
+      <TrainerPanel connection={connection} collapsedByDefault>
         <div>
           <div className="text-xs text-[var(--arm-text-muted)]">Занятие</div>
           <div className="font-medium leading-tight">{data.session.title}</div>

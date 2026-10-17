@@ -1,5 +1,5 @@
 import { AlertTriangle, Check, Clock3, PanelRightClose, PanelRightOpen, Wifi, WifiOff } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 
 import { acceptanceTimer, formatSeconds } from "@/emulator/time";
@@ -87,14 +87,23 @@ export function TrainerPanel({
   children,
   footer,
   width = "default",
+  collapsedByDefault = false,
+  expand = false,
 }: {
   connection: ConnectionState;
   children: ReactNode;
   footer?: ReactNode;
   /** «wide» holds the conversation panel of the operator card. */
   width?: "default" | "wide";
+  /** The ДДС screen is the original АРМ (customer's recommendation 6): the panel starts folded. */
+  collapsedByDefault?: boolean;
+  /** Opens the panel when it holds something the trainee must see now (a call, the result). */
+  expand?: boolean;
 }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(collapsedByDefault);
+  useEffect(() => {
+    if (expand) setCollapsed(false);
+  }, [expand]);
   if (collapsed) {
     return (
       <aside className="flex w-9 shrink-0 flex-col items-center gap-3 border-l border-[#a9adb2] bg-[var(--arm-panel)] py-2" aria-label="Тренажёр">
