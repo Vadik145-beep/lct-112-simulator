@@ -12,9 +12,12 @@ import { cn } from "@/lib/utils";
 export function OtherCardCalls({
   calls,
   onGo,
+  title = "Звонок по другой карточке",
 }: {
   calls: RingingOut[];
   onGo: (attemptId: string) => void;
+  /** In the journal no card is open: «Звонит бригада по карточке». */
+  title?: string;
 }) {
   if (calls.length === 0) return null;
   return (
@@ -25,7 +28,7 @@ export function OtherCardCalls({
           className="flex flex-col gap-1 rounded-sm border border-[var(--arm-orange)] bg-[#fff1ea] p-2 text-xs"
         >
           <span className="font-semibold text-[var(--arm-orange)]">
-            Звонок по другой карточке № {c.card_number}
+            {title} № {c.card_number}
           </span>
           <span>
             {c.incident_title}
@@ -80,7 +83,7 @@ export function JournalPhone({
             </button>
           </header>
           <div className="p-2">
-            <OtherCardCalls calls={calls} onGo={onGo} />
+            <OtherCardCalls calls={calls} onGo={onGo} title="Звонит бригада по карточке" />
           </div>
         </section>
       )}
