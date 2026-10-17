@@ -1,5 +1,6 @@
-"""Planted operator mistakes in generated cards (issue #35): share by difficulty, kinds, the
-description keeping the truth, determinism, and the generation providers applying them."""
+"""Planted operator mistakes in generated cards (issues #35, #265): exactly 0/1/2 by
+difficulty, kinds, the description naming the truth «со слов заявителя», determinism,
+preferred kinds, and the generation providers applying them."""
 
 from __future__ import annotations
 
@@ -49,21 +50,36 @@ def test_difficulty_one_never_gets_a_mistake(type_rows: list[dict]) -> None:
         assert "injected_errors" not in out
 
 
-@pytest.mark.parametrize(("difficulty", "low", "high"), [(2, 0.15, 0.45), (3, 0.35, 0.65)])
-def test_share_of_cards_with_mistakes_follows_difficulty(
-    type_rows: list[dict], difficulty: int, low: float, high: float
+@pytest.mark.parametrize(("difficulty", "count"), [(2, 1), (3, 2)])
+def test_difficulty_sets_the_exact_number_of_mistakes(
+    type_rows: list[dict], difficulty: int, count: int
 ) -> None:
     body = {**seed_card(), "difficulty": difficulty}
-    n = 200
-    hits = sum(
-        bool(
-            distort.inject_by_difficulty(
-                {**body, "title": f"Карточка {i}"}, type_rows=type_rows, catalogue=CATALOGUE
-            ).get("injected_errors")
+    for i in range(60):
+        out = distort.inject_by_difficulty(
+            {**body, "title": f"Карточка {i}"},
+            type_rows=type_rows,
+            catalogue=CATALOGUE,
+            streets=STREETS,
         )
-        for i in range(n)
-    )
-    assert low <= hits / n <= high
+        errors = out.get("injected_errors") or []
+        assert len(errors) == count, i
+        assert len({e["field"] for e in errors}) == count
+        # One address mistake per card; the refusal kind only alone.
+        assert sum(e["field"].startswith("address.") for e in errors) <= 1
+        assert count == 1 or all(e["field"] != "service" for e in errors)
+
+
+def test_preferred_kind_is_planted_first(type_rows: list[dict]) -> None:
+    body = {**seed_card(), "difficulty": 2}
+    for i in range(10):
+        out = distort.inject_by_difficulty(
+            {**body, "title": f"Карточка {i}"},
+            type_rows=type_rows,
+            catalogue=CATALOGUE,
+            prefer=["injured"],
+        )
+        assert [e["field"] for e in out["injected_errors"]] == ["flags.injured"]
 
 
 def test_planting_is_deterministic(type_rows: list[dict]) -> None:
@@ -76,34 +92,56 @@ def test_planting_is_deterministic(type_rows: list[dict]) -> None:
 
 def test_every_kind_keeps_the_truth_readable_and_validates(type_rows: list[dict]) -> None:
     ctx = context(type_rows)
-    for kind, plant in distort.DISTORTIONS.items():
-        # A missing service needs a card with several notified services.
-        body = seed_card("card_moek_1_net_otopleniya" if kind == "service_missing" else None)
-        card = dict(body)
-        card["card"] = distort._copy_card(body["card"])
-        error = plant(card, random.Random(kind), ctx)  # noqa: S311
-        assert error is not None, kind
-        scenario = parse_scenario({**card, "injected_errors": [error]})
+    for kind in distort.DISTORTIONS:
+        body = seed_card()
+        card = distort.inject(body, count=1, rng=random.Random(kind), ctx=ctx, prefer=[kind])  # noqa: S311
+        assert len(card["injected_errors"]) == 1, kind
+        error = card["injected_errors"][0]
+        assert distort.TRUTH_KEY not in error
+        scenario = parse_scenario(card)
         assert scenario.injected_errors[0].field == error["field"]
         assert error["wrong_value"] != error["correct_value"]
+        description = card["card"]["description"]
+        assert description.startswith(body["card"]["description"].rstrip(" ."))
+        assert "Со слов заявителя:" not in description
+        told = description[len(body["card"]["description"]) :]
         if kind == "house":
             assert card["card"]["address"]["house"] != body["card"]["address"]["house"]
-            assert "дом 42" in card["card"]["description"]
+            assert "точный адрес — улица Свободы, дом 42." in told
         elif kind == "street":
             assert card["card"]["address"]["street"] in {"улица Славы", "улица Свободная"}
-            assert "улица Свободы" in card["card"]["description"]
+            assert "точный адрес — улица Свободы, дом 42." in told
         elif kind == "incident_type":
             assert card["card"]["incident_type"] != body["card"]["incident_type"]
-            assert error["correct_label"]
+            assert error["correct_label"].split(":")[0].lower() in told
         elif kind == "injured":
             assert card["card"]["flags"]["injured"] is True
-            assert "Пострадавших нет" in card["card"]["description"]
-        elif kind == "service_extra":
-            assert error["wrong_value"].startswith("+")
-            assert len(card["card"]["notified"]) == len(body["card"]["notified"]) + 1
-        elif kind == "service_missing":
-            assert error["wrong_value"].startswith("-")
-            assert len(card["card"]["notified"]) == len(body["card"]["notified"]) - 1
+            # The description already says so: nothing is added.
+            assert description == body["card"]["description"]
+        elif kind == "wrong_service":
+            assert card["service"] == error["wrong_value"] != body["service"]
+            assert card["reference"]["decision"] == "reject"
+            assert card["reference"]["reject_reason"] == "not_in_competence"
+            added = [n["service"] for n in card["card"]["notified"] if n["status"] == "Добавлена"]
+            assert added == [card["service"]]
+
+
+def test_two_mistakes_are_told_by_different_sentences(type_rows: list[dict]) -> None:
+    body = seed_card()
+    body["card"]["description"] = "Течёт стояк холодной воды на лестничной клетке."
+    card = distort.inject(
+        body,
+        count=2,
+        rng=random.Random(1),  # noqa: S311
+        ctx=context(type_rows),
+        prefer=["house", "injured"],
+    )
+    told = card["card"]["description"][len(body["card"]["description"]) :].strip()
+    sentences = [s for s in told.split(".") if s.strip()]
+    assert len(sentences) == 2
+    openers = {s.strip().split(" ")[0] for s in sentences}
+    assert len(openers) == 2  # not the same pattern twice
+    assert "пострадавших нет" in told and "дом 42" in told
 
 
 def test_check_body_accepts_planted_cards_and_rejects_nonsense(
@@ -149,8 +187,20 @@ async def test_template_provider_plants_mistakes_by_difficulty(type_rows: list[d
         )
         for i in range(30)
     ]
-    planted = [r.body for r in hard if r.body.get("injected_errors")]
-    assert 5 <= len(planted) <= 25
-    for body in planted:
-        scenario = parse_scenario(body)
-        assert scenario.injected_errors
+    for result in hard:
+        scenario = parse_scenario(result.body)
+        assert len(scenario.injected_errors) == 2
+
+
+def test_street_named_in_another_case_is_not_repeated(type_rows: list[dict]) -> None:
+    body = seed_card()
+    body["card"]["description"] = "Течёт стояк на лестнице в доме 42 на улице Свободы."
+    card = distort.inject(
+        body,
+        count=1,
+        rng=random.Random(3),  # noqa: S311
+        ctx=context(type_rows),
+        prefer=["street"],
+    )
+    assert card["injected_errors"][0]["field"] == "address.street"
+    assert card["card"]["description"] == body["card"]["description"]

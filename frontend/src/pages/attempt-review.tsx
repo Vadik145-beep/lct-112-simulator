@@ -693,10 +693,13 @@ function DataCheckCard({
       </CardHeader>
       <CardContent className="space-y-3 text-sm">
         <p className="text-muted-foreground">
-          Карточка пришла от оператора 112 с ошибками.{" "}
-          {teacher ? "Обучающийся" : "Вы"} отметил{teacher ? "" : "и"}:{" "}
-          {items.filter((i) => i.verdict !== "missed").length} из{" "}
-          {items.filter((i) => i.verdict !== "false_alarm").length}, лишних
+          Карточка пришла от оператора 112 с ошибками. Найдено ошибок:{" "}
+          {
+            items.filter(
+              (i) => i.verdict === "found" || i.verdict === "wrong_correction",
+            ).length
+          }{" "}
+          из {items.filter((i) => i.verdict !== "false_alarm").length}, лишних
           отметок: {items.filter((i) => i.verdict === "false_alarm").length}.
         </p>
         <ul className="space-y-2" aria-label="Ошибки в данных карточки">

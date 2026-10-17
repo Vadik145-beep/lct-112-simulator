@@ -168,3 +168,65 @@ def test_values_match_by_field_kind() -> None:
     assert not values_match("services", "-moslift", "+moslift")
     assert values_match("caller.phone", "+7 916 402-17-55", "7 (916) 402 17 55")
     assert not values_match("caller.phone", "+7 916 402-17-55", "+7 916 402-17-56")
+
+
+WRONG_SERVICE = {
+    "field": "service",
+    "wrong_value": "moslift",
+    "correct_value": "rejected",
+    "hint_level": 1,
+    "correct_label": "Не принята: не в компетенции службы",
+}
+
+
+def sent_to_wrong_service() -> CardResponseScenario:
+    body = card_scenario().model_dump()
+    body["service"] = "moslift"
+    body["reference"] = {
+        "decision": "reject",
+        "reject_reason": "not_in_competence",
+        "status_chain": [{"status": "rejected", "comment_example": "Не в компетенции службы"}],
+        "critical_errors": ["empty_reject_comment"],
+    }
+    body["injected_errors"] = [WRONG_SERVICE]
+    return CardResponseScenario.model_validate(body)
+
+
+def answered(scenario: CardResponseScenario, *entries: dict) -> CardResponseAttempt:
+    attempt = perfect_card_attempt(scenario).model_dump()
+    attempt["status_log"] = [{"at": at(10 + i), **e} for i, e in enumerate(entries)]
+    attempt["flagged_fields"] = []
+    return CardResponseAttempt.model_validate(attempt)
+
+
+def test_wrong_service_is_found_by_refusing_out_of_competence() -> None:
+    scenario = sent_to_wrong_service()
+    attempt = answered(
+        scenario,
+        {
+            "status": "rejected",
+            "comment": "Не относится к компетенции службы",
+            "reject_reason": "not_in_competence",
+        },
+    )
+    check = evaluate_card_response(scenario, attempt, grammar=grammar_ok()).components["data_check"]
+    assert [i["verdict"] for i in check.items] == ["found"]
+    assert check.score == check.max
+
+
+def test_wrong_service_refused_for_another_reason_is_half_found() -> None:
+    scenario = sent_to_wrong_service()
+    attempt = answered(
+        scenario, {"status": "rejected", "comment": "Дубль", "reject_reason": "duplicate"}
+    )
+    check = evaluate_card_response(scenario, attempt, grammar=grammar_ok()).components["data_check"]
+    assert [i["verdict"] for i in check.items] == ["wrong_correction"]
+    assert 0 < check.score < check.max
+
+
+def test_wrong_service_accepted_is_missed() -> None:
+    scenario = sent_to_wrong_service()
+    attempt = answered(scenario, {"status": "accepted"})
+    result = evaluate_card_response(scenario, attempt, grammar=grammar_ok())
+    assert [i["verdict"] for i in result.components["data_check"].items] == ["missed"]
+    assert "error_missed" in {e.code for e in result.errors}

@@ -1,12 +1,15 @@
-"""Planted operator mistakes for generated cards (issue #35).
+"""Planted operator mistakes for generated cards (issues #35, #265).
 
 The dispatcher of a city service receives the card ready from the 112 operator and checks it,
-because the operator may have erred. A generated ``card_response`` scenario therefore gets a
-mistake with a probability set by its difficulty: none at 1, 30 % at 2, 50 % at 3 (a difficulty 3
-card sometimes carries two). The card keeps the wrong values, the truth goes to
-``injected_errors``; the description «со слов заявителя» always lets an attentive dispatcher
-notice the mistake. The choice is deterministic per scenario (seeded by the ticket and title), so
-regeneration gives the same card.
+because the operator may have erred. A generated ``card_response`` scenario gets exactly as many
+mistakes as its difficulty asks: none at 1, one at 2, two at 3. Every mistake is visible: the
+description tells the true value in a plain sentence («Заявитель уточнил, что пострадавших
+нет»), unless it already does, while the field shows the wrong one, so an attentive dispatcher
+can always find it. Small mistakes are flagged and the work goes on with
+the true value; a card sent to the wrong service (``wrong_service``, only as the single mistake)
+is refused with «Не принята» and the reason. The card keeps the wrong values, the truth goes to
+``injected_errors``. The choice is deterministic per scenario (seeded by the ticket and title),
+so regeneration gives the same card.
 """
 
 from __future__ import annotations
@@ -17,14 +20,46 @@ from collections.abc import Callable, Mapping, Sequence
 
 from rapidfuzz import fuzz
 
+from app.domain.evaluation.data_check import WRONG_SERVICE_ANSWER, WRONG_SERVICE_FIELD
 from app.domain.evaluation.text import normalize_house, normalize_text
-from app.domain.scenarios.template import ServiceInfo
+from app.domain.scenarios.template import ServiceInfo, card_reference
 
-SHARE_BY_DIFFICULTY: dict[int, float] = {1: 0.0, 2: 0.3, 3: 0.5}
-SECOND_ERROR_CHANCE = 0.4  # at difficulty 3
+MISTAKES_BY_DIFFICULTY: dict[int, int] = {1: 0, 2: 1, 3: 2}
 STREET_SIMILARITY = (60.0, 92.0)  # a look-alike street: close, but not the same
 NEIGHBOUR_HOUSE_STEPS = (1, 2, -1, -2)
 INJURED_ABSENT = ("пострадавших нет", "без пострадавших", "никто не пострадал")
+# How the description tells the truth: different openers within one card, so two mistakes do
+# not read as one pattern repeated.
+TRUTH_SENTENCES = (
+    "Заявитель уточнил, что {}.",
+    "По словам заявителя, {}.",
+    "Звонивший сообщил, что {}.",
+)
+TRUTH_KEY = "_truth"  # the clause a kind returns with its error; removed before storing
+# Words of a street name that only tell its type; the rest is matched by stems.
+STREET_TYPES = frozenset(
+    {
+        "улица",
+        "проспект",
+        "переулок",
+        "бульвар",
+        "шоссе",
+        "проезд",
+        "площадь",
+        "набережная",
+        "тупик",
+        "аллея",
+        "линия",
+        "квартал",
+        "микрорайон",
+    }
+)
+STEM_LENGTH = 5  # «Маршала Тимошенко» in «улице Маршала Тимошенко», «Свободы» in «Свободе»
+# Kinds that change the same part of the card: one of a group per card (the address sentence
+# of one would otherwise repeat the wrong value of the other).
+SAME_PART = {"house": "address", "street": "address"}
+# The whole card is wrong: refused, so no other mistake makes sense next to it.
+ALONE_KINDS = frozenset({"wrong_service"})
 _HOUSE_NUMBER = re.compile(r"^(\d+)(.*)$")
 
 Distortion = Callable[[dict, random.Random, "Context"], dict | None]
@@ -36,10 +71,13 @@ class Context:
         type_rows: Sequence[Mapping],
         catalogue: Mapping[str, ServiceInfo],
         streets: Sequence[str] = (),
+        services: Sequence[str] = (),
     ) -> None:
         self.type_rows = type_rows
         self.catalogue = catalogue
         self.streets = streets
+        # Services a wrong card may be sent to (the lesson's ones); empty = any on АРМ-112.
+        self.services = services
 
 
 def inject_by_difficulty(
@@ -48,51 +86,76 @@ def inject_by_difficulty(
     type_rows: Sequence[Mapping],
     catalogue: Mapping[str, ServiceInfo],
     streets: Sequence[str] = (),
+    services: Sequence[str] = (),
+    prefer: Sequence[str] = (),
 ) -> dict:
-    """Returns the body with planted mistakes according to its difficulty (or unchanged)."""
+    """Returns the body with exactly as many mistakes as its difficulty asks (none at 1).
+    ``prefer`` lists kinds to try first (the trainee's weak spots), in order."""
     if body.get("kind") != "card_response" or body.get("injected_errors"):
         return body
-    difficulty = int(body.get("difficulty") or 1)
-    share = SHARE_BY_DIFFICULTY.get(difficulty, 0.0)
+    count = MISTAKES_BY_DIFFICULTY.get(int(body.get("difficulty") or 1), 0)
+    if not count:
+        return body
     rng = random.Random(  # noqa: S311 - a stable choice per scenario, not security
         f"{body.get('ticket_ref')}|{body.get('title')}|{body.get('card', {}).get('number')}"
     )
-    if rng.random() >= share:
-        return body
-    count = 2 if difficulty >= 3 and rng.random() < SECOND_ERROR_CHANCE else 1
-    return inject(body, count=count, rng=rng, ctx=Context(type_rows, catalogue, streets))
+    ctx = Context(type_rows, catalogue, streets, services)
+    return inject(body, count=count, rng=rng, ctx=ctx, prefer=prefer)
 
 
-def inject(body: dict, *, count: int, rng: random.Random, ctx: Context) -> dict:
+def inject(
+    body: dict,
+    *,
+    count: int,
+    rng: random.Random,
+    ctx: Context,
+    prefer: Sequence[str] = (),
+) -> dict:
     """Plants up to ``count`` mistakes of different kinds; kinds that do not fit the card are
-    skipped (no house → no neighbour house)."""
-    result = dict(body)
-    result["card"] = _copy_card(body.get("card") or {})
+    skipped (no house → no neighbour house). A kind of ``ALONE_KINDS`` is planted only as the
+    single mistake."""
+    result = _copy_body(body)
     result["injected_errors"] = list(body.get("injected_errors") or [])
-    kinds = list(DISTORTIONS)
-    rng.shuffle(kinds)
+    others = [k for k in DISTORTIONS if k not in prefer]
+    rng.shuffle(others)
+    kinds = [k for k in prefer if k in DISTORTIONS] + others
+    if count > 1:
+        kinds = [k for k in kinds if k not in ALONE_KINDS]
     planted = 0
-    used_fields: set[str] = set()
+    used_parts: set[str] = set()
+    truths: list[str] = []
     for kind in kinds:
         if planted >= count:
             break
-        error = DISTORTIONS[kind](result, rng, ctx)
-        if error is None or error["field"] in used_fields:
+        part = SAME_PART.get(kind, kind)
+        if part in used_parts:
             continue
-        used_fields.add(error["field"])
-        result["injected_errors"].append(error)
+        trial = _copy_body(result)
+        error = DISTORTIONS[kind](trial, rng, ctx)
+        if error is None:
+            continue
+        used_parts.add(part)
+        truth = error.pop(TRUTH_KEY, None)
+        if truth:
+            truths.append(truth)
+        trial["injected_errors"] = [*result["injected_errors"], error]
+        result = trial
         planted += 1
     if not planted:
-        result.pop("injected_errors", None)
         return body
+    _tell_truth(result["card"], truths, rng)
     return result
 
 
-def _copy_card(card: Mapping) -> dict:
-    copy = dict(card)
-    copy["address"] = dict(card.get("address") or {})
-    copy["flags"] = dict(card.get("flags") or {})
-    copy["notified"] = [dict(n) for n in card.get("notified") or []]
+def _copy_body(body: Mapping) -> dict:
+    copy = dict(body)
+    card = body.get("card") or {}
+    copy["card"] = {
+        **card,
+        "address": dict(card.get("address") or {}),
+        "flags": dict(card.get("flags") or {}),
+        "notified": [dict(n) for n in card.get("notified") or []],
+    }
     return copy
 
 
@@ -103,8 +166,9 @@ def neighbour_house(body: dict, rng: random.Random, ctx: Context) -> dict | None
     """«д. 44» instead of «д. 42»; the description names the right house."""
     card = body["card"]
     house = str(card["address"].get("house") or "")
+    street = card["address"].get("street")
     match = _HOUSE_NUMBER.match(house.strip())
-    if not match or not card["address"].get("street"):
+    if not match or not street:
         return None
     number, suffix = int(match.group(1)), match.group(2)
     neighbour = number + rng.choice(NEIGHBOUR_HOUSE_STEPS)
@@ -114,16 +178,12 @@ def neighbour_house(body: dict, rng: random.Random, ctx: Context) -> dict | None
     if normalize_house(wrong) == normalize_house(house):
         return None
     card["address"]["house"] = wrong
-    card["description"] = _mention(
-        card.get("description") or "",
-        normalize_house(house),
-        f"Заявитель называет адрес: {card['address']['street']}, дом {house}.",
-    )
     return {
         "field": "address.house",
         "wrong_value": wrong,
         "correct_value": house,
         "hint_level": 2,
+        TRUTH_KEY: _address_truth(card, str(street), house, about="house"),
     }
 
 
@@ -145,27 +205,23 @@ def lookalike_street(body: dict, rng: random.Random, ctx: Context) -> dict | Non
     wrong = rng.choice(sorted(candidates))
     card["address"]["street"] = wrong
     house = card["address"].get("house")
-    card["description"] = _mention(
-        card.get("description") or "",
-        normalize_text(street),
-        f"Заявитель называет адрес: {street}{', дом ' + str(house) if house else ''}.",
-    )
     return {
         "field": "address.street",
         "wrong_value": wrong,
         "correct_value": street,
         "hint_level": 3,
+        TRUTH_KEY: _address_truth(card, street, str(house) if house else None, about="street"),
     }
 
 
 def sibling_incident_type(body: dict, rng: random.Random, ctx: Context) -> dict | None:
     """A neighbouring type of the classifier (same group, other final title); the description
-    still tells what really happened."""
+    tells what really happened."""
     card = body["card"]
     code = str(card.get("incident_type") or "")
     rows = {str(r["code"]): r for r in ctx.type_rows}
     row = rows.get(code)
-    if row is None:
+    if row is None or not row.get("final_title"):
         return None
     prefix = code.rsplit(".", 1)[0] + "."
     siblings = [
@@ -178,7 +234,10 @@ def sibling_incident_type(body: dict, rng: random.Random, ctx: Context) -> dict 
         siblings = [
             r
             for c, r in rows.items()
-            if c != code and str(r.get("group_code")) == group and r.get("final_title")
+            if c != code
+            and str(r.get("group_code")) == group
+            and r.get("final_title")
+            and r.get("final_title") != row.get("final_title")
         ]
     if not siblings:
         return None
@@ -192,21 +251,23 @@ def sibling_incident_type(body: dict, rng: random.Random, ctx: Context) -> dict 
         "hint_level": 2,
         "wrong_label": wrong_row.get("final_title"),
         "correct_label": row.get("final_title"),
+        TRUTH_KEY: f"это {_spoken_title(str(row['final_title']))}",
     }
 
 
 def flipped_injured(body: dict, rng: random.Random, ctx: Context) -> dict | None:
-    """«Пострадавшие: да» while the description says there are none (or the other way round)."""
+    """«Пострадавшие: да» while the caller says there are none (or the other way round).
+    Skipped when the description already contradicts the true flag."""
     card = body["card"]
     injured = bool(card["flags"].get("injured"))
     description = normalize_text(card.get("description") or "")
     says_absent = any(p in description for p in INJURED_ABSENT)
     says_present = "пострадавш" in description and not says_absent
-    if injured and not says_present:
-        return None
-    if not injured and not says_absent:
+    if (injured and says_absent) or (not injured and says_present):
         return None
     card["flags"]["injured"] = not injured
+    already_told = says_present if injured else says_absent
+    truth = "есть пострадавшие" if injured else "пострадавших нет"
     return {
         "field": "flags.injured",
         "wrong_value": "false" if injured else "true",
@@ -214,50 +275,44 @@ def flipped_injured(body: dict, rng: random.Random, ctx: Context) -> dict | None
         "hint_level": 1,
         "wrong_label": "нет" if injured else "да",
         "correct_label": "да" if injured else "нет",
+        TRUTH_KEY: None if already_told else truth,
     }
 
 
-def extra_service(body: dict, rng: random.Random, ctx: Context) -> dict | None:
-    """A service that has nothing to do with the incident is listed as notified."""
+def wrong_service(body: dict, rng: random.Random, ctx: Context) -> dict | None:
+    """The card is sent to a service the incident does not concern: the right answer is
+    «Не принята» with «не в компетенции службы». The incident in the description is the
+    evidence; the reference becomes the refusal."""
+    if (body.get("reference") or {}).get("decision") != "accept":
+        return None
     card = body["card"]
-    notified = {str(n.get("service")) for n in card["notified"]}
+    own = str(body.get("service") or "")
+    expected = [str(n.get("service")) for n in card["notified"]]
+    pool = ctx.services or list(ctx.catalogue)
     candidates = sorted(
         code
-        for code, info in ctx.catalogue.items()
-        if info.via_arm112 and code not in notified and code != body.get("service")
+        for code in pool
+        if code in ctx.catalogue
+        and ctx.catalogue[code].via_arm112
+        and code != own
+        and code not in expected
     )
     if not candidates:
         return None
     code = rng.choice(candidates)
-    card["notified"].insert(0, {"service": code, "status": "Получена службой"})
+    body["service"] = code
+    for entry in card["notified"]:
+        if entry.get("service") == own:
+            entry["status"] = "Получена службой"
+    card["notified"].append({"service": code, "status": "Добавлена"})
+    body["reference"] = card_reference(region=None, service=code, expected=expected)
     return {
-        "field": "services",
-        "wrong_value": f"+{code}",
-        "correct_value": f"-{code}",
+        "field": WRONG_SERVICE_FIELD,
+        "wrong_value": code,
+        "correct_value": WRONG_SERVICE_ANSWER,
         "hint_level": 1,
         "wrong_label": ctx.catalogue[code].title or code,
-        "correct_label": ctx.catalogue[code].title or code,
-    }
-
-
-def missing_service(body: dict, rng: random.Random, ctx: Context) -> dict | None:
-    """A service the incident needs is not notified."""
-    card = body["card"]
-    own = body.get("service")
-    candidates = [n for n in card["notified"] if str(n.get("service")) != own]
-    if len(candidates) < 2:
-        return None  # a card with a single other service would lose all context
-    removed = rng.choice(sorted(candidates, key=lambda n: str(n.get("service"))))
-    card["notified"] = [n for n in card["notified"] if n is not removed]
-    code = str(removed.get("service"))
-    info = ctx.catalogue.get(code)
-    return {
-        "field": "services",
-        "wrong_value": f"-{code}",
-        "correct_value": f"+{code}",
-        "hint_level": 2,
-        "wrong_label": info.title if info and info.title else code,
-        "correct_label": info.title if info and info.title else code,
+        "correct_label": "Не принята: не в компетенции службы",
     }
 
 
@@ -266,16 +321,43 @@ DISTORTIONS: dict[str, Distortion] = {
     "street": lookalike_street,
     "incident_type": sibling_incident_type,
     "injured": flipped_injured,
-    "service_extra": extra_service,
-    "service_missing": missing_service,
+    "wrong_service": wrong_service,
 }
 
 
-def _mention(description: str, needle: str, sentence: str) -> str:
-    """Adds the sentence unless the description already carries the fact."""
-    if needle and needle in normalize_text(description):
-        return description
-    text = description.rstrip()
+def _address_truth(card: Mapping, street: str, house: str | None, *, about: str) -> str | None:
+    """The true address as a clause, unless the description already names the part that is
+    wrong in the card (the street there may be declined, the house number is not)."""
+    description = normalize_text(card.get("description") or "")
+    if about == "house" and house and f"дом {normalize_house(house)}" in description:
+        return None
+    if about == "street" and _street_named(street, description):
+        return None
+    return f"точный адрес — {street}{', дом ' + house if house else ''}"
+
+
+def _street_named(street: str, description: str) -> bool:
+    """Whether the description names the street, in any case form («улице Маршала
+    Тимошенко» for «улица Маршала Тимошенко»): every word but the street type, by its stem."""
+    words = [w for w in normalize_text(street).split() if w not in STREET_TYPES]
+    return bool(words) and all(w[:STEM_LENGTH] in description for w in words)
+
+
+def _spoken_title(title: str) -> str:
+    """«пожар: опора контактной сети» → «пожар (опора контактной сети)»."""
+    head, sep, tail = title.partition(":")
+    spoken = f"{head.strip()} ({tail.strip()})" if sep and tail.strip() else title.strip()
+    return spoken[:1].lower() + spoken[1:]
+
+
+def _tell_truth(card: dict, truths: Sequence[str], rng: random.Random) -> None:
+    """Adds the true values to the description, one plain sentence each, openers not repeated."""
+    if not truths:
+        return
+    openers = list(TRUTH_SENTENCES)
+    rng.shuffle(openers)
+    text = (card.get("description") or "").rstrip()
     if text and not text.endswith((".", "!", "?")):
         text += "."
-    return f"{text} {sentence}".strip()
+    sentences = [openers[i % len(openers)].format(t) for i, t in enumerate(truths)]
+    card["description"] = " ".join([text, *sentences]).strip()

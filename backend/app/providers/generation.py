@@ -14,7 +14,9 @@ service catalogue and the retrieved reference chunks in ``GenerationContext``.
 
 from __future__ import annotations
 
+import dataclasses
 import json
+import random
 import time
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
@@ -23,6 +25,7 @@ from typing import Any, Protocol
 from pydantic import BaseModel, ValidationError
 
 from app.config import get_settings
+from app.domain.evaluation.schemas import Address
 from app.domain.scenarios import distort, examples, template
 from app.domain.scenarios.classify import rank_types
 from app.domain.scenarios.facts import TicketFacts, parse_ticket
@@ -41,6 +44,7 @@ from app.providers.llm import (
     Message,
     ModelOutputError,
     ModelUnavailableError,
+    OpenAiCompatibleChat,
 )
 from app.providers.rag import Chunk
 
@@ -51,6 +55,8 @@ GENERATION_MAX_TOKENS = 2200
 GENERATION_TIMEOUT_SECONDS = 900.0  # default; the stand sets LLM_GEN_TIMEOUT_SECONDS
 GENERATION_TEMPERATURE = 0.4
 TYPE_CANDIDATES = 12  # classifier rows offered to the model
+HOUSE_NUMBERS = (1, 120)  # a house picked for a card without a ticket address
+ROAD_KILOMETRE = "километр"  # «МКАД, 46-й километр» in the street list
 
 
 @dataclass
@@ -67,11 +73,19 @@ class GenerationRequest:
     noise: str | None = None
     # Teacher's remark for a revision («Переделать»); the model reads it, the template ignores it.
     comment: str | None = None
+    # A real address for a card without a ticket (a street of the reference list); the model
+    # writes the description around it and the card keeps it, so nothing is invented.
+    address: Address | None = None
 
     def facts_or_phrase(self) -> TicketFacts:
         if self.facts is not None:
             return self.facts
-        return parse_ticket(self.phrase or "", "")
+        facts = parse_ticket(self.phrase or "", "")
+        if self.address is None:
+            return facts
+        return dataclasses.replace(
+            facts, address=self.address, address_text=address_text(self.address)
+        )
 
 
 @dataclass
@@ -82,12 +96,41 @@ class GenerationContext:
     similar_tickets: Sequence[Chunk] = ()
     # Street names for look-alike street mistakes (issue #35); empty = that kind is skipped.
     streets: Sequence[str] = ()
+    # Services a card may be wrongly sent to (the lesson's); empty = any on АРМ-112.
+    services: Sequence[str] = ()
+
+
+def address_text(address: Address) -> str:
+    return ", ".join(
+        part for part in (address.street, f"дом {address.house}" if address.house else None) if part
+    )
+
+
+def with_real_address(request: GenerationRequest, ctx: GenerationContext) -> GenerationRequest:
+    """A card from a phrase gets a real street and a house (stable per request); a ticket
+    keeps its own address."""
+    if request.facts is not None or request.address is not None or not ctx.streets:
+        return request
+    rng = random.Random(  # noqa: S311 - a stable choice per request, not security
+        f"{request.phrase}|{request.ticket_ref}|{request.incident_type}|{request.difficulty}"
+    )
+    # Kilometres of ring roads and highways have no houses.
+    streets = sorted(s for s in ctx.streets if ROAD_KILOMETRE not in s.lower()) or sorted(
+        ctx.streets
+    )
+    street = rng.choice(streets)
+    house = str(rng.randint(*HOUSE_NUMBERS))
+    return dataclasses.replace(request, address=Address(street=street, house=house))
 
 
 def plant_mistakes(body: dict, ctx: GenerationContext) -> dict:
-    """Operator mistakes for a card by its difficulty (issue #35, ``distort``)."""
+    """Operator mistakes for a card by its difficulty (issues #35, #265, ``distort``)."""
     return distort.inject_by_difficulty(
-        body, type_rows=ctx.type_rows, catalogue=ctx.catalogue, streets=ctx.streets
+        body,
+        type_rows=ctx.type_rows,
+        catalogue=ctx.catalogue,
+        streets=ctx.streets,
+        services=ctx.services,
     )
 
 
@@ -175,6 +218,7 @@ class TemplateGeneration:
         self, request: GenerationRequest, ctx: GenerationContext
     ) -> GenerationResult:
         started = time.perf_counter()
+        request = with_real_address(request, ctx)
         facts = request.facts_or_phrase()
         row = choose_row(request, ctx.type_rows)
         if request.kind == "call_intake":
@@ -238,6 +282,12 @@ def build_messages(
         f"Адрес: «{facts.address_text}»."
         if request.facts is not None
         else f"Задание преподавателя: «{request.phrase}»."
+        + (
+            f" Адрес происшествия: «{address_text(request.address)}» — используй его без "
+            "изменений, другой адрес не придумывай."
+            if request.address is not None
+            else ""
+        )
     )
     wishes = []
     if request.difficulty:
@@ -321,7 +371,13 @@ def _card_address(generated: BaseModel, request: GenerationRequest) -> dict:
     is kept when the ticket has none."""
     written = _address(generated)
     if request.facts is None:
-        return written
+        if request.address is None:
+            return written
+        # The real address, whatever the model wrote; its landmark description is kept.
+        chosen = request.address.model_dump(exclude_none=True)
+        if written.get("descriptive"):
+            chosen["descriptive"] = written["descriptive"]
+        return chosen
     parsed = request.facts.address.model_dump(exclude_none=True)
     if not parsed:
         return written
@@ -463,6 +519,7 @@ class LlmGeneration:
         self, request: GenerationRequest, ctx: GenerationContext
     ) -> GenerationResult:
         started = time.perf_counter()
+        request = with_real_address(request, ctx)
         rows = candidate_rows(request, ctx.type_rows)
         by_code = {str(r["code"]): r for r in rows}
         codes = list(by_code)
@@ -535,16 +592,25 @@ class LlmGeneration:
 _provider: GenerationProvider | None = None
 
 
-def build_generation_provider(llm_gen_url: str | None) -> GenerationProvider:
-    if llm_gen_url:
-        timeout = get_settings().llm_gen_timeout_seconds or GENERATION_TIMEOUT_SECONDS
+def build_generation_provider(
+    llm_gen_url: str | None, api_key: str | None = None, api_model: str | None = None
+) -> GenerationProvider:
+    if not llm_gen_url:
+        return TemplateGeneration()
+    timeout = get_settings().llm_gen_timeout_seconds or GENERATION_TIMEOUT_SECONDS
+    chat: ChatModel
+    if api_key and api_model:  # both or neither: Settings refuses a key without a model
+        chat = OpenAiCompatibleChat(llm_gen_url, api_key=api_key, model=api_model, timeout=timeout)
+    else:
         chat = LlamaCppChat(llm_gen_url, name="llm-gen", timeout=timeout)
-        return LlmGeneration(chat)
-    return TemplateGeneration()
+    return LlmGeneration(chat)
 
 
 def get_generation_provider() -> GenerationProvider:
     global _provider
     if _provider is None:
-        _provider = build_generation_provider(get_settings().llm_gen_url)
+        settings = get_settings()
+        _provider = build_generation_provider(
+            settings.llm_gen_url, settings.llm_gen_api_key, settings.llm_gen_api_model
+        )
     return _provider

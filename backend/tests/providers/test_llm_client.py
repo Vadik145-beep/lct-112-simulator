@@ -13,6 +13,7 @@ from app.providers.llm import (
     LlamaCppChat,
     ModelOutputError,
     ModelUnavailableError,
+    OpenAiCompatibleChat,
     parse_json_object,
 )
 
@@ -130,6 +131,47 @@ def test_parse_json_object_tolerates_fences_and_prose() -> None:
         parse_json_object("[1, 2]")
     with pytest.raises(ModelOutputError):
         parse_json_object("нет json")
+
+
+# --- hosted model (OpenAI-compatible API) --------------------------------------------------
+
+
+async def test_hosted_model_gets_key_model_and_json_schema() -> None:
+    transport, seen = _server('{"reply_id": 2}')
+    client = OpenAiCompatibleChat(
+        "https://models.example.com", api_key="k-123", model="vendor/model", transport=transport
+    )
+    assert await client.available()
+    schema = {"type": "object", "properties": {"reply_id": {"type": "integer"}}}
+    answer = await client.complete_json([], schema, max_tokens=7, slot_key="attempt-1")
+    assert answer == {"reply_id": 2}
+    # No /health and no /props: such services have neither.
+    assert [r.url.path for r in seen] == ["/v1/chat/completions"]
+    request = seen[0]
+    assert request.headers["Authorization"] == "Bearer k-123"
+    payload = json.loads(request.content)
+    assert payload["model"] == "vendor/model"
+    assert payload["response_format"] == {
+        "type": "json_schema",
+        "json_schema": {"name": "answer", "schema": schema},
+    }
+    assert "id_slot" not in payload
+    assert "cache_prompt" not in payload
+
+
+async def test_hosted_model_failure_backs_off() -> None:
+    transport, _ = _server("", status=503)
+    client = OpenAiCompatibleChat(
+        "https://models.example.com", api_key="k", model="m", transport=transport
+    )
+    with pytest.raises(ModelUnavailableError):
+        await client.complete_text([], max_tokens=5)
+    assert not await client.available()
+
+
+def test_hosted_model_key_without_model_refuses_to_start() -> None:
+    with pytest.raises(ValueError, match="LLM_GEN_API_MODEL"):
+        Settings(**BASE_ENV, llm_gen_api_key="k")
 
 
 # --- ALLOW_EXTERNAL_AI ---------------------------------------------------------------------

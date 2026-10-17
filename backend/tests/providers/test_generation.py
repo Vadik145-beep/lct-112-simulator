@@ -19,7 +19,7 @@ from app.providers.generation import (
     build_generation_provider,
     candidate_rows,
 )
-from app.providers.llm import ModelUnavailableError
+from app.providers.llm import ModelUnavailableError, OpenAiCompatibleChat
 from app.providers.rag import Chunk, ReferenceIndex, split_document
 from tests.providers.fake_model import FakeModel
 
@@ -231,6 +231,9 @@ def test_candidate_rows_put_teacher_type_first_and_respect_group() -> None:
 def test_provider_factory() -> None:
     assert build_generation_provider(None).method == "template"
     assert build_generation_provider("http://llm-gen:8080").method == "llm"
+    hosted = build_generation_provider("https://models.example.com", "key", "vendor/model")
+    assert hosted.method == "llm"
+    assert isinstance(hosted._chat, OpenAiCompatibleChat)
 
 
 def test_split_document_and_tfidf_index(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:
@@ -259,3 +262,33 @@ async def test_revision_comment_reaches_the_model_but_not_the_template() -> None
     assert "более растерянным" in fake.calls[0]["messages"][1]["content"]
     result = await TemplateGeneration().generate(req, CTX)
     assert "растерянным" not in parse_scenario(result.body).caller.facts["what_happened"]
+
+
+STREETS_CTX = GenerationContext(
+    type_rows=ROWS, catalogue=CATALOGUE, streets=["улица Свободы", "Ленинский проспект"]
+)
+
+
+async def test_card_from_a_phrase_gets_a_real_street_not_the_invented_one() -> None:
+    answer = model_answer(address={"street": "улица Придуманная", "house": "7"})
+    fake = FakeModel([answer])
+    result = await LlmGeneration(fake).generate(request(), STREETS_CTX)
+    address = parse_scenario(result.body).reference_card.address
+    assert address.street in {"улица Свободы", "Ленинский проспект"}
+    assert address.house and address.house.isdigit()
+    # The model is told the address and not to invent another one.
+    prompt = fake.calls[0]["messages"][1]["content"]
+    assert f"{address.street}, дом {address.house}" in prompt
+    # The same request gives the same address.
+    again = await LlmGeneration(FakeModel([answer])).generate(request(), STREETS_CTX)
+    assert parse_scenario(again.body).reference_card.address == address
+
+
+async def test_template_card_from_a_phrase_gets_a_real_address() -> None:
+    result = await TemplateGeneration().generate(
+        request(kind="card_response", phrase="течёт стояк в подъезде", difficulty=1),
+        STREETS_CTX,
+    )
+    address = parse_scenario(result.body).card.address
+    assert address.street in {"улица Свободы", "Ленинский проспект"}
+    assert address.house

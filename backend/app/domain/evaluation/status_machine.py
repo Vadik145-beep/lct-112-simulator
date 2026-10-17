@@ -12,6 +12,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 
 from app.domain.evaluation.schemas import StatusEntry
+from app.domain.evaluation.text import normalize_text
 from app.domain.reference_data import RESPONSE_STATUSES
 
 STATUSES: dict[str, dict] = {s["code"]: s for s in RESPONSE_STATUSES}
@@ -34,6 +35,28 @@ PROGRESS_STATUSES = (RESPONSE_STARTED, ARRIVED, WORKS_STARTED)
 REJECT_STATUSES = frozenset({REJECTED, WORKS_REFUSED})
 # Service 103 closes without a squad instead of refusing (memo page 23).
 NO_REJECT_CLOSING_COMMENT = "завершение работ без бригады"
+
+
+# How a reason is phrased in a free-text comment when the drop-down was not used.
+REASON_PHRASES: list[tuple[str, tuple[str, ...]]] = [
+    ("duplicate", ("дубл", "повторн")),
+    ("other_card", ("по другой карточке", "по кп", "другой карточк")),
+    ("no_contract", ("нет договора",)),
+    ("not_our_territory", ("территор",)),
+    ("not_in_competence", ("компетенц", "не относится")),
+    ("transferred", ("передан", "передал")),
+    ("not_our_object", ("не обслужива", "объект")),
+]
+
+
+def infer_reject_reason(entry: StatusEntry) -> str | None:
+    if entry.reject_reason:
+        return entry.reject_reason
+    comment = normalize_text(entry.comment)
+    for code, phrases in REASON_PHRASES:
+        if any(p in comment for p in phrases):
+            return code
+    return None
 
 
 class TransitionError(ValueError):

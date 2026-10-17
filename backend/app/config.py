@@ -4,7 +4,7 @@ from functools import lru_cache
 from typing import Literal
 from urllib.parse import urlparse
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -56,6 +56,11 @@ class Settings(BaseSettings):
     # background job, so the wait costs nothing but the timeout has to allow for it —
     # otherwise every request fails and the teacher silently gets a template scenario.
     llm_gen_timeout_seconds: float = 900.0
+    # A hosted model for generation instead of llm-gen (demonstration stand only): with a key
+    # LLM_GEN_URL is an OpenAI-compatible API (without /v1) and LLM_GEN_API_MODEL names the
+    # model there. Empty key = llama.cpp. Requires ALLOW_EXTERNAL_AI=true.
+    llm_gen_api_key: str | None = None
+    llm_gen_api_model: str | None = None
     stt_url: str | None = None
     # How the caller answers (PRD 9.3): select | hybrid | generate | buttons | live.
     # Without a reachable dialog model every mode degrades to `buttons`.
@@ -168,6 +173,15 @@ class Settings(BaseSettings):
         if not value.startswith("postgresql+asyncpg://"):
             raise ValueError("ожидается адрес вида postgresql+asyncpg://…")
         return value
+
+    @model_validator(mode="after")
+    def _gen_key_needs_model(self) -> "Settings":
+        if self.llm_gen_api_key and not self.llm_gen_api_model:
+            raise ValueError(
+                "задан LLM_GEN_API_KEY, но не задан LLM_GEN_API_MODEL: укажите имя модели "
+                "или уберите ключ, чтобы генерацией занимался локальный сервер llm-gen"
+            )
+        return self
 
     def ai_service_urls(self) -> dict[str, str]:
         """Configured AI endpoints by their .env name (only the non-empty ones)."""
