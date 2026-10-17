@@ -303,6 +303,7 @@ a { color: #1d4ed8; }
 LIST_ITEM = re.compile(r"^(\s*)([-*]|\d+\.)\s+(.*)$")
 IMAGE = re.compile(r"^!\[([^\]]*)\]\(([^)]+)\)\s*$")
 HEADING = re.compile(r"^(#{2,4})\s+(.*)$")
+QUOTE_SPEAKER = re.compile(r"^[А-ЯЁA-Z][\w ]{0,30}:")
 
 
 def inline_html(text: str) -> str:
@@ -410,7 +411,13 @@ def md_to_html(md: str, base: Path) -> tuple[str, list[tuple[int, str, str]]]:
             continue
         if line.startswith(">"):
             flush_para(), close_lists()
-            out.append(f"<blockquote>{inline_html(line.lstrip('> '))}</blockquote>")
+            text = inline_html(line.lstrip("> "))
+            # Consecutive quote lines are one box; a line that starts with «Кто:» is a new reply.
+            if out and out[-1].endswith("</blockquote>"):
+                joiner = "<br>" if QUOTE_SPEAKER.match(line.lstrip("> ")) else " "
+                out[-1] = out[-1][: -len("</blockquote>")] + joiner + text + "</blockquote>"
+            else:
+                out.append(f"<blockquote>{text}</blockquote>")
             continue
         if lists and not line.startswith((" ", "\t")):
             flush_para(), close_lists()
