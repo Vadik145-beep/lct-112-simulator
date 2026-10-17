@@ -32,3 +32,17 @@ async def dataset() -> None:
     """Reference tables from the dataset, then the seed again so scenarios link to tickets."""
     await organizers.run(DATA_DIR)
     await seed(DATA_DIR)
+
+
+# Since 18.10.2026 a progress status needs a comment (memo p. 31, example 6); tests that do
+# not care what the dispatcher wrote get this one.
+PROGRESS_COMMENT = "Доложено бригадой"
+
+
+def status_body(body: dict) -> dict:
+    """The body of a status request with a comment where the status requires one."""
+    if body.get("status") in ("response_started", "arrived", "works_started") and not body.get(
+        "comment"
+    ):
+        return {**body, "comment": PROGRESS_COMMENT}
+    return body

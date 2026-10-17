@@ -787,7 +787,7 @@ def transitions_for(attempt: Attempt, service: Service | None) -> list[Transitio
             Transition(
                 code=code,
                 title=spec["title"],
-                requires_comment=spec["requires_comment"],
+                requires_comment=machine.needs_comment(code),
                 requires_order_number=spec["requires_order_number"],
                 is_final=spec["is_final"],
                 is_primary=spec["is_primary"],

@@ -171,7 +171,7 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
     await orderField.fill("");
     await expect(orderField).toHaveValue("");
     await page.keyboard.press("Escape");
-    await setStatus(page, "Прибытие");
+    await setStatus(page, "Прибытие", { comment: "Бригада прибыла на место" });
     await setStatus(page, "Проведение работ", {
       comment: "Мусоропровод вскрыт, тлеющий мусор удалён",
     });
@@ -520,7 +520,7 @@ test.describe("Задача #35: проверка карточки от опер
       orderNumber: "МОЭК-4127",
       comment: "Направлена аварийная бригада тепловых сетей",
     });
-    await setStatus(page, "Прибытие");
+    await setStatus(page, "Прибытие", { comment: "Бригада прибыла на место" });
     await setStatus(page, "Проведение работ", {
       comment: "Проверка ИТП дома 17, запуск циркуляции",
     });
@@ -686,7 +686,7 @@ test.describe("Задача #36: звонок диспетчера в служб
       orderNumber: "МОЭК-4127",
       comment: "Направлена аварийная бригада тепловых сетей",
     });
-    await setStatus(page, "Прибытие");
+    await setStatus(page, "Прибытие", { comment: "Бригада прибыла на место" });
     await setStatus(page, "Проведение работ", {
       comment: "Проверка ИТП, запуск циркуляции",
     });
@@ -921,7 +921,7 @@ test.describe("Доклады бригады диспетчеру по теле�
     await expect(
       page.getByTestId("service-call-line").filter({ hasText: "Доклад бригады" }),
     ).toHaveCount(1);
-    await takeReport(/Прибыли/, "Прибытие");
+    await takeReport(/Прибыли/, "Прибытие", { comment: "Бригада прибыла на место" });
     await takeReport(/перекрыт стояк/i, "Проведение работ", {
       comment: "Перекрыт стояк по подъезду, устранение течи",
     });

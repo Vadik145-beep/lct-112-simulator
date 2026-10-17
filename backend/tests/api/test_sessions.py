@@ -21,7 +21,7 @@ from app.training.stream import (
     issue_stream_cards,
     trainee_schedule,
 )
-from tests.api.conftest import DATA_DIR, issue_now
+from tests.api.conftest import DATA_DIR, issue_now, status_body
 from tests.conftest import bearer, login
 
 pytestmark = pytest.mark.skipif(
@@ -67,7 +67,9 @@ async def journal(client: AsyncClient, token: dict, session_id: str) -> dict:
 
 
 async def set_status(client: AsyncClient, token: dict, attempt_id: str, **body):
-    return await client.post(f"/api/attempts/{attempt_id}/status", headers=bearer(token), json=body)
+    return await client.post(
+        f"/api/attempts/{attempt_id}/status", headers=bearer(token), json=status_body(body)
+    )
 
 
 async def events(session_id: str, after: int = 0) -> list:

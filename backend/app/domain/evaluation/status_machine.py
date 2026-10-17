@@ -32,6 +32,15 @@ SYSTEM_STATUSES = frozenset(code for code, s in STATUSES.items() if s["is_system
 PRIMARY_STATUSES = frozenset(code for code, s in STATUSES.items() if s["is_primary"])
 FINAL_STATUSES = frozenset(code for code, s in STATUSES.items() if s["is_final"])
 PROGRESS_STATUSES = (RESPONSE_STARTED, ARRIVED, WORKS_STARTED)
+
+
+def needs_comment(code: str) -> bool:
+    """A comment is required to save the status: the memo's own ones and, since 18.10.2026,
+    the progress statuses too (memo p. 31, example 6: statuses «и комментарии к ним») — a card
+    must not fail on an empty comment the form let through."""
+    return bool(STATUSES[code]["requires_comment"]) or code in PROGRESS_STATUSES
+
+
 REJECT_STATUSES = frozenset({REJECTED, WORKS_REFUSED})
 # Service 103 closes without a squad instead of refusing (memo page 23).
 NO_REJECT_CLOSING_COMMENT = "завершение работ без бригады"
@@ -116,7 +125,7 @@ def validate_transition(
             f"После «{current_title}» нельзя проставить «{title(new)}». Доступно: {options}",
         )
     spec = STATUSES[new]
-    if spec["requires_comment"] and not (comment or "").strip():
+    if needs_comment(new) and not (comment or "").strip():
         raise TransitionError(
             "comment_required", f"К статусу «{title(new)}» обязателен комментарий"
         )

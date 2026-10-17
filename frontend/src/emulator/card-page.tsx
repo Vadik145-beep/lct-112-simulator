@@ -957,6 +957,7 @@ function CardView({
       <TrainerPanel
         connection={connection}
         collapsedByDefault
+        journalTo={`/student/sessions/${attempt.session.id}/journal`}
         // The result of the card lives in the panel: it opens for it. It opens too once the
         // card can be finished (its «Завершить работу с карточкой» is there): «Не принята»
         // does not close the card by itself. The conversation is in the virtual phone (#263).
