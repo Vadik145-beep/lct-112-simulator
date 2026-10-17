@@ -8,6 +8,7 @@ the router commits and then publishes them (see ``app.events``).
 from __future__ import annotations
 
 import uuid
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 
@@ -337,11 +338,16 @@ async def issue_cards(
 
 
 async def issue_next(
-    session: AsyncSession, ts: TrainingSession, student: User, want: int
+    session: AsyncSession,
+    ts: TrainingSession,
+    student: User,
+    want: int,
+    hold: Callable[[Scenario], bool] | None = None,
 ) -> tuple[list[Attempt], list[SessionEvent]]:
     """Adds up to ``want`` next cards of the queue to the trainee's journal (fewer when the
     queue or ``cards_per_student`` runs out; a stream is limited by its schedule only), each
-    with its «attempt.issued» event."""
+    with its «attempt.issued» event. ``hold`` keeps a scenario back for now (a stream holds a
+    repeated call until its time)."""
     done = list(
         await session.scalars(
             select(Attempt.scenario_id).where(
@@ -357,6 +363,8 @@ async def issue_next(
         candidates = await ai_cards.ready_for(session, ts, student, done)
     else:
         candidates = [s for s in await scenario_queue(session, ts) if s.id not in set(done)]
+    if hold is not None:
+        candidates = [s for s in candidates if not hold(s)]
     if ts.adaptive and not ai_cards.is_ai(ts):
         # PRD 9.7: the weakest incident group first, difficulty near the rating.
         state = await ratings.load_state(session, student.id)

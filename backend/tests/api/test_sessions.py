@@ -11,10 +11,15 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 from app.db import SessionLocal
 from app.events import events_after
-from app.models import Group, TrainingSession, User
+from app.models import Attempt, Group, Scenario, TrainingSession, User
 from app.scenarios import jobs
 from app.training.service import sweep_not_notified, utcnow
-from app.training.stream import due_count, issue_stream_cards, trainee_schedule
+from app.training.stream import (
+    REPEAT_DELAY,
+    due_count,
+    issue_stream_cards,
+    trainee_schedule,
+)
 from tests.api.conftest import DATA_DIR, issue_now
 from tests.conftest import bearer, login
 
@@ -483,6 +488,74 @@ async def test_difficulty_3_is_a_stream_of_cards_on_a_timer(client: AsyncClient)
     r = await client.get("/api/me/progress", headers=bearer(student))
     mine = next(s for s in r.json()["sessions"] if s["session_id"] == created["id"])
     assert mine["stream"] == row["stream"]
+
+
+async def test_repeated_call_in_a_stream_comes_a_minute_or_two_after_its_original(
+    client: AsyncClient,
+) -> None:
+    """A repeated call about the same incident (``duplicate_of``) does not come right after its
+    original: one to two minutes later, and it takes no place in the schedule of the stream."""
+    keys = [
+        "card_2-1_dubl",
+        "card_2-1_zadymlenie_musoroprovoda",
+        "card_gkh_1_tech_v_podezde",
+        "card_gkh_2_net_sveta_v_podezde",
+        "card_gkh_3_zapah_kanalizacii",
+        "card_17-1_pozharnaya_signalizaciya",
+    ]
+    async with SessionLocal() as session:
+        by_key = {
+            s.seed_key: s.id
+            for s in await session.scalars(select(Scenario).where(Scenario.seed_key.in_(keys)))
+        }
+    teacher = await login(client, "teacher1")
+    created = await create_session(
+        client, teacher, difficulty=3, scenario_ids=[str(by_key[k]) for k in keys]
+    )
+    started = await start(client, teacher, created["id"])
+    begin = datetime.fromisoformat(started["started_at"])
+
+    async def numbers() -> list[str]:
+        async with SessionLocal() as session:
+            rows = await session.scalars(
+                select(Attempt)
+                .where(Attempt.session_id == uuid.UUID(created["id"]))
+                .join(User, User.id == Attempt.student_id)
+                .where(User.login == "student1")
+                .order_by(Attempt.issued_at)
+            )
+            return [a.card_number for a in rows]
+
+    async def sweep(at: datetime) -> None:
+        async with SessionLocal() as session:
+            await issue_stream_cards(session, at)
+            await session.commit()
+
+    # The schedule gives at least three cards by 40 s: the repeat, first in the queue, waits.
+    await sweep(begin + timedelta(seconds=40))
+    first = await numbers()
+    assert "38260311" in first and "38260340" not in first
+    async with SessionLocal() as session:
+        original = await session.scalar(
+            select(Attempt).where(
+                Attempt.session_id == uuid.UUID(created["id"]), Attempt.card_number == "38260311"
+            )
+        )
+        assert original is not None
+        original_at = original.issued_at
+    # Not before a minute after the original; certainly by two, and on top of the schedule.
+    await sweep(original_at + timedelta(seconds=REPEAT_DELAY[0] - 1))
+    assert "38260340" not in await numbers()
+    await sweep(original_at + timedelta(seconds=REPEAT_DELAY[1] + 1))
+    after = await numbers()
+    assert after.count("38260340") == 1
+    async with SessionLocal() as session:
+        ts = await session.get(TrainingSession, uuid.UUID(created["id"]))
+        me = await session.scalar(select(User).where(User.login == "student1"))
+        assert ts is not None and me is not None
+        elapsed = (original_at - begin).total_seconds() + REPEAT_DELAY[1] + 1
+        due = due_count(trainee_schedule(ts, me.id), elapsed)
+    assert len(after) == min(due, len(keys) - 1) + 1
 
 
 async def test_lower_difficulty_is_no_stream(client: AsyncClient) -> None:
