@@ -120,6 +120,9 @@ function Card({ attemptId }: { attemptId: string }) {
   const onEvent = useCallback(
     (event: SessionEvent) => {
       const id = event.payload.attempt_id as string | undefined;
+      // A squad may ring about any card of the lesson: the phone shows it here too (#263).
+      if (event.type.startsWith("service_call."))
+        void client.invalidateQueries({ queryKey: ["ringing"] });
       if (id === attemptId)
         void client.invalidateQueries({ queryKey: attemptKey(attemptId) });
       else if (event.type === "attempt.issued" && id) setNextCardId(id);

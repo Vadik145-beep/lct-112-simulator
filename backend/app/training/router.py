@@ -37,6 +37,7 @@ from app.training.schemas import (
     AttemptOut,
     FlagFieldRequest,
     JournalOut,
+    RingingOut,
     StatusRequest,
     StatusResponse,
 )
@@ -99,6 +100,52 @@ async def _journal_student(session: DbSession, ts: TrainingSession, user: User, 
     if student is None:
         raise ApiError(404, "student_not_found", "Обучающийся не найден.")
     return student
+
+
+@router.get("/sessions/{session_id}/ringing", response_model=list[RingingOut])
+async def ringing(session_id: uuid.UUID, user: ActiveUser, session: DbSession) -> list[RingingOut]:
+    """Reports of the squads ringing now on the trainee's cards of the lesson (stand
+    18.10.2026: a report about card A was missed while the trainee sat in card B)."""
+    from app.dialog import officer
+
+    ts = await training.get_session_for(session, session_id, user)
+    if user.role != Role.student:
+        return []
+    attempts = [
+        a
+        for a in await session.scalars(
+            select(Attempt).where(Attempt.session_id == ts.id, Attempt.student_id == user.id)
+        )
+        if a.state not in training.CLOSED_STATES
+    ]
+    calls = {
+        a.id: call
+        for a in attempts
+        if (call := officer.open_call(a)) is not None
+        and officer.is_report(call)
+        and not call.get("answered")
+    }
+    if not calls:
+        return []
+    rows = [a for a in attempts if a.id in calls]
+    versions = await present.load_versions(session, rows)
+    bodies = {a.id: versions[(a.scenario_id, a.scenario_version)].body for a in rows}
+    lookups = await present.load_lookups(
+        session, {b.get("card", {}).get("incident_type") for b in bodies.values()}
+    )
+    result = []
+    for a in rows:
+        item = present.journal_item(a, bodies[a.id], ts, lookups)
+        result.append(
+            RingingOut(
+                attempt_id=a.id,
+                call_id=calls[a.id]["id"],
+                card_number=item.card_number,
+                incident_title=item.incident_title,
+                address=item.address,
+            )
+        )
+    return result
 
 
 @router.get("/sessions/{session_id}/journal", response_model=JournalOut)

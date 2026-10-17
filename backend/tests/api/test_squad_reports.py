@@ -129,6 +129,13 @@ async def test_reports_arrive_on_the_timeline_and_the_dispatcher_reflects_them(
     assert report["answered"] is False and report["ended_at"] is None
     assert report["turns"] == []
 
+    # It rings on the whole workstation: the journal and any other card know of it (#263).
+    session_id = data["session"]["id"]
+    r = await client.get(f"/api/sessions/{session_id}/ringing", headers=bearer(token))
+    assert r.status_code == 200, r.text
+    assert [(x["attempt_id"], x["call_id"]) for x in r.json()] == [(str(attempt_id), report["id"])]
+    assert r.json()[0]["card_number"] and r.json()[0]["incident_title"]
+
     # Delivered once: the same sweep again is silent while the report is open.
     assert await sweep() == []
 
@@ -147,6 +154,8 @@ async def test_reports_arrive_on_the_timeline_and_the_dispatcher_reflects_them(
     # Answering twice changes nothing.
     r = await answer(client, token, attempt_id, report["id"])
     assert r.status_code == 200 and len(r.json()["call"]["turns"]) == 1
+    r = await client.get(f"/api/sessions/{session_id}/ringing", headers=bearer(token))
+    assert r.json() == []
 
     # The dispatcher talks to the squad leader: the report is repeated on request, facts are
     # not counted on a report; then hangs up and reflects the report.

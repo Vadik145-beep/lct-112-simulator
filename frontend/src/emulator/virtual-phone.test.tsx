@@ -6,6 +6,11 @@ import type { AttemptOut } from "@/api/training";
 import type { CardCalls } from "@/emulator/use-card-calls";
 import { VirtualPhone } from "@/emulator/virtual-phone";
 
+const ringing = { current: [] as unknown[] };
+const navigate = vi.fn();
+vi.mock("@/api/training", () => ({ useRinging: () => ({ data: ringing.current }) }));
+vi.mock("react-router-dom", () => ({ useNavigate: () => navigate }));
+
 vi.mock("@/api/phones", () => ({
   usePhoneBook: () => ({
     isSuccess: true,
@@ -23,6 +28,7 @@ vi.mock("@/api/phones", () => ({
 
 const attempt = {
   id: "a1",
+  session: { id: "s1" },
   service_calls: [],
   card: { services: [{ code: "moek", is_own: true }] },
   reports_expected: false,
@@ -111,5 +117,30 @@ describe("VirtualPhone", () => {
     fireEvent.change(screen.getByLabelText("Поиск по справочнику"), { target: { value: "бригад" } });
     expect(screen.getByRole("button", { name: /Начальник аварийной бригады/ })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Руководитель организации/ })).toBeNull();
+  });
+});
+
+
+describe("VirtualPhone and the other cards", () => {
+  it("rings in orange about another card and leads to it", () => {
+    ringing.current = [
+      {
+        attempt_id: "a2",
+        call_id: "c2",
+        card_number: "34451676",
+        incident_title: "Взрывы",
+        address: "3-я Сосновая улица, 57",
+      },
+    ];
+    render(<Phone />);
+    const circle = screen.getByTestId("virtual-phone-button");
+    expect(circle).toHaveAccessibleName("Телефон: звонок по другой карточке");
+    fireEvent.click(circle);
+    expect(screen.getByTestId("other-card-calls")).toHaveTextContent(
+      "Звонок по другой карточке № 34451676",
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Перейти в карточку" }));
+    expect(navigate).toHaveBeenCalledWith("/student/attempts/a2");
+    ringing.current = [];
   });
 });
