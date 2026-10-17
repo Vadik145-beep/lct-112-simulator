@@ -44,6 +44,7 @@ from app.telephony.cloud import (
     note_speech,
     record_transcript,
     report_recording_url,
+    store_analysis,
     token_candidates,
 )
 from app.telephony.vapi import (
@@ -247,6 +248,7 @@ class CloudWebCalls:
             # report with the recording a few seconds later. The call is over; only the file
             # is still to be kept.
             call.reported = True
+            await store_analysis(call, message)
             await self._save_recording(call, report_recording_url(message))
             await self._forget(call)
             return {}
@@ -269,6 +271,7 @@ class CloudWebCalls:
             call.vapi_ended = True
             call.reported = True
             await apply_report(call, message)
+            await store_analysis(call, message)
             await self._save_recording(call, report_recording_url(message))
             await self._end(call, end_reason(str(message.get("endedReason") or "")))
         elif kind == "hang":

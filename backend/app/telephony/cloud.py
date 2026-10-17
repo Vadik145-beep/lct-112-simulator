@@ -286,6 +286,23 @@ async def _apply_service_report(call: CloudTurns, reported: list[tuple[str, str]
     await publish_events(events)
 
 
+async def store_analysis(call: CloudTurns, message: dict) -> None:
+    """The cloud's form of a call on the card (``analysis.structuredData`` of the report): the
+    evaluation of the call to the squad chief reads it (#263)."""
+    from app.dialog import officer
+
+    data = (message.get("analysis") or {}).get("structuredData")
+    if not call.service_call_id or not isinstance(data, dict) or not data:
+        return
+    async with SessionLocal() as session:
+        loaded = await load_card_attempt(session, call.attempt_id)
+        if loaded is None:
+            return
+        officer.set_analysis(loaded.attempt, call.service_call_id, data, loaded.scenario)
+        await session.commit()
+    log.info("cloud form stored", call=call.service_call_id, form=data)
+
+
 def report_recording_url(message: dict) -> str | None:
     artifact = message.get("artifact") or {}
     return artifact.get("recordingUrl") or message.get("recordingUrl") or None
@@ -649,6 +666,7 @@ class CloudCallManager(CallManager):
         elif kind == "end-of-call-report":
             call.vapi_ended = True
             await apply_report(call, message)
+            await store_analysis(call, message)
             await self._end(call, end_reason(str(message.get("endedReason") or "")))
         elif kind == "hang":
             log.warning("vapi reports a delay", attempt=str(call.attempt_id))

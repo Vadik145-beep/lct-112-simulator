@@ -705,6 +705,7 @@ def evaluation_input(attempt: Attempt) -> dict:
                     for t in c.get("dialog") or []
                 ],
                 "facts_passed": list(c.get("facts_passed") or []),
+                "analysis": c.get("analysis"),
             }
             for c in attempt.service_calls or []
         ],

@@ -573,6 +573,62 @@ async def send_control(url: str, body: dict[str, Any]) -> bool:
     return True
 
 
+# The form the cloud fills after a call to the squad chief (#263): the evaluation reads the
+# dispatcher's words by meaning, not by keywords.
+CHIEF_FORM: dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "address_named": {
+            "type": "boolean",
+            "description": "Диспетчер назвал адрес происшествия: улицу и номер дома.",
+        },
+        "house_named": {
+            "type": "string",
+            "description": "Номер дома, который диспетчер назвал последним, цифрами (с буквой, "
+            "если была). Пустая строка, если не называл.",
+        },
+        "incident_named": {
+            "type": "boolean",
+            "description": "Диспетчер сказал, что случилось.",
+        },
+        "injured_named": {
+            "type": "boolean",
+            "description": "Диспетчер сказал, есть ли пострадавшие.",
+        },
+        "access_named": {
+            "type": "boolean",
+            "description": "Диспетчер сказал про доступ на объект: код, ключи, кто встретит.",
+        },
+        "order_given": {
+            "type": "boolean",
+            "description": "Диспетчер распорядился выезжать — любыми словами.",
+        },
+        "house_corrected": {
+            "type": "boolean",
+            "description": "Собеседник повторил номер дома неверно, и диспетчер его поправил. "
+            "false, если ошибки не было или диспетчер не поправил.",
+        },
+    },
+    "required": [
+        "address_named",
+        "house_named",
+        "incident_named",
+        "injured_named",
+        "access_named",
+        "order_given",
+        "house_corrected",
+    ],
+}
+
+
+def is_squad_chief(scenario: CallIntakeScenario) -> bool:
+    from app.domain.scenarios.officers import OFFICER_PERSONA, SQUAD_CHIEF_TITLE
+
+    return scenario.caller.persona == OFFICER_PERSONA and scenario.title.startswith(
+        SQUAD_CHIEF_TITLE
+    )
+
+
 def build_assistant(
     scenario: CallIntakeScenario, settings: Settings | None = None, *, recording: bool = False
 ) -> dict[str, Any]:
@@ -604,9 +660,15 @@ def build_assistant(
         # Диспетчер передаёт карточку кусками, с паузами: дежурный ждёт дольше обычного,
         # чтобы не отвечать на каждую его фразу (замечание пользователя 23.09.2026).
         **({} if is_caller(scenario) else {"startSpeakingPlan": {"waitSeconds": 1.5}}),
-        # The server steers the people of the card mid-call (#263): misheard house, the order
-        # taken, «машин нет» — decided on the dispatcher's words, voiced by the cloud.
+        # The server steers the people of the card mid-call (#263): the misheard house and
+        # «машин нет», voiced word for word.
         **({} if is_caller(scenario) else {"monitorPlan": {"controlEnabled": True}}),
+        # After a call to the squad chief the cloud fills the form the evaluation reads.
+        **(
+            {"analysisPlan": {"structuredDataPlan": {"enabled": True, "schema": CHIEF_FORM}}}
+            if is_squad_chief(scenario)
+            else {}
+        ),
         # A SIP call is recorded by Asterisk into storage/recordings and Vapi keeps nothing;
         # a browser call has no Asterisk, so Vapi records it and the report brings the file.
         "artifactPlan": {"recordingEnabled": recording},

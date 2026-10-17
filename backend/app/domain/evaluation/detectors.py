@@ -25,12 +25,13 @@ from app.domain.evaluation.schemas import (
 )
 from app.domain.evaluation.service_call import (
     address_named,
-    facts_from_dialog,
+    call_facts,
+    form_says,
     gives_order,
     true_card,
     wrong_address_told,
 )
-from app.domain.evaluation.text import normalize_text
+from app.domain.evaluation.text import normalize_house, normalize_text
 from app.domain.evaluation.timing import seconds_between
 from app.domain.reference_data import TYPICAL_ERRORS
 from app.domain.scenarios import complication, misheard, no_vehicles, staff
@@ -372,7 +373,7 @@ def _informed_services(ctx: CardContext) -> tuple[set[str], set[str]]:
             continue
         reached.add(call.service)
         required = required_by_service.get(call.service) or []
-        passed = facts_from_dialog(true_card(ctx.scenario), call.dialog)
+        passed = call_facts(ctx.scenario, call)
         if not required or any(fact in passed for fact in required):
             told.add(call.service)
     return reached, told
@@ -559,10 +560,9 @@ def no_order_given(ctx: CardContext) -> ErrorItem | None:
         if c.kind == "outgoing" and c.service == ctx.scenario.service and c.answered
     ]
     said = [t.text for c in chief for t in c.dialog if t.role == "operator"]
-    turns = [t for c in chief for t in c.dialog]
-    if not said or not facts_from_dialog(true_card(ctx.scenario), turns):
+    if not said or not any(call_facts(ctx.scenario, c) for c in chief):
         return None  # no call, or a silent one: those are errors of their own
-    if any(gives_order(text) for text in said):
+    if any(gives_order(text) for text in said) or form_says(chief, "order_given"):
         return None
     return _item(
         "no_order_given",
@@ -580,10 +580,17 @@ def wrong_address_passed(ctx: CardContext) -> ErrorItem | None:
         if c.kind == "outgoing" and c.service == ctx.scenario.service and c.answered
     ]
     said = [t.text for c in chief for t in c.dialog if t.role == "operator"]
-    if not any(wrong_address_told(ctx.scenario, text) for text in said):
-        return None
     truth = true_card(ctx.scenario)
-    if any(address_named(truth, text) for text in said):
+    houses = [normalize_house(str((c.analysis or {}).get("house_named") or "")) for c in chief]
+    wrong_house = normalize_house(ctx.scenario.card.address.house)
+    told_wrong = any(wrong_address_told(ctx.scenario, text) for text in said) or (
+        truth is not ctx.scenario.card and wrong_house in houses
+    )
+    if not told_wrong:
+        return None
+    if any(address_named(truth, text) for text in said) or (
+        normalize_house(truth.address.house) in houses
+    ):
         return None  # corrected in the end
     card = ctx.scenario.card.address
     return _item(
@@ -638,6 +645,8 @@ def misheard_not_fixed(ctx: CardContext) -> ErrorItem | None:
     found = misheard.state(calls)
     if found is None or found.fixed:
         return None
+    if form_says(ctx.attempt.service_calls, "house_corrected"):
+        return None  # the cloud's form heard the correction the words missed
     asked = next(
         (
             t.text

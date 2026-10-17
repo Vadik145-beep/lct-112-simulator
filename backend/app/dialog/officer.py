@@ -732,6 +732,16 @@ def is_hint(turn: dict) -> bool:
 VERBATIM_TOPICS = frozenset({misheard.TOPIC_MISHEARD, no_vehicles.TOPIC_NO_VEHICLES})
 
 
+def set_analysis(
+    attempt: Attempt, call_id: str, analysis: dict, scenario: CardResponseScenario
+) -> None:
+    """Keeps the cloud's form of a call (#263): the evaluation reads it, and the facts it says
+    were passed show in the call's history."""
+    call = find_call(attempt, call_id)
+    facts = engine.facts_from_analysis(scenario, analysis) if passes_facts(call) else []
+    _store(attempt, {**call, "analysis": analysis, "facts_passed": facts})
+
+
 def hint_of(call: dict) -> str | None:
     """The decision the cloud has to voice: the hidden turn right after the last phrase."""
     turns = call.get("dialog") or []
