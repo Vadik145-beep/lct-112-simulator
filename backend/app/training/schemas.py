@@ -302,6 +302,12 @@ class ServiceCallRequest(BaseModel):
     service: str = Field(min_length=1, max_length=32)
 
 
+class DialRequest(BaseModel):
+    """A number dialled on the virtual phone (#263): digits, spaces and «+» are fine."""
+
+    number: str = Field(min_length=1, max_length=20)
+
+
 class ServiceCallSayRequest(BaseModel):
     text: str = Field(min_length=1, max_length=1000)
     action_id: str | None = Field(default=None, max_length=64)

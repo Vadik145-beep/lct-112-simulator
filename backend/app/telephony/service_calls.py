@@ -23,15 +23,16 @@ from app.db import SessionLocal
 from app.dialog import officer
 from app.dialog import service as dialog
 from app.domain.evaluation.schemas import CardResponseScenario
-from app.domain.scenarios import caller_back
+from app.domain.scenarios import caller_back, staff
 from app.errors import ApiError
 from app.events import publish_events
 from app.models import MODE_CARD_RESPONSE, Attempt, Role, TrainingSession, User
 from app.providers.stt import Transcript, get_stt_provider
 from app.telephony import service as telephony
-from app.training import present
+from app.training import phones, present
 from app.training import service as training
 from app.training.schemas import (
+    DialRequest,
     ServiceCallRequest,
     ServiceCallResponse,
     ServiceCallSayRequest,
@@ -46,6 +47,22 @@ SILENCE_PEAK = 0.01  # below this the microphone sent nothing but noise floor
 def caller_number(scenario: CardResponseScenario) -> str:
     """The phone of the card's caller: the dispatcher calls it back directly."""
     return (scenario.card.caller.phone or "").strip()
+
+
+# A mobile number is told by its last ten digits: «8 916…», «+7 916…» and «916…» are one.
+SUBSCRIBER_DIGITS = 10
+
+
+def same_phone(dialled: str, number: str) -> bool:
+    a, b = phones.digits(dialled), phones.digits(number)
+    if not a or not b:
+        return False
+    if len(a) >= SUBSCRIBER_DIGITS and len(b) >= SUBSCRIBER_DIGITS:
+        return a[-SUBSCRIBER_DIGITS:] == b[-SUBSCRIBER_DIGITS:]
+    return a == b
+
+
+CALLER_NOT_ALLOWED = "Номер недоступен: звонить заявителю в этом занятии преподаватель не разрешил."
 
 
 def nothing_recognized_message(transcript: Transcript) -> str:
@@ -129,12 +146,96 @@ async def start_service_call(
             raise ApiError(
                 422, "no_caller_phone", "В карточке нет телефона заявителя: звонить некуда."
             )
+        if not ts.allow_caller_call:
+            raise ApiError(409, "number_unavailable", CALLER_NOT_ALLOWED)
     else:
         services = await training.load_services(session)
         service = services.get(body.service)
         if service is None:
             raise ApiError(422, "unknown_service", f"Службы «{body.service}» нет в справочнике.")
         code, title = service.code, service.title
+    kind = officer.KIND_CALLER if to_caller else officer.KIND_OUTGOING
+    number = caller_number(scenario) if to_caller else None
+    return await _start_call(
+        session, request, user, attempt, ts, card, scenario, code, title, kind, number=number
+    )
+
+
+@router.post("/attempts/{attempt_id}/dial", response_model=ServiceCallResponse)
+async def dial_number(
+    attempt_id: uuid.UUID,
+    body: DialRequest,
+    user: ActiveUser,
+    session: DbSession,
+    request: Request,
+) -> ServiceCallResponse:
+    """The virtual phone of the card (#263): the number dialled tells who answers. A number of
+    the card's service in the directory reaches that person — the squad chief is the officer
+    of the own service's tab; the caller's number from the card rings only when the lesson
+    allows it; anything else does not exist."""
+    attempt, ts, card, scenario = await card_attempt(session, attempt_id, user)
+    dialled = phones.digits(body.number)
+    if not dialled:
+        raise ApiError(422, "empty_number", "Наберите номер: цифры на клавиатуре телефона.")
+    services = await training.load_services(session)
+    own = services.get(scenario.service)
+    own_title = own.title if own else scenario.service
+    entry = await phones.find_entry(session, scenario.service, dialled)
+    if entry is not None:
+        if entry.role == staff.ROLE_SQUAD_CHIEF:
+            kind, role = officer.KIND_OUTGOING, None
+        else:
+            kind, role = officer.KIND_STAFF, entry.role
+        return await _start_call(
+            session,
+            request,
+            user,
+            attempt,
+            ts,
+            card,
+            scenario,
+            scenario.service,
+            own_title,
+            kind,
+            role=role,
+            number=entry.number,
+        )
+    if same_phone(dialled, caller_number(scenario)):
+        if not ts.allow_caller_call:
+            raise ApiError(409, "number_unavailable", "Номер недоступен.")
+        title = caller_back.caller_name(scenario)
+        return await _start_call(
+            session,
+            request,
+            user,
+            attempt,
+            ts,
+            card,
+            scenario,
+            officer.CALLER_TARGET,
+            title,
+            officer.KIND_CALLER,
+            number=caller_number(scenario),
+        )
+    raise ApiError(404, "number_not_found", "Набранный номер не существует.")
+
+
+async def _start_call(
+    session: DbSession,
+    request: Request,
+    user: User,
+    attempt: Attempt,
+    ts: TrainingSession,
+    card: training.ScenarioCard,
+    scenario: CardResponseScenario,
+    code: str,
+    title: str,
+    kind: str,
+    *,
+    role: str | None = None,
+    number: str | None = None,
+) -> ServiceCallResponse:
+    """Starts the call on the card and rings the trainee's phone when the lesson has one."""
     live = telephony.for_session(ts)
     # В облачном занятии без телефонии трубку снимает браузерный звонок: первую фразу
     # говорит сам провайдер (см. cloud_router.start_service_web_call).
@@ -149,7 +250,8 @@ async def start_service_call(
         title,
         telephony=live,
         answer_now=not cloud,
-        kind=officer.KIND_CALLER if to_caller else officer.KIND_OUTGOING,
+        kind=kind,
+        role=role,
     )
     await write_audit(
         session,
@@ -158,7 +260,7 @@ async def start_service_call(
         actor_role=user.role,
         entity="attempt",
         entity_id=str(attempt.id),
-        details={"service": code, "call_id": call["id"], "telephony": live},
+        details={"service": code, "call_id": call["id"], "telephony": live, "role": role},
         ip=client_ip(request),
     )
     await session.commit()
@@ -171,7 +273,7 @@ async def start_service_call(
             code,
             title,
             kind=call["kind"],
-            number=caller_number(scenario) if to_caller else None,
+            number=number,
         )
         if not dialled:
             # The phone could not be rung: fall back to the text path right away.

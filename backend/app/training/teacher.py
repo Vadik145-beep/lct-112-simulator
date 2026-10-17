@@ -214,6 +214,7 @@ async def _session_out(session: DbSession, ts: TrainingSession) -> SessionOut:
         adaptive=ts.adaptive,
         phone_calls=ts.phone_calls,
         phone=ts.phone,
+        allow_caller_call=ts.allow_caller_call,
         members=[_student_out(u) for u in members],
         queue=[_queue_out(s) for s in queue],
         last_seq=await present.last_seq(session, ts.id),

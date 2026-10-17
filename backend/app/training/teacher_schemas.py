@@ -96,6 +96,8 @@ class SessionIn(BaseModel):
     phone_calls: bool = False
     # The number of the live call; empty = each trainee's own number.
     phone: str | None = Field(default=None, max_length=30)
+    # The trainee may dial the caller's number from the card (#263); off by default.
+    allow_caller_call: bool = False
 
 
 class SessionPatch(BaseModel):
@@ -118,6 +120,7 @@ class SessionPatch(BaseModel):
     adaptive: bool | None = None
     phone_calls: bool | None = None
     phone: str | None = Field(default=None, max_length=30)
+    allow_caller_call: bool | None = None
 
 
 class QueueScenarioOut(BaseModel):
@@ -193,6 +196,7 @@ class SessionOut(SessionListItem):
     adaptive: bool
     phone_calls: bool = False
     phone: str | None = None
+    allow_caller_call: bool = False
     members: list[StudentOut]
     # The queue: fixed once the session starts, a preview of the current filters before.
     queue: list[QueueScenarioOut]

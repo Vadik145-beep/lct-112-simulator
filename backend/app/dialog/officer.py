@@ -251,9 +251,16 @@ def call_scenario(
         # это два разных файла.
         return with_studio_audio(built, f"{STUDIO_CALLER_KEY}/{built.caller.voice}")
     if is_staff(call):
+        role = call.get(no_vehicles.ROLE_KEY) or staff.ROLE_HEAD
         org = officers.spoken_service(scenario.service, title)
-        head = staff.head_scenario(scenario, org)
-        return with_studio_audio(head, f"{STUDIO_STAFF_KEY}/{call.get(no_vehicles.ROLE_KEY)}")
+        state = squad_state(attempt)
+        progress = (
+            staff.SPECIALIST_PROGRESS.get(state, "")
+            if role == staff.ROLE_SQUAD_SPECIALIST
+            else officers.PROGRESS_REPLIES[state]
+        )
+        person = staff.person_scenario(role, scenario, org, progress)
+        return with_studio_audio(person, f"{STUDIO_STAFF_KEY}/{role}")
     if is_report(call):
         report = _report_for(scenario, call, attempt)
         leader = officers.report_scenario(scenario, report, title)
@@ -495,6 +502,8 @@ async def answer(
     else:
         # A call back uses the caller's own folder of recordings, split by voice.
         key = f"{STUDIO_CALLER_KEY}/{officer.caller.voice}" if is_caller(call) else call["service"]
+        if is_staff(call):
+            key = f"{STUDIO_STAFF_KEY}/{call.get(no_vehicles.ROLE_KEY)}"
         audio = await _greeting_audio(version, officer, key, repeat=is_repeat(call))
         topics = ["greeting"]
     opening = (
@@ -891,6 +900,9 @@ def _reply_stem(call: dict, reply: CallerReply) -> str:
         # Report replies quote the report itself: cache per phrase, so every trainee who
         # hears the same squad leader gets the same file instead of a fresh synthesis.
         return f"report-{call.get('report_status') or 'report'}-{_text_key(reply.text)}"
+    if is_staff(call):
+        # Some replies say where the squad is: cache per phrase, not per reply.
+        return f"staff-{call.get(no_vehicles.ROLE_KEY)}-{_text_key(reply.text)}"
     if reply.reply_id:
         return f"officer-{call['service']}-r{reply.reply_id}"
     return f"officer-{call['service']}-{_text_key(reply.text)}"
@@ -914,7 +926,10 @@ async def _greeting_audio(
     opening = officer.caller.opening
     # The repeat call opens with where the squad is: its own file per phrase, so the cached
     # greeting of the first call is neither played here nor overwritten.
-    if repeat:
+    if service.startswith(STUDIO_STAFF_KEY):
+        # A person of the organization: the greeting may name where the squad is.
+        stem = f"staff-{service.rsplit('/', 1)[-1]}-{_text_key(opening)}"
+    elif repeat:
         stem = f"officer-{service}-repeat-{_text_key(opening)}"
     elif opening.endswith(rush.OPENING_TAIL):
         # The hurried greeting of difficulty 3 is its own file next to the calm one.

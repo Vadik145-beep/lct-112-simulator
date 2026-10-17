@@ -172,6 +172,7 @@ class SessionSettings:
     adaptive: bool = False
     phone_calls: bool = False
     phone: str | None = None
+    allow_caller_call: bool = False
 
 
 async def validate_settings(session: AsyncSession, spec: SessionSettings, teacher: User) -> None:
@@ -304,6 +305,7 @@ def apply_settings(ts: TrainingSession, spec: SessionSettings) -> None:
     # The number matters only with the checkbox; stored as MultiFon dials it.
     phone = telephony_settings.normalize_phone(spec.phone) if spec.phone_calls else ""
     ts.phone = phone or None
+    ts.allow_caller_call = spec.allow_caller_call
 
 
 async def pick_scenarios(session: AsyncSession, ts: TrainingSession) -> list[Scenario]:

@@ -42,6 +42,7 @@ from app.models import (
 )
 from app.security import hash_password
 from app.seed_history import seed_history
+from app.training import phones
 from app.training.service import utcnow
 
 log = get_logger(__name__)
@@ -382,6 +383,8 @@ async def seed_demo_session(session: AsyncSession, keys: list[str]) -> bool:
             norm_seconds=30,
             pass_threshold=70,
             hints_enabled=True,
+            # The demo shows the call back to the caller from the card (#263).
+            allow_caller_call=True,
             status=SESSION_RUNNING,
             started_at=utcnow(),
         )
@@ -440,6 +443,7 @@ async def seed(data_dir: Path | None = None) -> int:
     data_dir = data_dir or Path(settings.data_dir)
     async with SessionLocal() as session:
         users_created = await seed_users(session)
+        phones_created = await phones.seed_defaults(session)
         scenarios_created, scenarios_updated, keys = await seed_scenarios(session, data_dir)
         groups_created = 0
         session_created = call_session_created = False
@@ -454,6 +458,7 @@ async def seed(data_dir: Path | None = None) -> int:
         "seed finished",
         demo_mode=settings.demo_mode,
         users_created=users_created,
+        phone_numbers_created=phones_created,
         groups_created=groups_created,
         scenarios_created=scenarios_created,
         scenarios_updated=scenarios_updated,
