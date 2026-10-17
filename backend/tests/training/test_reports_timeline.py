@@ -54,7 +54,7 @@ def report_call(status: str, start: float, end: float | None, *, spoken: bool = 
 
 # What the dispatcher says to the officer of «card_gkh_1_tech_v_podezde»: the squad only
 # leaves once it has been told where to go.
-ADDRESS_PASSED = "улица Свободы, дом 42, течёт стояк, пострадавших нет, код подъезда 5В"
+ADDRESS_PASSED = "улица Свободы, дом 42, течёт стояк, пострадавших нет, код подъезда 5В, выезжайте"
 
 
 def officer_call(start: float, end: float, said: str = ADDRESS_PASSED) -> dict:
@@ -91,6 +91,17 @@ def test_first_report_comes_after_the_delay_from_the_call_to_the_officer() -> No
     assert reports.next_report(SCENARIO, a, now(80 + FIRST.after_seconds - 1)) is None
     due = reports.next_report(SCENARIO, a, now(80 + FIRST.after_seconds))
     assert due is not None and due.status == "response_started"
+
+
+def test_a_squad_told_but_not_sent_stays_until_the_order() -> None:
+    """The address alone is not the order to go (#263): the squad leaves at the end of the
+    call in which the dispatcher sent it."""
+    told = officer_call(20, 80, said="улица Свободы, дом 42, течёт стояк, пострадавших нет")
+    assert reports.next_report(SCENARIO, attempt(calls=[told]), now(5000)) is None
+    sent = {**officer_call(100, 130, said="Выезжайте."), "id": "o-2"}
+    a = attempt(calls=[told, sent])
+    assert reports.next_report(SCENARIO, a, now(130 + FIRST.after_seconds - 1)) is None
+    assert reports.next_report(SCENARIO, a, now(130 + FIRST.after_seconds)) is not None
 
 
 def test_nothing_before_accepted_or_after_a_rejection() -> None:

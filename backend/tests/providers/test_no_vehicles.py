@@ -57,7 +57,7 @@ def talk(scenario: CardResponseScenario, attempt: Attempt, call: dict, text: str
     """One phrase of the dispatcher answered as ``officer.say`` answers it."""
     special = officer.special_reply(scenario, attempt, call, text)
     reply, extra = special if special is not None else (PROVIDER, {})
-    reply = officer.no_vehicles_reply(scenario, attempt, call, text, reply)
+    reply = officer.chief_reply(scenario, attempt, call, text, reply)
     call["dialog"] = [
         *call["dialog"],
         {"role": "operator", "text": text, "topics": reply.operator_topics},
@@ -83,11 +83,11 @@ def test_no_vehicles_after_the_house_is_settled_then_the_head_finds_one() -> Non
     call = chief_call()
     attempt = Attempt(service_calls=[call])
     accepted(attempt)
-    # The house is misheard first; «машин нет» comes with the correction.
+    # The house is misheard first; «машин нет» answers the order to go (#263).
     assert talk(scenario, attempt, call, ADDRESS).startswith("Записал:")
-    said = talk(scenario, attempt, call, "Нет, дом 42.")
-    assert said == f"Понял, дом 42. Исправил, записал. {no_vehicles.SHORTAGE}"
+    assert talk(scenario, attempt, call, "Нет, дом 42.") == "Понял, дом 42. Исправил, записал."
     assert misheard.state(attempt.service_calls).fixed
+    assert talk(scenario, attempt, call, "Выезжайте.") == no_vehicles.ANNOUNCE
     call["ended_at"] = (NOW + timedelta(seconds=40)).isoformat()
 
     # One truth: the squad has no vehicles and goes nowhere.

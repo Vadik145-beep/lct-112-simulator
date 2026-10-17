@@ -94,7 +94,8 @@ PERSONS: dict[str, Person] = {
 }
 # Where the squad is, as its specialist says it (the squad's states of ``officers``).
 SPECIALIST_PROGRESS: dict[str, str] = {
-    "pending": "Собираемся, ждём команды на выезд.",
+    "waiting": "Ждём команды на выезд.",
+    "pending": "Собираемся, выезжаем.",
     "no_vehicles": "Стоим, машин нет.",
     "response_started": "Едем на адрес.",
     "arrived": "На месте, осматриваемся.",

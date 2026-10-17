@@ -101,14 +101,15 @@ async def test_reports_arrive_on_the_timeline_and_the_dispatcher_reflects_them(
     assert r.status_code == 200, r.text
     assert await sweep() == []
 
-    # The dispatcher calls the officer (issue #36) and asks about the squad: it is being
-    # sent. The squad leaves after this call, so the first report counts from its end.
+    # The dispatcher calls the squad chief (issue #36) and asks about the squad: it waits for
+    # the order (#263). Told and sent, it leaves after this call: the first report counts
+    # from its end.
     r = await start(client, token, attempt_id)
     call_id = r.json()["call"]["id"]
     r = await say(client, token, attempt_id, call_id, "Как обстановка, бригада выехала?")
     assert r.json()["call"]["turns"][-1]["topics"] == ["progress"]
-    assert "собираем" in r.json()["call"]["turns"][-1]["text"]
-    await say(client, token, attempt_id, call_id, "Улица Молостовых, дом 10, корпус 1, наряд 4127")
+    assert "ждём вашего распоряжения" in r.json()["call"]["turns"][-1]["text"]
+    await say(client, token, attempt_id, call_id, "Улица Молостовых, дом 10, корпус 1, выезжайте")
     await end(client, token, attempt_id, call_id)
     await rewind(attempt_id, 20)
     assert await sweep() == []

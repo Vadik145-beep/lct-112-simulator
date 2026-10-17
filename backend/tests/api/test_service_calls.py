@@ -373,7 +373,8 @@ async def test_repeat_call_does_not_take_the_card_again(client: AsyncClient) -> 
         token,
         attempt_id,
         first["id"],
-        "Улица Молостовых, дом 10, корпус 1, нет отопления в трёх домах, пострадавших нет",
+        "Улица Молостовых, дом 10, корпус 1, нет отопления в трёх домах, пострадавших нет, "
+        "выезжайте",
     )
     assert set(r.json()["call"]["facts_passed"]) >= {"address", "incident_type", "injured"}
     await end(client, token, attempt_id, first["id"])
