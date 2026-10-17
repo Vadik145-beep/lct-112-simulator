@@ -128,7 +128,7 @@ function Journal({ sessionId }: { sessionId: string }) {
               <div className="mt-1 flex items-center gap-2 text-xs text-[var(--arm-on-dark-muted)]">
                 {/* The organization comes first, as «, УМЦ Оп» on the customer's screenshot: whose ДДС
                     the trainee is (the lesson's choice in the mode «Задания формирует ИИ»). */}
-                <span className="max-w-72 truncate">
+                <span className="max-w-56 truncate" title={`${data.session.service?.title ?? ""} ${data.arm.dispatcher}`.trim()}>
                   , {data.session.service ? `ДДС ${data.session.service.short_title} · ` : ""}
                   {data.arm.dispatcher}
                 </span>
