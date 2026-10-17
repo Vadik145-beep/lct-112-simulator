@@ -4,6 +4,8 @@ back at once. Retrieval index on TF-IDF."""
 
 from __future__ import annotations
 
+import re
+
 import pytest
 
 from app.domain.evaluation.schemas import parse_scenario
@@ -334,3 +336,37 @@ async def test_card_for_the_trainees_service_follows_the_classifier_not_the_mode
         "not_in_competence",
     )
     assert [e.field for e in scenario.injected_errors] == ["service"]
+
+
+PHONE = re.compile(r"^9\d\d-\d{3}-\d{2}-\d{2}$")
+
+
+async def test_every_card_from_a_phrase_names_the_caller_and_the_number() -> None:
+    """Issue #265: the card of АРМ-112 always says who called and from what number (АОН),
+    even when the model leaves the caller out."""
+    answer = _parking_fire("accept") | {"caller": {"name": None, "role": "очевидец"}}
+    fake = FakeModel([answer])
+    result = await LlmGeneration(fake).generate(request(kind="card_response"), CTX)
+    caller = parse_scenario(result.body).card.caller
+    assert caller.name and len(caller.name.split()) == 3
+    assert caller.phone and PHONE.match(caller.phone)
+    assert (
+        f"Заявитель: {caller.name}, телефон {caller.phone}"
+        in fake.calls[0]["messages"][1]["content"]
+    )
+
+    template = await TemplateGeneration().generate(
+        request(kind="card_response", phrase="течёт стояк в подъезде"), CTX
+    )
+    caller = parse_scenario(template.body).card.caller
+    assert caller.name and caller.phone and PHONE.match(caller.phone)
+
+
+async def test_ticket_without_a_number_gets_one_and_keeps_its_caller() -> None:
+    facts = parse_ticket("Возгорание мусорного контейнера, Сидоров Иван Сергеевич", "")
+    result = await TemplateGeneration().generate(
+        request(kind="card_response", facts=facts, ticket_ref="1-1", phrase=None), CTX
+    )
+    caller = parse_scenario(result.body).card.caller
+    assert caller.name == "Сидоров Иван Сергеевич"
+    assert caller.phone and PHONE.match(caller.phone)
