@@ -124,6 +124,8 @@ class JournalItem(BaseModel):
     incident_title: str
     incident_group: str
     injured: bool
+    # ЧС flag of the card: the «ЧС» column of the journal marks it, as on the live АРМ.
+    emergency: bool = False
     address: str
     caller: CallerOut
     description: str

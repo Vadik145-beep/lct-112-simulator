@@ -391,6 +391,38 @@ async def build_report(session: AsyncSession, ts: TrainingSession) -> ReportOut:
     )
 
 
+def cards_per_trainee(ts: TrainingSession) -> int:
+    """How many cards one trainee gets in the lesson: the tile of the monitor says «все
+    карточки закрыты» when that many are closed. The queue is the lesson's, but at difficulty
+    1 and 2 a trainee gets only ``cards_per_student`` of it; a stream counts per trainee
+    (``trainee_totals``)."""
+    if ai_cards.is_ai(ts):
+        return ai_cards.cards_for(ts)
+    queue = len(ts.scenario_ids)
+    if ts.cards_per_student and not training.is_stream(ts):
+        return min(queue, ts.cards_per_student)
+    return queue
+
+
+async def trainee_totals(
+    session: AsyncSession, ts: TrainingSession, by_student: dict[uuid.UUID, list[Attempt]]
+) -> dict[uuid.UUID, int]:
+    """Cards each trainee gets. In a stream: what his schedule brings while the queue lasts,
+    plus a repeated call once its original has reached him (it comes outside the schedule)."""
+    if not training.is_stream(ts):
+        total = cards_per_trainee(ts)
+        return {student_id: total for student_id in by_student}
+    queue = await training.scenario_queue(session, ts)
+    repeats = await stream.repeats_of(session, queue)
+    plain = len(queue) - len(repeats)
+    totals: dict[uuid.UUID, int] = {}
+    for student_id, rows in by_student.items():
+        numbers = {a.card_number for a in rows}
+        scheduled = min(len(stream.trainee_schedule(ts, student_id)), plain)
+        totals[student_id] = scheduled + sum(1 for o in repeats.values() if o in numbers)
+    return totals
+
+
 def monitor_card(attempt: Attempt, ts: TrainingSession, incident_title: str) -> MonitorCard:
     return MonitorCard(
         attempt_id=attempt.id,
@@ -419,6 +451,7 @@ async def build_monitor(session: AsyncSession, ts: TrainingSession) -> MonitorOu
     by_student: dict[uuid.UUID, list[Attempt]] = {u.id: [] for u in members}
     for a in attempts:
         by_student.setdefault(a.student_id, []).append(a)
+    totals_of = await trainee_totals(session, ts, by_student)
     tiles: list[MonitorStudent] = []
     for user in sorted(members, key=lambda u: u.full_name):
         rows = by_student[user.id]
@@ -446,6 +479,7 @@ async def build_monitor(session: AsyncSession, ts: TrainingSession) -> MonitorOu
                 last_attempt_id=next(
                     (a.id for a in rows if a.result and a.submitted_at == last), None
                 ),
+                cards_total=totals_of[user.id],
             )
         )
     return MonitorOut(
@@ -453,7 +487,7 @@ async def build_monitor(session: AsyncSession, ts: TrainingSession) -> MonitorOu
         status=ts.status,
         norm_seconds=ts.norm_seconds,
         pass_threshold=ts.pass_threshold,
-        cards_total=ai_cards.cards_for(ts) if ai_cards.is_ai(ts) else len(ts.scenario_ids),
+        cards_total=cards_per_trainee(ts),
         students=tiles,
         last_seq=last_seq,
     )

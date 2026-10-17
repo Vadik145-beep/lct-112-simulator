@@ -3501,6 +3501,11 @@ export interface components {
             incident_group: string;
             /** Injured */
             injured: boolean;
+            /**
+             * Emergency
+             * @default false
+             */
+            emergency: boolean;
             /** Address */
             address: string;
             caller: components["schemas"]["CallerOut"];
@@ -3699,6 +3704,8 @@ export interface components {
             last_total: number | null;
             /** Last Attempt Id */
             last_attempt_id: string | null;
+            /** Cards Total */
+            cards_total?: number | null;
         };
         /** NoiseOut */
         NoiseOut: {

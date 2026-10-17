@@ -13,6 +13,7 @@ from app.db import SessionLocal
 from app.events import events_after
 from app.models import Attempt, Group, Scenario, TrainingSession, User
 from app.scenarios import jobs
+from app.training import ai_cards
 from app.training.service import sweep_not_notified, utcnow
 from app.training.stream import (
     REPEAT_DELAY,
@@ -327,6 +328,91 @@ async def test_cards_per_student_limits_issue(client: AsyncClient) -> None:
     assert r.status_code == 200, r.text
     assert r.json()["issued"] == []
     assert (await journal(client, student, created["id"]))["total"] == 1
+
+
+async def test_monitor_tile_reaches_all_closed_at_difficulty_1(client: AsyncClient) -> None:
+    """At difficulty 1 a trainee gets one card of a longer queue: once it is closed, the
+    monitor counts his cards as all closed (the tile «все карточки закрыты»)."""
+    teacher = await login(client, "teacher1")
+    created = await create_session(
+        client, teacher, difficulty=1, cards_per_student=1, service_profile=[]
+    )
+    session_id = created["id"]
+    started = await start(client, teacher, session_id)
+    assert len(started["scenario_ids"]) > 1
+    student = await login(client, "student1")
+    item = (await journal(client, student, session_id))["items"][0]
+    await client.post(f"/api/attempts/{item['attempt_id']}/open", headers=bearer(student))
+    r = await set_status(client, student, item["attempt_id"], status="accepted")
+    assert r.status_code == 200, r.text
+    r = await client.post(f"/api/attempts/{item['attempt_id']}/finish", headers=bearer(student))
+    assert r.status_code == 200 and r.json()["attempt"]["state"] == "evaluated"
+
+    r = await client.get(f"/api/sessions/{session_id}/monitor", headers=bearer(teacher))
+    assert r.status_code == 200, r.text
+    monitor = r.json()
+    assert monitor["cards_total"] == 1
+    tile = next(s for s in monitor["students"] if s["login"] == "student1")
+    assert tile["active"] == [] and tile["finished"] >= monitor["cards_total"]
+
+
+async def test_monitor_counts_the_stream_of_each_trainee(client: AsyncClient) -> None:
+    """In a stream the tile's «всего» is what this trainee's schedule brings while the queue
+    lasts; a repeated call adds one once its original has reached him."""
+    keys = [
+        "card_2-1_dubl",
+        "card_2-1_zadymlenie_musoroprovoda",
+        "card_gkh_1_tech_v_podezde",
+        "card_gkh_2_net_sveta_v_podezde",
+        "card_gkh_3_zapah_kanalizacii",
+        "card_17-1_pozharnaya_signalizaciya",
+    ]
+    async with SessionLocal() as session:
+        by_key = {
+            s.seed_key: s.id
+            for s in await session.scalars(select(Scenario).where(Scenario.seed_key.in_(keys)))
+        }
+    teacher = await login(client, "teacher1")
+    created = await create_session(
+        client, teacher, difficulty=3, scenario_ids=[str(by_key[k]) for k in keys]
+    )
+    started = await start(client, teacher, created["id"])
+
+    async def tile_total() -> int:
+        r = await client.get(f"/api/sessions/{created['id']}/monitor", headers=bearer(teacher))
+        assert r.status_code == 200, r.text
+        tile = next(s for s in r.json()["students"] if s["login"] == "student1")
+        return tile["cards_total"]
+
+    async with SessionLocal() as session:
+        ts = await session.get(TrainingSession, uuid.UUID(created["id"]))
+        me = await session.scalar(select(User).where(User.login == "student1"))
+        assert ts is not None and me is not None
+        scheduled = min(len(trainee_schedule(ts, me.id)), len(keys) - 1)
+    # Before the original of the repeated call arrives, only the schedule counts.
+    assert await tile_total() == scheduled
+    async with SessionLocal() as session:
+        await issue_stream_cards(
+            session, datetime.fromisoformat(started["started_at"]) + timedelta(seconds=40)
+        )
+        await session.commit()
+    assert await tile_total() == scheduled + 1
+
+
+async def test_monitor_counts_five_cards_when_the_cards_are_written_by_ai(
+    client: AsyncClient,
+) -> None:
+    teacher = await login(client, "teacher1")
+    created = await create_session(
+        client, teacher, card_source="ai", difficulty=3, service_profile=[], cards_per_student=3
+    )
+    await start(client, teacher, created["id"])
+    await ai_cards.wait_all()
+    r = await client.get(f"/api/sessions/{created['id']}/monitor", headers=bearer(teacher))
+    assert r.status_code == 200, r.text
+    assert r.json()["cards_total"] == ai_cards.CARDS_PER_TRAINEE == 5
+    assert {s["cards_total"] for s in r.json()["students"]} == {5}
+    await ai_cards.wait_all(max_seconds=30)
 
 
 async def test_monitor_progress_and_finish_with_report(client: AsyncClient) -> None:

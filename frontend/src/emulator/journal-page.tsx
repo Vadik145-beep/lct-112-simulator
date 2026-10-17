@@ -349,7 +349,9 @@ function JournalRow({
           </button>
         </td>
         <td className={cn(cell, "text-center")}><Link2 className="mx-auto size-3.5 text-[var(--arm-on-dark-muted)]" aria-hidden /></td>
-        <td className={cn(cell, "text-center")} />
+        <td className={cn(cell, "text-center")}>
+          {item.emergency && <Zap className="mx-auto size-3.5 fill-white text-white" aria-label="ЧС" data-testid="journal-emergency" />}
+        </td>
         <td className={cn(cell, "text-center")}><Bookmark className="mx-auto size-3.5 text-[var(--arm-on-dark-muted)]" aria-hidden /></td>
         <td className={cn(cell, "text-center")}><Zap className="mx-auto size-3.5 text-[var(--arm-on-dark-muted)]" aria-hidden /></td>
         <td className={cn(cell, "text-center")}>

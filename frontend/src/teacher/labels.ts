@@ -10,9 +10,9 @@ export const SESSION_STATUS_TITLES: Record<string, string> = {
 };
 
 export const DIFFICULTY_TITLES: Record<number, string> = {
-  1: "1 — одна карточка, простой случай",
-  2: "2 — одна карточка, сложный случай (чужой регион, дубли)",
-  3: "3 — вал карточек: приходят сами, несколько в минуту",
+  1: "1 — простой случай, без ошибок оператора 112",
+  2: "2 — одна ошибка оператора 112 в карточке",
+  3: "3 — ЧС, две ошибки, карточки идут валом (около 4 в минуту)",
 };
 
 /** How many cards are on the trainee's screen at once at each difficulty (backend CARDS_AT_ONCE). */
