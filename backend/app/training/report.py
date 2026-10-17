@@ -16,6 +16,7 @@ from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.domain.evaluation import advice
 from app.domain.evaluation.data_check import field_title
 from app.domain.evaluation.timing import seconds_between
 from app.models import (
@@ -356,6 +357,9 @@ async def build_report(session: AsyncSession, ts: TrainingSession) -> ReportOut:
                 )
                 if stream_lesson
                 else None,
+                advice=advice.session_advice(
+                    [a.result for a in attempts if a.student_id == user.id and a.result]
+                ),
             )
         )
         session_errors.update(acc.errors)

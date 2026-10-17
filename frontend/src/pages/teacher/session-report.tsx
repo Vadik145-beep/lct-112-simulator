@@ -5,6 +5,7 @@ import { Link, Navigate, useParams } from "react-router-dom";
 import { downloadReport, type ExportFormat } from "@/api/review";
 import { useReport, type ReportAttempt, type ReportStudent } from "@/api/teacher";
 import { ErrorState, LoadingState } from "@/components/states";
+import { AdviceList } from "@/components/advice-list";
 import { StreamSummaryView } from "@/components/stream-summary";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -105,11 +106,12 @@ function Report({ sessionId }: { sessionId: string }) {
             {report.students.map((s) => (
               <Fragment key={s.student_id}>
                 <StudentRow student={s} open={open.has(s.student_id)} onToggle={() => toggle(s.student_id)} threshold={report.pass_threshold} />
-                {s.stream && (
+                {(s.stream || s.advice.length > 0) && (
                   <tr className="border-b">
                     <td />
-                    <td colSpan={8} className="pb-3 pr-3">
-                      <StreamSummaryView summary={s.stream} />
+                    <td colSpan={8} className="space-y-2 pb-3 pr-3">
+                      {s.stream && <StreamSummaryView summary={s.stream} />}
+                      <AdviceList title="Советы по занятию" points={s.advice} />
                     </td>
                   </tr>
                 )}

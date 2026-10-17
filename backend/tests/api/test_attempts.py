@@ -459,9 +459,11 @@ async def test_flag_field_is_stored_scored_and_closed_with_the_card(client: Asyn
     async with SessionLocal() as session:
         events = list(
             await session.scalars(
-                select(SessionEvent).where(
+                select(SessionEvent)
+                .where(
                     SessionEvent.session_id == session_id, SessionEvent.type == "attempt.progress"
                 )
+                .order_by(SessionEvent.seq)
             )
         )
     assert events and events[-1].payload["stage"] == "checking_data"

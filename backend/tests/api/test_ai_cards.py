@@ -8,10 +8,18 @@ from datetime import timedelta
 
 import pytest
 from httpx import AsyncClient
-from sqlalchemy import select, update
+from sqlalchemy import delete, select, update
 
 from app.db import SessionLocal
-from app.models import AI_CARD_GENERATING, AI_CARD_READY, AiCard, Attempt, Scenario, User
+from app.models import (
+    AI_CARD_GENERATING,
+    AI_CARD_READY,
+    AiCard,
+    Attempt,
+    Scenario,
+    TrainingSession,
+    User,
+)
 from app.training import ai_cards
 from app.training.service import utcnow
 from app.training.stream import issue_stream_cards
@@ -29,6 +37,15 @@ pytestmark = pytest.mark.skipif(
 async def finish_writing():
     yield
     await ai_cards.wait_all(max_seconds=30)
+    # The scenarios outlive the per-test reset: other tests take every scenario of a service.
+    async with SessionLocal() as session:
+        await session.execute(
+            delete(TrainingSession).where(TrainingSession.card_source == ai_cards.CARD_SOURCE_AI)
+        )
+        await session.execute(
+            delete(Scenario).where(Scenario.source == ai_cards.SCENARIO_SOURCE_AI)
+        )
+        await session.commit()
 
 
 async def ai_lesson(client: AsyncClient, teacher: dict, difficulty: int) -> str:
@@ -103,6 +120,10 @@ async def test_next_card_is_written_after_the_scored_one_by_its_mistakes(
     assert (await set_status(client, student, first, status="accepted")).status_code == 200
     r = await client.post(f"/api/attempts/{first}/finish", headers=bearer(student))
     assert r.status_code == 200, r.text
+    # The review: advice from the mistakes, and why this card was written for the trainee.
+    evaluation = r.json()["attempt"]["evaluation"]
+    assert 1 <= len(evaluation["advice"]) <= 5
+    assert evaluation["reasons"]
     await ai_cards.wait_all()  # written while the trainee reads the result
 
     items = (await journal(client, student, lesson))["items"]
@@ -124,6 +145,14 @@ async def test_next_card_is_written_after_the_scored_one_by_its_mistakes(
     assert [r.seq for r in rows] == [1, 2]
     assert all(r.status == AI_CARD_READY for r in rows)
     assert any("Пропущена ошибка" in reason for reason in rows[1].reasons)
+
+    # After the lesson: advice per trainee for him and for the teacher.
+    r = await client.get(f"/api/sessions/{lesson}/report", headers=bearer(teacher))
+    row = next(s for s in r.json()["students"] if s["login"] == "student3")
+    assert row["advice"]
+    r = await client.get("/api/me/progress", headers=bearer(student))
+    mine = next(s for s in r.json()["sessions"] if s["session_id"] == lesson)
+    assert mine["advice"] == row["advice"]
 
 
 async def test_difficulty_3_is_an_emergency_with_two_mistakes_one_card_at_a_time(

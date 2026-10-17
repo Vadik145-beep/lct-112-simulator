@@ -15,6 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.analytics import service as analytics
 from app.analytics.schemas import RatingOut, WeekPointOut
 from app.domain.analytics.records import MAX_TIME_RATIO
+from app.domain.evaluation import advice
 from app.models import (
     MODE_CALL_INTAKE,
     SESSION_DRAFT,
@@ -52,6 +53,8 @@ class ProgressSession(BaseModel):
     overridden: int
     # «Вал карточек» (issue #264): how the trainee held the stream; only in a stream lesson.
     stream: StreamSummary | None = None
+    # Advice for further training after the lesson (issue #265), from its scored cards.
+    advice: list[str] = []
 
 
 class FrequentError(BaseModel):
@@ -160,6 +163,7 @@ async def build_progress(session: AsyncSession, student: User) -> ProgressOut:
                 stream=stream.stream_summary(rows_of, emergency, ts.norm_seconds)
                 if training.is_stream(ts)
                 else None,
+                advice=advice.session_advice([a.result for a in rows_of if a.result]),
             )
         )
         all_totals += totals

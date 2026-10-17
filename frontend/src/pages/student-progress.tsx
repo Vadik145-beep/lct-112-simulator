@@ -7,6 +7,7 @@ import { useProgress, type ProgressOut } from "@/api/review";
 import { Chart } from "@/components/chart";
 import { baseOption, usePalette, type ChartOption, type ChartPalette } from "@/components/chart-theme";
 import { ErrorState, LoadingState } from "@/components/states";
+import { AdviceList } from "@/components/advice-list";
 import { StreamSummaryView } from "@/components/stream-summary";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -75,7 +76,7 @@ export function StudentProgressPage() {
                 const low = s.average !== null && s.average < s.pass_threshold;
                 return (
                   <Fragment key={s.session_id}>
-                    <tr className={cn("border-b last:border-0", s.stream && "border-b-0")}>
+                    <tr className={cn("border-b last:border-0", (s.stream || s.advice.length > 0) && "border-b-0")}>
                       <td className="py-2 pl-3 pr-3">
                         <div className="font-medium">{s.title}</div>
                         <div className="text-xs text-muted-foreground">
@@ -97,10 +98,11 @@ export function StudentProgressPage() {
                         </div>
                       </td>
                     </tr>
-                    {s.stream && (
+                    {(s.stream || s.advice.length > 0) && (
                       <tr className="border-b last:border-0">
-                        <td colSpan={7} className="pb-3 pl-3 pr-3">
-                          <StreamSummaryView summary={s.stream} />
+                        <td colSpan={7} className="space-y-2 pb-3 pl-3 pr-3">
+                          {s.stream && <StreamSummaryView summary={s.stream} />}
+                          <AdviceList title="Советы по занятию" points={s.advice} />
                         </td>
                       </tr>
                     )}

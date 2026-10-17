@@ -3,6 +3,7 @@ import { Link, Navigate, useParams } from "react-router-dom";
 
 import { useAttempt, type AttemptOut } from "@/api/training";
 import { useAuth } from "@/app/use-auth";
+import { AdviceList } from "@/components/advice-list";
 import { ErrorState, LoadingState } from "@/components/states";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,6 +52,9 @@ interface Evaluation {
   methods: Record<string, string>;
   ai_comment: string | null;
   checked_text?: string;
+  // Issue #265: what to work on next; why a card written for the trainee was chosen.
+  advice?: string[];
+  reasons?: string[];
 }
 interface ReferenceStep {
   status: string;
@@ -426,6 +430,15 @@ function ReviewView({
           </p>
         )}
       </section>
+
+      {((evaluation.advice?.length ?? 0) > 0 || (evaluation.reasons?.length ?? 0) > 0) && (
+        <Card data-testid="review-advice">
+          <CardContent className="grid gap-4 pt-6 sm:grid-cols-2">
+            <AdviceList title="Советы для дальнейшего обучения" points={evaluation.advice ?? []} />
+            <AdviceList title="Почему ИИ выдал эту карточку" points={evaluation.reasons ?? []} />
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

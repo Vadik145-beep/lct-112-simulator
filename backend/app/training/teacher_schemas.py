@@ -319,6 +319,8 @@ class ReportStudent(BaseModel):
     grammar_percent: float | None
     # «Вал карточек» (issue #264): how the trainee held the stream; only in a stream lesson.
     stream: StreamSummary | None = None
+    # Advice for further training after the lesson (issue #265), from the scored cards.
+    advice: list[str] = []
 
 
 class ReportSummary(BaseModel):

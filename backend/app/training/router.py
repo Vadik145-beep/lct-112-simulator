@@ -12,9 +12,11 @@ from sqlalchemy import delete, func, select
 from app.audit import write_audit
 from app.auth.deps import ActiveUser, DbSession, client_ip
 from app.config import get_settings
+from app.domain.evaluation import advice
 from app.domain.evaluation.call_intake import description_text
 from app.domain.evaluation.card_response import comment_texts
 from app.domain.evaluation.schemas import CallIntakeAttempt, CardResponseAttempt
+from app.domain.scenarios.validate import GENERATION_KEY
 from app.errors import ApiError
 from app.events import append_event, publish_events
 from app.models import (
@@ -160,6 +162,12 @@ async def _attempt_out(session: DbSession, attempt: Attempt, ts: TrainingSession
                 "methods": row.methods,
                 # Text the grammar component was checked on; its items carry offsets into it.
                 "checked_text": _checked_text(attempt),
+                # Issue #265: what to work on next, and why a card written for the trainee was
+                # chosen (empty for other cards).
+                "advice": advice.card_advice(
+                    {"components": row.components, "errors": row.errors, "passed": row.passed}
+                ),
+                "reasons": list((card.body.get(GENERATION_KEY) or {}).get("reasons") or []),
             }
     override, comments = await review.review_extras(session, attempt)
     out = present.attempt_out(
