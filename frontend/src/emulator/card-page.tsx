@@ -71,6 +71,9 @@ const HINTS: Record<string, string> = {
   works_started:
     "По окончании — «Работы завершены» с комментарием о результатах: статус закрывает карточку.",
 };
+// Statuses after which the dispatcher closes the card with «Завершить работу с карточкой».
+const READY_TO_FINISH = new Set(["rejected", "works_done", "works_refused"]);
+
 // The same hints when the squad reports by phone (customer, 21.09.2026): the statuses of
 // the response follow the reports of the squad leader, not the dispatcher's guess.
 const REPORT_HINTS: Record<string, string> = {
@@ -947,9 +950,10 @@ function CardView({
       <TrainerPanel
         connection={connection}
         collapsedByDefault
-        // The result of the card lives in the panel: it opens for it. The conversation is in
-        // the virtual phone (#263).
-        expand={finished}
+        // The result of the card lives in the panel: it opens for it. It opens too once the
+        // card can be finished (its «Завершить работу с карточкой» is there): «Не принята»
+        // does not close the card by itself. The conversation is in the virtual phone (#263).
+        expand={finished || READY_TO_FINISH.has(attempt.response_status)}
         footer={
           <button
             type="button"
