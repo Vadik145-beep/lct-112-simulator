@@ -40,6 +40,19 @@ def test_old_wording_is_renamed() -> None:
     )
 
 
+def test_works_done_is_said_once() -> None:
+    """Stand 17.10.2026: the reference comment itself started with «Работы завершены»."""
+    said = "Алло, диспетчер? Начальник аварийной бригады. Работы завершены: работы завершены, "
+    assert officers.renamed(said + "пострадавших нет.") == (
+        "Алло, диспетчер? Начальник аварийной бригады. Работы завершены, пострадавших нет."
+    )
+    assert officers.renamed("Работы завершены: работы выполнены.") == "Работы завершены."
+    assert officers.renamed("Работы завершены: работы выполнены") == "Работы завершены"
+    assert officers.renamed("Работы завершены: заменили участок трубы.") == (
+        "Работы завершены: заменили участок трубы."
+    )
+
+
 def test_stored_report_of_old_wording_is_said_by_the_new_title_without_its_recording() -> None:
     scenario = card_scenario(NAME)
     old = scenario.reference.reports[0].model_copy(

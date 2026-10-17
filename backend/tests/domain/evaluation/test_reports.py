@@ -248,3 +248,47 @@ def test_report_model_defaults() -> None:
     report = BrigadeReport(status="arrived", text="На месте.")
     assert report.after_seconds > 0
     assert CardResponseAttempt(issued_at=at(0)).service_calls == []
+
+
+def _chief_named_squad(scenario, attempt: CardResponseAttempt, second: int) -> list[dict]:
+    """The dispatcher's call to the squad chief, who said «выезжаем» and named the squad."""
+    calls = [c.model_dump() for c in attempt.service_calls]
+    call = next(c for c in calls if c["kind"] == "outgoing" and c["service"] == scenario.service)
+    call["dialog"].append(
+        {
+            "role": "caller",
+            "text": "Принял, выезжаем. Наряд 4484.",
+            "topics": ["order_taken", "order_number"],
+            "at": at(second),
+        }
+    )
+    return calls
+
+
+def test_departure_set_after_the_chief_named_his_squad_is_on_time() -> None:
+    """Stand 17.10.2026 (decision of the user): «Принял, выезжаем. Наряд 4484» on the phone is
+    the information on the departure (memo p. 22), the squad's call back only confirms it."""
+    scenario = card_scenario(NAME)
+    perfect = perfect_card_attempt(scenario)
+    named = STEP_SECONDS["response_started"] - 60  # well before the squad's report call
+    log = [e.model_dump() for e in perfect.status_log]
+    for entry in log:
+        if entry["status"] == "response_started":
+            entry["at"] = at(named + 5)
+    calls = _chief_named_squad(scenario, perfect, named)
+    errors = errors_of(scenario, with_changes(perfect, status_log=log, service_calls=calls))
+    assert "status_before_report" not in errors
+    assert "report_not_reflected" not in errors
+
+
+def test_departure_set_before_the_chief_named_his_squad_is_early() -> None:
+    scenario = card_scenario(NAME)
+    perfect = perfect_card_attempt(scenario)
+    named = STEP_SECONDS["response_started"] - 60
+    log = [e.model_dump() for e in perfect.status_log]
+    for entry in log:
+        if entry["status"] == "response_started":
+            entry["at"] = at(named - 5)
+    calls = _chief_named_squad(scenario, perfect, named)
+    errors = errors_of(scenario, with_changes(perfect, status_log=log, service_calls=calls))
+    assert "«Начало реагирования»" in errors["status_before_report"]

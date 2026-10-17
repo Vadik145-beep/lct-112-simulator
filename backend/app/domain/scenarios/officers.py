@@ -198,11 +198,23 @@ _OLD_TITLES: list[tuple[re.Pattern[str], str]] = [
 ]
 
 
+# A reference comment that itself starts with «Работы завершены» (stand 17.10.2026: «Работы
+# завершены: работы завершены, пострадавших нет.»).
+_DOUBLE_DONE = re.compile(r"Работы завершены:\s+работы (?:завершены|выполнены)([.,]?)")
+
+
+def _done_once(match: re.Match[str]) -> str:
+    if match.group(1):
+        return f"Работы завершены{match.group(1)}"
+    return "Работы завершены" if match.end() == len(match.string) else "Работы завершены,"
+
+
 def renamed(text: str) -> str:
-    """The squad leader of an older wording called by the customer's title."""
+    """The squad leader of an older wording called by the customer's title; «Работы
+    завершены» said once."""
     for pattern, title in _OLD_TITLES:
         text = pattern.sub(title, text)
-    return text
+    return _DOUBLE_DONE.sub(_done_once, text)
 
 
 DEFAULT_WORK_COMMENTS: dict[str, str] = {

@@ -102,6 +102,18 @@ SPECIALIST_PROGRESS: dict[str, str] = {
     "works_started": "Работаем, пока без замечаний.",
     "works_done": "Закончили, сворачиваемся.",
 }
+# Where the squad is, as the head and the chief of the response department know it from the
+# office: not in the squad chief's words (stand 17.10.2026: the chief of the department said
+# «Бригада на базе… выедем», as if he sent the squad himself).
+OFFICE_PROGRESS: dict[str, str] = {
+    "waiting": "Бригада на базе, распоряжения на выезд пока не было.",
+    "pending": "Бригада собирается на выезд.",
+    "no_vehicles": "У бригады нет свободных машин.",
+    "response_started": "Бригада в пути на адрес.",
+    "arrived": "Бригада на месте.",
+    "works_started": "Бригада ведёт работы.",
+    "works_done": "Работы завершены.",
+}
 # The dispatcher sends the squad through the wrong person (#263, «позвонил не тому»).
 TOPIC_WRONG_CONTACT = "wrong_contact"
 WRONG_CONTACT = "Распоряжение на выезд — начальнику аварийной бригады, звоните ему."

@@ -289,7 +289,7 @@ def call_scenario(
         progress = (
             staff.SPECIALIST_PROGRESS.get(state, "")
             if role == staff.ROLE_SQUAD_SPECIALIST
-            else officers.PROGRESS_REPLIES[state]
+            else staff.OFFICE_PROGRESS.get(state, officers.PROGRESS_REPLIES[state])
         )
         person = staff.person_scenario(role, scenario, org, progress)
         if role == staff.ROLE_HEAD and no_vehicles.held(calls_of(attempt)):

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import datetime
 from math import ceil
 
 from rapidfuzz import fuzz
@@ -435,6 +436,33 @@ def _reports_delivered(ctx: CardContext) -> dict[str, StatusEntry | None]:
     return delivered
 
 
+# The squad chief named his squad in the dispatcher's call (``app.dialog.officer``).
+ORDER_TAKEN_TOPIC = "order_taken"
+
+
+def _departure_told(ctx: CardContext) -> datetime | None:
+    """When the squad chief told the dispatcher by phone that the squad goes and named it:
+    «Принял, выезжаем. Наряд 4484.» That is the information on the departure the memo sets
+    «Начало реагирования» by (p. 22; decision of 17.10.2026), before the squad calls back."""
+    told = [
+        turn.at or call.started_at
+        for call in ctx.attempt.service_calls
+        if call.kind == "outgoing" and call.service == ctx.scenario.service
+        for turn in call.dialog
+        if turn.role == "caller" and ORDER_TAKEN_TOPIC in turn.topics
+    ]
+    return min(told, default=None)
+
+
+def _known_at(ctx: CardContext, status: str, report: StatusEntry | None) -> datetime | None:
+    """The first moment the dispatcher knew of the milestone: the report call, or for the
+    departure the squad chief's own words if they came first."""
+    moments = [report.at] if report is not None else []
+    if status == sm.RESPONSE_STARTED and (told := _departure_told(ctx)) is not None:
+        moments.append(told)
+    return min(moments, default=None)
+
+
 def status_before_report(ctx: CardContext) -> ErrorItem | None:
     """A progress status set before the squad reported it (customer, 21.09.2026: the
     dispatcher learns about the departure, arrival and works by phone). Only for cards whose
@@ -447,8 +475,8 @@ def status_before_report(ctx: CardContext) -> ErrorItem | None:
     for entry in ctx.log:
         if entry.status not in expected or entry.status not in REPORTED_STATUSES:
             continue
-        report = delivered.get(entry.status)
-        if report is None or entry.at < report.at:
+        known = _known_at(ctx, entry.status, delivered.get(entry.status))
+        if known is None or entry.at < known:
             early.append(entry.status)
     if not early:
         return None
@@ -471,7 +499,8 @@ def report_not_reflected(ctx: CardContext) -> ErrorItem | None:
     late: list[str] = []
     for status, report in delivered.items():
         assert report is not None
-        entries = [e for e in ctx.entries(status) if e.at >= report.at]
+        known = _known_at(ctx, status, report) or report.at
+        entries = [e for e in ctx.entries(status) if e.at >= known]
         if not entries:
             missed.append(status)
         elif (seconds_between(report.at, entries[0].at) or 0.0) > REPORT_REACTION_SECONDS:

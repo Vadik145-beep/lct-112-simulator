@@ -24,7 +24,8 @@ log = get_logger(__name__)
 WEBHOOK_PATH = "/api/cloud/vapi/webhook"
 SECRET_HEADER = "X-Trainer-Secret"  # noqa: S105 - header name, not a secret
 NUMBER_PROVIDER = "vapi"
-REQUEST_TIMEOUT_SECONDS = 15
+# Vapi once took 22 s to store an assistant (stand 17.10.2026): wait longer than that.
+REQUEST_TIMEOUT_SECONDS = 30
 # Server messages the assistant sends back; the rest is noise for the trainer.
 # ``speech-update`` marks when either side starts and stops talking: the reply latency.
 SERVER_MESSAGES = ["transcript", "status-update", "end-of-call-report", "hang", "speech-update"]
@@ -321,7 +322,9 @@ STAFF_DUTIES: dict[str, str] = {
     "силам: машины, люди, техника. Бригаду сам не высылаешь — распоряжение на выезд даёт "
     "диспетчер начальнику аварийной бригады.",
     "response_chief": "Принимаешь доклад о происшествии и ставишь его на контроль, уточняешь, "
-    "какие силы направлены. Бригаду не высылаешь и машинами не распоряжаешься.",
+    "какие силы направлены. Бригаду не высылаешь и машинами не распоряжаешься. О бригаде "
+    "говоришь только то, что в строке «где бригада», и ничего не обещаешь: на выезд её "
+    "отправляет начальник аварийной бригады по распоряжению диспетчера.",
     "squad_specialist": "Ты на месте с бригадой: рассказываешь, что видишь и что делаете. "
     "Распоряжений на выезд не принимаешь — это к начальнику аварийной бригады.",
 }
