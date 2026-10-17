@@ -119,7 +119,7 @@ async def test_service_call_is_played_by_the_cloud(
     assert prompt.startswith("Ты начальник аварийной бригады")
     assert "ЗАЯВИТЕЛЯ" not in prompt
     assert "номер наряда — наряд твой" in prompt
-    assert "где он и что видит" in prompt
+    assert "где он находится" in prompt
     assert assistant["monitorPlan"] == {"controlEnabled": True}
     # Трубку кладёт диспетчер: дежурному функция завершения звонка не даётся.
     assert assistant["endCallFunctionEnabled"] is False
