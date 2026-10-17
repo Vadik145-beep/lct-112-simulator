@@ -114,12 +114,13 @@ async def test_service_call_is_played_by_the_cloud(
     assert keys.status_code == 200, keys.text
     assistant = api.assistants[keys.json()["assistant_id"]]
     prompt = assistant["model"]["messages"][0]["content"]
-    # Роль именно дежурного службы: облако принимает информацию, а не допрашивает
-    # диспетчера, как заявителя в приёме вызова (замечание пользователя 23.09.2026).
-    assert prompt.startswith("Ты дежурный службы")
+    # Своя служба — начальник аварийной бригады (#263): облако принимает информацию и
+    # выезжает по распоряжению, а не допрашивает диспетчера, как заявителя в приёме вызова.
+    assert prompt.startswith("Ты начальник аварийной бригады")
     assert "ЗАЯВИТЕЛЯ" not in prompt
-    assert "номер наряда: наряд твой" in prompt
-    assert "где он находится" in prompt
+    assert "номер наряда — наряд твой" in prompt
+    assert "где он и что видит" in prompt
+    assert assistant["monitorPlan"] == {"controlEnabled": True}
     # Трубку кладёт диспетчер: дежурному функция завершения звонка не даётся.
     assert assistant["endCallFunctionEnabled"] is False
     assert "на другой язык" in prompt and "Не кладёшь трубку" in prompt
