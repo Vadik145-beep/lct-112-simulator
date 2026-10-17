@@ -26,42 +26,65 @@ def hear(scenario, attempt: Attempt, call: dict, text: str) -> str | None:
     if decided is not None:
         reply, extra = decided
         turns[0]["topics"] = list(reply.operator_topics)
-        turns.append(
-            {"role": "caller", "text": reply.text, "topics": reply.topics, "hint": True, **extra}
-        )
-    turns.append({"role": "caller", "text": "(слова облака)", "topics": []})
+        if reply.text:
+            turns.append(
+                {
+                    "role": "caller",
+                    "text": reply.text,
+                    "topics": reply.topics,
+                    "hint": True,
+                    **extra,
+                }
+            )
     call["dialog"] = [*call["dialog"], *turns]
     attempt.service_calls = [c if c["id"] != call["id"] else call for c in attempt.service_calls]
-    return decided[0].text if decided is not None else None
+    return decided[0].text if decided is not None and decided[0].text else None
 
 
-def test_misheard_and_order_decided_on_the_dispatchers_words() -> None:
+def cloud_says(scenario, attempt: Attempt, call: dict, text: str) -> list[str]:
+    """A phrase of the cloud itself: what it means for the squad is read from its words."""
+    marks = officer.cloud_marks(scenario, attempt, call, text)
+    call["dialog"] = [*call["dialog"], {"role": "caller", "text": text, "topics": marks}]
+    attempt.service_calls = [c if c["id"] != call["id"] else call for c in attempt.service_calls]
+    return marks
+
+
+def test_the_server_says_only_the_misheard_house_the_cloud_sends_the_squad() -> None:
     scenario = officer.lesson_scenario(card_scenario(NAME), SimpleNamespace(difficulty=2))
     call = new_call("moek")
     attempt = Attempt(service_calls=[call])
     assert hear(scenario, attempt, call, ADDRESS) == "Записал: улица Молостовых, дом 12, корпус 1?"
-    assert hear(scenario, attempt, call, "Нет, дом десять.").startswith("Понял, дом 10.")
+    # The fix is recorded on the dispatcher's phrase; what to answer is the cloud's.
+    hear(scenario, attempt, call, "Нет, дом десять.")
     assert misheard.state(attempt.service_calls).fixed
-    # The cloud talks on its own until the order; the order is the server's to take.
-    assert hear(scenario, attempt, call, "Горячая вода есть.") is None
-    assert hear(scenario, attempt, call, "Высылайте бригаду.").startswith("Принял, выезжаем. Наряд")
-    assert officer.order_given(attempt, scenario)
+    assert hear(scenario, attempt, call, "Высылайте бригаду.") is None
+    assert not officer.squad_sent([call])
+    # The squad goes when the chief himself names its number, in digits or in words.
+    order = officer.reference_for(scenario, "moek").order_number or "5600"
+    assert cloud_says(scenario, attempt, call, f"Принял, выезжаем, наряд {order}.")
+    assert officer.squad_sent([call])
 
 
-def test_no_vehicles_and_the_head_decided_by_the_server() -> None:
+def test_no_vehicles_said_by_the_server_the_head_releases_the_squad_in_his_own_words() -> None:
     scenario = card_scenario(NAME).model_copy(update={"difficulty": 3})
     chief = {**new_call("moek"), no_vehicles.PLAN_KEY: no_vehicles.PLAN_NO_VEHICLES}
     attempt = Attempt(service_calls=[chief])
     hear(scenario, attempt, chief, ADDRESS)  # misheard first on difficulty 3
     said = hear(scenario, attempt, chief, "Нет, дом 10.")
     assert said == f"Понял, дом 10. Исправил, записал. {no_vehicles.SHORTAGE}"
-    assert hear(scenario, attempt, chief, "Выезжайте.") == no_vehicles.STILL_NONE
-    assert no_vehicles.blocked(attempt.service_calls)
+    # The chief naming a number on a «машин нет» card sends nobody.
+    order = officer.reference_for(scenario, "moek").order_number or "5600"
+    assert cloud_says(scenario, attempt, chief, f"Наряд {order}.") == []
+    assert no_vehicles.held(attempt.service_calls)
     head = {**new_call("moek"), "kind": officer.KIND_STAFF, "role": staff.ROLE_HEAD}
     attempt.service_calls = [*attempt.service_calls, head]
-    said = "Докладываю: машин у бригады нет, а на Молостовых нет отопления."
-    assert hear(scenario, attempt, head, said) == no_vehicles.RESOLVED
-    assert not no_vehicles.blocked(attempt.service_calls)
+    assert (
+        officer.call_scenario(scenario, head, attempt).caller.facts[no_vehicles.HEAD_FACT_KEY]
+        == no_vehicles.HEAD_FACT
+    )
+    marks = cloud_says(scenario, attempt, head, "Понял. Снимаю машину с планового выезда.")
+    assert marks == [no_vehicles.TOPIC_VEHICLES_FOUND]
+    assert not no_vehicles.held(attempt.service_calls)
 
 
 def test_hidden_turns_are_hints_not_phrases() -> None:

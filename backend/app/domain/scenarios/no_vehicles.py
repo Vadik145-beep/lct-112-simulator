@@ -83,6 +83,27 @@ def resolving_call(calls: Iterable[Mapping]) -> Mapping | None:
     return next((c for c in calls if _said(c, TOPIC_VEHICLES_FOUND)), None)
 
 
+def held(calls: Iterable[Mapping]) -> bool:
+    """The card is a «машин нет» one and the head has not found a vehicle yet: the squad
+    cannot leave, whatever was said (one truth from the start of the card)."""
+    rows = list(calls)
+    return plan_of(rows) == PLAN_NO_VEHICLES and resolving_call(rows) is None
+
+
+# The head's own words when he finds a vehicle (his prompt tells him to say so).
+FOUND_WORDS = re.compile(r"планов")
+HEAD_FACT_KEY = "машины"
+HEAD_FACT = (
+    "у аварийной бригады нет свободных машин; если диспетчер доложит, что машин нет, — "
+    "скажи, что снимаешь машину с планового выезда и бригада выедет"
+)
+
+
+def finds_vehicle(text: str) -> bool:
+    """The head says he takes a vehicle off a planned job."""
+    return bool(FOUND_WORDS.search(normalize_text(text)))
+
+
 def blocked(calls: Iterable[Mapping]) -> bool:
     """No vehicles said and no vehicle found yet: the squad stays where it is."""
     rows = list(calls)
