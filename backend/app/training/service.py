@@ -31,6 +31,7 @@ from app.models import (
     ATTEMPT_ISSUED,
     ATTEMPT_RECEIVED,
     MODE_CALL_INTAKE,
+    MODE_CARD_RESPONSE,
     SCENARIO_APPROVED,
     SESSION_RUNNING,
     Attempt,
@@ -56,6 +57,17 @@ CARD_FINISHED = "finished"
 # How many cards are in the journal at once per session difficulty (PRD 9.2: at
 # difficulty 3 the trainee handles several cards in parallel).
 CARDS_AT_ONCE = {1: 1, 2: 1, 3: 3}
+
+# «Вал карточек» (issue #264, app.training.stream): at difficulty 3 a card response lesson gets
+# its cards on a timer, about STREAM_PER_MINUTE a minute for STREAM_MINUTES, not on the journal.
+STREAM_DIFFICULTY = 3
+STREAM_PER_MINUTE = 4
+STREAM_MINUTES = 5
+
+
+def is_stream(ts: TrainingSession) -> bool:
+    return ts.mode == MODE_CARD_RESPONSE and ts.difficulty == STREAM_DIFFICULTY
+
 
 # Journal numbers look like real АРМ-112 incident numbers (8 digits).
 _CARD_NUMBER_BASE = 38260000
@@ -291,7 +303,8 @@ async def issue_cards(
     journal (the norm of a card runs from «Добавлена», so a card is added only while the
     journal is in front of the trainee), never when a card closes. No-op when the session
     is not running or the queue is exhausted."""
-    if ts.status != SESSION_RUNNING:
+    if ts.status != SESSION_RUNNING or is_stream(ts):
+        # A stream lesson issues on its timer (app.training.stream), not on the journal.
         return [], []
     active = await session.scalar(
         select(func.count())
@@ -307,6 +320,15 @@ async def issue_cards(
     want = at_once - (active or 0)
     if want <= 0:
         return [], []
+    return await issue_next(session, ts, student, want)
+
+
+async def issue_next(
+    session: AsyncSession, ts: TrainingSession, student: User, want: int
+) -> tuple[list[Attempt], list[SessionEvent]]:
+    """Adds up to ``want`` next cards of the queue to the trainee's journal (fewer when the
+    queue or ``cards_per_student`` runs out; a stream is limited by its schedule only), each
+    with its «attempt.issued» event."""
     done = list(
         await session.scalars(
             select(Attempt.scenario_id).where(
@@ -314,7 +336,7 @@ async def issue_cards(
             )
         )
     )
-    if ts.cards_per_student:
+    if ts.cards_per_student and not is_stream(ts):
         want = min(want, ts.cards_per_student - len(done))
         if want <= 0:
             return [], []

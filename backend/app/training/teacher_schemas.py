@@ -9,6 +9,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 from app.models import MODE_CARD_RESPONSE
+from app.training.schemas import StreamSummary
 
 # ---------------------------------------------------------------- groups
 
@@ -312,6 +313,8 @@ class ReportStudent(BaseModel):
     wrong_decisions: int
     typical_errors: list[ReportErrorCount]
     grammar_percent: float | None
+    # «Вал карточек» (issue #264): how the trainee held the stream; only in a stream lesson.
+    stream: StreamSummary | None = None
 
 
 class ReportSummary(BaseModel):

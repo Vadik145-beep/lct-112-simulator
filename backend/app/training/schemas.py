@@ -331,3 +331,20 @@ class StatusResponse(BaseModel):
     applied: bool
     # Cards issued right after this one was closed (queue mode).
     issued: list[uuid.UUID]
+
+
+class StreamSummary(BaseModel):
+    """How the trainee held a stream of cards (issue #264, app.training.stream): the whole
+    stream at once, next to the scores of the cards, which it does not change."""
+
+    arrived: int
+    closed: int
+    # Taken («Принята» / «Не принята») later than the norm from «Добавлена».
+    late: int
+    # Still without «Принята» / «Не принята».
+    no_reaction: int
+    emergency_cards: int
+    # Every ЧС card got its reaction before the trainee turned to the ordinary cards that
+    # arrived meanwhile; ``None`` when the stream had no ЧС.
+    emergency_first: bool | None
+    advice: list[str]

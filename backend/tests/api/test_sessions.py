@@ -2,7 +2,7 @@
 
 import asyncio
 import uuid
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pytest
 from httpx import AsyncClient
@@ -11,10 +11,11 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 from app.db import SessionLocal
 from app.events import events_after
-from app.models import Group, User
+from app.models import Group, TrainingSession, User
 from app.scenarios import jobs
 from app.training.service import sweep_not_notified, utcnow
-from tests.api.conftest import DATA_DIR
+from app.training.stream import due_count, issue_stream_cards, trainee_schedule
+from tests.api.conftest import DATA_DIR, issue_now
 from tests.conftest import bearer, login
 
 pytestmark = pytest.mark.skipif(
@@ -290,6 +291,7 @@ async def test_start_fixes_queue_and_notifies_group(client: AsyncClient) -> None
     student = await login(client, "student1")
     assignments = (await client.get("/api/me/assignments", headers=bearer(student))).json()
     assert assignments[0]["id"] == created["id"] and assignments[0]["status"] == "running"
+    await issue_now(created["id"], "student1")
     data = await journal(client, student, created["id"])
     assert data["total"] == 3
     types = [e.type for e in await events(created["id"])]
@@ -327,6 +329,7 @@ async def test_monitor_progress_and_finish_with_report(client: AsyncClient) -> N
     created = await create_session(client, teacher)
     session_id = created["id"]
     await start(client, teacher, session_id)
+    await issue_now(session_id, "student1")
 
     student = await login(client, "student1")
     items = (await journal(client, student, session_id))["items"]
@@ -439,6 +442,60 @@ async def test_unfinished_threshold_marks_card(
     r = await set_status(client, student, attempt_id, status="works_done", comment="Готово")
     assert r.status_code == 200, r.text
     assert r.json()["attempt"]["card_status"] == "finished"
+
+
+async def test_difficulty_3_is_a_stream_of_cards_on_a_timer(client: AsyncClient) -> None:
+    """«Вал карточек» (issue #264): at difficulty 3 the journal itself adds nothing, the sweeper
+    issues the cards each trainee's schedule says are due; the report and the trainee's
+    progress sum the stream up."""
+    teacher = await login(client, "teacher1")
+    created = await create_session(client, teacher, service_profile=[], difficulty=3)
+    started = await start(client, teacher, created["id"])
+    student = await login(client, "student1")
+    assert (await journal(client, student, created["id"]))["total"] == 0
+
+    async with SessionLocal() as session:
+        ts = await session.get(TrainingSession, uuid.UUID(created["id"]))
+        me = await session.scalar(select(User).where(User.login == "student1"))
+        assert ts is not None and me is not None
+        due = due_count(trainee_schedule(ts, me.id), 40.0)
+        at = datetime.fromisoformat(started["started_at"]) + timedelta(seconds=40)
+        issued = await issue_stream_cards(session, at)
+        await session.commit()
+        again = await issue_stream_cards(session, at)
+        await session.commit()
+    assert due >= 3
+    assert {e.type for e in issued} == {"attempt.issued"}
+    assert again == []
+    items = (await journal(client, student, created["id"]))["items"]
+    assert len(items) == due
+
+    first = items[0]["attempt_id"]
+    await client.post(f"/api/attempts/{first}/open", headers=bearer(student))
+    r = await set_status(client, student, first, status="accepted")
+    assert r.status_code == 200, r.text
+
+    r = await client.get(f"/api/sessions/{created['id']}/report", headers=bearer(teacher))
+    assert r.status_code == 200, r.text
+    row = next(s for s in r.json()["students"] if s["login"] == "student1")
+    assert (row["stream"]["arrived"], row["stream"]["no_reaction"]) == (due, due - 1)
+    assert row["stream"]["advice"][0].startswith(f"{due - 1} ")
+    r = await client.get("/api/me/progress", headers=bearer(student))
+    mine = next(s for s in r.json()["sessions"] if s["session_id"] == created["id"])
+    assert mine["stream"] == row["stream"]
+
+
+async def test_lower_difficulty_is_no_stream(client: AsyncClient) -> None:
+    teacher = await login(client, "teacher1")
+    created = await create_session(client, teacher, difficulty=1)
+    await start(client, teacher, created["id"])
+    student = await login(client, "student1")
+    assert (await journal(client, student, created["id"]))["total"] == 1
+    async with SessionLocal() as session:
+        issued = await issue_stream_cards(session, utcnow() + timedelta(minutes=2))
+    assert all(str(e.session_id) != created["id"] for e in issued)
+    r = await client.get(f"/api/sessions/{created['id']}/report", headers=bearer(teacher))
+    assert all(s["stream"] is None for s in r.json()["students"])
 
 
 async def test_session_norm_overrides_scenario_norm(client: AsyncClient) -> None:
@@ -604,7 +661,7 @@ async def test_teacher_deletes_finished_and_draft_lessons_with_their_history(
     from app.models import Attempt, AuditLog, Evaluation, SkillRating, TrainingSession
 
     teacher = await login(client, "teacher1")
-    finished = await create_session(client, teacher, title="Удаляемое завершённое")
+    finished = await create_session(client, teacher, title="Удаляемое завершённое", difficulty=1)
     await start(client, teacher, finished["id"])
     # Cards are issued when a trainee opens the journal.
     trainee = await login(client, "student1")

@@ -1,5 +1,5 @@
 import { BookOpen, TrendingUp } from "lucide-react";
-import { useMemo } from "react";
+import { Fragment, useMemo } from "react";
 import { Link } from "react-router-dom";
 
 import { scoreDynamicsOption, shortTitle, timeDynamicsOption } from "@/analytics/charts";
@@ -7,6 +7,7 @@ import { useProgress, type ProgressOut } from "@/api/review";
 import { Chart } from "@/components/chart";
 import { baseOption, usePalette, type ChartOption, type ChartPalette } from "@/components/chart-theme";
 import { ErrorState, LoadingState } from "@/components/states";
+import { StreamSummaryView } from "@/components/stream-summary";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate, formatDateTime } from "@/emulator/time";
@@ -73,28 +74,37 @@ export function StudentProgressPage() {
               {p.sessions.map((s) => {
                 const low = s.average !== null && s.average < s.pass_threshold;
                 return (
-                  <tr key={s.session_id} className="border-b last:border-0">
-                    <td className="py-2 pl-3 pr-3">
-                      <div className="font-medium">{s.title}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {MODE_TITLES[s.mode] ?? s.mode} · {SESSION_STATUS_TITLES[s.status] ?? s.status}
-                      </div>
-                    </td>
-                    <td className="py-2 pr-3 whitespace-nowrap">{s.started_at ? formatDateTime(s.started_at) : "—"}</td>
-                    <td className="py-2 pr-3 text-right tabular-nums">
-                      {s.attempts}
-                      {s.evaluated > 0 && <span className="text-xs text-muted-foreground"> · зачтено {s.passed}</span>}
-                    </td>
-                    <td className={cn("py-2 pr-3 text-right font-medium tabular-nums", low && "text-destructive")}>{formatScore(s.average)}</td>
-                    <td className="py-2 pr-3 text-right tabular-nums">{formatDuration(s.average_seconds)}</td>
-                    <td className={cn("py-2 pr-3 text-right tabular-nums", (s.average_deviation ?? 0) > 0 && "text-destructive")}>{formatDeviation(s.average_deviation)}</td>
-                    <td className="py-2 pr-3">
-                      <div className="flex flex-wrap gap-1">
-                        {s.comments > 0 && <Badge tone="primary">{s.comments} {plural(s.comments, "комментарий", "комментария", "комментариев")}</Badge>}
-                        {s.overridden > 0 && <Badge tone="warning">оценка изменена</Badge>}
-                      </div>
-                    </td>
-                  </tr>
+                  <Fragment key={s.session_id}>
+                    <tr className={cn("border-b last:border-0", s.stream && "border-b-0")}>
+                      <td className="py-2 pl-3 pr-3">
+                        <div className="font-medium">{s.title}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {MODE_TITLES[s.mode] ?? s.mode} · {SESSION_STATUS_TITLES[s.status] ?? s.status}
+                        </div>
+                      </td>
+                      <td className="py-2 pr-3 whitespace-nowrap">{s.started_at ? formatDateTime(s.started_at) : "—"}</td>
+                      <td className="py-2 pr-3 text-right tabular-nums">
+                        {s.attempts}
+                        {s.evaluated > 0 && <span className="text-xs text-muted-foreground"> · зачтено {s.passed}</span>}
+                      </td>
+                      <td className={cn("py-2 pr-3 text-right font-medium tabular-nums", low && "text-destructive")}>{formatScore(s.average)}</td>
+                      <td className="py-2 pr-3 text-right tabular-nums">{formatDuration(s.average_seconds)}</td>
+                      <td className={cn("py-2 pr-3 text-right tabular-nums", (s.average_deviation ?? 0) > 0 && "text-destructive")}>{formatDeviation(s.average_deviation)}</td>
+                      <td className="py-2 pr-3">
+                        <div className="flex flex-wrap gap-1">
+                          {s.comments > 0 && <Badge tone="primary">{s.comments} {plural(s.comments, "комментарий", "комментария", "комментариев")}</Badge>}
+                          {s.overridden > 0 && <Badge tone="warning">оценка изменена</Badge>}
+                        </div>
+                      </td>
+                    </tr>
+                    {s.stream && (
+                      <tr className="border-b last:border-0">
+                        <td colSpan={7} className="pb-3 pl-3 pr-3">
+                          <StreamSummaryView summary={s.stream} />
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 );
               })}
             </tbody>

@@ -21,7 +21,7 @@ from app.models import (
     User,
 )
 from app.training.service import sweep_not_notified, utcnow
-from tests.api.conftest import DATA_DIR
+from tests.api.conftest import DATA_DIR, issue_now
 from tests.conftest import bearer, login
 
 pytestmark = pytest.mark.skipif(
@@ -94,6 +94,9 @@ async def test_assignments_list_running_session_first(client: AsyncClient) -> No
 async def test_journal_issues_cards_by_difficulty(client: AsyncClient) -> None:
     session_id = await make_session(difficulty=3)
     token = await login(client, "student1")
+    # Difficulty 3 is a stream (#264): the journal adds nothing, the cards come on a timer.
+    assert (await journal(client, token, session_id))["total"] == 0
+    await issue_now(session_id, "student1")
     data = await journal(client, token, session_id)
     assert data["total"] == 3
     assert data["session"]["service"]["short_title"] == "Управа"
@@ -125,6 +128,7 @@ async def test_journal_issues_cards_by_difficulty(client: AsyncClient) -> None:
 
 async def test_journal_pagination_and_address(client: AsyncClient) -> None:
     session_id = await make_session(difficulty=3)
+    await issue_now(session_id, "student1")
     token = await login(client, "student1")
     page = await journal(client, token, session_id, per_page=10)
     item = next(i for i in page["items"] if i["card_number"] == "38260311")
@@ -616,9 +620,9 @@ async def test_reference_search(client: AsyncClient) -> None:
 
 
 async def test_restart_in_demo_mode_drops_own_cards(client: AsyncClient) -> None:
-    session_id = await make_session(difficulty=3)
+    session_id = await make_session(difficulty=2)
     token = await login(client, "student1")
-    assert (await journal(client, token, session_id))["total"] == 3
+    assert (await journal(client, token, session_id))["total"] == 1
     r = await client.post(f"/api/sessions/{session_id}/restart", headers=bearer(token))
     assert r.status_code == 204, r.text
     async with SessionLocal() as db:
@@ -627,7 +631,7 @@ async def test_restart_in_demo_mode_drops_own_cards(client: AsyncClient) -> None
         )
     assert left == 0
     # The journal starts the exercise again from the first card.
-    assert (await journal(client, token, session_id))["total"] == 3
+    assert (await journal(client, token, session_id))["total"] == 1
     teacher = await login(client, "teacher1")
     r = await client.post(f"/api/sessions/{session_id}/restart", headers=bearer(teacher))
     assert r.status_code == 404

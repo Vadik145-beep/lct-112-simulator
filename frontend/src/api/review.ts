@@ -10,6 +10,7 @@ export type OverrideOut = components["schemas"]["OverrideOut"];
 export type CommentOut = components["schemas"]["CommentOut"];
 export type OverrideIn = components["schemas"]["OverrideIn"];
 export type ProgressOut = components["schemas"]["ProgressOut"];
+export type StreamSummary = components["schemas"]["StreamSummary"];
 
 /** PATCH /attempts/{id}/evaluation: the teacher's total with a reason; refreshes the review
  * and the report of the session. */

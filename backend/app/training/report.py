@@ -26,7 +26,7 @@ from app.models import (
     User,
 )
 from app.models.cabinets import Comment, EvaluationOverride
-from app.training import present, review
+from app.training import present, review, stream
 from app.training import service as training
 from app.training import sessions as lessons
 from app.training.teacher_schemas import (
@@ -292,6 +292,8 @@ async def build_report(session: AsyncSession, ts: TrainingSession) -> ReportOut:
     loaded = await _load(session, ts)
     members, attempts, scenarios = loaded.members, loaded.attempts, loaded.scenarios
     per_student: dict[uuid.UUID, _Acc] = {u.id: _Acc() for u in members}
+    stream_lesson = training.is_stream(ts)
+    emergency = await stream.emergency_attempts(session, attempts) if stream_lesson else set()
     for a in attempts:
         acc = per_student.setdefault(a.student_id, _Acc())
         row = report_attempt(
@@ -349,6 +351,11 @@ async def build_report(session: AsyncSession, ts: TrainingSession) -> ReportOut:
                     for c, n in acc.errors.most_common()
                 ],
                 grammar_percent=_mean(acc.grammar),
+                stream=stream.stream_summary(
+                    [a for a in attempts if a.student_id == user.id], emergency, ts.norm_seconds
+                )
+                if stream_lesson
+                else None,
             )
         )
         session_errors.update(acc.errors)
