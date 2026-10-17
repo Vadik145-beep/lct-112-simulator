@@ -130,10 +130,12 @@ async def _resolve(url: str) -> None:
         raise ServiceOffError(f"сервис {host} не запущен (профиль не поднят)") from exc
 
 
-async def _check_http(url: str, auth: tuple[str, str] | None = None) -> str | None:
+async def _check_http(
+    url: str, auth: tuple[str, str] | None = None, headers: dict[str, str] | None = None
+) -> str | None:
     await _resolve(url)
     async with httpx.AsyncClient(timeout=CHECK_TIMEOUT_SECONDS, auth=auth) as client:
-        response = await client.get(url)
+        response = await client.get(url, headers=headers)
         response.raise_for_status()
     return None
 
@@ -170,11 +172,12 @@ async def check_services() -> list[ServiceTile]:
         )
     for name, url in (
         ("llm-dialog", s.llm_dialog_url),
-        ("llm-gen", s.llm_gen_url),
         ("stt", s.stt_url),
     ):
         if url:
             checks[name] = _check_http(f"{url.rstrip('/')}/health")
+    if s.llm_gen_url:
+        checks["llm-gen"] = _check_http(*_generation_probe())
     results = await asyncio.gather(*(_timed(c) for c in checks.values()))
     by_name = dict(zip(checks, results, strict=True))
     tiles = [
@@ -197,6 +200,16 @@ async def check_services() -> list[ServiceTile]:
     return tiles
 
 
+def _generation_probe() -> tuple[str, None, dict[str, str] | None]:
+    """How to ask the generation model whether it is up: llama.cpp answers ``/health``, a
+    hosted OpenAI-compatible API (``LLM_GEN_API_KEY``) lists its models for the key."""
+    s = get_settings()
+    base = (s.llm_gen_url or "").rstrip("/")
+    if s.llm_gen_api_key:
+        return f"{base}/v1/models", None, {"Authorization": f"Bearer {s.llm_gen_api_key}"}
+    return f"{base}/health", None, None
+
+
 async def model_availability() -> dict[str, bool]:
     """Which AI services answer right now: for the teacher's lesson form (docs/BUGS.md, 10).
     ``dialog`` — the caller's replies, ``generation`` — scenario generation, ``stt`` —
@@ -204,17 +217,21 @@ async def model_availability() -> dict[str, bool]:
     from app.dialog.service import tts_available
 
     s = get_settings()
+
+    def health(url: str | None) -> tuple[str, None, None] | None:
+        return (f"{url.rstrip('/')}/health", None, None) if url else None
+
     probes = {
-        "dialog": s.llm_dialog_url,
-        "generation": s.llm_gen_url,
-        "stt": s.stt_url,
+        "dialog": health(s.llm_dialog_url),
+        "generation": _generation_probe() if s.llm_gen_url else None,
+        "stt": health(s.stt_url),
     }
 
-    async def alive(url: str | None) -> bool:
-        if not url:
+    async def alive(probe: tuple[str, None, dict[str, str] | None] | None) -> bool:
+        if probe is None:
             return False
         try:
-            await _check_http(f"{url.rstrip('/')}/health")
+            await _check_http(*probe)
         except Exception:  # any failure means «not available»
             return False
         return True
