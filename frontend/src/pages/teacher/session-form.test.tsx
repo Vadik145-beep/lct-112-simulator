@@ -118,3 +118,14 @@ describe("Lesson mode and access to the 112 operator mode", () => {
     expect(screen.getByText("Как отвечают служба и бригада")).toBeInTheDocument();
   });
 });
+
+describe("Card stream at difficulty 3", () => {
+  it("says the cards come as a stream, with no fields of its own", () => {
+    existing.current = null;
+    renderForm("/teacher/sessions/new", false);
+    fireEvent.change(screen.getByLabelText("Сложность"), { target: { value: "3" } });
+    expect(screen.getByText(/Вал: карточки приходят сами, около 4 в минуту в течение 5 минут, каждому до 20/)).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Сложность"), { target: { value: "1" } });
+    expect(screen.getByText("Каждый обучающийся получит одну карточку.")).toBeInTheDocument();
+  });
+});

@@ -3813,6 +3813,7 @@ export interface components {
             comments: number;
             /** Overridden */
             overridden: number;
+            stream?: components["schemas"]["StreamSummary"] | null;
         };
         /** PublicConfig */
         PublicConfig: {
@@ -4193,6 +4194,7 @@ export interface components {
             typical_errors: components["schemas"]["ReportErrorCount"][];
             /** Grammar Percent */
             grammar_percent: number | null;
+            stream?: components["schemas"]["StreamSummary"] | null;
         };
         /** ReportSummary */
         ReportSummary: {
@@ -5031,6 +5033,27 @@ export interface components {
             applied: boolean;
             /** Issued */
             issued: string[];
+        };
+        /**
+         * StreamSummary
+         * @description How the trainee held a stream of cards (issue #264, app.training.stream): the whole
+         *     stream at once, next to the scores of the cards, which it does not change.
+         */
+        StreamSummary: {
+            /** Arrived */
+            arrived: number;
+            /** Closed */
+            closed: number;
+            /** Late */
+            late: number;
+            /** No Reaction */
+            no_reaction: number;
+            /** Emergency Cards */
+            emergency_cards: number;
+            /** Emergency First */
+            emergency_first: boolean | null;
+            /** Advice */
+            advice: string[];
         };
         /** StreetOut */
         StreetOut: {

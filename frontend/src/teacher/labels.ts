@@ -12,11 +12,14 @@ export const SESSION_STATUS_TITLES: Record<string, string> = {
 export const DIFFICULTY_TITLES: Record<number, string> = {
   1: "1 — одна карточка, простой случай",
   2: "2 — одна карточка, сложный случай (чужой регион, дубли)",
-  3: "3 — три карточки одновременно",
+  3: "3 — вал карточек: приходят сами, несколько в минуту",
 };
 
 /** How many cards are on the trainee's screen at once at each difficulty (backend CARDS_AT_ONCE). */
 export const CARDS_AT_ONCE: Record<number, number> = { 1: 1, 2: 1, 3: 3 };
+
+/** «Вал карточек» at difficulty 3 of a card response lesson (backend app.training.stream). */
+export const STREAM = { difficulty: 3, perMinute: 4, minutes: 5 } as const;
 
 /** A score as the report shows it: one decimal, «—» when there is nothing yet. */
 export function formatScore(value: number | null | undefined): string {

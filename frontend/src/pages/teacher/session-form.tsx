@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CARDS_AT_ONCE, DIFFICULTY_TITLES } from "@/teacher/labels";
+import { CARDS_AT_ONCE, DIFFICULTY_TITLES, STREAM } from "@/teacher/labels";
 import { cn } from "@/lib/utils";
 
 const HOUR = 3600;
@@ -89,9 +89,12 @@ const CLOUD_MODE: (typeof DIALOG_MODES)[number] = {
   hint: "заявителя играет облачная модель с живым голосом; демо вне закрытого контура",
   dds: "дежурного и бригаду играет облачная модель с живым голосом; демо вне закрытого контура",
 };
-// Cards a trainee gets in the whole lesson: one at difficulty 1 and 2, three at 3 (at once in
-// card response, one after another in call intake). No endless queue.
-const cardsFor = (difficulty: number) => CARDS_AT_ONCE[difficulty] ?? 1;
+// Cards a trainee gets in the whole lesson: one at difficulty 1 and 2; at 3 three calls one after
+// another in call intake, a stream in card response (issue #264). No endless queue.
+const isStream = (mode: string, difficulty: number) =>
+  mode === "card_response" && difficulty === STREAM.difficulty;
+const cardsFor = (difficulty: number, mode: string) =>
+  isStream(mode, difficulty) ? STREAM.perMinute * STREAM.minutes : (CARDS_AT_ONCE[difficulty] ?? 1);
 const NORM_DEFAULT = { card_response: 30, call_intake: 60 } as const;
 
 const selectClass =
@@ -201,7 +204,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
     e.preventDefault();
     const body: SessionIn = {
       ...form,
-      cards_per_student: cardsFor(form.difficulty),
+      cards_per_student: cardsFor(form.difficulty, form.mode),
       title: form.title.trim(),
       group_id: groupId,
       // «Не завершено» через: поля в форме нет, остаётся значение занятия (по умолчанию 48 ч).
@@ -411,8 +414,8 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               <p className="text-sm">
                 Доступно карточек: <b>{preview.data.total}</b>
                 {preview.data.harder_only && <span className="text-muted-foreground"> — все сложнее выбранной сложности, будут выданы как есть</span>}
-                {cardsFor(form.difficulty) > preview.data.total && (
-                  <span className="text-muted-foreground"> — меньше, чем {cardsFor(form.difficulty)} на обучающегося: каждый получит {preview.data.total}</span>
+                {cardsFor(form.difficulty, form.mode) > preview.data.total && (
+                  <span className="text-muted-foreground"> — меньше, чем {cardsFor(form.difficulty, form.mode)} на обучающегося: каждый получит {preview.data.total}</span>
                 )}
                 .
               </p>
@@ -429,12 +432,12 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
             </select>
             <p className="text-xs text-muted-foreground">
               {form.mode === "call_intake"
-                ? cardsFor(form.difficulty) === 1
+                ? cardsFor(form.difficulty, form.mode) === 1
                   ? "Каждый обучающийся получит один вызов."
-                  : `Каждый обучающийся получит ${cardsFor(form.difficulty)} вызова подряд.`
-                : cardsFor(form.difficulty) === 1
-                  ? "Каждый обучающийся получит одну карточку."
-                  : `Каждый обучающийся получит ${cardsFor(form.difficulty)} карточки сразу.`}
+                  : `Каждый обучающийся получит ${cardsFor(form.difficulty, form.mode)} вызова подряд.`
+                : isStream(form.mode, form.difficulty)
+                  ? `Вал: карточки приходят сами, около ${STREAM.perMinute} в минуту в течение ${STREAM.minutes} минут, каждому до ${cardsFor(form.difficulty, form.mode)}.`
+                  : "Каждый обучающийся получит одну карточку."}
             </p>
           </div>
         </CardContent>

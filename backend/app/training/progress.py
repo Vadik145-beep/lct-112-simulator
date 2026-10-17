@@ -23,8 +23,9 @@ from app.models import (
     TypicalError,
     User,
 )
-from app.training import review
+from app.training import review, stream
 from app.training import service as training
+from app.training.schemas import StreamSummary
 
 MAX_FREQUENT_ERRORS = 5
 MAX_RECOMMENDATIONS = 4
@@ -49,6 +50,8 @@ class ProgressSession(BaseModel):
     average_deviation: float | None
     comments: int
     overridden: int
+    # «Вал карточек» (issue #264): how the trainee held the stream; only in a stream lesson.
+    stream: StreamSummary | None = None
 
 
 class FrequentError(BaseModel):
@@ -94,6 +97,10 @@ async def build_progress(session: AsyncSession, student: User) -> ProgressOut:
     attempt_ids = [a.id for a in attempts]
     overrides = await review.latest_overrides(session, attempt_ids)
     comments = await review.comments_for(session, attempt_ids)
+
+    stream_ids = {sid for sid, ts in sessions.items() if training.is_stream(ts)}
+    in_stream = [a for a in attempts if a.session_id in stream_ids]
+    emergency = await stream.emergency_attempts(session, in_stream) if in_stream else set()
 
     by_session: dict[uuid.UUID, list[Attempt]] = {}
     for a in attempts:
@@ -150,6 +157,9 @@ async def build_progress(session: AsyncSession, student: User) -> ProgressOut:
                 else round(mean_seconds - ts.norm_seconds, 1),
                 comments=sum(len(comments.get(a.id, [])) for a in rows_of),
                 overridden=sum(1 for a in rows_of if a.id in overrides),
+                stream=stream.stream_summary(rows_of, emergency, ts.norm_seconds)
+                if training.is_stream(ts)
+                else None,
             )
         )
         all_totals += totals

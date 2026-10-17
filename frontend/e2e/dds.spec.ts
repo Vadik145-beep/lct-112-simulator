@@ -453,7 +453,8 @@ test.describe("Задача #35: проверка карточки от опер
       data: {
         title: `#35: ошибка оператора · ${stamp}`,
         group_id: ((await group.json()) as { id: string }).id,
-        difficulty: 3,
+        // Not 3: difficulty 3 is a stream of cards on a timer (#264), this test opens one card.
+        difficulty: 2,
         scenario_ids: [scenarios.items[0]!.id],
         service_profile: ["moek"],
         norm_seconds: 30,
