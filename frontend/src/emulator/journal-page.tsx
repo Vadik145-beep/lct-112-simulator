@@ -126,7 +126,12 @@ function Journal({ sessionId }: { sessionId: string }) {
             <div>
               <div className="text-sm font-medium">{formatLongDate(now)}</div>
               <div className="mt-1 flex items-center gap-2 text-xs text-[var(--arm-on-dark-muted)]">
-                <span className="max-w-56 truncate">, {data.arm.dispatcher}</span>
+                {/* The organization comes first, as «, УМЦ Оп» on the customer's screenshot: whose ДДС
+                    the trainee is (the lesson's choice in the mode «Задания формирует ИИ»). */}
+                <span className="max-w-72 truncate">
+                  , {data.session.service ? `ДДС ${data.session.service.short_title} · ` : ""}
+                  {data.arm.dispatcher}
+                </span>
                 <span className="inline-flex items-center gap-1.5" title={`оп. ${data.arm.operator_no}, АРМ ${data.arm.arm_no}`}>
                   <Monitor className="size-3" aria-hidden />
                   <Settings className="size-3" aria-hidden />

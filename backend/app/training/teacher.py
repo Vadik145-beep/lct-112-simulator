@@ -15,6 +15,7 @@ from app.admin import settings as admin_settings
 from app.audit import write_audit
 from app.auth.access import require_call_intake_access
 from app.auth.deps import DbSession, client_ip, require_role
+from app.domain.scenarios.ai_plan import service_groups
 from app.errors import ApiError
 from app.events import publish_events
 from app.models import (
@@ -38,6 +39,7 @@ from app.training import ai_cards, present
 from app.training import report as reporting
 from app.training import sessions as lessons
 from app.training.teacher_schemas import (
+    AiCardGroupsOut,
     ExportRequest,
     GroupIn,
     GroupOut,
@@ -229,6 +231,14 @@ def _queue_out(s: Scenario) -> QueueScenarioOut:
         service_code=s.service_code,
         incident_type_code=s.incident_type_code,
     )
+
+
+@router.get("/ai-card-groups", response_model=AiCardGroupsOut)
+async def ai_card_groups(user: Teacher, session: DbSession) -> AiCardGroupsOut:
+    """For the lesson form in the mode «Задания формирует ИИ»: which incident groups each
+    service takes part in, so a group the chosen ДДС never gets cannot be checked."""
+    refs = await scenarios.load_refs(session)
+    return AiCardGroupsOut(by_service=service_groups(list(refs.incident_types.values())))
 
 
 @router.post("/sessions/preview", response_model=QueuePreviewOut)

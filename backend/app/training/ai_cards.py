@@ -28,7 +28,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.analytics import ratings
 from app.db import SessionLocal
-from app.domain.scenarios.ai_plan import CARDS_PER_TRAINEE, EarlierCard, PlanInput, plan_next
+from app.domain.scenarios.ai_plan import (
+    CARDS_PER_TRAINEE,
+    EarlierCard,
+    PlanInput,
+    lesson_service,
+    plan_next,
+)
 from app.errors import ApiError
 from app.events import append_event, publish_events
 from app.logging import get_logger
@@ -41,6 +47,7 @@ from app.models import (
     SCENARIO_APPROVED,
     AiCard,
     Attempt,
+    GroupMember,
     IncidentGroup,
     Scenario,
     TrainingSession,
@@ -223,6 +230,7 @@ async def _write_into(session: AsyncSession, row: AiCard, *, template_only: bool
     refs = await scenarios.load_refs(session)
     trainee = await session.get(User, row.student_id)
     catalogue = await scenarios.load_catalogue(session)
+    own = await trainee_service(session, ts, row.student_id, trainee)
     async with _plan_locks.setdefault(ts.id, asyncio.Lock()):
         taken = [*await _taken_types(session, ts.id), *_planned.get(ts.id, set())]
         plan = plan_next(
@@ -238,7 +246,8 @@ async def _write_into(session: AsyncSession, row: AiCard, *, template_only: bool
                 allowed_groups=list(ts.incident_groups or []),
                 services=list(ts.service_profile or []),
                 taken_types=taken,
-                own_service=trainee.service_code if trainee else None,
+                seen_types=await _seen_types(session, row.student_id),
+                own_service=own,
             )
         )
         _planned.setdefault(ts.id, set()).add(str(plan.request.incident_type))
@@ -355,6 +364,39 @@ async def _earlier_cards(
             )
         )
     return cards
+
+
+async def trainee_service(
+    session: AsyncSession, ts: TrainingSession, student_id: uuid.UUID, student: User | None
+) -> str | None:
+    """Whose ДДС the trainee is in this lesson (``ai_plan.lesson_service``): the cards are
+    written for it and the journal's header names it."""
+    members = await session.scalars(
+        select(GroupMember.student_id)
+        .join(User, User.id == GroupMember.student_id)
+        .where(GroupMember.group_id == ts.group_id)
+        .order_by(User.full_name, User.id)
+    )
+    return lesson_service(
+        list(ts.service_profile or []),
+        [str(m) for m in members],
+        str(student_id),
+        student.service_code if student else None,
+    )
+
+
+async def _seen_types(session: AsyncSession, student_id: uuid.UUID) -> list[str]:
+    """Incident types the trainee had in any lesson: a new lesson does not start over."""
+    return [
+        str(code)
+        for code in await session.scalars(
+            select(Scenario.incident_type_code)
+            .join(Attempt, Attempt.scenario_id == Scenario.id)
+            .where(Attempt.student_id == student_id)
+            .distinct()
+        )
+        if code
+    ]
 
 
 async def _taken_types(session: AsyncSession, session_id: uuid.UUID) -> list[str]:

@@ -157,6 +157,13 @@ class SessionGenerateOut(BaseModel):
     groups: list[str]
 
 
+class AiCardGroupsOut(BaseModel):
+    """Service → incident group → number of incident types the classifier notifies the
+    service of: what a lesson with cards written by AI can give that service's ДДС."""
+
+    by_service: dict[str, dict[str, int]]
+
+
 class QueuePreviewOut(BaseModel):
     total: int
     # True when nothing matched at the chosen difficulty and harder cards will be used.

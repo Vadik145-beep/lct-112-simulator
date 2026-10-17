@@ -74,9 +74,10 @@ async def my_assignments(user: ActiveUser, session: DbSession) -> list[Assignmen
     # Running first, then upcoming, then finished; the newest lesson first inside a group.
     order = {"running": 0, "draft": 1, "finished": 2}
     sessions.sort(key=lambda s: (order.get(s.status, 3), -s.created_at.timestamp()))
+    own = {ts.id: await _lesson_service(session, ts, user) for ts in sessions}
     return [
         AssignmentOut(
-            **present.session_info(ts, lookups, _own_service(ts, user)).model_dump(),
+            **present.session_info(ts, lookups, own[ts.id]).model_dump(),
             active_cards=active.get(ts.id, 0),
             finished_cards=finished.get(ts.id, 0),
         )
@@ -88,6 +89,13 @@ def _own_service(ts: TrainingSession, user: User) -> str | None:
     if user.service_code and (not ts.service_profile or user.service_code in ts.service_profile):
         return user.service_code
     return ts.service_profile[0] if ts.service_profile else user.service_code
+
+
+async def _lesson_service(session: DbSession, ts: TrainingSession, user: User) -> str | None:
+    """The trainee's ДДС in the lesson; cards written by AI follow the teacher's choice."""
+    if ai_cards.is_ai(ts):
+        return await ai_cards.trainee_service(session, ts, user.id, user)
+    return _own_service(ts, user)
 
 
 async def _journal_student(session: DbSession, ts: TrainingSession, user: User, student_id):
@@ -135,7 +143,7 @@ async def journal(
         session, {b.get("card", {}).get("incident_type") for b in bodies.values()}
     )
     return JournalOut(
-        session=present.session_info(ts, lookups, _own_service(ts, student)),
+        session=present.session_info(ts, lookups, await _lesson_service(session, ts, student)),
         arm=present.arm_info(student),
         items=[present.journal_item(a, bodies[a.id], ts, lookups) for a in attempts],
         page=page,

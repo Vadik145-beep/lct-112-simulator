@@ -24,6 +24,7 @@ and the teacher.
 from __future__ import annotations
 
 import random
+import zlib
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 
@@ -85,6 +86,7 @@ class PlanInput:
     allowed_groups: Sequence[str] = ()  # the lesson's incident groups; empty = by difficulty
     services: Sequence[str] = ()  # the lesson's services; empty = any
     taken_types: Sequence[str] = ()  # types already given in the lesson (all trainees)
+    seen_types: Sequence[str] = ()  # types this trainee had in any lesson
     own_service: str | None = None  # the trainee's service; its cards are for it
 
 
@@ -110,7 +112,7 @@ def plan_next(spec: PlanInput) -> Plan:
     for row in rows:
         by_group.setdefault(str(row["group_code"]), []).append(row)
     group, reason = _choose_group(spec, by_group, last, missed, rng)
-    row = _choose_type(by_group[group], spec.taken_types, rng)
+    row = _choose_type(by_group[group], spec.taken_types, spec.seen_types, rng)
     prefer = [k for k in (missed or _fresh_kinds(spec.earlier)) if k != WRONG_SERVICE]
     reasons = [reason]
     if missed:
@@ -131,6 +133,33 @@ def plan_next(spec: PlanInput) -> Plan:
         wrong_service=wrong,
     )
     return Plan(request=request, prefer=prefer, reasons=reasons)
+
+
+def lesson_service(
+    services: Sequence[str], members: Sequence[str], trainee: str, fallback: str | None
+) -> str | None:
+    """The service whose ДДС the trainee is for the whole lesson: the teacher's choice in the
+    lesson form (decision of 17.10.2026 — the jury sees it there, not in the admin's user list);
+    several services go round the group's trainees in their order. Without a choice — the
+    trainee's own service, as before."""
+    if not services:
+        return fallback
+    index = members.index(trainee) if trainee in members else zlib.crc32(trainee.encode())
+    return services[index % len(services)]
+
+
+def service_groups(type_rows: Sequence[Mapping]) -> dict[str, dict[str, int]]:
+    """Service → incident group → how many types the classifier always notifies the service
+    of: the groups a lesson for that service's ДДС can be about (the lesson form)."""
+    groups: dict[str, dict[str, int]] = {}
+    for row in type_rows:
+        if not row.get("final_title"):
+            continue
+        group = str(row.get("group_code"))
+        for service in dict.fromkeys(_expected(row)):
+            by_group = groups.setdefault(service, {})
+            by_group[group] = by_group.get(group, 0) + 1
+    return groups
 
 
 def _wrong_service_now(spec: PlanInput, missed: Sequence[str]) -> bool:
@@ -211,19 +240,30 @@ def _choose_group(
             )
     done = {incident_group(c.incident_type) for c in spec.earlier}
     fresh = [g for g in groups if g not in done] or groups
-    rng.shuffle(fresh)  # equal ratings: a stable random order per trainee
-    fresh.sort(key=lambda g: spec.ratings.get(g, START_RATING))
-    group = fresh[0]
+    lowest = min(spec.ratings.get(g, START_RATING) for g in fresh)
+    tied = [g for g in fresh if spec.ratings.get(g, START_RATING) == lowest]
+    # Equal ratings: a group by the number of its types, so each type is as likely as another
+    # (stand 17.10.2026: two groups 50/50, the three types of animals came in 38 % of the
+    # first cards and three lessons in a row began with «Агрессивное животное»).
+    group = rng.choices(tied, weights=[len(by_group[g]) for g in tied])[0]
     rating = spec.ratings.get(group)
     if rating is None:
         return group, f"Группа «{title.get(group, group)}»: карточек этой группы ещё не было."
     return group, (f"Группа «{title.get(group, group)}»: самый низкий рейтинг ({round(rating)}).")
 
 
-def _choose_type(rows: Sequence[Mapping], taken: Sequence[str], rng: random.Random) -> Mapping:
+def _choose_type(
+    rows: Sequence[Mapping], taken: Sequence[str], seen: Sequence[str], rng: random.Random
+) -> Mapping:
+    """A type new to the trainee and to the lesson; the trainee's own repeats are avoided
+    first (one trainee in several lessons), then the lesson's (several trainees)."""
     ordered = sorted(rows, key=lambda r: str(r["code"]))
-    fresh = [r for r in ordered if str(r["code"]) not in set(taken)]
-    return rng.choice(fresh or ordered)
+    taken_set, seen_set = set(taken), set(seen)
+    for skip in (taken_set | seen_set, seen_set, taken_set):
+        fresh = [r for r in ordered if str(r["code"]) not in skip]
+        if fresh:
+            return rng.choice(fresh)
+    return rng.choice(ordered)
 
 
 # --- mistakes --------------------------------------------------------------------------------

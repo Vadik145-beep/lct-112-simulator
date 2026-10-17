@@ -217,3 +217,27 @@ async def test_a_card_lost_in_writing_is_written_by_the_template(client: AsyncCl
     body = await body_of(await scenario_of(items[0]["attempt_id"]))
     assert body["generation"]["method"] == "template"
     assert not body.get("injected_errors")  # difficulty 1
+
+
+async def test_the_lesson_chooses_whose_dds_the_trainees_are(client: AsyncClient) -> None:
+    """Decision of 17.10.2026: the teacher picks the service in the lesson form; two services
+    go round the group, whatever service the admin gave the trainees; the journal's header
+    names it."""
+    teacher = await login(client, "teacher1")
+    groups = (await client.get("/api/ai-card-groups", headers=bearer(teacher))).json()
+    assert groups["by_service"]["gkh"]["1"] > 0  # ЖКХ takes part in fires
+    assert "13" not in groups["by_service"]["gkh"]  # but never in «Запах газа»
+
+    created = await create_session(
+        client, teacher, card_source="ai", difficulty=1, service_profile=["gkh", "mosvodokanal"]
+    )
+    await start(client, teacher, created["id"])
+    await ai_cards.wait_all()
+    services = set()
+    for name in ("student1", "student2"):
+        trainee = await login(client, name)
+        page = await journal(client, trainee, created["id"])
+        card = await scenario_of(page["items"][0]["attempt_id"])
+        assert card.service_code == page["session"]["service"]["code"]
+        services.add(card.service_code)
+    assert services == {"gkh", "mosvodokanal"}
