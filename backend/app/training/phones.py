@@ -14,7 +14,7 @@ import re
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -259,15 +259,17 @@ async def update_entry(
     return entry_out(entry)
 
 
-@router.delete("/phone-directory/{entry_id}", status_code=204)
+@router.delete("/phone-directory/{entry_id}", response_model=PhoneEntryOut)
 async def delete_entry(
     entry_id: uuid.UUID, user: Teacher, session: DbSession, request: Request
-) -> Response:
+) -> PhoneEntryOut:
+    """Removes the number and returns what was removed."""
     entry = await _get(session, entry_id)
+    removed = entry_out(entry)
     await _audit(session, user, request, "phone_directory.delete", entry)
     await session.delete(entry)
     await session.commit()
-    return Response(status_code=204)
+    return removed
 
 
 async def _get(session: AsyncSession, entry_id: uuid.UUID) -> PhoneEntry:

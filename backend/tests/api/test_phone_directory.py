@@ -91,7 +91,7 @@ async def test_teacher_edits_within_the_rules(client: AsyncClient) -> None:
     finally:
         for entry_id in added:
             gone = await client.delete(f"/api/phone-directory/{entry_id}", headers=bearer(token))
-            assert gone.status_code == 204
+            assert gone.status_code == 200, gone.text
 
 
 async def test_trainee_cannot_edit_the_directory(client: AsyncClient) -> None:
