@@ -264,6 +264,15 @@ def order_number(scenario: CardResponseScenario, service: str) -> str:
     return str(1000 + int(digest[:4], 16) % 9000)
 
 
+def with_order(text: str, status: str, number: str) -> str:
+    """The squad names itself when it reports the departure: «Выехали по адресу …. Наряд 2750.»
+    (stand 18.10.2026: on the head's vehicle nobody named the squad and the dispatcher had no
+    number for «Начало реагирования»)."""
+    if status != "response_started" or not number or number in re.sub(r"\D", "", text):
+        return text
+    return f"{text.rstrip()} Наряд {number}."
+
+
 def squad_state(delivered: list[str]) -> str:
     """The squad's state from the reports already delivered (progress status codes)."""
     for status in ("works_done", "works_started", "arrived", "response_started"):

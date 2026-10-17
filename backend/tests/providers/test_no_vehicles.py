@@ -150,3 +150,33 @@ def errors_of(scenario: CardResponseScenario, attempt: Attempt) -> dict[str, str
         scenario, CardResponseAttempt.model_validate(data), grammar=grammar_ok()
     )
     return {e.code: e.explanation for e in result.errors}
+
+
+def test_only_the_squad_chief_mishears_the_house() -> None:
+    """Stand 18.10.2026: the head repeated «дом 22?» and the squad drove to it."""
+    scenario = hard()
+    head = head_call(NOW)
+    attempt = Attempt(service_calls=[head])
+    accepted(attempt)
+    assert officer.misheard_reply(scenario, attempt, head, ADDRESS) is None
+    decided = officer.cloud_decision(scenario, attempt, head, ADDRESS)
+    assert decided is None or "misheard" not in decided[0].topics
+
+
+def test_after_the_heads_vehicle_a_call_to_the_chief_is_a_repeat() -> None:
+    """Stand 18.10.2026: the squad left on the head's vehicle and a call to its chief started
+    as a new one, «Короче, что у вас?» and «Передано: пока ничего»."""
+    scenario = hard()
+    call = chief_call()
+    attempt = Attempt(service_calls=[call])
+    accepted(attempt)
+    talk(scenario, attempt, call, ADDRESS)
+    talk(scenario, attempt, call, "Нет, дом 42.")
+    call["facts_passed"] = ["address", "incident_type", "injured"]
+    call["ended_at"] = (NOW + timedelta(seconds=40)).isoformat()
+    assert not officer.squad_out(attempt, scenario)
+    head = head_call(NOW + timedelta(seconds=60))
+    attempt.service_calls = [*attempt.service_calls, head]
+    talk(scenario, attempt, head, "Добрый день, у бригады нет свободных машин.")
+    head["ended_at"] = (NOW + timedelta(seconds=90)).isoformat()
+    assert officer.squad_out(attempt, scenario)

@@ -65,7 +65,9 @@ def test_stored_report_of_old_wording_is_said_by_the_new_title_without_its_recor
     stored = scenario.model_copy(update={"reference": reference})
     call = {"kind": "report", "report_status": old.status, "service": "gkh"}
     built = officer.call_scenario(stored, call, Attempt(service_calls=[]))
-    assert built.caller.opening == "Алло, диспетчер? Это начальник аварийной бригады. Выехали."
+    assert built.caller.opening.startswith(
+        "Алло, диспетчер? Это начальник аварийной бригады. Выехали. Наряд "
+    )
     report = officer._report_for(stored, call, Attempt(service_calls=[]))
     assert report.audio is None
 
@@ -88,3 +90,12 @@ def test_seed_links_a_report_recording_only_when_it_says_the_same_words(tmp_path
     assert linked == 1
     assert "audio" not in reports[0]
     assert reports[1]["audio"] == "audio/report-works_done.mp3"
+
+
+def test_the_departure_report_names_the_squad() -> None:
+    """Stand 18.10.2026: on the head's vehicle nobody named the squad."""
+    said = "Алло, диспетчер? Начальник аварийной бригады. Выехали: улица Свободы, дом 42."
+    assert officers.with_order(said, "response_started", "2750") == f"{said} Наряд 2750."
+    named = f"{said} Наряд 2750."
+    assert officers.with_order(named, "response_started", "2750") == named
+    assert officers.with_order("Прибыли.", "arrived", "2750") == "Прибыли."

@@ -133,6 +133,8 @@ export function VirtualPhone({
                       shownCall.kind === "outgoing" &&
                       shownCall.service === ownService
                     }
+                    noVehicles={attempt.squad_state === "no_vehicles"}
+                    headNumber={book.data?.entries.find((e) => e.role === "head")?.number ?? null}
                     error={calls.error ? calls.error.message : null}
                     onSay={(text, actionId) =>
                       calls.say(shownCall.id, text, actionId)

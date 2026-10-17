@@ -292,6 +292,12 @@ def call_scenario(
             else staff.OFFICE_PROGRESS.get(state, officers.PROGRESS_REPLIES[state])
         )
         person = staff.person_scenario(role, scenario, org, progress)
+        if role == staff.ROLE_SQUAD_SPECIALIST and squad_out(attempt, scenario):
+            # He rides with the squad: he knows its number (stand 18.10.2026: asked for it, he
+            # sent the dispatcher to the head of the organization).
+            facts = {**person.caller.facts, "наряд бригады": squad_order(scenario)}
+            caller = person.caller.model_copy(update={"facts": facts})
+            person = person.model_copy(update={"caller": caller})
         if role == staff.ROLE_HEAD and no_vehicles.held(calls_of(attempt)):
             facts = {**person.caller.facts, no_vehicles.HEAD_FACT_KEY: no_vehicles.HEAD_FACT}
             caller = person.caller.model_copy(update={"facts": facts})
@@ -323,6 +329,7 @@ def _report_for(scenario: CardResponseScenario, call: dict, attempt: Attempt) ->
     report = _report_of(scenario, call)
     text = officers.renamed(report.text)
     text = misheard.report_text(text, scenario.card, misheard.state(calls_of(attempt)))
+    text = officers.with_order(text, report.status, squad_order(scenario))
     if text == report.text:
         return report
     return report.model_copy(update={"text": text, "audio": None})
@@ -411,9 +418,9 @@ async def start(
         # Calling from a card not opened yet still means it was received.
         events += await training.open_attempt(session, attempt, ts)
     call = _new_call(service, service_title, now, telephony=telephony, kind=kind)
-    # The squad chief has the card once he took it; a duty officer, once told.
+    # The squad chief has the card once his squad is out; a duty officer, once told.
     passed = card_passed_to(attempt, service)
-    if service == scenario.service and not squad_sent(chief_calls(attempt, scenario)):
+    if service == scenario.service and not squad_out(attempt, scenario):
         passed = False
     if kind == KIND_OUTGOING and passed:
         call["repeat"] = True
@@ -503,6 +510,7 @@ async def start_report(
     opening = misheard.report_text(
         officers.renamed(report.text), scenario.card, misheard.state(calls_of(attempt))
     )
+    opening = officers.with_order(opening, report.status, squad_order(scenario))
     call = {
         **_new_call(scenario.service, service_title, now, telephony=telephony),
         "kind": KIND_REPORT,
@@ -1067,6 +1075,24 @@ def _said_by_dispatcher(calls: list[dict]) -> list[str]:
     ]
 
 
+def squad_order(scenario: CardResponseScenario) -> str:
+    """The number of the own service's squad, as its chief knows it."""
+    ref = reference_for(scenario, scenario.service)
+    return ref.order_number or officers.order_number(scenario, scenario.service)
+
+
+def squad_out(attempt: Attempt, scenario: CardResponseScenario) -> bool:
+    """The squad has left: its chief named it, or the head found a vehicle when there were
+    none, or it already reported (stand 18.10.2026: after «машин нет» and the head's vehicle
+    the chief picked up a repeat call as a new one, «Короче, что у вас?»)."""
+    calls = calls_of(attempt)
+    return (
+        squad_sent(chief_calls(attempt, scenario))
+        or no_vehicles.resolving_call(calls) is not None
+        or bool(delivered_reports(attempt))
+    )
+
+
 def squad_sent(calls: list[dict]) -> bool:
     """The squad chief has taken the card and named his squad: the squad is sent."""
     return any(
@@ -1176,7 +1202,9 @@ def misheard_reply(
       squad, corrects him.
     * Right after his question a bare «нет» gets «Какой дом тогда?», a bare «да» is taken.
     """
-    if is_caller(call) or call.get("service") != scenario.service:
+    # Only the squad chief mishears, not a person of the organization (stand 18.10.2026: the
+    # head repeated «дом 22?» and the squad drove to it).
+    if is_caller(call) or is_staff(call) or call.get("service") != scenario.service:
         return None
     # The house the caller gave, not a mistake of the operator in the field (#263).
     card = engine.true_card(scenario)

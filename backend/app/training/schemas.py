@@ -241,6 +241,9 @@ class AttemptOut(BaseModel):
     # The squad will report by phone after «Принята» (customer, 21.09.2026): the hints tell
     # the trainee to wait for the reports instead of clicking the statuses through.
     reports_expected: bool = False
+    # Where the own squad is (``officer.squad_state``): «no_vehicles» turns the phone's hint
+    # from waiting for the report to telling the head (stand 18.10.2026).
+    squad_state: str | None = None
     transitions: list[TransitionOut]
     reject_reasons: list[RejectReasonOut]
     # Reference solution, visible after the card is closed (PRD 11: «эталон после завершения»).
