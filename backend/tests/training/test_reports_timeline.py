@@ -104,6 +104,22 @@ def test_a_squad_told_but_not_sent_stays_until_the_order() -> None:
     assert reports.next_report(SCENARIO, a, now(130 + FIRST.after_seconds)) is not None
 
 
+def test_a_squad_sent_before_accepted_leaves_once_the_card_is_accepted() -> None:
+    """«Выезжайте» said before «Принята» is not lost (#263): the timeline counts from
+    «Принята»."""
+    early = officer_call(2, 8)  # ended before «Принята» at 10 s
+    a = attempt(calls=[early])
+    assert reports.next_report(SCENARIO, a, now(10 + FIRST.after_seconds - 1)) is None
+    due = reports.next_report(SCENARIO, a, now(10 + FIRST.after_seconds))
+    assert due is not None and due.status == "response_started"
+
+
+def test_the_address_in_any_case_and_order_sends_the_squad() -> None:
+    said = "Течёт стояк в доме сорок два по улице Свободы, пострадавших нет. Выезжайте."
+    a = attempt(calls=[officer_call(20, 80, said=said)])
+    assert reports.next_report(SCENARIO, a, now(80 + FIRST.after_seconds)) is not None
+
+
 def test_nothing_before_accepted_or_after_a_rejection() -> None:
     not_yet = attempt("received", log=[{"status": "added", "at": iso(0), "by": BY_SYSTEM}])
     assert reports.next_report(SCENARIO, not_yet, now(500)) is None

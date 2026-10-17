@@ -76,6 +76,25 @@ def dispatcher_turns(dialog: list[DialogTurn]) -> list[DialogTurn]:
     return [t for t in dialog if t.role == "operator"]
 
 
+# The part of a street word that stays the same in every case: «зелён|ый», «зелён|ому»,
+# «молостов|ых», «молостов|ой». The ending takes at most three letters; a short word is kept.
+STREET_ENDING = 3
+STREET_STEM_MIN = 4
+
+
+def _street_stem(word: str) -> str:
+    if len(word) <= STREET_STEM_MIN:
+        return word
+    return word[: max(STREET_STEM_MIN, len(word) - STREET_ENDING)]
+
+
+def street_said(street: str, normalized: str) -> bool:
+    """Every word of the street's name is in the phrase in some case and order: «дом 17 по
+    Зелёному проспекту» names «Зелёный проспект» (#263, the dispatcher speaks, not reads)."""
+    words = normalized.split()
+    return all(any(w.startswith(_street_stem(part)) for w in words) for part in street.split())
+
+
 def address_named(card: Card, text: str) -> bool:
     """The street (by its core name) and the house of the card appear in the phrase."""
     normalized = normalize_text(text)
@@ -89,6 +108,7 @@ def address_named(card: Card, text: str) -> bool:
     # the phone. The leading word alone is not enough — «Красного» names no street.
     street_ok = not street or any(
         fuzz.partial_ratio(variant, normalized) >= STREET_THRESHOLD
+        or street_said(variant, normalized)
         for variant in (street, street.split()[-1])
     )
     # The numerals are turned into digits over the whole phrase, not token by token: a house
