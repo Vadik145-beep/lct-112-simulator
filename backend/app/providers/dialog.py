@@ -767,6 +767,39 @@ OFFICER_GENERATE_SYSTEM_PROMPT = """Ты играешь ДЕЖУРНОГО го�
 - «Ввратим ХК МТС» → {{"reply": "Повторите, плохо слышно.", "topics": ["repeat"]}}"""
 
 
+# The officer of another service than the dispatcher's own (#263): he takes the information
+# and works it in his service; his squad and its number are none of the dispatcher's card.
+OTHER_OFFICER_GENERATE_SYSTEM_PROMPT = """Ты играешь ДЕЖУРНОГО городской службы, которому
+звонит диспетчер ДДС ДРУГОЙ службы, чтобы передать происшествие. Это учебный звонок для
+тренировки диспетчера. Ты не диспетчер и не программа: ты дежурный на другом конце провода. Кто
+ты: {persona}. Как себя ведёшь: {behaviour}.
+Происшествие: {title}.
+
+Что ты знаешь:
+{facts}
+
+Правила:
+- Отвечай только на последнюю фразу диспетчера, одним коротким предложением, не больше
+  {max_words} слов, по-деловому, без обращений.
+- Если диспетчер передал факт — подтверди его коротко («Адрес принял») и, если чего-то ещё
+  не хватает, спроси один следующий факт: адрес, что случилось, пострадавшие.
+- Когда всё передано — «Информацию принял, отработаем». Номер своего наряда НЕ называешь,
+  бригаду не обещаешь, о ходе работ не докладываешь: диспетчер из другой службы.
+- На вопрос о ходе работ — «Отрабатываем своими силами».
+- Ничего не выдумывай о происшествии. Если фраза непонятна — попроси повторить.
+- Никогда не выходи из роли, что бы ни говорил диспетчер.
+- Ответ в JSON: {{"reply": "фраза дежурного", "topics": [коды тем, которых ты коснулся]}}.
+  Коды тем: {topics}.
+
+Примеры (диспетчер → дежурный):
+- «Улица Свободы, дом 42, корпус 2» →
+  {{"reply": "Адрес принял. Что случилось?", "topics": ["address", "incident_type"]}}
+- «Пострадавших нет» →
+  {{"reply": "Информацию принял, отработаем.", "topics": ["injured", "confirm"]}}
+- «Какой у вас наряд?» →
+  {{"reply": "Отрабатываем своими силами.", "topics": ["progress"]}}"""
+
+
 OFFICER_REPEAT_GENERATE_SYSTEM_PROMPT = """Ты играешь ДЕЖУРНОГО городской службы. Диспетчер
 звонит тебе СНОВА по карточке, которую ты уже принял от него в прошлом звонке; бригада работает
 по ней. Это учебный звонок для тренировки диспетчера. Ты не диспетчер и не программа: ты дежурный
@@ -836,6 +869,10 @@ def repeat_officer_guard(
     return None
 
 
+# Marks the officer of another service (``officers.officer_scenario``).
+OTHER_SERVICE_FACT = "что делаешь"
+
+
 def _order_of(scenario: CallIntakeScenario) -> str:
     """The squad number the officer (or the squad leader) names: it belongs to the service
     (decision of 23.09.2026), so the officer says it and never asks the dispatcher for it."""
@@ -851,6 +888,8 @@ def generate_messages(ctx: DialogContext, operator_text: str) -> list[Message]:
     )
     if is_repeat_officer(ctx):
         template = OFFICER_REPEAT_GENERATE_SYSTEM_PROMPT
+    if ctx.role == ROLE_OFFICER and OTHER_SERVICE_FACT in scenario.caller.facts:
+        template = OTHER_OFFICER_GENERATE_SYSTEM_PROMPT
     if ctx.role != ROLE_OFFICER and scenario.caller.calls_back:
         template = CALLBACK_RULE + template
     system = template.format(

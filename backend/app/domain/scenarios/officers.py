@@ -291,6 +291,17 @@ def spoken_service(service: str, service_title: str) -> str:
     return re.sub(r"\s{2,}", " ", without).strip(" ,;«»") or service_title
 
 
+# The officer of another service than the dispatcher's own (#263).
+OTHER_SERVICE_DUTY = (
+    "принимаешь информацию и отрабатываешь её в своей службе; диспетчер — из другой службы: "
+    "номер своего наряда ему не называешь и о ходе работ не докладываешь"
+)
+OTHER_SERVICE_CONFIRM = "Информацию принял, отработаем."
+OTHER_SERVICE_PROGRESS = "Отрабатываем своими силами."
+OTHER_SERVICE_REPLY_ID = 90
+ORDER_WORDS = re.compile(r"наряд|доложу", re.IGNORECASE)
+
+
 def builtin_replies(
     service: str, service_title: str, state: str = SQUAD_STATE_PENDING, order: str = ""
 ) -> list[Reply]:
@@ -344,11 +355,18 @@ def greeting(service: str, service_title: str, *, chief: bool = False) -> str:
 
 
 def repeat_opening(
-    service: str, service_title: str, state: str = SQUAD_STATE_PENDING, *, chief: bool = False
+    service: str,
+    service_title: str,
+    state: str = SQUAD_STATE_PENDING,
+    *,
+    chief: bool = False,
+    other: bool = False,
 ) -> str:
     """The officer's first phrase on a repeat call: the card is with the service already, the
     squad is where the reports put it."""
     first = greeting(service, service_title, chief=chief)
+    if other:  # another service works its own way and does not report to this dispatcher
+        return f"{first} Карточку от вас уже приняли, отрабатываем."
     passed = "Карточку от вас уже принял." if chief else "Карточку от вас уже приняли."
     return f"{first} {passed} {PROGRESS_REPLIES[state]}"
 
@@ -388,12 +406,33 @@ def officer_scenario(
         "где бригада": PROGRESS_REPLIES[state],
     }
     replies = officer_replies(scenario, ref.service, service_title, state)
+    other = ref.service != scenario.service
+    if other:
+        # Another service: the dispatcher only tells it; its squad, its number and its progress
+        # are none of his card (stand 18.10.2026: the district council «sent squad 2-348»).
+        facts = {k: v for k, v in facts.items() if k not in ("твой наряд", "где бригада")}
+        facts["что делаешь"] = OTHER_SERVICE_DUTY
+        replies = [r for r in replies if not ORDER_WORDS.search(r.text) and r.topic != "progress"]
+        replies += [
+            Reply(
+                id=BUILTIN_REPLY_ID_BASE + OTHER_SERVICE_REPLY_ID,
+                topic="confirm",
+                text=OTHER_SERVICE_CONFIRM,
+                approved=True,
+            ),
+            Reply(
+                id=BUILTIN_REPLY_ID_BASE + OTHER_SERVICE_REPLY_ID + 1,
+                topic="progress",
+                text=OTHER_SERVICE_PROGRESS,
+                approved=True,
+            ),
+        ]
     opening = greeting(ref.service, service_title, chief=chief)
     behaviour = SQUAD_CHIEF_BEHAVIOUR if chief else OFFICER_BEHAVIOUR
     required = list(ref.required_facts)
     if repeat:
         facts[REPEAT_FACT_KEY] = REPEAT_FACT
-        opening = repeat_opening(ref.service, service_title, state, chief=chief)
+        opening = repeat_opening(ref.service, service_title, state, chief=chief, other=other)
         behaviour = SQUAD_CHIEF_REPEAT_BEHAVIOUR if chief else OFFICER_REPEAT_BEHAVIOUR
         required = []
         # The officer's questions about the card («Назовите адрес…», «Где запах газа?»).

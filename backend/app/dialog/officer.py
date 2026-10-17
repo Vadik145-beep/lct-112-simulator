@@ -327,9 +327,7 @@ def _report_for(scenario: CardResponseScenario, call: dict, attempt: Attempt) ->
     (``misheard``), a report worded before #263 calls him by the customer's title, and a
     recording that no longer matches the words is dropped."""
     report = _report_of(scenario, call)
-    text = officers.renamed(report.text)
-    text = misheard.report_text(text, scenario.card, misheard.state(calls_of(attempt)))
-    text = officers.with_order(text, report.status, squad_order(scenario))
+    text = report_said(scenario, attempt, report)
     if text == report.text:
         return report
     return report.model_copy(update={"text": text, "audio": None})
@@ -507,10 +505,7 @@ async def start_report(
     if open_call(attempt) is not None:
         raise ApiError(409, "call_in_progress", "Уже идёт разговор.")
     now = now or training.utcnow()
-    opening = misheard.report_text(
-        officers.renamed(report.text), scenario.card, misheard.state(calls_of(attempt))
-    )
-    opening = officers.with_order(opening, report.status, squad_order(scenario))
+    opening = report_said(scenario, attempt, report)
     call = {
         **_new_call(scenario.service, service_title, now, telephony=telephony),
         "kind": KIND_REPORT,
@@ -1102,6 +1097,19 @@ def stt_terms(scenario: CardResponseScenario) -> list[str]:
     if scenario.title and not re.search(r"\d", scenario.title):
         terms.append(scenario.title)
     return list(dict.fromkeys(t.strip() for t in terms if t and t.strip()))[:STT_TERMS_MAX]
+
+
+def report_said(scenario: CardResponseScenario, attempt: Attempt, report: BrigadeReport) -> str:
+    """The report as the squad says it: by the customer's title, at the real address — not the
+    house the 112 operator got wrong in the card (stand 18.10.2026: «прибыли … дом 23» while
+    the caller and the dispatcher said 24) — unless the squad went to a misheard house; with
+    its number on the departure."""
+    text = officers.renamed(report.text)
+    truth = engine.true_card(scenario)
+    shown = misheard.spoken_address(scenario.card.address.model_dump())
+    text = text.replace(shown, misheard.spoken_address(truth.address.model_dump()), 1)
+    text = misheard.report_text(text, truth, misheard.state(calls_of(attempt)))
+    return officers.with_order(text, report.status, squad_order(scenario))
 
 
 def squad_order(scenario: CardResponseScenario) -> str:

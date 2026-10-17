@@ -180,3 +180,18 @@ def test_after_the_heads_vehicle_a_call_to_the_chief_is_a_repeat() -> None:
     talk(scenario, attempt, head, "Добрый день, у бригады нет свободных машин.")
     head["ended_at"] = (NOW + timedelta(seconds=90)).isoformat()
     assert officer.squad_out(attempt, scenario)
+
+
+def test_reports_say_the_real_house_not_the_operators_mistake() -> None:
+    """Stand 18.10.2026: «прибыли … дом 23» while the caller and the dispatcher said 24."""
+    body = card_scenario(NAME).model_dump()
+    body["card"]["address"]["house"] = "41"  # the 112 operator's mistake; the caller said 42
+    body["injected_errors"] = [
+        {"field": "address.house", "wrong_value": "41", "correct_value": "42", "hint_level": 2}
+    ]
+    scenario = CardResponseScenario.model_validate(body)
+    report = next(r for r in scenario.reference.reports if r.status == "arrived").model_copy(
+        update={"text": "Прибыли по адресу: улица Свободы, дом 41, корпус 2."}
+    )
+    said = officer.report_said(scenario, Attempt(service_calls=[]), report)
+    assert "дом 42" in said and "дом 41" not in said

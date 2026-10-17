@@ -28,7 +28,7 @@ ADDRESS_AND_INCIDENT = (
 def ctx() -> DialogContext:
     card = CardResponseScenario.model_validate(
         json.loads((SCENARIOS_DIR / "card_17-1_pozharnaya_signalizaciya.json").read_text("utf-8"))
-    )
+    ).model_copy(update={"service": "gkh"})  # the own service: it names its squad
     # Address, incident type and the injured: the default facts of a service call.
     ref = ServiceCallRef(service="gkh")
     officer = officers.officer_scenario(card, ref, "Городское хозяйство (ЕДЦ ЖКХ)")
