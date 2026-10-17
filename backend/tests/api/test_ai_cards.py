@@ -63,6 +63,13 @@ async def ai_lesson(client: AsyncClient, teacher: dict, difficulty: int) -> str:
     return created["id"]
 
 
+async def service_of(login_name: str) -> str | None:
+    async with SessionLocal() as session:
+        user = await session.scalar(select(User).where(User.login == login_name))
+        assert user is not None
+        return user.service_code
+
+
 async def scenario_of(attempt_id: str) -> Scenario:
     async with SessionLocal() as session:
         attempt = await session.get(Attempt, uuid.UUID(attempt_id))
@@ -92,6 +99,17 @@ async def test_each_trainee_gets_own_card_written_at_start(client: AsyncClient) 
     a, b = await scenario_of(mine[0]["attempt_id"]), await scenario_of(theirs[0]["attempt_id"])
     assert a.source == b.source == ai_cards.SCENARIO_SOURCE_AI
     assert a.incident_type_code != b.incident_type_code
+    # Each card is for the trainee's own service: its own tab, and a type it is notified of.
+    assert a.service_code == await service_of("student1")
+    assert b.service_code == await service_of("student2")
+    own = next(
+        s
+        for s in (
+            await client.get(f"/api/attempts/{mine[0]['attempt_id']}", headers=bearer(first))
+        ).json()["card"]["services"]
+        if s["is_own"]
+    )
+    assert own["code"] == a.service_code
     body = await body_of(a)
     assert body["difficulty"] == 2
     assert len(body["injected_errors"]) == 1
@@ -165,6 +183,7 @@ async def test_difficulty_3_is_an_emergency_with_two_mistakes_one_card_at_a_time
     assert len(items) == 1
     body = await body_of(await scenario_of(items[0]["attempt_id"]))
     assert len(body["injected_errors"]) == 2
+    assert body["service"] == await service_of("student4")
     assert body["card"]["flags"]["emergency"] is True
     card = await client.get(f"/api/attempts/{items[0]['attempt_id']}", headers=bearer(student))
     assert card.json()["card"]["emergency"] is True  # «ЧС» in the card header

@@ -78,6 +78,11 @@ class GenerationRequest:
     address: Address | None = None
     # Kinds of operator mistakes to plant first (``distort``): the trainee's weak spots.
     mistakes_first: list[str] = field(default_factory=list)
+    # The service the card is for (the trainee's own); empty = the first notified on АРМ-112.
+    service: str | None = None
+    # The card was sent to ``service`` though the incident is not its concern (issue #265):
+    # the right answer is «Не принята», and it is one of the card's planted mistakes.
+    wrong_service: bool = False
 
     def facts_or_phrase(self) -> TicketFacts:
         if self.facts is not None:
@@ -126,16 +131,21 @@ def with_real_address(request: GenerationRequest, ctx: GenerationContext) -> Gen
 
 
 def plant_mistakes(
-    body: dict, ctx: GenerationContext, prefer: Sequence[str] = ()
+    body: dict, ctx: GenerationContext, request: GenerationRequest | None = None
 ) -> dict:
-    """Operator mistakes for a card by its difficulty (issues #35, #265, ``distort``)."""
+    """Operator mistakes for a card by its difficulty (issues #35, #265, ``distort``); a card
+    planned as sent to the wrong service carries that mistake first."""
+    if request is not None and request.wrong_service:
+        body = distort.sent_to_wrong_service(body, ctx.catalogue)
+    # A card for the trainee's own service keeps it as its own tab: no other service is planted.
+    own = request.service if request is not None and request.service in ctx.catalogue else None
     return distort.inject_by_difficulty(
         body,
         type_rows=ctx.type_rows,
         catalogue=ctx.catalogue,
         streets=ctx.streets,
-        services=ctx.services,
-        prefer=prefer,
+        services=[own] if own else ctx.services,
+        prefer=request.mistakes_first if request is not None else (),
     )
 
 
@@ -244,8 +254,9 @@ class TemplateGeneration:
                 traps=request.traps,
                 catalogue=ctx.catalogue,
                 difficulty=request.difficulty,
+                service=request.service,
             )
-            body = plant_mistakes(body, ctx, request.mistakes_first)
+            body = plant_mistakes(body, ctx, request)
         return GenerationResult(
             body=body, method=self.method, latency_ms=round((time.perf_counter() - started) * 1000)
         )
@@ -457,9 +468,19 @@ def card_response_body(
     flags.setdefault("injured", False)
     chosen = [k for k, v in flags.items() if v]
     expected = resolve_services(row.get("service_rules") or [], chosen)
-    service = template.choose_card_service(expected, ctx.catalogue, row.get("main_service"))
+    # The trainee's own service (issue #265): whether it takes the card is the classifier's
+    # answer, not the model's — a type it does not serve is the «не та служба» card.
+    own = request.service in ctx.catalogue
+    service = request.service if own else None
+    if service is None:
+        service = template.choose_card_service(expected, ctx.catalogue, row.get("main_service"))
+    decision = ("accept" if service in expected else "reject") if own else gen.decision
     comments = list(gen.comments) + [""] * 3
-    if gen.decision == "accept":
+    if own and decision == "reject":
+        refused = template.card_reference(region=None, service=service, expected=expected)
+        chain, critical = refused["status_chain"], refused["critical_errors"]
+        reason = refused["reject_reason"]
+    elif decision == "accept":
         chain = [
             {"status": "accepted"},
             {
@@ -501,7 +522,7 @@ def card_response_body(
             "notified": notified,
         },
         "reference": {
-            "decision": gen.decision,
+            "decision": decision,
             "reject_reason": reason,
             "status_chain": chain,
             "critical_errors": critical,
@@ -577,6 +598,7 @@ class LlmGeneration:
                 else plant_mistakes(
                     card_response_body(generated, row, request, ctx),  # type: ignore[arg-type]
                     ctx,
+                    request,
                 )
             )
             return GenerationResult(

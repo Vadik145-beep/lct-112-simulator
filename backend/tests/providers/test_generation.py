@@ -292,3 +292,45 @@ async def test_template_card_from_a_phrase_gets_a_real_address() -> None:
     address = parse_scenario(result.body).card.address
     assert address.street in {"улица Свободы", "Ленинский проспект"}
     assert address.house
+
+
+def _parking_fire(decision: str) -> dict:
+    return {
+        "title": "Пожар на автостоянке",
+        "difficulty": 2,
+        "incident_type": "1.99.0.8",
+        "flags": {"injured": False},
+        "address": {"street": "улица Грина", "house": "11"},
+        "caller": {"name": "Миша", "role": "очевидец"},
+        "description": "Горит автомобиль на подземной автостоянке. Пострадавших нет.",
+        "decision": decision,
+        "reject_reason": "not_in_competence" if decision == "reject" else None,
+        "comments": ["Направлен дежурный, наряд 12", "Работы ведутся", "Работы завершены"],
+    }
+
+
+async def test_card_for_the_trainees_service_follows_the_classifier_not_the_model() -> None:
+    """Issue #265: the card is for the trainee's own service, which is its own tab; whether
+    the service takes it is the classifier's answer whatever the model said."""
+    own = await LlmGeneration(FakeModel([_parking_fire("reject")])).generate(
+        request(kind="card_response", service="gkh"), CTX
+    )
+    scenario = parse_scenario(own.body)
+    assert scenario.service == "gkh" and scenario.reference.decision == "accept"
+
+    # A service the incident does not concern, planned so: the card goes to it and is refused,
+    # and that is one of its mistakes (difficulty 2: the only one).
+    wrong = await LlmGeneration(FakeModel([_parking_fire("accept")])).generate(
+        request(kind="card_response", service="territorial_oiv", wrong_service=True, difficulty=2),
+        CTX,
+    )
+    scenario = parse_scenario(wrong.body)
+    assert scenario.service == "territorial_oiv"
+    assert [n.service for n in scenario.card.notified if n.status == "Добавлена"] == [
+        "territorial_oiv"
+    ]
+    assert (scenario.reference.decision, scenario.reference.reject_reason) == (
+        "reject",
+        "not_in_competence",
+    )
+    assert [e.field for e in scenario.injected_errors] == ["service"]
