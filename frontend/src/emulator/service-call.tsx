@@ -438,7 +438,7 @@ export function ServiceCallPanel({
           title={
             recording
               ? "Отпустите, чтобы отправить сказанное"
-              : "Удерживайте кнопку и говорите дежурному"
+              : "Удерживайте кнопку, говорите и отпустите"
           }
           disabled={pending}
           onPointerDown={(e) => {

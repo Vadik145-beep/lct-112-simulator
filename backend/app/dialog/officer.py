@@ -30,7 +30,7 @@ from __future__ import annotations
 import hashlib
 import re
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 
 from sqlalchemy import select
@@ -655,7 +655,7 @@ async def external_turn(
     facts = list(call.get("facts_passed") or [])
     if passes_facts(call):
         facts = engine.facts_from_dialog(
-            scenario.card,
+            engine.true_card(scenario),
             [
                 DialogTurn(role=t["role"], text=t["text"], topics=list(t.get("topics") or []))
                 for t in turns
@@ -697,13 +697,12 @@ async def say(
     call = find_call(attempt, call_id)
     caller_side = is_caller(call)
     if call.get("ended_at"):
-        whom = "заявителю" if caller_side else "дежурному"
-        raise ApiError(409, "call_ended", f"Звонок завершён: {whom} больше не сказать.")
+        raise ApiError(409, "call_ended", "Звонок завершён: сказать больше ничего нельзя.")
     if not call.get("answered"):
         if is_report(call):
             message = "Вы ещё не ответили на звонок: нажмите «Ответить»."
         else:
-            message = "Заявитель ещё не ответил." if caller_side else "Дежурный ещё не ответил."
+            message = "Заявитель ещё не ответил." if caller_side else "Абонент ещё не ответил."
         raise ApiError(409, "not_answered", message)
     retry = _find_retry(call, action_id)
     if retry is not None:
@@ -717,6 +716,7 @@ async def say(
     else:
         reply = await dialog.provider_for(ts).reply(_context(attempt, call, officer), text)
         extra = {}
+    reply = known_facts_reply(scenario, call, text, reply, officer)
     reply = chief_reply(scenario, attempt, call, text, reply)
     operator = _turn("operator", text, reply.operator_topics, now, action_id=action_id, heard=heard)
     audio = await dialog.reply_audio(None, version, officer, reply, stem=_reply_stem(call, reply))
@@ -735,7 +735,7 @@ async def say(
     facts: list[str] = []
     if passes_facts(call):
         facts = engine.facts_from_dialog(
-            scenario.card,
+            engine.true_card(scenario),
             [
                 DialogTurn(role=t["role"], text=t["text"], topics=list(t.get("topics") or []))
                 for t in turns
@@ -826,6 +826,67 @@ def _dispatching(reply: CallerReply) -> bool:
     return not text.endswith("?") and bool(_DISPATCHING.search(text.lower()))
 
 
+def known_facts_reply(
+    scenario: CardResponseScenario,
+    call: dict,
+    text: str,
+    reply: CallerReply,
+    other_side: CallIntakeScenario,
+) -> CallerReply:
+    """The officer does not ask for a fact the dispatcher has already passed (#263: «Что именно
+    произошло?» after a cat stuck in a shaft). The facts are read as the evaluation reads them —
+    by the words of the card too, not only by the keyword table the reply was chosen by — and
+    join the dispatcher's turn, so the next reply knows them as well. Instead the officer asks
+    the next missing fact, or confirms once nothing is missing."""
+    if not passes_facts(call):
+        return reply
+    turns = [
+        *(
+            DialogTurn(role=t["role"], text=t["text"], topics=list(t.get("topics") or []))
+            for t in call.get("dialog") or []
+        ),
+        DialogTurn(role="operator", text=text, topics=list(reply.operator_topics)),
+    ]
+    passed = engine.facts_from_dialog(engine.true_card(scenario), turns)
+    now = engine.facts_from_dialog(
+        engine.true_card(scenario), [DialogTurn(role="operator", text=text, topics=[])]
+    )
+    topics = [*reply.operator_topics, *(f for f in now if f not in reply.operator_topics)]
+    reply = replace(reply, operator_topics=topics)
+    if reply.text not in officers.FACT_REQUESTS or not (set(reply.topics) & set(passed)):
+        return reply
+    required = list(other_side.required_topics)
+    missing = [f for f in required if f not in passed]
+    asked = {t.get("text") for t in call.get("dialog") or [] if t.get("role") == "caller"}
+    for fact in missing:
+        question = next(
+            (
+                r
+                for r in other_side.replies
+                if r.topic == fact and r.text in officers.FACT_REQUESTS and r.text not in asked
+            ),
+            None,
+        )
+        if question is not None:
+            return CallerReply(
+                text=question.text,
+                topics=[fact],
+                operator_topics=topics,
+                reply_id=question.id,
+                audio=question.audio,
+                method="facts",
+            )
+    confirm = next((r for r in other_side.replies if r.topic == "confirm"), None)
+    return CallerReply(
+        text=confirm.text if confirm else TAKEN,
+        topics=["confirm"],
+        operator_topics=topics,
+        reply_id=confirm.id if confirm else None,
+        audio=confirm.audio if confirm else None,
+        method="facts",
+    )
+
+
 def chief_calls(attempt: Attempt, scenario: CardResponseScenario) -> list[dict]:
     """The dispatcher's calls to the squad chief of the own service, in order."""
     return [
@@ -874,7 +935,7 @@ def chief_reply(
     calls = chief_calls(attempt, scenario)
     said = [*_said_by_dispatcher(calls), text]
     ordered = any(engine.gives_order(phrase) for phrase in said)
-    told = any(engine.address_named(scenario.card, phrase) for phrase in said)
+    told = any(engine.address_told(scenario, phrase) for phrase in said)
     taken = any(
         TOPIC_ORDER_TAKEN in (t.get("topics") or [])
         for c in calls
@@ -899,7 +960,7 @@ def chief_reply(
             return reply
         required = list(reference_for(scenario, scenario.service).required_facts)
         turns = [DialogTurn(role="operator", text=phrase, topics=[]) for phrase in said]
-        passed = engine.facts_from_dialog(scenario.card, turns)
+        passed = engine.facts_from_dialog(engine.true_card(scenario), turns)
         complete = all(f in passed for f in required)
         return answer(ASK_ORDER if complete else TAKEN, ["confirm"], "order")
     if not told:
@@ -954,7 +1015,8 @@ def misheard_reply(
     """
     if is_caller(call) or call.get("service") != scenario.service:
         return None
-    card = scenario.card
+    # The house the caller gave, not a mistake of the operator in the field (#263).
+    card = engine.true_card(scenario)
     heard = detect_officer_topics(text)
     current = misheard.state(calls_of(attempt))
 

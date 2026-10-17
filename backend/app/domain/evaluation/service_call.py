@@ -98,6 +98,39 @@ def address_named(card: Card, text: str) -> bool:
     return bool(street_ok and house_ok)
 
 
+# Parts of the address an operator of 112 may have got wrong (issue #35, ``InjectedError``).
+ADDRESS_PARTS = ("street", "house", "building", "entrance")
+
+
+def true_card(scenario: CardResponseScenario) -> Card:
+    """The card as it really is: the address parts the operator of 112 got wrong replaced by
+    the truth (the caller's own words in the description). A dispatcher who passes the right
+    house is right, whatever the field shows (#263)."""
+    fixes = {
+        e.field.split(".", 1)[1]: e.correct_value
+        for e in scenario.injected_errors
+        if e.field.split(".", 1)[-1] in ADDRESS_PARTS and e.field.startswith("address.")
+    }
+    if not fixes:
+        return scenario.card
+    address = scenario.card.address.model_copy(update=fixes)
+    return scenario.card.model_copy(update={"address": address})
+
+
+def address_told(scenario: CardResponseScenario, text: str) -> bool:
+    """The phrase names the address: the true one, or the one the card shows by mistake (the
+    squad goes there all the same; the evaluation names the mistake)."""
+    return address_named(true_card(scenario), text) or address_named(scenario.card, text)
+
+
+def wrong_address_told(scenario: CardResponseScenario, text: str) -> bool:
+    """The phrase passes the operator's mistake in the address, not the truth."""
+    truth = true_card(scenario)
+    if truth is scenario.card:
+        return False
+    return address_named(scenario.card, text) and not address_named(truth, text)
+
+
 def _evidence_of_another_fact(word: str) -> bool:
     """The word is a keyword of some other fact, so it says nothing about the incident."""
     facts = detect_service_facts(word)
@@ -212,7 +245,7 @@ def outcomes(scenario: CardResponseScenario, attempt: CardResponseAttempt) -> li
         # The best of several calls to the same service counts (a second call may fix a miss).
         best: CallOutcome | None = None
         for log in candidates:
-            passed = facts_from_dialog(scenario.card, log.dialog)
+            passed = facts_from_dialog(true_card(scenario), log.dialog)
             required = list(ref.required_facts)
             passed_required = [f for f in passed if f in required]
             missing = [f for f in required if f not in passed]

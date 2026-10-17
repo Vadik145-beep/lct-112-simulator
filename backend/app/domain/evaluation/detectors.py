@@ -23,7 +23,13 @@ from app.domain.evaluation.schemas import (
     CardResponseScenario,
     StatusEntry,
 )
-from app.domain.evaluation.service_call import facts_from_dialog, gives_order
+from app.domain.evaluation.service_call import (
+    address_named,
+    facts_from_dialog,
+    gives_order,
+    true_card,
+    wrong_address_told,
+)
 from app.domain.evaluation.text import normalize_text
 from app.domain.evaluation.timing import seconds_between
 from app.domain.reference_data import TYPICAL_ERRORS
@@ -366,7 +372,7 @@ def _informed_services(ctx: CardContext) -> tuple[set[str], set[str]]:
             continue
         reached.add(call.service)
         required = required_by_service.get(call.service) or []
-        passed = facts_from_dialog(ctx.scenario.card, call.dialog)
+        passed = facts_from_dialog(true_card(ctx.scenario), call.dialog)
         if not required or any(fact in passed for fact in required):
             told.add(call.service)
     return reached, told
@@ -385,7 +391,8 @@ def service_not_informed(ctx: CardContext) -> ErrorItem | None:
         "service_not_informed",
         "Карточка принята, но в службу по телефону не позвонили: "
         + ", ".join(f"«{s}»" for s in missing)
-        + ". Руководителю службы передаются адрес, тип происшествия, пострадавшие и номер наряда.",
+        + ". Начальнику аварийной бригады передаются адрес, что случилось и пострадавшие, и "
+        "даётся распоряжение на выезд.",
     )
 
 
@@ -402,8 +409,8 @@ def service_call_silent(ctx: CardContext) -> ErrorItem | None:
         "service_call_silent",
         "Дозвонились в службу, но ничего не передали: "
         + ", ".join(f"«{s}»" for s in silent)
-        + ". Дежурному нужны адрес, тип происшествия, пострадавшие и номер наряда — "
-        "без них наряду ехать некуда.",
+        + ". Начальнику аварийной бригады нужны адрес, что случилось и пострадавшие, и "
+        "распоряжение на выезд — без них бригаде ехать некуда.",
     )
 
 
@@ -552,7 +559,8 @@ def no_order_given(ctx: CardContext) -> ErrorItem | None:
         if c.kind == "outgoing" and c.service == ctx.scenario.service and c.answered
     ]
     said = [t.text for c in chief for t in c.dialog if t.role == "operator"]
-    if not said or not facts_from_dialog(ctx.scenario.card, [t for c in chief for t in c.dialog]):
+    turns = [t for c in chief for t in c.dialog]
+    if not said or not facts_from_dialog(true_card(ctx.scenario), turns):
         return None  # no call, or a silent one: those are errors of their own
     if any(gives_order(text) for text in said):
         return None
@@ -560,6 +568,31 @@ def no_order_given(ctx: CardContext) -> ErrorItem | None:
         "no_order_given",
         "Начальнику аварийной бригады передали происшествие, но не дали распоряжение на "
         "выезд. Скажите прямо: «Выезжайте» или «Направляйте бригаду» — и запишите номер наряда.",
+    )
+
+
+def wrong_address_passed(ctx: CardContext) -> ErrorItem | None:
+    """The dispatcher passed the squad chief the address as the operator of 112 got it wrong,
+    and never the true one (#263): the squad goes to the wrong house."""
+    chief = [
+        c
+        for c in ctx.attempt.service_calls
+        if c.kind == "outgoing" and c.service == ctx.scenario.service and c.answered
+    ]
+    said = [t.text for c in chief for t in c.dialog if t.role == "operator"]
+    if not any(wrong_address_told(ctx.scenario, text) for text in said):
+        return None
+    truth = true_card(ctx.scenario)
+    if any(address_named(truth, text) for text in said):
+        return None  # corrected in the end
+    card = ctx.scenario.card.address
+    return _item(
+        "wrong_address_passed",
+        f"Начальнику аварийной бригады передан неверный адрес из карточки: дом {card.house}"
+        + (f", корпус {card.building}" if card.building else "")
+        + f". Со слов заявителя — дом {truth.address.house}"
+        + (f", корпус {truth.address.building}" if truth.address.building else "")
+        + ". Ошибку оператора 112 нужно не только отметить в карточке, но и не передавать бригаде.",
     )
 
 
@@ -620,8 +653,8 @@ def misheard_not_fixed(ctx: CardContext) -> ErrorItem | None:
     )
     return _item(
         "misheard_not_fixed",
-        f"Начальник бригады повторил адрес с ошибкой: «{asked}», а в карточке дом "
-        f"{ctx.scenario.card.address.house}. Его нужно было сразу поправить." + after,
+        f"Начальник бригады повторил адрес с ошибкой: «{asked}», а верно — дом "
+        f"{true_card(ctx.scenario).address.house}. Его нужно было сразу поправить." + after,
     )
 
 
@@ -649,6 +682,7 @@ CARD_DETECTORS: dict[str, Callable[[CardContext], ErrorItem | None]] = {
     "no_vehicles_not_reported": no_vehicles_not_reported,
     "no_order_given": no_order_given,
     "wrong_contact": wrong_contact,
+    "wrong_address_passed": wrong_address_passed,
 }
 
 

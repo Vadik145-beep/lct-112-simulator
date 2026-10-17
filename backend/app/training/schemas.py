@@ -30,6 +30,9 @@ class SessionInfo(BaseModel):
     phone_calls: bool = False
     # The number the teacher entered: the calls ring it, the page does not ask for one.
     lesson_phone: str | None = None
+    # The teacher allowed calling the caller of the card (#263): otherwise the handsets of the
+    # card's phones stay grey.
+    allow_caller_call: bool = False
     started_at: datetime | None
     finished_at: datetime | None
     service: ServiceInfo | None
