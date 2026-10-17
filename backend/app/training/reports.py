@@ -23,6 +23,7 @@ to for ``REPORT_CALL_TIMEOUT_SECONDS`` is closed as «not taken» and the timeli
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from datetime import datetime, timedelta
 
 from sqlalchemy import select
@@ -31,6 +32,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.domain.evaluation import status_machine as machine
 from app.domain.evaluation.schemas import BrigadeReport, CardResponseScenario
 from app.domain.evaluation.service_call import address_named
+from app.domain.scenarios import complication, no_vehicles
 from app.models import (
     ACTIVE_ATTEMPT_STATES,
     MODE_CARD_RESPONSE,
@@ -66,13 +68,19 @@ def dispatched_at(scenario: CardResponseScenario, attempt: Attempt) -> datetime 
     A card the reference sends nobody to call is dispatched by «Принята» alone. Where the card
     does require a call to the service officer, the squad leaves at the end of the call in
     which the dispatcher named the address: a squad that was not told where to go does not
-    depart, however long the dispatcher held the line (issue #127).
+    depart, however long the dispatcher held the line (issue #127). When the squad chief said
+    there are no vehicles, the squad leaves at the end of the call in which the head of the
+    organization found one (#263), and stays put until then.
     """
     from app.dialog import officer
 
     accepted = accepted_at(attempt)
     if accepted is None:
         return None
+    calls = officer.calls_of(attempt)
+    if no_vehicles.announced(calls):
+        released = no_vehicles.released_at(calls)
+        return max(released, accepted) if released is not None else None
     if not scenario.reference.service_calls:
         return accepted
     told: list[datetime] = []
@@ -94,13 +102,22 @@ def dispatched_at(scenario: CardResponseScenario, attempt: Attempt) -> datetime 
 
 
 def next_report(
-    scenario: CardResponseScenario, attempt: Attempt, now: datetime
+    scenario: CardResponseScenario,
+    attempt: Attempt,
+    now: datetime,
+    titles: Mapping[str, str] | None = None,
 ) -> BrigadeReport | None:
     """The report due now, if any: the first one not delivered yet, once its delay after the
-    previous milestone has passed and no call is in progress on the card."""
+    previous milestone has passed and no call is in progress on the card. On difficulty 3 the
+    specialist's call about a complication comes after the arrival (``complication``);
+    ``titles`` name the services in it."""
     from app.dialog import officer
 
-    reports = scenario.reference.reports
+    calls = officer.calls_of(attempt)
+    if no_vehicles.plan_of(calls) == no_vehicles.PLAN_NO_VEHICLES:
+        reports = list(scenario.reference.reports)  # one stress per card, not both
+    else:
+        reports = complication.timeline(scenario, titles)
     if not reports or attempt.response_status not in RESPONDING_STATUSES:
         return None
     delivered = officer.delivered_reports(attempt)
@@ -161,6 +178,7 @@ async def sweep_reports(
     events: list[SessionEvent] = []
     to_dial: list[tuple[Attempt, dict]] = []
     lessons: dict = {}
+    titles: dict[str, str] | None = None
     for (attempt,) in rows:
         if attempt.session_id not in lessons:
             lessons[attempt.session_id] = await session.get(TrainingSession, attempt.session_id)
@@ -178,12 +196,13 @@ async def sweep_reports(
             session, attempt.scenario_id, attempt.scenario_version
         )
         scenario = CardResponseScenario.model_validate(card.body)
-        report = next_report(scenario, attempt, now)
+        if titles is None:
+            services = await training.load_services(session)
+            titles = {code: s.title for code, s in services.items()}
+        report = next_report(scenario, attempt, now, titles)
         if report is None:
             continue
-        services = await training.load_services(session)
-        service = services.get(scenario.service)
-        title = service.title if service else scenario.service
+        title = titles.get(scenario.service, scenario.service)
         call, started = await officer.start_report(
             session, attempt, scenario, report, title, telephony=live, now=now
         )

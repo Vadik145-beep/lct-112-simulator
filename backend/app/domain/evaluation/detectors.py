@@ -27,6 +27,8 @@ from app.domain.evaluation.service_call import facts_from_dialog
 from app.domain.evaluation.text import normalize_text
 from app.domain.evaluation.timing import seconds_between
 from app.domain.reference_data import TYPICAL_ERRORS
+from app.domain.scenarios import complication, misheard, no_vehicles
+from app.domain.scenarios.officers import spoken_service
 
 ERRORS: dict[str, dict] = {e["code"]: e for e in TYPICAL_ERRORS}
 
@@ -418,7 +420,9 @@ def _reports_delivered(ctx: CardContext) -> dict[str, StatusEntry | None]:
     delivered: dict[str, StatusEntry | None] = {}
     for call in ctx.attempt.service_calls:
         status = call.report_status
-        if call.kind == "report" and call.answered and status and status not in delivered:
+        if status not in REPORTED_STATUSES:
+            continue  # a complication on site is a call, not a status of the card
+        if call.kind == "report" and call.answered and status not in delivered:
             delivered[status] = StatusEntry(status=status, at=call.started_at)
     return delivered
 
@@ -494,12 +498,90 @@ def report_not_taken(ctx: CardContext) -> ErrorItem | None:
     ]
     if not missed:
         return None
-    named = [sm.title(s) for s in dict.fromkeys(missed) if s]
+    named = [_report_title(s) for s in dict.fromkeys(missed) if s]
     about = " (" + ", ".join(f"«{t}»" for t in named) + ")" if named else ""
     return _item(
         "report_not_taken",
         f"Бригада звонила с докладом {len(missed)} раз(а){about}, диспетчер не ответил. "
         "Доклад принимается по телефону: без него ход реагирования в карточке не отражается.",
+    )
+
+
+def _report_title(status: str) -> str:
+    return complication.TITLE if status == complication.STATUS else sm.title(status)
+
+
+def complication_not_passed(ctx: CardContext) -> ErrorItem | None:
+    """The squad's specialist asked for another service and the dispatcher did not call it
+    afterwards (issue #263). An unanswered call is ``report_not_taken``, not this."""
+    needed = complication.service_needed(ctx.scenario)
+    calls = ctx.attempt.service_calls
+    asked = [
+        c
+        for c in calls
+        if c.kind == "report" and c.report_status == complication.STATUS and c.answered
+    ]
+    if not asked or needed is None:
+        return None
+    told = any(
+        c.kind == "outgoing"
+        and c.service == needed
+        and c.answered
+        and c.started_at >= asked[0].started_at
+        and any(t.role == "operator" for t in c.dialog)
+        for c in calls
+    )
+    if told:
+        return None
+    return _item(
+        "complication_not_passed",
+        f"Специалист бригады сообщил об осложнении и попросил помощи "
+        f"{spoken_service(needed, needed)}, но диспетчер в эту службу не позвонил. "
+        "Об осложнении на месте нужно сразу оповестить службу через её вкладку.",
+    )
+
+
+def no_vehicles_not_reported(ctx: CardContext) -> ErrorItem | None:
+    """The squad chief said there are no vehicles and the dispatcher never got the head of
+    the organization to find one (issue #263): the squad never left."""
+    calls = [{"dialog": [t.model_dump() for t in c.dialog]} for c in ctx.attempt.service_calls]
+    if not no_vehicles.blocked(calls):
+        return None
+    return _item(
+        "no_vehicles_not_reported",
+        "Начальник аварийной бригады сообщил, что свободных машин нет, а руководителю "
+        "организации об этом не доложено: бригада так и не выехала. О нехватке сил и средств "
+        "нужно сразу докладывать руководителю.",
+    )
+
+
+def misheard_not_fixed(ctx: CardContext) -> ErrorItem | None:
+    """The squad chief repeated the address with a wrong house and the dispatcher let it pass
+    in that call (issue #263). A later correction turns the squad round but comes too late."""
+    calls = [
+        {"id": str(i), "dialog": [t.model_dump() for t in call.dialog]}
+        for i, call in enumerate(ctx.attempt.service_calls)
+    ]
+    found = misheard.state(calls)
+    if found is None or found.fixed:
+        return None
+    asked = next(
+        (
+            t.text
+            for t in ctx.attempt.service_calls[int(found.call_id)].dialog
+            if t.role == "caller" and misheard.TOPIC_MISHEARD in t.topics
+        ),
+        "",
+    )
+    after = (
+        " Адрес исправлен позже, когда бригада уже выехала не туда."
+        if found.fixed_late
+        else " Бригада выехала по неверному адресу."
+    )
+    return _item(
+        "misheard_not_fixed",
+        f"Начальник бригады повторил адрес с ошибкой: «{asked}», а в карточке дом "
+        f"{ctx.scenario.card.address.house}. Его нужно было сразу поправить." + after,
     )
 
 
@@ -522,6 +604,9 @@ CARD_DETECTORS: dict[str, Callable[[CardContext], ErrorItem | None]] = {
     "status_before_report": status_before_report,
     "report_not_reflected": report_not_reflected,
     "report_not_taken": report_not_taken,
+    "misheard_not_fixed": misheard_not_fixed,
+    "complication_not_passed": complication_not_passed,
+    "no_vehicles_not_reported": no_vehicles_not_reported,
 }
 
 

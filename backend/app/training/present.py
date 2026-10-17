@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.evaluation.data_check import field_title
 from app.domain.evaluation.status_machine import STATUSES
+from app.domain.scenarios import complication, staff
 from app.models import (
     MODE_CALL_INTAKE,
     Attempt,
@@ -177,6 +178,8 @@ def _caller_out(caller: dict) -> CallerOut:
 
 def _status_title(code: str, lookups: Lookups) -> str:
     del lookups  # titles come from the memo constants, kept for symmetry with the others
+    if code == complication.STATUS:  # a squad's call, not a status of the card
+        return complication.TITLE
     return training.status_title(code)
 
 
@@ -403,7 +406,7 @@ def service_call_out(attempt: Attempt, body: dict, call: dict, lookups: Lookups)
             list(c.get("required_facts") or [])
             for c in (body.get("reference") or {}).get("service_calls") or []
             if c.get("service") == call.get("service")
-            and call.get("kind") != "report"
+            and (call.get("kind") or "outgoing") == "outgoing"
             and not call.get("repeat")
         ),
         [],
@@ -417,6 +420,8 @@ def service_call_out(attempt: Attempt, body: dict, call: dict, lookups: Lookups)
         service=call["service"],
         service_title=service.title if service else call.get("service_title") or call["service"],
         kind=call.get("kind") or "outgoing",
+        role=call.get("role"),
+        role_title=staff.ROLE_TITLES.get(call.get("role") or ""),
         report_status=report_status,
         report_status_title=_status_title(report_status, lookups) if report_status else None,
         started_at=started,

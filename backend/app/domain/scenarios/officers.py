@@ -30,6 +30,7 @@ from app.domain.evaluation.schemas import (
     Reply,
     ServiceCallRef,
 )
+from app.domain.scenarios import misheard
 
 # How the duty officer names his own service out loud. The reference titles come from the
 # classifier and carry the paperwork («Территориальные ОИВ (управы, префектуры)»), which a
@@ -106,12 +107,15 @@ assert FACT_REQUESTS <= {text for _, text in GENERIC_REPLIES}
 # delivered: none yet → the squad is being sent; the report of «Начало реагирования» → on the
 # way; «Прибытие» → on site; «Проведение работ» → working; «Работы завершены» → done.
 SQUAD_STATE_PENDING = "pending"
+# No vehicles to send (#263): the squad stays until the head of the organization finds one.
+SQUAD_STATE_NO_VEHICLES = "no_vehicles"
 PROGRESS_REPLIES: dict[str, str] = {
     SQUAD_STATE_PENDING: "Бригаду собираем, выезжаем. Как выедем — доложу.",
     "response_started": "Бригада в пути, едем на адрес. По прибытии доложим.",
     "arrived": "Бригада на месте, осматриваемся. Как начнём работы — доложу.",
     "works_started": "Работы ведутся, пока без замечаний. По окончании доложу.",
     "works_done": "Работы завершены, докладывал. Всё по карточке отражено.",
+    SQUAD_STATE_NO_VEHICLES: "Машин так и нет, все на выездах.",
 }
 # Состояния, в которых бригаду уже видно на месте: это знает и заявитель, если ему позвонить
 # (app.domain.scenarios.caller_back).
@@ -283,7 +287,7 @@ def repeat_opening(service: str, service_title: str, state: str = SQUAD_STATE_PE
     return f"{first} Карточку от вас уже приняли. {PROGRESS_REPLIES[state]}"
 
 
-def _reference_card(scenario: CardResponseScenario) -> ReferenceCard:
+def reference_card_of(scenario: CardResponseScenario) -> ReferenceCard:
     card = scenario.card
     return ReferenceCard(
         incident_type=card.incident_type,
@@ -342,7 +346,7 @@ def officer_scenario(
         ),
         replies=replies,
         required_topics=required,
-        reference_card=_reference_card(scenario),
+        reference_card=reference_card_of(scenario),
     )
 
 
@@ -388,19 +392,8 @@ def report_scenario(
         ),
         replies=report_replies(report, order_number(scenario, scenario.service)),
         required_topics=[],
-        reference_card=_reference_card(scenario),
+        reference_card=reference_card_of(scenario),
     )
-
-
-def _spoken_address(card: Mapping) -> str:
-    address = card.get("address") or {}
-    parts = [address.get("street") or ""]
-    if address.get("house"):
-        parts.append(f"дом {address['house']}")
-    if address.get("building"):
-        parts.append(f"корпус {address['building']}")
-    text = ", ".join(p for p in parts if p)
-    return text or (address.get("descriptive") or "адрес по карточке")
 
 
 def default_reports(scenario_body: Mapping) -> list[dict]:
@@ -412,7 +405,7 @@ def default_reports(scenario_body: Mapping) -> list[dict]:
         return []
     chain = {s.get("status"): s for s in reference.get("status_chain") or [] if s.get("status")}
     card = scenario_body.get("card") or {}
-    address = _spoken_address(card)
+    address = misheard.spoken_address(card.get("address") or {})
     reports: list[dict] = []
     for status, after, template in DEFAULT_REPORTS:
         if status not in chain:
