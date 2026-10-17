@@ -13,6 +13,7 @@ import re
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -47,11 +48,14 @@ def _requests_dir() -> Path:
 
 
 def _dump_time(name: str) -> datetime | None:
+    """When the dump started: the backup service names the file by its local clock (TZ of the
+    stack, the same as the application's), not by UTC."""
     match = DUMP_PATTERN.match(name)
     if not match:
         return None
     try:
-        return datetime.strptime(match.group(1), "%Y%m%d-%H%M%S").replace(tzinfo=UTC)
+        local = datetime.strptime(match.group(1), "%Y%m%d-%H%M%S")
+        return local.replace(tzinfo=ZoneInfo(get_settings().tz)).astimezone(UTC)
     except ValueError:
         return None
 

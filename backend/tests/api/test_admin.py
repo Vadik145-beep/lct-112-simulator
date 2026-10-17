@@ -5,6 +5,7 @@ role — no evaluations, no scenarios, no hand in a running lesson."""
 from __future__ import annotations
 
 import uuid
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -408,6 +409,10 @@ async def test_backup_request_and_list(
     assert data["schedule_time"] == "03:00" and data["keep"] == 14
     assert [b["file_name"] for b in data["items"]] == ["trainer-20260921-030000.dump"]
     assert data["items"][0]["kind"] == "scheduled"
+    # The service names the dump by the stack's clock (TZ, Moscow): 03:00 there is 00:00 UTC.
+    assert datetime.fromisoformat(data["items"][0]["requested_at"]) == datetime(
+        2026, 9, 21, 0, 0, tzinfo=UTC
+    )
 
     r = await client.post("/api/admin/backups", headers=bearer(admin))
     assert r.status_code == 202, r.text

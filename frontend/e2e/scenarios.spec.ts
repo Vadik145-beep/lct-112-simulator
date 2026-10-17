@@ -62,6 +62,8 @@ test.describe("Волна 8: сценарии", () => {
     await page.getByLabel("Режим").selectOption("card_response");
     await expect(page.getByRole("table", { name: "Список сценариев" }).locator("tbody tr").first()).toContainText("Реагирование");
     await page.getByLabel("Режим").selectOption("");
+    // Source, status and ticket are folded under «Ещё фильтры».
+    await page.getByRole("button", { name: /Ещё фильтры/ }).click();
     await page.getByLabel("Билет").fill("2-1");
     const rows = page.getByRole("table", { name: "Список сценариев" }).locator("tbody tr");
     await expect(rows.first()).toContainText("2-1");

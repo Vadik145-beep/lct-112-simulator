@@ -86,37 +86,12 @@ function SettingsForm({ settings }: { settings: AdminSettingsOut }) {
           </CardHeader>
           <CardContent className="space-y-4 text-sm">
             <div className="space-y-1.5">
-              <Label htmlFor="ari-url">Адрес ARI Asterisk</Label>
-              <Input id="ari-url" value={ariUrl} onChange={(e) => setAriUrl(e.target.value)} placeholder="http://asterisk:8088/ari" />
-              <p className="text-xs text-muted-foreground">Применяется после перезапуска API. Приложение ARI: {t.ari_app}, домен SIP: {t.sip_domain}.</p>
-            </div>
-            <div className="space-y-1.5">
               <Label htmlFor="ring">Ожидание ответа, с</Label>
               <Input id="ring" type="number" min={5} max={300} value={ring} onChange={(e) => setRing(e.target.value)} className="w-32" />
             </div>
             <label className="flex items-center gap-2">
               <input type="checkbox" checked={recording} onChange={(e) => setRecording(e.target.checked)} /> Записывать разговоры (запись доступна в разборе)
             </label>
-            <fieldset>
-              <legend className="mb-1 font-medium">Кодеки софтфона в браузере</legend>
-              <div className="flex flex-wrap gap-3">
-                {CODECS.map((c) => (
-                  <label key={c} className="flex items-center gap-1">
-                    <input type="checkbox" checked={webrtc.has(c)} onChange={() => toggle(webrtc, setWebrtc, c)} /> {c}
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-            <fieldset>
-              <legend className="mb-1 font-medium">Кодеки настольного телефона</legend>
-              <div className="flex flex-wrap gap-3">
-                {CODECS.map((c) => (
-                  <label key={c} className="flex items-center gap-1">
-                    <input type="checkbox" checked={phone.has(c)} onChange={() => toggle(phone, setPhone, c)} /> {c}
-                  </label>
-                ))}
-              </div>
-            </fieldset>
             <div className="space-y-1.5">
               <Label htmlFor="trainee-phones">Телефоны стажёров (линия оператора)</Label>
               <textarea
@@ -136,22 +111,6 @@ function SettingsForm({ settings }: { settings: AdminSettingsOut }) {
         </Card>
 
         <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Журналирование</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-1.5 text-sm">
-              <Label htmlFor="log-level">Уровень журнала API</Label>
-              <select id="log-level" value={level} onChange={(e) => setLevel(e.target.value as typeof level)} className="h-9 w-40 rounded-md border border-input bg-background text-foreground px-2 text-sm">
-                {LEVELS.map((l) => (
-                  <option key={l} value={l}>
-                    {l}
-                  </option>
-                ))}
-              </select>
-              <p className="text-xs text-muted-foreground">Применяется сразу; фоновые задачи берут уровень при следующем запуске.</p>
-            </CardContent>
-          </Card>
 
           <Card>
             <CardHeader>
@@ -179,6 +138,54 @@ function SettingsForm({ settings }: { settings: AdminSettingsOut }) {
               <Input id="unfinished" type="number" min={1} max={336} value={unfinished} onChange={(e) => setUnfinished(e.target.value)} className="w-32" />
               <p className="text-xs text-muted-foreground">Через сколько часов после первичного статуса открытая карточка помечается «Не завершено» (памятка: 48 часов). Значение по умолчанию для новых занятий.</p>
             </CardContent>
+          </Card>
+
+          {/* Settings only a technician changes: folded so the page is not overloaded
+              (customer's recommendation 6); «Сохранить настройки» saves them with the rest. */}
+          <Card>
+            <details data-testid="technician-settings">
+              <summary className="cursor-pointer px-6 py-4 text-base font-semibold">
+                Для техника: адрес ARI, кодеки, уровень журнала
+              </summary>
+              <CardContent className="space-y-4 text-sm">
+                <div className="space-y-1.5">
+                  <Label htmlFor="ari-url">Адрес ARI Asterisk</Label>
+                  <Input id="ari-url" value={ariUrl} onChange={(e) => setAriUrl(e.target.value)} placeholder="http://asterisk:8088/ari" />
+                  <p className="text-xs text-muted-foreground">Применяется после перезапуска API. Приложение ARI: {t.ari_app}, домен SIP: {t.sip_domain}.</p>
+                </div>
+                <fieldset>
+                  <legend className="mb-1 font-medium">Кодеки софтфона в браузере</legend>
+                  <div className="flex flex-wrap gap-3">
+                    {CODECS.map((c) => (
+                      <label key={c} className="flex items-center gap-1">
+                        <input type="checkbox" checked={webrtc.has(c)} onChange={() => toggle(webrtc, setWebrtc, c)} /> {c}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+                <fieldset>
+                  <legend className="mb-1 font-medium">Кодеки настольного телефона</legend>
+                  <div className="flex flex-wrap gap-3">
+                    {CODECS.map((c) => (
+                      <label key={c} className="flex items-center gap-1">
+                        <input type="checkbox" checked={phone.has(c)} onChange={() => toggle(phone, setPhone, c)} /> {c}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+                <div className="space-y-1.5">
+                  <Label htmlFor="log-level">Уровень журнала API</Label>
+                  <select id="log-level" value={level} onChange={(e) => setLevel(e.target.value as typeof level)} className="h-9 w-40 rounded-md border border-input bg-background text-foreground px-2 text-sm">
+                    {LEVELS.map((l) => (
+                      <option key={l} value={l}>
+                        {l}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-muted-foreground">Применяется сразу; фоновые задачи берут уровень при следующем запуске.</p>
+                </div>
+              </CardContent>
+            </details>
           </Card>
         </div>
       </div>

@@ -1,5 +1,5 @@
-import { Eye, KeyRound, Phone, Plus, ShieldBan, ShieldCheck } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { Eye, KeyRound, MoreHorizontal, Phone, Plus, ShieldBan, ShieldCheck } from "lucide-react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 
 import {
   useAdminServices,
@@ -208,21 +208,80 @@ function UserRow({
       </td>
       <td className="py-2 pr-3 whitespace-nowrap text-muted-foreground">{u.last_login_at ? formatDateTime(u.last_login_at) : "—"}</td>
       <td className="py-2 pr-3">
-        <div className="flex flex-wrap gap-1">
-          <Button size="sm" variant="outline" onClick={() => onBlock(!u.is_blocked)} aria-label={`${u.is_blocked ? "Разблокировать" : "Заблокировать"}: ${u.login}`}>
-            {u.is_blocked ? <ShieldCheck /> : <ShieldBan />} {u.is_blocked ? "Разблокировать" : "Заблокировать"}
-          </Button>
-          <Button size="sm" variant="outline" onClick={onReset} aria-label={`Сбросить пароль: ${u.login}`}>
-            <KeyRound /> Сбросить пароль
-          </Button>
-          {u.role === "student" && (
-            <Button size="sm" variant="outline" onClick={onSip} aria-label={`SIP-учётка: ${u.login}`}>
-              <Phone /> SIP-учётка
-            </Button>
+        <RowMenu login={u.login}>
+          {(close) => (
+            <>
+              <MenuItem
+                onClick={() => close(() => onBlock(!u.is_blocked))}
+                label={`${u.is_blocked ? "Разблокировать" : "Заблокировать"}: ${u.login}`}
+              >
+                {u.is_blocked ? <ShieldCheck /> : <ShieldBan />} {u.is_blocked ? "Разблокировать" : "Заблокировать"}
+              </MenuItem>
+              <MenuItem onClick={() => close(onReset)} label={`Сбросить пароль: ${u.login}`}>
+                <KeyRound /> Сбросить пароль
+              </MenuItem>
+              {u.role === "student" && (
+                <MenuItem onClick={() => close(onSip)} label={`SIP-учётка: ${u.login}`}>
+                  <Phone /> SIP-учётка
+                </MenuItem>
+              )}
+            </>
           )}
-        </div>
+        </RowMenu>
       </td>
     </tr>
+  );
+}
+
+/** The rare actions of a user row under one «⋯» button (customer's recommendation 6: no
+ * overload of buttons); closes on a choice, a click elsewhere or Escape. */
+function RowMenu({ login, children }: { login: string; children: (close: (then: () => void) => void) => ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const outside = (e: MouseEvent) => {
+      if (box.current && !box.current.contains(e.target as Node)) setOpen(false);
+    };
+    const escape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", outside);
+    document.addEventListener("keydown", escape);
+    return () => {
+      document.removeEventListener("mousedown", outside);
+      document.removeEventListener("keydown", escape);
+    };
+  }, [open]);
+  const close = (then: () => void) => {
+    setOpen(false);
+    then();
+  };
+  return (
+    <div ref={box} className="relative inline-block">
+      <Button size="sm" variant="outline" aria-haspopup="menu" aria-expanded={open} aria-label={`Действия: ${login}`} onClick={() => setOpen((v) => !v)}>
+        <MoreHorizontal />
+      </Button>
+      {open && (
+        <div role="menu" className="absolute right-0 z-20 mt-1 flex w-56 flex-col rounded-md border bg-card p-1 shadow-lg">
+          {children(close)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MenuItem({ onClick, label, children }: { onClick: () => void; label: string; children: ReactNode }) {
+  return (
+    <button
+      type="button"
+      role="menuitem"
+      aria-label={label}
+      onClick={onClick}
+      className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent [&_svg]:size-4"
+    >
+      {children}
+    </button>
   );
 }
 
