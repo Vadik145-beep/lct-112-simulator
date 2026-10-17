@@ -19,7 +19,7 @@ from app.providers.generation import (
     build_generation_provider,
     candidate_rows,
 )
-from app.providers.llm import ModelUnavailableError
+from app.providers.llm import ModelUnavailableError, OpenAiCompatibleChat
 from app.providers.rag import Chunk, ReferenceIndex, split_document
 from tests.providers.fake_model import FakeModel
 
@@ -231,6 +231,9 @@ def test_candidate_rows_put_teacher_type_first_and_respect_group() -> None:
 def test_provider_factory() -> None:
     assert build_generation_provider(None).method == "template"
     assert build_generation_provider("http://llm-gen:8080").method == "llm"
+    hosted = build_generation_provider("https://models.example.com", "key", "vendor/model")
+    assert hosted.method == "llm"
+    assert isinstance(hosted._chat, OpenAiCompatibleChat)
 
 
 def test_split_document_and_tfidf_index(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:

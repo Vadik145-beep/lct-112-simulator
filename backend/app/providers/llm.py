@@ -6,6 +6,9 @@ for JSON constrained by a schema (llama.cpp builds a grammar from it, so the mod
 outside the schema) and keeps the system prompt cached per conversation: ``cache_prompt`` reuses
 the KV cache of a slot and ``id_slot`` pins one conversation to one slot (PRD 9.3).
 
+``OpenAiCompatibleChat`` is the same client for a hosted model (a key and a model name), used
+for scenario generation on a demonstration stand outside the closed contour.
+
 When the server is down the client raises ``ModelUnavailableError`` and does not retry for
 ``RETRY_AFTER_SECONDS``; the dialog provider then degrades to the mode without a model.
 """
@@ -121,10 +124,7 @@ class LlamaCppChat:
         if time.monotonic() < self._unavailable_until:
             raise ModelUnavailableError(f"{self.name}: недавно не отвечал, повтор позже")
         payload: dict[str, Any] = {
-            "messages": list(messages),
-            "max_tokens": max_tokens,
-            "temperature": temperature,
-            "cache_prompt": True,
+            **self._payload(messages, max_tokens=max_tokens, temperature=temperature),
             **extra,
         }
         started = time.perf_counter()
@@ -163,9 +163,23 @@ class LlamaCppChat:
             max_tokens=max_tokens,
             slot_key=slot_key,
             temperature=temperature,
-            extra={"response_format": {"type": "json_object", "schema": schema}},
+            extra={"response_format": self._json_format(schema)},
         )
         return parse_json_object(content)
+
+    def _payload(
+        self, messages: Sequence[Message], *, max_tokens: int, temperature: float
+    ) -> dict[str, Any]:
+        return {
+            "messages": list(messages),
+            "max_tokens": max_tokens,
+            "temperature": temperature,
+            "cache_prompt": True,
+        }
+
+    def _json_format(self, schema: dict[str, Any]) -> dict[str, Any]:
+        # llama.cpp turns the schema into a grammar: the model cannot leave it.
+        return {"type": "json_object", "schema": schema}
 
     async def complete_text(
         self,
@@ -178,6 +192,60 @@ class LlamaCppChat:
         return await self._chat(
             messages, max_tokens=max_tokens, slot_key=slot_key, temperature=temperature, extra={}
         )
+
+
+class OpenAiCompatibleChat(LlamaCppChat):
+    """A hosted model behind the OpenAI-compatible chat API (a key and a model name).
+
+    The same endpoint as llama.cpp, so the base address is given without ``/v1``. Differences:
+    the key goes in the ``Authorization`` header, the model is named in the request, the schema
+    is passed as ``json_schema`` (structured outputs) and there are no slots or prompt cache
+    of llama.cpp. Such services have no ``/health``: the model counts as available unless a
+    request has just failed. Outside the closed contour only (``ALLOW_EXTERNAL_AI``).
+    """
+
+    def __init__(
+        self,
+        base_url: str,
+        *,
+        api_key: str,
+        model: str,
+        name: str | None = None,
+        timeout: float = REQUEST_TIMEOUT_SECONDS,
+        transport: httpx.AsyncBaseTransport | None = None,
+    ) -> None:
+        super().__init__(base_url, name=name or model, timeout=timeout, transport=transport)
+        self._api_key = api_key
+        self._model = model
+
+    def _client(self) -> httpx.AsyncClient:
+        return httpx.AsyncClient(
+            base_url=self._base,
+            timeout=self._timeout,
+            transport=self._transport,
+            headers={"Authorization": f"Bearer {self._api_key}"},
+        )
+
+    async def available(self) -> bool:
+        return time.monotonic() >= self._unavailable_until
+
+    async def _slot_for(self, client: httpx.AsyncClient, slot_key: str | None) -> int | None:
+        return None
+
+    def _payload(
+        self, messages: Sequence[Message], *, max_tokens: int, temperature: float
+    ) -> dict[str, Any]:
+        return {
+            "model": self._model,
+            "messages": list(messages),
+            "max_tokens": max_tokens,
+            "temperature": temperature,
+        }
+
+    def _json_format(self, schema: dict[str, Any]) -> dict[str, Any]:
+        # Not strict: strict mode demands every property required, our schemas have optional
+        # ones. The answer is validated by the caller anyway.
+        return {"type": "json_schema", "json_schema": {"name": "answer", "schema": schema}}
 
 
 def parse_json_object(content: str) -> dict[str, Any]:

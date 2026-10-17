@@ -41,6 +41,7 @@ from app.providers.llm import (
     Message,
     ModelOutputError,
     ModelUnavailableError,
+    OpenAiCompatibleChat,
 )
 from app.providers.rag import Chunk
 
@@ -535,16 +536,25 @@ class LlmGeneration:
 _provider: GenerationProvider | None = None
 
 
-def build_generation_provider(llm_gen_url: str | None) -> GenerationProvider:
-    if llm_gen_url:
-        timeout = get_settings().llm_gen_timeout_seconds or GENERATION_TIMEOUT_SECONDS
+def build_generation_provider(
+    llm_gen_url: str | None, api_key: str | None = None, api_model: str | None = None
+) -> GenerationProvider:
+    if not llm_gen_url:
+        return TemplateGeneration()
+    timeout = get_settings().llm_gen_timeout_seconds or GENERATION_TIMEOUT_SECONDS
+    chat: ChatModel
+    if api_key and api_model:  # both or neither: Settings refuses a key without a model
+        chat = OpenAiCompatibleChat(llm_gen_url, api_key=api_key, model=api_model, timeout=timeout)
+    else:
         chat = LlamaCppChat(llm_gen_url, name="llm-gen", timeout=timeout)
-        return LlmGeneration(chat)
-    return TemplateGeneration()
+    return LlmGeneration(chat)
 
 
 def get_generation_provider() -> GenerationProvider:
     global _provider
     if _provider is None:
-        _provider = build_generation_provider(get_settings().llm_gen_url)
+        settings = get_settings()
+        _provider = build_generation_provider(
+            settings.llm_gen_url, settings.llm_gen_api_key, settings.llm_gen_api_model
+        )
     return _provider
