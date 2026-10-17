@@ -155,6 +155,9 @@ def test_service_groups_count_the_types_a_service_is_always_notified_of(
 ) -> None:
     groups = ai_plan.service_groups(type_rows)
     assert groups["gkh"]["1"] > 0  # ЖКХ takes part in fires
+    # Only the services with an emergency squad: not 103, not the district councils.
+    assert set(groups) <= set(ai_plan.DDS_SERVICES)
+    assert "103" not in groups and "territorial_oiv" not in groups
     for code, count in groups["gkh"].items():
         rows = [
             r

@@ -148,15 +148,22 @@ def lesson_service(
     return services[index % len(services)]
 
 
+# Whose ДДС a trainee can be with cards written by AI: the city services with an emergency
+# squad, as the customer's four roles of the phone are (recommendation 8: «начальник аварийной
+# бригады»). Not 103 or the district councils: no emergency squad (decision of 18.10.2026).
+DDS_SERVICES = ("gkh", "mosgaz", "mosvodokanal", "moek", "gormost")
+
+
 def service_groups(type_rows: Sequence[Mapping]) -> dict[str, dict[str, int]]:
-    """Service → incident group → how many types the classifier always notifies the service
-    of: the groups a lesson for that service's ДДС can be about (the lesson form)."""
+    """Service of ``DDS_SERVICES`` → incident group → how many types the classifier always
+    notifies the service of: the groups a lesson for that service's ДДС can be about (the
+    lesson form)."""
     groups: dict[str, dict[str, int]] = {}
     for row in type_rows:
         if not row.get("final_title"):
             continue
         group = str(row.get("group_code"))
-        for service in dict.fromkeys(_expected(row)):
+        for service in dict.fromkeys(s for s in _expected(row) if s in DDS_SERVICES):
             by_group = groups.setdefault(service, {})
             by_group[group] = by_group.get(group, 0) + 1
     return groups
