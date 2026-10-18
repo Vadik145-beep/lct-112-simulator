@@ -16,6 +16,7 @@ from app.models import Attempt
 from app.providers.dialog import CallerReply
 from app.telephony import vapi
 from app.training import reports
+from app.training.present import squad_state_told
 from tests.domain.evaluation.helpers import card_scenario, grammar_ok, perfect_card_attempt
 
 NAME = "card_gkh_1_tech_v_podezde"  # улица Свободы, дом 42, корпус 2; own service gkh
@@ -113,6 +114,18 @@ def test_no_vehicles_after_the_house_is_settled_then_the_head_finds_one() -> Non
     assert officer.squad_state(attempt) == officers.SQUAD_STATE_PENDING
     assert reports.dispatched_at(scenario, attempt) == NOW + timedelta(seconds=90)
     assert "no_vehicles_not_reported" not in errors_of(scenario, attempt)
+
+
+def test_the_phone_says_no_vehicles_only_once_the_chief_has_said_it() -> None:
+    scenario = hard()
+    call = chief_call()
+    attempt = Attempt(service_calls=[call])
+    accepted(attempt)
+    # Dialled and hung up at once: the squad is held, the trainee has been told nothing.
+    assert officer.squad_state(attempt) == officers.SQUAD_STATE_NO_VEHICLES
+    assert squad_state_told(attempt) == officers.SQUAD_STATE_WAITING
+    talk(scenario, attempt, call, ADDRESS)
+    assert squad_state_told(attempt) == officers.SQUAD_STATE_NO_VEHICLES
 
 
 def test_a_complication_turn_has_vehicles() -> None:

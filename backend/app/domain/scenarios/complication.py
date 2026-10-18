@@ -13,7 +13,7 @@ the reports skip it. The dispatcher is expected to call the named service after 
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 
 from app.domain.evaluation.schemas import BrigadeReport, CallIntakeScenario, CardResponseScenario
 from app.domain.scenarios.officers import spoken_service
@@ -47,6 +47,9 @@ PROBLEMS: dict[str, str] = {
     "104": "Запах газа в подъезде",
 }
 GENERIC_PROBLEM = "Сами не справимся"
+# The specialist's call not answered rings once more, then the squad tells it in its next
+# calls (stand 18.10.2026: the call dropped, the chief and the reports forgot the complication).
+MAX_RINGS = 2
 OFF_THE_POINT = "Диспетчер, это специалист бригады, нам нужна помощь другой службы."
 
 
@@ -63,6 +66,82 @@ def applies(scenario: CardResponseScenario) -> bool:
     if AFTER_STATUS not in {r.status for r in scenario.reference.reports}:
         return False
     return service_needed(scenario) is not None
+
+
+def problem(scenario: CardResponseScenario) -> str:
+    return PROBLEMS.get(service_needed(scenario) or "", GENERIC_PROBLEM)
+
+
+def calls_about(calls: Iterable[Mapping]) -> list[Mapping]:
+    """The specialist's calls about the complication, in order."""
+    return [c for c in calls if c.get("kind") == "report" and c.get("report_status") == STATUS]
+
+
+def happened(calls: Iterable[Mapping]) -> bool:
+    """The squad has run into the complication: the specialist has called (answered or not)."""
+    return bool(calls_about(calls))
+
+
+def heard(calls: Iterable[Mapping]) -> bool:
+    """The dispatcher answered the specialist's call."""
+    return any(c.get("answered") for c in calls_about(calls))
+
+
+def settled(calls: Iterable[Mapping]) -> bool:
+    """The specialist's call is over with: answered, or rung ``MAX_RINGS`` times."""
+    rows = calls_about(calls)
+    return any(c.get("answered") for c in rows) or len(rows) >= MAX_RINGS
+
+
+def told(calls: Iterable[Mapping], service: str, *, besides: str | None = None) -> bool:
+    """The dispatcher knows of the complication: he answered the specialist, or a later call
+    of the own organization (not ``besides``, the call being built) has told him."""
+    rows = list(calls)
+    about = calls_about(rows)
+    if not about:
+        return False
+    if heard(rows):
+        return True
+    since = str(about[0].get("started_at") or "")
+    return any(
+        c.get("answered")
+        and c.get("id") != besides
+        and c.get("service") == service
+        and c.get("report_status") != STATUS
+        and str(c.get("started_at") or "") >= since
+        for c in rows
+    )
+
+
+def specialist_line(scenario: CardResponseScenario) -> str:
+    """The specialist's own words when the dispatcher reaches him before hearing of it."""
+    service = service_needed(scenario) or ""
+    return f"{problem(scenario)}. Нужна помощь {spoken_service(service, service)}, сообщите им."
+
+
+def unheard_line(scenario: CardResponseScenario) -> str:
+    """What the squad says in its next calls when the specialist did not get through."""
+    service = service_needed(scenario) or ""
+    return (
+        f"Специалист до вас не дозвонился: {problem(scenario).lower()}. "
+        f"Нужна помощь {spoken_service(service, service)}, сообщите им."
+    )
+
+
+def fact(scenario: CardResponseScenario, calls: Iterable[Mapping]) -> str:
+    """The complication as the own organization knows it, for the prompt of anyone of it."""
+    service = service_needed(scenario) or ""
+    name = spoken_service(service, service)
+    if heard(calls):
+        return (
+            f"на месте осложнение: {problem(scenario).lower()}; специалист попросил диспетчера "
+            f"вызвать помощь {name}. Если диспетчер говорит, что вызвал её, — «Понял, ждём, "
+            "работаем дальше»; на вопрос о помощи — нужна помощь " + name
+        )
+    return (
+        f"на месте осложнение: {problem(scenario).lower()}; специалист звонил диспетчеру, но "
+        f"не дозвонился. Сам скажи диспетчеру и попроси сообщить {name}: нужна их помощь"
+    )
 
 
 def report(
