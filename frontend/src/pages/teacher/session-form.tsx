@@ -96,7 +96,8 @@ const CLOUD_MODE: (typeof DIALOG_MODES)[number] = {
 const isStream = (mode: string, difficulty: number) =>
   mode === "card_response" && difficulty === STREAM.difficulty;
 const cardsFor = (difficulty: number, mode: string) =>
-  isStream(mode, difficulty) ? STREAM.perMinute * STREAM.minutes : (CARDS_AT_ONCE[difficulty] ?? 1);
+  isStream(mode, difficulty) ? STREAM.cards : (CARDS_AT_ONCE[difficulty] ?? 1);
+const STREAM_HINT = `${STREAM.cards} карточек: первая сразу, дальше по одной каждые ${STREAM.gap} с`;
 const NORM_DEFAULT = { card_response: 30, call_intake: 60 } as const;
 // «Задания формирует ИИ» (issue #265): each trainee gets his own cards written during the lesson,
 // one at a time, the next by the mistakes of the previous one; ДДС lessons only.
@@ -509,9 +510,11 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                   ? "Каждый обучающийся получит один вызов."
                   : `Каждый обучающийся получит ${cardsFor(form.difficulty, form.mode)} вызова подряд.`
                 : aiCards
-                  ? `Каждый обучающийся получит ${AI_CARDS.perTrainee} своих карточек по одной${form.difficulty === STREAM.difficulty ? ": ЧС, по две ошибки оператора 112 в карточке" : ""}.`
+                  ? isStream(form.mode, form.difficulty)
+                    ? `Вал своих карточек каждому — ${STREAM_HINT}; ЧС, по две ошибки оператора 112 в карточке.`
+                    : `Каждый обучающийся получит ${AI_CARDS.perTrainee} своих карточек по одной.`
                   : isStream(form.mode, form.difficulty)
-                  ? `Вал: карточки приходят сами, около ${STREAM.perMinute} в минуту в течение ${STREAM.minutes} минут, каждому до ${cardsFor(form.difficulty, form.mode)}.`
+                  ? `Вал: ${STREAM_HINT}.`
                   : "Каждый обучающийся получит одну карточку."}
             </p>
           </div>
