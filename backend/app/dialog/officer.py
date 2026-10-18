@@ -101,6 +101,9 @@ STUDIO_OFFICERS_DIR = "tts/seed/_officers"
 STUDIO_SQUAD_KEY = "_squad"
 STUDIO_CALLER_KEY = "_caller"
 STUDIO_STAFF_KEY = "_staff"
+# The duty officer of another service than the card's own speaks another voice than the squad
+# chief (decision of 19.10.2026), so the same phrase of his is another file: ``_duty/<service>``.
+STUDIO_DUTY_KEY = "_duty"
 _RETRY_WINDOW = 5
 
 
@@ -276,7 +279,7 @@ def officer_scenario(
         built = built.model_copy(
             update={"caller": built.caller.model_copy(update={"facts": facts})}
         )
-    return with_studio_audio(built, service)
+    return with_studio_audio(built, officer_studio_key(scenario, service))
 
 
 # The squad chief called with a report the dispatcher did not take; called back, he says so
@@ -649,14 +652,25 @@ async def answer(
     if not with_opening:
         audio, topics = None, []
     elif is_report(call):
-        audio = await _report_audio(version, officer, _report_for(scenario, call, attempt))
+        audio = await _report_audio(
+            version,
+            officer,
+            _report_for(scenario, call, attempt),
+            studio=studio_key(scenario, call, officer),
+        )
         topics = ["report", call.get("report_status") or ""]
     else:
         # A call back uses the caller's own folder of recordings, split by voice.
         key = f"{STUDIO_CALLER_KEY}/{officer.caller.voice}" if is_caller(call) else call["service"]
         if is_staff(call):
             key = f"{STUDIO_STAFF_KEY}/{call.get(no_vehicles.ROLE_KEY)}"
-        audio = await _greeting_audio(version, officer, key, repeat=is_repeat(call))
+        audio = await _greeting_audio(
+            version,
+            officer,
+            key,
+            repeat=is_repeat(call),
+            studio=studio_key(scenario, call, officer),
+        )
         topics = ["greeting"]
     opening = (
         [
@@ -898,6 +912,10 @@ async def say(
     reply = known_facts_reply(scenario, call, text, reply, officer)
     reply = report_taken_reply(scenario, call, text, reply, officer)
     reply = chief_reply(scenario, attempt, call, text, reply)
+    if not reply.audio:
+        # Lines built on the spot («машин нет», «Так, стоп…», the order taken) are fixed words
+        # too: a studio recording of exactly these words plays instead of the stand's voice.
+        reply = replace(reply, audio=studio_audio(studio_key(scenario, call, officer), reply.text))
     operator = _turn("operator", text, reply.operator_topics, now, action_id=action_id, heard=heard)
     audio = await dialog.reply_audio(None, version, officer, reply, stem=_reply_stem(call, reply))
     officer_turn = _turn(
@@ -1334,6 +1352,26 @@ def studio_audio(service: str, text: str) -> str | None:
     return relative if (dialog.storage_root() / relative).is_file() else None
 
 
+def officer_studio_key(scenario: CardResponseScenario, service: str) -> str:
+    """Folder of an officer's recordings: the squad chief of the card's own service in the
+    service's folder, the duty officer of another service in ``_duty/<service>``."""
+    return service if service == scenario.service else f"{STUDIO_DUTY_KEY}/{service}"
+
+
+def studio_key(scenario: CardResponseScenario, call: dict, other_side: CallIntakeScenario) -> str:
+    """Folder of the studio recordings of whoever speaks on ``call`` (``studio_audio``)."""
+    if is_caller(call):
+        return f"{STUDIO_CALLER_KEY}/{other_side.caller.voice}"
+    if is_staff(call):
+        return f"{STUDIO_STAFF_KEY}/{call.get(no_vehicles.ROLE_KEY) or staff.ROLE_HEAD}"
+    if is_report(call):
+        status = call.get("report_status")
+        if status in (complication.STATUS, complication.REMINDER_STATUS):
+            return complication.STUDIO_KEY
+        return STUDIO_SQUAD_KEY
+    return officer_studio_key(scenario, call["service"])
+
+
 def with_studio_audio(scenario: CallIntakeScenario, service: str) -> CallIntakeScenario:
     """The officer's replies with their recordings: a reply that has none keeps ``audio``
     empty and is voiced by the stand."""
@@ -1363,22 +1401,35 @@ def _reply_stem(call: dict, reply: CallerReply) -> str:
 
 
 async def _report_audio(
-    version: ScenarioVersion, leader: CallIntakeScenario, report: BrigadeReport
+    version: ScenarioVersion,
+    leader: CallIntakeScenario,
+    report: BrigadeReport,
+    *,
+    studio: str = STUDIO_SQUAD_KEY,
 ) -> str | None:
-    """The squad leader's report: the recording of the scenario when it has one, else a
-    synthesis cached per scenario version and text (issue #67)."""
+    """The squad leader's report: the recording of the scenario when it has one, else the
+    studio bank's recording of exactly these words (``studio``), else a synthesis cached per
+    scenario version and text (issue #67)."""
     opening = leader.caller.opening
     # The opening may say more than the report (the complication the squad tells): then the
     # recording of the report alone does not fit.
     audio = report.audio if opening == report.text else None
+    audio = audio or studio_audio(studio, opening)
     reply = CallerReply(text=opening, topics=["report"], operator_topics=[], audio=audio)
     stem = f"report-{report.status}-{_text_key(opening)}"
     return await dialog.reply_audio(None, version, leader, reply, stem=stem)
 
 
 async def _greeting_audio(
-    version: ScenarioVersion, officer: CallIntakeScenario, service: str, *, repeat: bool = False
+    version: ScenarioVersion,
+    officer: CallIntakeScenario,
+    service: str,
+    *,
+    repeat: bool = False,
+    studio: str | None = None,
 ) -> str | None:
+    """``service`` names the cached synthesis, ``studio`` the folder of the recordings when it
+    is another one (the duty officer of another service, ``officer_studio_key``)."""
     opening = officer.caller.opening
     # The repeat call opens with where the squad is: its own file per phrase, so the cached
     # greeting of the first call is neither played here nor overwritten.
@@ -1396,7 +1447,7 @@ async def _greeting_audio(
         text=opening,
         topics=["greeting"],
         operator_topics=[],
-        audio=studio_audio(service, opening),
+        audio=studio_audio(studio or service, opening),
     )
     return await dialog.reply_audio(None, version, officer, reply, stem=stem)
 

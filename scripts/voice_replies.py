@@ -3,9 +3,10 @@
 The ``select`` dialog mode plays approved replies verbatim, so their voice can be rendered
 once, ahead of time, with emotion tags the on-stand synthesizer cannot do. The result is
 data: one MP3 per opening, per approved reply and per its other wording (``variants``) of a
-call-intake scenario, and one per report of the squad (``reference.reports``) of a
-card-response one, under ``data/seed/audio/<seed key>/``, which ``app.seed`` copies into
-``storage/tts/seed/`` and links from the scenario body. Scenarios made later on the stand
+call-intake scenario under ``data/seed/audio/<seed key>/``, which ``app.seed`` copies into
+``storage/tts/seed/`` and links from the scenario body; and the card-response side (ДДС) — the
+officers, the squad's reports, the specialist, the people of the organization — as banks under
+``data/seed/audio/_officers/``, found by the text of a phrase. Scenarios made later on the stand
 (generated or edited) keep the local synthesizer.
 
 Runs on a machine with internet, never on the stand. ``index.json`` in every folder holds a
@@ -15,11 +16,13 @@ Usage (repository root; key and voice ids in ``.env.elevenlabs``, see ``--help``
     python scripts/voice_replies.py            # voice everything missing or changed
     python scripts/voice_replies.py --dry-run  # only count characters
     python scripts/voice_replies.py --only call_2-1_zadymlenie_musoroprovoda --force
+    cd backend && uv run python ../scripts/voice_replies.py --dds-only --dry-run --table t.csv
 """
 
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
 import json
 import os
@@ -70,21 +73,36 @@ PERSONA_TAGS: dict[str, str] = {
 DEFAULT_TAG = "[nervous]"
 # Service replies («repeat again», «I don't know») sound the same whatever the persona.
 TOPIC_TAGS: dict[str, str] = {"repeat": "[shouting]"}
-# The squad leader reporting from the scene (app.domain.scenarios.officers): one voice for
-# every service, businesslike, a working background rather than panic. On the last report the
-# work is done and he is tired — the only place the sigh belongs (user, 23.09.2026).
-SQUAD_VOICE = "ru_male_2"
+# The card-response side (ДДС): businesslike, a working background rather than panic. On the
+# last report the work is done and he is tired — the sigh belongs there (user, 23.09.2026), and
+# in a few more places where the person has a reason for it (user, 19.10.2026), nowhere else.
 SQUAD_TAG = "[calm]"
 REPORT_TAGS: dict[str, str] = {"works_done": "[tired] [exhales]"}
+SIGH_TAG = "[sighs]"
+EXHALE_TAG = "[exhales]"
 # Tags that need a looser voice to be heard at all; the rest keep the steady default.
 LOOSE_TAGS = ("[tired]", "[exhausted]", "[sighs]", "[exhales]", "[panicked]")
 STABILITY_STEADY = 0.5
 STABILITY_LOOSE = 0.35
-# The duty officer of a service answers the dispatcher's call (issue #59): his bank is built
-# in code, the same for every scenario, so it is voiced once per service.
+# The people of the card-response side by voice (decision of 19.10.2026, by ear): the squad
+# chief and the chief of the response department speak as in the cloud (Nikolay), the head of
+# the organization, the squad specialist and the duty officers of other services each their own.
+DDS_VOICE_ENV: dict[str, str] = {
+    "chief": "ELEVENLABS_VOICE_DDS_CHIEF",
+    "head": "ELEVENLABS_VOICE_DDS_HEAD",
+    "specialist": "ELEVENLABS_VOICE_DDS_SPECIALIST",
+    "duty": "ELEVENLABS_VOICE_DDS_DUTY",
+}
+# Their banks are built in code (app.dialog.officer.studio_audio, issue #59) and found by the
+# text of a phrase, so one folder per speaker under ``_officers``: the squad chief per service,
+# the duty officers of other services in ``_duty/<service>``, the reports and the chief's
+# answers after them in ``_squad``, the specialist's complication in ``_specialist``, the people
+# of the organization in ``_staff/<role>``.
 OFFICERS_KEY = "_officers"
-# The squad leader's answers during a report call: the same for every service, so one folder.
 SQUAD_KEY = "_squad"
+# Where the squad may be once it has reported at least once (app.dialog.officer.squad_state):
+# only then can a report have gone unanswered.
+REPORTED_STATES = frozenset({"response_started", "arrived", "works_started", "works_done"})
 # The caller of a card answering a call back from the dispatcher (ответ заказчика 23.09.2026).
 # His bank is built in code from the card, the same phrase may come up in several cards, and
 # the voice differs by gender — so the folder is split by voice and the file named by the text.
@@ -147,65 +165,216 @@ def remaining_characters(client: httpx.Client) -> tuple[int, int] | None:
     return int(data.get("character_count", 0)), int(data.get("character_limit", 0))
 
 
-def report_phrases(body: dict) -> list[tuple[str, str, str]]:
-    """(file stem, tag, text) for every report of the squad on a card-response scenario."""
-    reference = body.get("reference") or {}
-    items: list[tuple[str, str, str]] = []
-    for report in reference.get("reports") or []:
-        text = (report.get("text") or "").strip()
-        status = report.get("status")
-        if text and status:
-            items.append((f"report-{status}", REPORT_TAGS.get(status, SQUAD_TAG), text))
-    return items
+def dds_phrases() -> list[tuple[str, str, str, str, str, str]]:
+    """(folder under ``_officers``, file stem, voice role, tag, spoken text, who) of every fixed
+    phrase the card-response side may say on a seed card, at any difficulty of a lesson, worded
+    by the backend exactly as the server says it: the officers' replies and greetings by the
+    squad's state, the special lines («машин нет», «Так, стоп…», the order taken), the reports
+    and the answers after them, the specialist's complication, the people of the organization.
+    The bank lives in the backend, so this needs its virtual environment:
 
+        cd backend && uv run python ../scripts/voice_replies.py --dds-only
 
-def officer_phrases(env: dict[str, str]) -> list[tuple[str, str, str, str]]:
-    """(service, file stem, tag, text) of the duty officers' built-in bank. The bank lives in
-    the backend, so this needs its virtual environment:
-
-        cd backend && uv run python ../scripts/voice_replies.py
-
-    The file name is a digest of the text: an edited phrase becomes another file, and two
-    services that say the same thing each keep their own recording."""
+    The file name is a digest of the text as the server says it; out loud a squad number goes
+    one digit at a time and the other numbers as words. What the server words on the spot from
+    a stand's own card (a misheard house, a card made later) is not here and stays synthesized."""
     sys.path.insert(0, str(ROOT / "backend"))
     try:
-        from app.domain.scenarios import officers
+        from types import SimpleNamespace
+
+        from app.dialog import officer
+        from app.domain.evaluation.schemas import CardResponseScenario
+        from app.domain.scenarios import (
+            complication,
+            no_vehicles,
+            officers,
+            rush,
+            staff,
+        )
+        from app.providers.tts import spell_numbers
     except ImportError as exc:
         raise SystemExit(
-            f"Банк дежурного берётся из бэкенда ({exc}). Запустите из backend: "
-            "cd backend && uv run python ../scripts/voice_replies.py"
+            f"Банк ДДС берётся из бэкенда ({exc}). Запустите из backend: "
+            "cd backend && uv run python ../scripts/voice_replies.py --dds-only"
         ) from exc
 
     classifier = json.loads((ROOT / "data/seed/classifier.json").read_text(encoding="utf-8"))
     titles = {
         row["code"]: row.get("title") or row["code"] for row in classifier.get("services", [])
     }
-    services = sorted(
-        {
-            body.get("service")
-            for path in SCENARIOS_DIR.glob("card_*.json")
-            if (body := json.loads(path.read_text(encoding="utf-8"))).get("service")
-        }
-    )
-    items: list[tuple[str, str, str, str]] = []
-    for service in services:
-        title = titles.get(service, service)
-        seen: set[str] = set()
-        for state in officers.PROGRESS_REPLIES:
-            for reply in officers.builtin_replies(service, title, state):
-                text = reply.text.strip()
-                if text and text not in seen:
-                    seen.add(text)
-                    items.append((service, digest_stem(text), SQUAD_TAG, text))
-    # The squad leader answers the dispatcher after his report: «сколько ещё», «кто на
-    # месте», «нужна ли помощь». Phrases that quote the report itself ({report}) belong to a
-    # scenario, not to the bank, and are voiced with it.
-    for topic, text in officers.REPORT_REPLIES:
-        del topic
-        if "{report}" in text:
-            continue
-        items.append((SQUAD_KEY, digest_stem(text), SQUAD_TAG, text.strip()))
-    return items
+    staff_voices = {
+        staff.ROLE_HEAD: "head",
+        staff.ROLE_RESPONSE_CHIEF: "chief",
+        staff.ROLE_SQUAD_SPECIALIST: "specialist",
+    }
+    sighs = {no_vehicles.STILL_NONE: SIGH_TAG, no_vehicles.RESOLVED: EXHALE_TAG}
+    rows: dict[tuple[str, str], tuple[str, str, str, str, str, str]] = {}
+
+    def add(key: str, text: str, role: str, who: str, tag: str = SQUAD_TAG, order: str = ""):
+        text = text.strip()
+        if not text or (key, text) in rows:
+            return
+        spoken = text.replace(order, officers.spoken_digits(order)) if order else text
+        tag = sighs.get(text, tag)
+        rows[(key, text)] = (
+            key,
+            digest_stem(text),
+            role,
+            tag,
+            spell_numbers(spoken),
+            who,
+        )
+
+    nobody = SimpleNamespace(service_calls=[])  # an attempt with no calls: the plain wording
+    chief_who = "начальник аварийной бригады"
+    for path in sorted(SCENARIOS_DIR.glob("card_*.json")):
+        card = CardResponseScenario.model_validate(json.loads(path.read_text(encoding="utf-8")))
+        own = card.service
+        order = officer.squad_order(card)
+        # A lesson may be harder than the card (app.dialog.officer.lesson_scenario).
+        for level in range(max(card.difficulty, 1), 4):
+            s = card.model_copy(update={"difficulty": level})
+            for service in dict.fromkeys([own, *(n.service for n in s.card.notified)]):
+                chief = service == own
+                title = titles.get(service, service)
+                key = officer.officer_studio_key(s, service)
+                role = "chief" if chief else "duty"
+                who = chief_who if chief else f"дежурный {officers.spoken_service(service, title)}"
+                ref = officer.reference_for(s, service)
+                own_order = ref.order_number or officers.order_number(s, service)
+                for state in officers.PROGRESS_REPLIES:
+                    for repeat in (False, True):
+                        built = officers.officer_scenario(
+                            s, ref, title, state, repeat=repeat, chief=chief
+                        )
+                        for reply in built.replies:
+                            if not reply.audio:
+                                add(key, reply.text, role, who, order=own_order)
+                        opening = built.caller.opening
+                        if not chief:
+                            add(key, opening, role, who)
+                        elif not repeat:
+                            hurried = rush.applies(level)
+                            add(
+                                key,
+                                rush.opening(opening) if hurried else opening,
+                                role,
+                                who,
+                            )
+                        else:
+                            # Called back, the chief may tell the complication the specialist
+                            # could not — it comes right after the arrival, before any work —
+                            # and a report the dispatcher did not take, once the squad reports.
+                            lines = [opening]
+                            if complication.applies(s) and state == complication.AFTER_STATUS:
+                                lines.append(f"{opening.rstrip()} {complication.unheard_line(s)}")
+                            for line in lines:
+                                add(key, line, role, who)
+                                if state not in REPORTED_STATES:
+                                    continue
+                                told = built.model_copy(
+                                    update={
+                                        "caller": built.caller.model_copy(update={"opening": line})
+                                    }
+                                )
+                                add(
+                                    key,
+                                    officer._tells_missed_report(told).caller.opening,
+                                    role,
+                                    who,
+                                )
+            # The squad chief's lines built on the spot (app.dialog.officer.known_facts_reply).
+            for line in (officer.ASK_ADDRESS, officer.ASK_INCIDENT, officer.TAKEN):
+                add(own, line, "chief", chief_who)
+            add(
+                own,
+                f"Принял, выезжаем. Наряд {order}.",
+                "chief",
+                chief_who,
+                order=order,
+            )
+            if officers.not_ours(s):
+                add(own, officers.NOT_OURS, "chief", chief_who)
+            if rush.applies(level):
+                add(own, rush.CUT_IN, "chief", chief_who)
+            if no_vehicles.applies(level):
+                for line in (
+                    no_vehicles.ANNOUNCE,
+                    no_vehicles.STILL_NONE,
+                    no_vehicles.TO_HEAD,
+                ):
+                    add(own, line, "chief", chief_who)
+            # The reports as the squad says them, and its answers after them.
+            for report in s.reference.reports:
+                said = officer.report_said(s, nobody, report)
+                tag = REPORT_TAGS.get(report.status, SQUAD_TAG)
+                variants = [said]
+                if report.status == "works_started" and complication.applies(s):
+                    variants.append(officer._after_greeting(said, complication.arrived_line(s)))
+                for text in variants:
+                    add(SQUAD_KEY, text, "chief", "доклад бригады", tag, order)
+                    leader = officers.report_scenario(
+                        s,
+                        report.model_copy(update={"text": text, "audio": None}),
+                        titles.get(own, own),
+                    )
+                    for reply in leader.replies:
+                        repeats = reply.text.endswith(text)
+                        add(
+                            SQUAD_KEY,
+                            reply.text,
+                            "chief",
+                            chief_who,
+                            tag if repeats else SQUAD_TAG,
+                            order,
+                        )
+            # The specialist's call about the complication, his reminder, his answers.
+            if complication.applies(s):
+                who = "специалист бригады (осложнение)"
+                for call, tag in (
+                    (complication.report(s, titles), SQUAD_TAG),
+                    (complication.reminder(s), SIGH_TAG),
+                ):
+                    add(complication.STUDIO_KEY, call.text, "specialist", who, tag)
+                    person = complication.specialist(
+                        officers.report_scenario(s, call, titles.get(own, own))
+                    )
+                    for reply in person.replies:
+                        repeats = reply.text.endswith(call.text)
+                        add(
+                            complication.STUDIO_KEY,
+                            reply.text,
+                            "specialist",
+                            who,
+                            tag if repeats else SQUAD_TAG,
+                            order,
+                        )
+            # The people of the organization on the phone.
+            org = officers.spoken_service(own, titles.get(own, own))
+            for role_code, role in staff_voices.items():
+                key = f"{officer.STUDIO_STAFF_KEY}/{role_code}"
+                who = staff.ROLE_TITLES[role_code].lower()
+                progresses = [
+                    staff.SPECIALIST_PROGRESS.get(state, "")
+                    if role_code == staff.ROLE_SQUAD_SPECIALIST
+                    else staff.OFFICE_PROGRESS.get(state, officers.PROGRESS_REPLIES[state])
+                    for state in officers.PROGRESS_REPLIES
+                ]
+                if role_code == staff.ROLE_SQUAD_SPECIALIST and complication.applies(s):
+                    progresses.append(complication.specialist_line(s))
+                for progress in progresses:
+                    person = staff.person_scenario(role_code, s, org, progress)
+                    add(key, person.caller.opening, role, who)
+                    for reply in person.replies:
+                        add(key, reply.text, role, who)
+                add(key, staff.WRONG_CONTACT, role, who)
+            head = f"{officer.STUDIO_STAFF_KEY}/{staff.ROLE_HEAD}"
+            if officers.not_ours(s):
+                add(head, staff.HEAD_NOT_OURS, "head", "руководитель организации")
+            if no_vehicles.applies(level):
+                for line in (no_vehicles.RESOLVED, no_vehicles.ASK_ADDRESS):
+                    add(head, line, "head", "руководитель организации")
+    return list(rows.values())
 
 
 def caller_phrases() -> list[tuple[str, str, str, str]]:
@@ -287,6 +456,16 @@ def main() -> None:
         action="store_true",
         help="только банк заявителя на обратном звонке, без сценариев и банка дежурного",
     )
+    parser.add_argument(
+        "--dds-only",
+        action="store_true",
+        help="только реплики ДДС (_officers без _caller): приём вызова 112 не трогается",
+    )
+    parser.add_argument(
+        "--table",
+        type=Path,
+        help="CSV со всем, что пойдёт в озвучку (кто, папка, текст)",
+    )
     args = parser.parse_args()
 
     env = load_env(ENV_FILE)
@@ -294,22 +473,19 @@ def main() -> None:
     if not key and not args.dry_run:
         raise SystemExit(f"ELEVENLABS_API_KEY не задан ({ENV_FILE})")
 
-    files = [] if args.caller_only else sorted(SCENARIOS_DIR.glob("*.json"))
+    files = [] if args.caller_only or args.dds_only else sorted(SCENARIOS_DIR.glob("*.json"))
     if args.only:
         files = [f for f in files if f.stem in set(args.only)]
     todo: list[tuple[str, str, str, str, str]] = []  # key, stem, voice_id, tag, text
+    who_of: dict[tuple[str, str], str] = {}  # (key, stem) → who says it, for the table
     skipped = 0
     for path in files:
         body = json.loads(path.read_text(encoding="utf-8"))
-        kind = body.get("kind")
-        if kind == "call_intake":
-            voice = (body.get("caller") or {}).get("voice") or "ru_male_1"
-            items = phrases(body)
-        elif kind == "card_response":
-            voice = SQUAD_VOICE
-            items = report_phrases(body)
-        else:
+        # The squad's reports of a card-response scenario live in the DDS bank (_squad).
+        if body.get("kind") != "call_intake":
             continue
+        voice = (body.get("caller") or {}).get("voice") or "ru_male_1"
+        items = phrases(body)
         if not items:
             continue
         voice_id = env.get(VOICE_ENV.get(voice, "ELEVENLABS_VOICE_MALE"), "")
@@ -330,10 +506,12 @@ def main() -> None:
             todo.append((path.stem, stem, voice_id, tag, text))
 
     if not args.only:
-        folder = AUDIO_DIR / OFFICERS_KEY
-        for service, stem, tag, text in [] if args.caller_only else officer_phrases(env):
-            voice_id = env.get(VOICE_ENV.get(SQUAD_VOICE, "ELEVENLABS_VOICE_MALE"), "")
-            index_path = folder / service / "index.json"
+        for folder, stem, role, tag, text, who in [] if args.caller_only else dds_phrases():
+            voice_id = env.get(DDS_VOICE_ENV[role], "")
+            if not voice_id:
+                raise SystemExit(f"нет ElevenLabs-голоса {DDS_VOICE_ENV[role]} в {ENV_FILE}")
+            key_path = f"{OFFICERS_KEY}/{folder}"
+            index_path = AUDIO_DIR / key_path / "index.json"
             index = (
                 json.loads(index_path.read_text(encoding="utf-8")) if index_path.exists() else {}
             )
@@ -341,14 +519,15 @@ def main() -> None:
             if (
                 not args.force
                 and current.get("sha256") == digest(voice_id, tag, text)
-                and (folder / service / f"{stem}.mp3").exists()
+                and (AUDIO_DIR / key_path / f"{stem}.mp3").exists()
             ):
                 skipped += 1
                 continue
-            todo.append((f"{OFFICERS_KEY}/{service}", stem, voice_id, tag, text))
+            todo.append((key_path, stem, voice_id, tag, text))
+            who_of[(key_path, stem)] = who
 
         # Банк заявителя на обратном звонке: та же раскладка, но папка своя на каждый голос.
-        for voice, stem, tag, text in caller_phrases():
+        for voice, stem, tag, text in [] if args.dds_only else caller_phrases():
             voice_id = env.get(CALLER_VOICE_ENV.get(voice, "ELEVENLABS_VOICE_MALE"), "")
             if not voice_id:
                 raise SystemExit(
@@ -372,6 +551,14 @@ def main() -> None:
 
     chars = sum(len(f"{tag} {text}") for _, _, _, tag, text in todo)
     print(f"озвучить: {len(todo)} фраз, {chars} символов; без изменений: {skipped}")
+    if args.table:
+        with args.table.open("w", encoding="utf-8-sig", newline="") as out:
+            writer = csv.writer(out, delimiter=";")
+            writer.writerow(["кто", "папка", "файл", "тег", "символов", "текст"])
+            for scenario_key, stem, _voice_id, tag, text in todo:
+                who = who_of.get((scenario_key, stem), "")
+                writer.writerow([who, scenario_key, stem, tag, len(f"{tag} {text}"), text])
+        print(f"таблица: {args.table}")
     if args.dry_run or not todo:
         return
     client = httpx.Client(base_url=API, headers={"xi-api-key": key}, timeout=120)

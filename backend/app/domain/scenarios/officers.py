@@ -35,6 +35,9 @@ from app.domain.scenarios import misheard
 # How the duty officer names his own service out loud. The reference titles come from the
 # classifier and carry the paperwork («Территориальные ОИВ (управы, префектуры)»), which a
 # voice reads aloud brackets and all (as the caller's types did before #104).
+# The name follows «Дежурный», «Руководитель», «помощь», so it is said in the genitive: «Дежурный
+# Москоллектора», not «Дежурный Москоллектор» (19.10.2026). Every service of the classifier has
+# one; abbreviations stay as they are.
 SPOKEN_SERVICE_TITLES: dict[str, str] = {
     "gkh": "ЕДЦ ЖКХ",
     "moek": "МОЭК",
@@ -47,6 +50,60 @@ SPOKEN_SERVICE_TITLES: dict[str, str] = {
     "102": "полиции",
     "103": "скорой помощи",
     "104": "газовой службы",
+    "ods_psc": "ОДС ПСЦ",
+    "mgpss": "МГПСС",
+    "cemp": "ЦЭМП",
+    "fsb": "ФСБ",
+    "mosoblgaz": "Мособлгаза",
+    "autoroads": "Автомобильных дорог",
+    "mosgortrans": "Мосгортранса",
+    "kim": "Канала имени Москвы",
+    "mgts": "МГТС",
+    "metro": "метрополитена",
+    "moesk": "МОЭСК",
+    "oek": "ОЭК",
+    "codd": "ЦОДД",
+    "dep_gkh": "Департамента ЖКХ",
+    "duty_arm112": "дежурной службы АРМ-112",
+    "mkp_analytics": "МКП",
+    "mayor_office": "Аппарата Мэра",
+    "moscollector": "Москоллектора",
+    "mzd": "РЖД",
+    "dep_education": "Департамента образования",
+    "crvh": "Центррегионводхоза",
+    "military_commandant": "военной комендатуры",
+    "oati": "ОАТИ",
+    "mosvodostok": "Мосводостока",
+    "dep_ppoos": "Департамента природопользования",
+    "dep_tszn": "Департамента труда и социальной защиты",
+    "rsvo": "РСВО",
+    "evazhd": "ЭВАЖД",
+    "msppn": "МСППН",
+    "dtu_ritual": "ДТУ «Ритуал»",
+    "dtu": "ДТУ",
+    "rosgvardia": "Росгвардии",
+    "territorial_oiv_tinao": "управы ТиНАО",
+    "autoroads_ao": "Автомобильных дорог округа",
+    "dep_construction": "Департамента строительства",
+    "veterinary": "Комитета ветеринарии",
+    "moszhilinspection": "Мосжилинспекции",
+    "dep_culture": "Департамента культуры",
+    "csa_glinki": "ЦСА имени Глинки",
+    "ntu": "НТУ",
+    "fso": "ФСО",
+    "msr_kub": "ГУП МСР",
+    "msr_fires": "ГУП МСР",
+    "tourism": "Комитета по туризму",
+    "dgp_integration": "ДГП",
+    "dgp_arm112": "ДГП",
+    "cukb_mo": "ЦУКБ Минобороны",
+    "cukb_bpla_mo": "ЦУКБ БПЛА Минобороны",
+    "transport_organizer": "Организатора перевозок",
+    "mosecomonitoring": "Мосэкомониторинга",
+    "mo_rhbz_polygons": "РХБЗ Минобороны",
+    "mo_rhbz_moscow": "РХБЗ Минобороны",
+    "cityenergo": "Ситиэнерго",
+    "dep_civil_construction": "Департамента гражданского строительства",
 }
 
 OFFICER_PERSONA = "service_officer"
@@ -349,7 +406,11 @@ def spoken_service(service: str, service_title: str) -> str:
     if spoken:
         return spoken
     without = re.sub(r"\s*\([^()]*\)", "", service_title)
-    return re.sub(r"\s{2,}", " ", without).strip(" ,;«»") or service_title
+    spoken = re.sub(r"\s{2,}", " ", without).strip(" ,;")
+    # Quotes go only in pairs: ГБУ «Гормост» keeps them, a title quoted as a whole loses both.
+    if spoken.startswith("«") and spoken.endswith("»") and spoken.count("«") == 1:
+        spoken = spoken[1:-1]
+    return spoken or service_title
 
 
 # The officer of another service than the dispatcher's own (#263).
@@ -360,6 +421,7 @@ OTHER_SERVICE_DUTY = (
 OTHER_SERVICE_CONFIRM = "Информацию принял, отработаем."
 OTHER_SERVICE_PROGRESS = "Отрабатываем своими силами."
 OTHER_SERVICE_REPLY_ID = 90
+CHIEF_GREETING_REPLY_ID = OTHER_SERVICE_REPLY_ID + 3
 ORDER_WORDS = re.compile(r"наряд|доложу", re.IGNORECASE)
 
 # A card the own service must refuse as not its business (stand 18.10.2026: the chief took it,
@@ -519,6 +581,20 @@ def officer_scenario(
                 approved=True,
             )
         )
+    if chief:
+        # Greeted again mid-call, the chief answers as he picked up, not «Дежурный …»
+        # (19.10.2026). His own id: a voice cached for the duty officer's words is not his.
+        replies = [
+            Reply(
+                id=BUILTIN_REPLY_ID_BASE + CHIEF_GREETING_REPLY_ID,
+                topic="greeting",
+                text=greeting(ref.service, service_title, chief=True),
+                approved=True,
+            )
+            if r.id == BUILTIN_REPLY_ID_BASE and r.topic == "greeting"
+            else r
+            for r in replies
+        ]
     opening = greeting(ref.service, service_title, chief=chief)
     behaviour = SQUAD_CHIEF_BEHAVIOUR if chief else OFFICER_BEHAVIOUR
     required = list(ref.required_facts)
