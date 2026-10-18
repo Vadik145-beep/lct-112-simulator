@@ -11,6 +11,7 @@ import {
   useStartServiceCall,
   type AttemptOut,
 } from "@/api/training";
+import { RINGBACK_MAX_MS, RINGBACK_MS, playRingback } from "@/emulator/phone-tones";
 import { CloudCall } from "@/softphone/cloud-call";
 import { useSoftphone } from "@/softphone/context";
 
@@ -98,6 +99,39 @@ export function useCardCalls(attempt: AttemptOut) {
 
   const [sttAvailable, setSttAvailable] = useState(false);
   const openCall = attempt.service_calls.find((c) => c.ended_at === null) ?? null;
+  // A call made from the browser beeps before the other side answers (#270): the answer the
+  // server already wrote shows when the beeps end; a cloud call beeps until its voice is on.
+  // A call over the softphone has the beeps of the telephone line.
+  const [dialingId, setDialingId] = useState<string | null>(null);
+  const stopBeeps = useRef<(() => void) | null>(null);
+  const endBeeps = useCallback(() => {
+    stopBeeps.current?.();
+    stopBeeps.current = null;
+    setDialingId(null);
+  }, []);
+  const beep = (callId: string) => {
+    endBeeps();
+    setDialingId(callId);
+    stopBeeps.current = playRingback(cloudLesson ? RINGBACK_MAX_MS : RINGBACK_MS);
+  };
+  useEffect(() => {
+    if (!dialingId || cloudLesson) return;
+    const timer = setTimeout(endBeeps, RINGBACK_MS);
+    return () => clearTimeout(timer);
+  }, [dialingId, cloudLesson, endBeeps]);
+  useEffect(() => {
+    if (dialingId && cloudLesson && cloudState !== "connecting") endBeeps();
+  }, [dialingId, cloudLesson, cloudState, endBeeps]);
+  // The call ended or another one is on the line: no more beeps. The new call itself may come
+  // into the card a render later than the dial answers.
+  const openId = openCall?.id ?? null;
+  const dialingOver =
+    (openId !== null && openId !== dialingId) ||
+    attempt.service_calls.some((c) => c.id === dialingId && c.ended_at !== null);
+  useEffect(() => {
+    if (dialingId && dialingOver) endBeeps();
+  }, [dialingId, dialingOver, endBeeps]);
+  useEffect(() => () => stopBeeps.current?.(), []);
   const [shownCallId, setShownCallId] = useState<string | null>(null);
   // The window of the virtual phone: a call started or ringing opens it.
   const [phoneOpen, setPhoneOpen] = useState(false);
@@ -157,7 +191,9 @@ export function useCardCalls(attempt: AttemptOut) {
   const started = (data: { call: ServiceCall; stt_available: boolean }) => {
     setShownCallId(data.call.id);
     setSttAvailable(data.stt_available);
-    if (cloudLesson && !data.call.telephony) void startCloudCall(data.call.id);
+    if (data.call.telephony) return;
+    beep(data.call.id);
+    if (cloudLesson) void startCloudCall(data.call.id);
   };
   /** A handset of the card: a service of the strip or the caller (``CALLER_TARGET``). */
   const call = (service: string) => {
@@ -187,6 +223,7 @@ export function useCardCalls(attempt: AttemptOut) {
   };
   const hangUp = () => {
     if (!openCall) return;
+    endBeeps();
     void stopCloudCall();
     endCall.mutate(openCall.id, {
       onSuccess: () => {
@@ -214,6 +251,7 @@ export function useCardCalls(attempt: AttemptOut) {
     phoneOpen,
     setPhoneOpen,
     busy,
+    dialing: dialingId !== null && dialingId === openId,
     replying: sayToOfficer.isPending || speakToOfficer.isPending,
     error,
     dialError: dialCall.error,
