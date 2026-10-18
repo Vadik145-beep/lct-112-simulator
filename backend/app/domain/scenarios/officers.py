@@ -308,16 +308,19 @@ def order_number(scenario: CardResponseScenario, service: str) -> str:
 DIGIT_WORDS = ("ноль", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять")
 
 
-def spoken_digits(number: str) -> str:
-    """«8513» → «восемь-пять-один-три»: the cloud's voice read a squad number as «8-5/13»
-    (stand 18.10.2026); one digit at a time it is heard and written down right."""
-    return "-".join(DIGIT_WORDS[int(d)] for d in number if d.isdigit()) or number
+def spoken_digits(number: str, sep: str = ", ") -> str:
+    """«8513» → «восемь, пять, один, три»: the cloud's voice read a squad number as «8-5/13»
+    (stand 18.10.2026); one digit at a time it is heard and written down right, and the commas
+    make the voice pause between them (stand 18.10.2026: «4-641» said in one breath)."""
+    return sep.join(DIGIT_WORDS[int(d)] for d in number if d.isdigit()) or number
 
 
 def said_order(number: str) -> str:
     """The squad number as the cloud must say it: the digits and how to say them."""
     spoken = spoken_digits(number)
-    return f"{number} — вслух по одной цифре: «{spoken}»" if spoken != number else number
+    if spoken == number:
+        return number
+    return f"{number} — вслух словами по одной цифре, не торопясь: «{spoken}»"
 
 
 def with_order(text: str, status: str, number: str) -> str:
@@ -326,7 +329,7 @@ def with_order(text: str, status: str, number: str) -> str:
     number for «Начало реагирования»)."""
     if status != "response_started" or not number or number in re.sub(r"\D", "", text):
         return text
-    if spoken_digits(number) in text:
+    if spoken_digits(number) in text or spoken_digits(number, "-") in text:
         return text
     return f"{text.rstrip()} Наряд {spoken_digits(number)}."
 
@@ -358,6 +361,24 @@ OTHER_SERVICE_CONFIRM = "Информацию принял, отработаем
 OTHER_SERVICE_PROGRESS = "Отрабатываем своими силами."
 OTHER_SERVICE_REPLY_ID = 90
 ORDER_WORDS = re.compile(r"наряд|доложу", re.IGNORECASE)
+
+# A card the own service must refuse as not its business (stand 18.10.2026: the chief took it,
+# said «машин нет», and the head found a vehicle). Its chief does not go (decision of
+# 18.10.2026).
+NOT_OURS = "Это не наш профиль, нам такое не передают."
+NOT_OURS_FACT_KEY = "профиль"
+NOT_OURS_FACT = (
+    "происшествие не по профилю твоей службы: на выезд не соглашаешься, наряд не называешь, "
+    f"говоришь «{NOT_OURS}»"
+)
+TOPIC_NOT_OURS = "not_ours"
+_GOES = re.compile(r"наряд|доложу|выезжа|выедем", re.IGNORECASE)
+
+
+def not_ours(scenario: CardResponseScenario) -> bool:
+    """The right answer to the card is «не в компетенции службы»."""
+    reference = scenario.reference
+    return reference.decision == "reject" and reference.reject_reason == "not_in_competence"
 
 
 def builtin_replies(
@@ -485,6 +506,19 @@ def officer_scenario(
                 approved=True,
             ),
         ]
+    elif chief and not_ours(scenario):
+        # No squad goes on it: no number, no «выезжаем», nothing about where the squad is.
+        facts = {k: v for k, v in facts.items() if k not in ("твой наряд", "где бригада")}
+        facts[NOT_OURS_FACT_KEY] = NOT_OURS_FACT
+        replies = [r for r in replies if not _GOES.search(r.text)]
+        replies.append(
+            Reply(
+                id=BUILTIN_REPLY_ID_BASE + OTHER_SERVICE_REPLY_ID + 2,
+                topic="confirm",
+                text=NOT_OURS,
+                approved=True,
+            )
+        )
     opening = greeting(ref.service, service_title, chief=chief)
     behaviour = SQUAD_CHIEF_BEHAVIOUR if chief else OFFICER_BEHAVIOUR
     required = list(ref.required_facts)
@@ -551,7 +585,7 @@ def report_scenario(
             opening=report.text,
             facts={
                 "служба": service_title,
-                "наряд": order_number(scenario, scenario.service),
+                "наряд": said_order(order_number(scenario, scenario.service)),
                 "доклад": report.text,
                 "статус": report.status,
             },
