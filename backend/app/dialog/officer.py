@@ -400,7 +400,7 @@ def call_scenario(
     if is_report(call):
         report = _report_for(scenario, call, attempt)
         leader = officers.report_scenario(scenario, report, title)
-        if report.status == complication.STATUS:
+        if report.status in (complication.STATUS, complication.REMINDER_STATUS):
             return with_studio_audio(complication.specialist(leader), complication.STUDIO_KEY)
         leader = _knows_complication(
             leader, scenario, calls_of(attempt), besides=call.get("id"), opening=True
@@ -1170,7 +1170,18 @@ def report_said(scenario: CardResponseScenario, attempt: Attempt, report: Brigad
     shown = misheard.spoken_address(scenario.card.address.model_dump())
     text = text.replace(shown, misheard.spoken_address(truth.address.model_dump()), 1)
     text = misheard.report_text(text, truth, misheard.state(calls_of(attempt)))
+    calls = calls_of(attempt)
+    if report.status == "works_started" and complication.help_called_at(scenario, calls):
+        text = _after_greeting(text, complication.arrived_line(scenario))
     return officers.with_order(text, report.status, squad_order(scenario))
+
+
+def _after_greeting(text: str, line: str) -> str:
+    """``line`` after «…начальник аварийной бригады.» at the head of a report."""
+    head, dot, rest = text.partition("бригады.")
+    if not dot:
+        return f"{line} {text}"
+    return f"{head}{dot} {line}{rest}"
 
 
 def squad_order(scenario: CardResponseScenario) -> str:

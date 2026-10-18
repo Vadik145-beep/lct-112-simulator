@@ -56,7 +56,11 @@ export function otherSide(call: ServiceCallOut): string {
  * ОДС ЖКХ» / «Звонок: Руководитель организации» / «Звонок в службу: МОЭК». */
 export function callTitle(call: ServiceCallOut): string {
   if (isReport(call)) {
-    const who = call.report_status === "complication" ? "Звонок специалиста бригады" : "Доклад бригады";
+    const who =
+      call.report_status === "complication" ||
+      call.report_status === "complication_reminder"
+        ? "Звонок специалиста бригады"
+        : "Доклад бригады";
     return `${who}: ${call.service_title}`;
   }
   if (isStaff(call)) return `Звонок: ${call.role_title ?? otherSide(call)}`;

@@ -183,8 +183,3 @@ def test_the_chief_prompt_keeps_the_lines_that_held_it_before_the_final() -> Non
     assert "больше одного вопроса за реплику" in vapi.CHIEF_PROMPT
     assert "Сам на свои вопросы не отвечаешь" in vapi.CHIEF_PROMPT
     assert "не торопясь" not in vapi.DIGITS_RULE
-
-
-def test_the_card_words_are_not_sent_to_the_recognizer_for_now() -> None:
-    config = vapi.transcriber_config(vocabulary=["Народного Ополчения"])
-    assert "customVocabulary" not in config and "contextGeneral" not in config

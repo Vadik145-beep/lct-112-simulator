@@ -256,7 +256,7 @@ def _choose_group(
     rating = spec.ratings.get(group)
     if rating is None:
         return group, f"Группа «{title.get(group, group)}»: карточек этой группы ещё не было."
-    return group, (f"Группа «{title.get(group, group)}»: самый низкий рейтинг ({round(rating)}).")
+    return group, (f"Группа «{title.get(group, group)}»: самый низкий рейтинг.")
 
 
 def _choose_type(
