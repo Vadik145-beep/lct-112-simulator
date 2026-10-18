@@ -165,11 +165,13 @@ def next_report(
 
 
 def stale_report(attempt: Attempt, now: datetime) -> dict | None:
-    """An open report the dispatcher has not spoken to for the timeout."""
+    """An open report the dispatcher has not answered for the timeout. An answered one is his
+    to end (stand 18.10.2026: «Работы завершены» answered at 83 s was closed 8 s later as not
+    taken, and its cloud voice held the line for the other cards)."""
     from app.dialog import officer
 
     call = officer.open_call(attempt)
-    if call is None or not officer.is_report(call):
+    if call is None or not officer.is_report(call) or call.get("answered"):
         return None
     if any(t.get("role") == "operator" for t in call.get("dialog") or []):
         return None

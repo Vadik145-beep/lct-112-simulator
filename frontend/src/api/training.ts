@@ -335,6 +335,12 @@ export function useEndServiceCall(attemptId: string) {
   });
 }
 
+/** Ends a call of a card the trainee has left (no cache to update: that card is not shown). */
+export const endServiceCallOf = (attemptId: string, callId: string) =>
+  api.POST("/api/attempts/{attempt_id}/service-call/{call_id}/end", {
+    params: { path: { attempt_id: attemptId, call_id: callId } },
+  });
+
 // PRD 12: «attempt.progress» goes out at most once per 2 s.
 const PROGRESS_INTERVAL_MS = 2000;
 
