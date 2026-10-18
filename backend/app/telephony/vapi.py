@@ -662,6 +662,13 @@ def caller_prompt(scenario: CallIntakeScenario) -> str:
     )
 
 
+# The chief of the response department shares the other services' voice: slower and drier, an
+# office manner, so he does not sound like the duty officer of the police (18.10.2026).
+ROLE_MANNER: dict[str, dict[str, float]] = {
+    "response_chief": {"speed": 0.95, "stability": 0.6, "style": 0.15},
+}
+
+
 def role_voice_id(scenario: CallIntakeScenario, s: Settings) -> str | None:
     """The voice of a person of a ДДС card by his role: the specialist, the head, the chief of
     the response department, a duty officer of another service. ``None`` — the squad chief, his
@@ -701,6 +708,7 @@ def voice_config(scenario: CallIntakeScenario, settings: Settings | None = None)
         settings_ = dict(VOICE_SETTINGS[state])
         if kind in ("elder_male", "elder_female"):
             settings_["speed"] = round(settings_["speed"] - 0.08, 2)
+        settings_.update(ROLE_MANNER.get(scenario.caller.persona or "", {}))
         voice.update(settings_)
         if s.cloud_voice_voice_model == "eleven_flash_v2_5":
             # The only model with language enforcement: no accent drift on short phrases.

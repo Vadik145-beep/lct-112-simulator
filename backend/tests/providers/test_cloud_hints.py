@@ -229,3 +229,14 @@ def test_every_person_of_a_card_has_his_own_voice() -> None:
     voices = {chief, other, *staff_calls.values()}
     assert len(voices) == 4  # the response department shares the other services' voice
     assert staff_calls[staff.ROLE_HEAD] != staff_calls[staff.ROLE_RESPONSE_CHIEF]
+    # Same voice as the other services, another manner.
+    office = vapi.voice_config(
+        officer.call_scenario(
+            scenario,
+            {"id": "rc", "service": "moek", "kind": "staff", "role": staff.ROLE_RESPONSE_CHIEF},
+            attempt,
+        ),
+        s,
+    )
+    duty = vapi.voice_config(officer.call_scenario(scenario, new_call("101"), attempt), s)
+    assert office["speed"] < duty["speed"] and office["stability"] > duty["stability"]
