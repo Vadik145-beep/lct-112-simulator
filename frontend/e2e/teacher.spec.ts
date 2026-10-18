@@ -54,7 +54,7 @@ async function setStatus(page: Page, status: string, opts: { orderNumber?: strin
 
 test.describe("Волна 4: занятие целиком", () => {
   test("преподаватель создаёт и запускает занятие, видит обучающегося вживую, завершает и читает отчёт", async ({ browser, request }) => {
-    test.setTimeout(240_000);
+    test.setTimeout(420_000);
     const teacher = await newPage(browser);
     const student = await newPage(browser);
     const teacherNet = watchNetwork(teacher);
@@ -107,14 +107,16 @@ test.describe("Волна 4: занятие целиком", () => {
     await row.getByRole("link", { name: "Ждать начала в журнале" }).click();
     await expect(student).toHaveURL(new RegExp(`/student/sessions/${sessionId}/journal$`));
     await expect(student.getByText("Занятие ещё не начато")).toBeVisible();
-    await expect(student.getByRole("status").filter({ hasText: "связь есть" })).toBeVisible();
+    // The training panel is folded on the ДДС screen (#275): the connection is its dot.
+    await expect(student.getByTitle("связь есть")).toBeVisible();
 
-    // --- teacher starts: a stream at difficulty 3, the first card at once, then one every
-    // 40–50 s (the sweeper issues them, every 5 s), three in under two minutes --------------
+    // --- teacher starts: a stream at difficulty 3, the first card at once, the next 40–50 s
+    // later (the sweeper issues them, every 5 s); the third of this queue is the repeated call
+    // of the second, 1–2 minutes after it -------------------------------------------------
     await teacher.getByRole("button", { name: "Начать занятие" }).click();
     await expect(teacher.getByText("Идёт", { exact: true })).toBeVisible();
     await expect(student.locator("tr[data-attempt]")).toHaveCount(1, { timeout: SWEEP_MS + LIVE_MS });
-    await expect(student.locator("tr[data-attempt]")).toHaveCount(3, { timeout: 110_000 });
+    await expect(student.locator("tr[data-attempt]")).toHaveCount(3, { timeout: 190_000 });
     await expect(teacher.getByRole("list", { name: "Обучающиеся" }).getByRole("listitem")).toHaveCount(2);
     await teacher.screenshot({ path: `${SHOTS}/04-monitor-start.png`, fullPage: true });
 
