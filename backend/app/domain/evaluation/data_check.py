@@ -8,7 +8,8 @@ a field that was right (a false alarm) costs half a share. A card sent to the wr
 (field ``service``, issue #265) is found by refusing it as «не в компетенции службы»; a refusal
 with another reason counts as a wrong correction. Values are compared after the same
 normalization the call-intake engine uses for a saved card (streets by ``rapidfuzz``, houses
-without «д.» and spaces, everything else lower-cased without punctuation).
+without «д.» and spaces, a type by its title in any word form, everything else lower-cased
+without punctuation).
 """
 
 from __future__ import annotations
@@ -74,8 +75,15 @@ def field_title(field: str) -> str:
     return FIELD_TITLES.get(field, field)
 
 
-def values_match(field: str, expected: str, actual: str | None, label: str | None = None) -> bool:
-    """Whether the dispatcher's correction names the right value for the field."""
+def values_match(
+    field: str,
+    expected: str,
+    actual: str | None,
+    label: str | None = None,
+    wrong_label: str | None = None,
+) -> bool:
+    """Whether the dispatcher's correction names the right value for the field. A type is
+    also right when it is the title in other words (``type_named``)."""
     if actual is None:
         return False
     if field == "address.street":
@@ -96,12 +104,65 @@ def values_match(field: str, expected: str, actual: str | None, label: str | Non
     if normalized_expected == normalized_actual:
         return True
     if field == "incident_type" and label:
-        return fuzz.token_set_ratio(normalize_text(label), normalized_actual) >= LABEL_THRESHOLD
+        if names_longer_wrong(label, actual, wrong_label):
+            return False
+        return fuzz.token_set_ratio(
+            normalize_text(label), normalized_actual
+        ) >= LABEL_THRESHOLD or type_named(label, actual)
     if field in {"description", "caller.name"}:
         return fuzz.token_set_ratio(normalized_expected, normalized_actual) >= LABEL_THRESHOLD
     if field == "caller.phone":
         return _digits(expected) == _digits(actual)
     return False
+
+
+# Words of a typed incident type that say nothing of the type.
+_TYPE_FORM_WORDS = frozenset({"в", "во", "на", "и", "с", "со", "у", "по", "при", "для", "из"})
+# Inflection endings cut off a word of a type, longest first: «жилом доме» and «жилое здание»
+# come to the same roots.
+_TYPE_ENDINGS = tuple(
+    sorted(
+        """ого его ому ему ыми ими ая яя ое ее ые ие ый ий ой ом ем ых их ую юю ам ям ах ях ов ев
+        ия ью а я о е ы и у ю ь""".split(),
+        key=len,
+        reverse=True,
+    )
+)
+_TYPE_ROOT_MIN = 3
+# Roots the classifier and a dispatcher use for the same thing.
+_TYPE_SYNONYMS = {"дом": "здан", "заведен": "учрежден", "автомобил": "автомашин"}
+
+
+def _type_root(word: str) -> str:
+    root = word
+    while True:
+        ending = next(
+            (e for e in _TYPE_ENDINGS if root.endswith(e) and len(root) - len(e) >= _TYPE_ROOT_MIN),
+            None,
+        )
+        if ending is None:
+            break
+        root = root[: -len(ending)]
+    return _TYPE_SYNONYMS.get(root, root)
+
+
+def _type_roots(text: str | None) -> set[str]:
+    return {_type_root(w) for w in normalize_text(text).split() if w not in _TYPE_FORM_WORDS}
+
+
+def type_named(label: str, actual: str | None) -> bool:
+    """The typed type names every word of the classifier title, in any form («взрыв в жилом
+    доме» for «Взрыв жилое здание», stand 18.10.2026)."""
+    right = _type_roots(label)
+    return bool(right) and right <= _type_roots(actual)
+
+
+def names_longer_wrong(label: str, actual: str | None, wrong_label: str | None) -> bool:
+    """The typed type names the planted wrong title that is longer than the right one:
+    «Взрыв МЦК (станция, тоннель)» typed for «Взрыв МЦК» is the mistake itself, though it
+    holds every word of the right title."""
+    wrong = _type_roots(wrong_label)
+    return len(wrong) > len(_type_roots(label)) and wrong <= _type_roots(actual)
 
 
 def _as_bool(value: str | None) -> bool | None:
@@ -197,7 +258,11 @@ def check(scenario: CardResponseScenario, attempt: CardResponseAttempt) -> DataC
             else:
                 wrong.append((error, flag))
         elif values_match(
-            error.field, error.correct_value, flag.corrected_value, error.correct_label
+            error.field,
+            error.correct_value,
+            flag.corrected_value,
+            error.correct_label,
+            error.wrong_label,
         ):
             found.append(error)
         else:

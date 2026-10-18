@@ -272,13 +272,14 @@ def gives_order(text: str) -> bool:
     return bool(_ORDER.search(normalize_text(text)))
 
 
-def _as_rows(attempt: CardResponseAttempt) -> list[dict]:
+def call_rows(attempt: CardResponseAttempt) -> list[dict]:
     """The calls as the dialog layer stores them, for the shared readers of the truth."""
     return [
         {
             "id": str(i),
             "kind": c.kind,
             "role": c.role,
+            no_vehicles.PLAN_KEY: c.squad_plan,
             "dialog": [t.model_dump() for t in c.dialog],
             "ended_at": c.ended_at,
         }
@@ -363,11 +364,14 @@ def _chief_outcome(
 ) -> CallOutcome:
     """The call to the squad chief by the weights of #263. Said over several calls, the order
     and the number count wherever they were said."""
-    rows = _as_rows(attempt)
+    rows = call_rows(attempt)
     said = [t.text for log in candidates for t in log.dialog if t.role == "operator"]
     heard = [t.text for log in candidates for t in log.dialog if t.role == "caller"]
     order = best.ref.order_number or officers.order_number(scenario, best.ref.service)
     order_given = any(gives_order(text) for text in said) or form_says(candidates, "order_given")
+    # On a «машин нет» card the head of the organization gives the vehicle, the chief has
+    # nothing to send: no order is no loss (decision of 18.10.2026).
+    order_counted = order_given or no_vehicles.on_path(rows)
     number_taken = any(order in text for text in heard) or any(
         (e.order_number or "").strip() for e in attempt.status_log
     )
@@ -393,7 +397,7 @@ def _chief_outcome(
             CHIEF_ROLES_SHARE * reached / required
             + CHIEF_FACTS_SHARE * facts_fraction
             + CHIEF_MISHEARD_SHARE * int(fixed)
-            + CHIEF_ORDER_SHARE * (int(order_given) + int(number_taken)) / 2
+            + CHIEF_ORDER_SHARE * (int(order_counted) + int(number_taken)) / 2
             + (CHIEF_NORM_SHARE if best.within_norm else 0.0)
         )
     return CallOutcome(

@@ -22,11 +22,13 @@ from app.domain.evaluation.schemas import (
     CallIntakeScenario,
     CardResponseAttempt,
     CardResponseScenario,
+    ServiceCallLog,
     StatusEntry,
 )
 from app.domain.evaluation.service_call import (
     address_named,
     call_facts,
+    call_rows,
     form_says,
     gives_order,
     true_card,
@@ -35,7 +37,7 @@ from app.domain.evaluation.service_call import (
 from app.domain.evaluation.text import normalize_house, normalize_text
 from app.domain.evaluation.timing import seconds_between
 from app.domain.reference_data import TYPICAL_ERRORS
-from app.domain.scenarios import complication, misheard, no_vehicles, staff
+from app.domain.scenarios import complication, misheard, no_vehicles, officers, staff
 from app.domain.scenarios.officers import spoken_service
 
 ERRORS: dict[str, dict] = {e["code"]: e for e in TYPICAL_ERRORS}
@@ -454,12 +456,74 @@ def _departure_told(ctx: CardContext) -> datetime | None:
     return min(told, default=None)
 
 
+# People of the squad itself: what they say on the phone about the squad is its report.
+SQUAD_ROLES = frozenset({staff.ROLE_SQUAD_CHIEF, staff.ROLE_SQUAD_SPECIALIST})
+# Words of the squad's side about where it is (``officers.PROGRESS_REPLIES``,
+# ``staff.SPECIALIST_PROGRESS`` and free speech of the cloud).
+SQUAD_PROGRESS_PHRASES = (
+    "едем",
+    "в пути",
+    "выезжа",
+    "выехал",
+    "на месте",
+    "прибыл",
+    "осматрива",
+    "работ",
+    "закончил",
+    "сворачива",
+    "завершен",
+)
+
+
+def _squad_side(ctx: CardContext, call: ServiceCallLog) -> bool:
+    if call.kind == "outgoing":
+        return call.service == ctx.scenario.service
+    return call.kind == "staff" and call.role in SQUAD_ROLES
+
+
+def _told_by_squad(ctx: CardContext) -> dict[str, datetime]:
+    """Milestones the squad chief or specialist told the dispatcher of when the dispatcher
+    called them (decision of 18.10.2026: «едем, наряд 4641», «на месте, осматриваемся» in the
+    dispatcher's own call is the report). The squad tells where it is at that moment: a
+    milestone counts once its report was due — the report call started, picked up or not —
+    and the moment is the first words of the squad about its progress in that call."""
+    calls = ctx.attempt.service_calls
+    told: dict[str, datetime] = {}
+    for call in calls:
+        if not call.answered or not _squad_side(ctx, call):
+            continue
+        due = [
+            c.report_status
+            for c in calls
+            if c.kind == "report" and c.report_status and c.started_at <= call.started_at
+        ]
+        reached = officers.squad_state(due)
+        if reached not in REPORTED_STATUSES:
+            continue
+        said = next(
+            (
+                turn.at or call.started_at
+                for turn in call.dialog
+                if turn.role == "caller" and _has(turn.text, SQUAD_PROGRESS_PHRASES)
+            ),
+            None,
+        )
+        if said is None:
+            continue
+        for status in REPORTED_STATUSES[: REPORTED_STATUSES.index(reached) + 1]:
+            told[status] = min(told.get(status, said), said)
+    return told
+
+
 def _known_at(ctx: CardContext, status: str, report: StatusEntry | None) -> datetime | None:
-    """The first moment the dispatcher knew of the milestone: the report call, or for the
-    departure the squad chief's own words if they came first."""
+    """The first moment the dispatcher knew of the milestone: the report call, the squad's
+    own words in the dispatcher's call to it, or for the departure the squad chief naming his
+    squad, whichever came first."""
     moments = [report.at] if report is not None else []
     if status == sm.RESPONSE_STARTED and (told := _departure_told(ctx)) is not None:
         moments.append(told)
+    if (said := _told_by_squad(ctx).get(status)) is not None:
+        moments.append(said)
     return min(moments, default=None)
 
 
@@ -585,8 +649,12 @@ def complication_not_passed(ctx: CardContext) -> ErrorItem | None:
 
 def no_order_given(ctx: CardContext) -> ErrorItem | None:
     """The squad chief of the own service was told about the incident but never sent (#263):
-    no «выезжайте», «направляйте бригаду» in any call to him."""
+    no «выезжайте», «направляйте бригаду» in any call to him. Not on a «машин нет» card: the
+    chief has nothing to send, the head of the organization gives the vehicle (decision of
+    18.10.2026)."""
     if not any(r.service == ctx.scenario.service for r in ctx.scenario.reference.service_calls):
+        return None
+    if no_vehicles.on_path(call_rows(ctx.attempt)):
         return None
     chief = [
         c
