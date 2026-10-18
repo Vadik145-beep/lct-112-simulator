@@ -167,3 +167,18 @@ def test_the_journal_shows_dashes_not_heard_colons() -> None:
         "Фиксирую адрес: Елисеевский переулок."
     )
     assert cloud.written("Принял, выезжаем.") == "Принял, выезжаем."
+
+
+def test_the_chief_prompt_keeps_the_lines_that_held_it_before_the_final() -> None:
+    """Stand 18.10.2026: questions in a heap, «Пострадавший. Есть.», «Принято» to a question."""
+    prompt = vapi.CHIEF_PROMPT
+    assert "Не задаёшь подряд много вопросов" in prompt
+    assert "Сам себе на свои вопросы не отвечаешь" in prompt
+    assert "Не пересказываешь заново" in prompt
+    assert "на вопрос «Принято» не отвечают" in prompt
+    assert "не торопясь" not in vapi.DIGITS_RULE
+
+
+def test_the_card_words_are_not_sent_to_the_recognizer_for_now() -> None:
+    config = vapi.transcriber_config(vocabulary=["Народного Ополчения"])
+    assert "customVocabulary" not in config and "contextGeneral" not in config
