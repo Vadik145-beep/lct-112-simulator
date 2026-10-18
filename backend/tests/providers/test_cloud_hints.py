@@ -226,4 +226,6 @@ def test_every_person_of_a_card_has_his_own_voice() -> None:
     assert staff_calls[staff.ROLE_HEAD] == s.cloud_voice_voice_id_org_head
     assert staff_calls[staff.ROLE_RESPONSE_CHIEF] == s.cloud_voice_voice_id_response_chief
     assert staff_calls[staff.ROLE_SQUAD_SPECIALIST] == s.cloud_voice_voice_id_specialist
-    assert len({chief, other, *staff_calls.values()}) == 5
+    voices = {chief, other, *staff_calls.values()}
+    assert len(voices) == 4  # the response department shares the other services' voice
+    assert staff_calls[staff.ROLE_HEAD] != staff_calls[staff.ROLE_RESPONSE_CHIEF]
