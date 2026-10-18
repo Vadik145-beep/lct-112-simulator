@@ -22,22 +22,9 @@ type Roles = PhoneDirectoryOut["roles"];
  * the virtual phone of the card — up to ten per dispatch service, the customer's four roles.
  * One directory for all teachers.
  */
-/** City dispatch services with emergency squads and the district councils: whose ДДС a
- * trainee is (the customer's four roles of the phone fit them). */
-const DDS_SERVICES = new Set([
-  "gkh",
-  "moek",
-  "mosgaz",
-  "mosvodokanal",
-  "gormost",
-  "moslift",
-  "oek",
-  "moesk",
-  "mosvodostok",
-  "moscollector",
-  "territorial_oiv",
-  "territorial_oiv_tinao",
-]);
+/** Whose ДДС a trainee is: the same five services as in the lessons with cards written by AI
+ * (backend ``ai_plan.DDS_SERVICES``) — city services with an emergency squad. */
+const DDS_SERVICES = new Set(["gkh", "moek", "mosgaz", "mosvodokanal", "gormost"]);
 
 export function TeacherPhonesPage() {
   const directory = usePhoneDirectory();
