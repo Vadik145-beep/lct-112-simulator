@@ -200,3 +200,30 @@ def test_the_no_vehicles_chief_has_nothing_about_going_out() -> None:
 def test_not_ours_is_said_at_once() -> None:
     assert "Адрес не повторяешь" in " ".join(vapi.CHIEF_NOT_OURS.split())
     assert "Карточку не принимайте" not in vapi.CHIEF_NOT_OURS
+
+
+def test_every_person_of_a_card_has_his_own_voice() -> None:
+    """Decision of 18.10.2026: all the people of a ДДС card spoke with one voice."""
+    from app.config import get_settings
+
+    s = get_settings()
+    scenario = card_scenario(NAME).model_copy(update={"difficulty": 3})
+    attempt = Attempt(service_calls=[])
+
+    def voice(call: dict) -> str:
+        return vapi.voice_config(officer.call_scenario(scenario, call, attempt), s)["voiceId"]
+
+    chief = voice(new_call("moek"))
+    other = voice(new_call("101"))
+    staff_calls = {
+        role: voice({"id": role, "service": "moek", "kind": "staff", "role": role})
+        for role in (staff.ROLE_HEAD, staff.ROLE_RESPONSE_CHIEF, staff.ROLE_SQUAD_SPECIALIST)
+    }
+    report = next(r for r in scenario.reference.reports if r.status == "arrived")
+    squad = vapi.voice_config(officers.report_scenario(scenario, report, "МОЭК"), s)["voiceId"]
+    assert chief == squad == s.cloud_voice_voice_id
+    assert other == s.cloud_voice_voice_id_other_officer
+    assert staff_calls[staff.ROLE_HEAD] == s.cloud_voice_voice_id_org_head
+    assert staff_calls[staff.ROLE_RESPONSE_CHIEF] == s.cloud_voice_voice_id_response_chief
+    assert staff_calls[staff.ROLE_SQUAD_SPECIALIST] == s.cloud_voice_voice_id_specialist
+    assert len({chief, other, *staff_calls.values()}) == 5

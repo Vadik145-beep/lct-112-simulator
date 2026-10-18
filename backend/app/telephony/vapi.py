@@ -598,13 +598,12 @@ def role_prompt(scenario: CallIntakeScenario) -> str:
     facts = "\n".join(f"- {key}: {value}" for key, value in caller.facts.items())
     service = caller.facts.get("служба", "службы")
     if caller.persona == OFFICER_PERSONA:
+        from app.domain.scenarios import no_vehicles
         from app.domain.scenarios.officers import (
             NOT_OURS_FACT_KEY,
             REPEAT_FACT_KEY,
             SQUAD_CHIEF_TITLE,
         )
-
-        from app.domain.scenarios import no_vehicles
 
         repeat = REPEAT_FACT_KEY in caller.facts
         chief = scenario.title.startswith(SQUAD_CHIEF_TITLE) and not repeat
@@ -663,12 +662,31 @@ def caller_prompt(scenario: CallIntakeScenario) -> str:
     )
 
 
+def role_voice_id(scenario: CallIntakeScenario, s: Settings) -> str | None:
+    """The voice of a person of a ДДС card by his role: the specialist, the head, the chief of
+    the response department, a duty officer of another service. ``None`` — the squad chief, his
+    reports and the callers keep the voices they had."""
+    from app.domain.scenarios.officers import OFFICER_PERSONA, SQUAD_CHIEF_TITLE
+
+    persona = scenario.caller.persona
+    if persona == OFFICER_PERSONA:
+        chief = scenario.title.startswith(SQUAD_CHIEF_TITLE)
+        return None if chief else s.cloud_voice_voice_id_other_officer
+    return {
+        "squad_specialist": s.cloud_voice_voice_id_specialist,
+        "organization_head": s.cloud_voice_voice_id_org_head,
+        "response_chief": s.cloud_voice_voice_id_response_chief,
+    }.get(persona or "")
+
+
 def voice_config(scenario: CallIntakeScenario, settings: Settings | None = None) -> dict[str, Any]:
     """The caller's voice: by the scenario's voice id when a voice of that kind is configured,
     else the default; agitated personas get a less stable (more emotional) delivery."""
     s = settings or get_settings()
     kind = VOICE_SETTING.get(scenario.caller.voice or "")
-    voice_id = getattr(s, f"cloud_voice_voice_id_{kind}", None) if kind else None
+    voice_id = role_voice_id(scenario, s) or (
+        getattr(s, f"cloud_voice_voice_id_{kind}", None) if kind else None
+    )
     if not voice_id and kind == "elder_female":
         voice_id = s.cloud_voice_voice_id_female
     if not voice_id and kind == "elder_male":
