@@ -126,3 +126,9 @@ def test_progress_advice_names_what_was_wrong() -> None:
     missing = "Ход работ не отражён в карточке: не проставлены «Прибытие»."
     points = card_advice({"errors": [{"code": "progress_missing", "explanation": missing}]})
     assert points[0].startswith("Ведите карточку до конца")
+
+
+def test_lesson_advice_counts_cards_in_russian() -> None:
+    assert session_advice([_result(total=50)])[-1] == "Зачтено 0 из 1 карточки."
+    assert session_advice([_result(total=50)] * 5)[-1] == "Зачтено 0 из 5 карточек."
+    assert session_advice([_result(total=50)] * 21)[-1] == "Зачтено 0 из 21 карточки."

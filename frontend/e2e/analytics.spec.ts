@@ -104,7 +104,7 @@ test("trainee: my progress", async ({ page }) => {
   const tips = page.getByTestId("recommendations").locator("li");
   await expect(tips.first()).toContainText("Слабое место");
   await expect(tips).toHaveCount(4);
-  await expect(page.getByTestId("ratings-chart").locator("canvas")).toBeVisible();
+  await expect(page.getByTestId("ratings-chart").locator("li").first()).toBeVisible();
   await expect(page.getByRole("table", { name: "Занятия" }).locator("tbody tr").first()).toContainText("демонстрационные данные");
   await expect(page.getByTestId("progress-errors").locator("li").first()).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/student-progress.png`, fullPage: true });
