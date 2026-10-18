@@ -45,6 +45,12 @@ FACT = (
     "свободных машин нет, все на выездах, наряд не называешь; только если диспетчер прямо "
     f"спросит, что делать, — «{TO_HEAD}»"
 )
+# The chief called again before the head found a vehicle: he has said it already and does not
+# take the card anew (stand 18.10.2026: the second call asked the address all over again).
+FACT_AGAIN = (
+    "ты уже говорил диспетчеру, что машин нет; машин так и нет, все на выездах, наряд не "
+    f"называешь; только если диспетчер прямо спросит, что делать, — «{TO_HEAD}»"
+)
 RESOLVED = (
     "Понял. Снимаю машину с планового выезда, бригада выедет через десять минут. "
     "Держите на контроле."

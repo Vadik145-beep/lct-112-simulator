@@ -151,6 +151,14 @@ def next_report(
     if not pending or officer.open_call(attempt) is not None:
         return None
     report = pending[0]
+    if report.status in complication.WORK_STATUSES and complication.happened(calls):
+        # The squad waits for the service it asked for (decision of 18.10.2026).
+        arrives = complication.help_arrives_at(scenario, calls)
+        if arrives is None:
+            due = complication.remind_due(calls, now)
+            return complication.reminder(scenario) if due else None
+        if report.status == "works_started":
+            return report if arrives <= now else None
     previous = officer.reports_of(attempt)
     if previous:
         last = previous[-1]
@@ -179,6 +187,24 @@ def stale_report(attempt: Attempt, now: datetime) -> dict | None:
         return None
     started = _at(call["started_at"]) or now
     if started + timedelta(seconds=REPORT_CALL_TIMEOUT_SECONDS) > now:
+        return None
+    return call
+
+
+# An answered call with not a word in it this long was lost on the way (the backend restarted
+# mid-call, the browser dropped it): it would hold the card's line for good (stand 18.10.2026).
+DEAD_CALL_SECONDS = 120
+
+
+def dead_call(attempt: Attempt, now: datetime) -> dict | None:
+    """The open call answered ``DEAD_CALL_SECONDS`` ago with no turn at all."""
+    from app.dialog import officer
+
+    call = officer.open_call(attempt)
+    if call is None or not call.get("answered") or call.get("dialog"):
+        return None
+    answered = _at(call.get("answered_at"))
+    if answered is None or answered + timedelta(seconds=DEAD_CALL_SECONDS) > now:
         return None
     return call
 
@@ -212,6 +238,11 @@ async def sweep_reports(
         if attempt.session_id not in lessons:
             lessons[attempt.session_id] = await session.get(TrainingSession, attempt.session_id)
         live = telephony.for_session(lessons[attempt.session_id])
+        dead = dead_call(attempt, now)
+        if dead is not None:
+            _, ended = await officer.end(session, attempt, dead["id"], officer.END_FAILED)
+            events.extend(ended)
+            continue
         stale = stale_report(attempt, now)
         if stale is not None:
             _, ended = await officer.end(session, attempt, stale["id"], officer.END_NOT_TAKEN)

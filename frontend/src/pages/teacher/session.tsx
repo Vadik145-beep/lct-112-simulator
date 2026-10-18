@@ -323,6 +323,7 @@ function MonitorBoard({
               now={now}
               finished={session.status === "finished"}
               mode={session.mode}
+              sessionId={session.id}
             />
           ))}
         </ul>
@@ -363,6 +364,7 @@ function StudentTile({
   now,
   finished,
   mode,
+  sessionId,
 }: {
   student: MonitorStudent;
   summary: ReturnType<typeof summarize>;
@@ -373,6 +375,7 @@ function StudentTile({
   now: number;
   finished: boolean;
   mode?: string;
+  sessionId: string;
 }) {
   const navigate = useNavigate();
   const current = summary.current;
@@ -386,6 +389,13 @@ function StudentTile({
       : acceptanceTimer(current.issued_at, current.primary_status_at, norm, now)
     : null;
   const targetId = current?.attempt_id ?? student.last_attempt_id;
+  // No card on the go: the trainee's closed cards, all of them, in the lesson's report (stand
+  // 18.10.2026: three closed, the tile opened only the last one).
+  const toReport = !current && student.finished > 0;
+  const open = () => {
+    if (toReport) navigate(`/teacher/sessions/${sessionId}/report?student=${student.student_id}`);
+    else if (targetId) navigate(`/teacher/attempts/${targetId}/review`);
+  };
   const alert = summary.overdue || (current?.card_status === "not_notified") || (current?.card_status === "not_finished");
   const statusText = finished ? (student.finished > 0 ? "занятие завершено" : "не участвовал") : (call ? CALL_TILE_STATUS : TILE_STATUS)[summary.status];
   const stageText = !finished && stage && summary.status !== "idle" ? STAGE_TITLES[stage.stage] ?? stage.stage : null;
@@ -397,7 +407,7 @@ function StudentTile({
         data-student={student.login}
         data-status={summary.status}
         disabled={!targetId}
-        onClick={() => targetId && navigate(`/teacher/attempts/${targetId}/review`)}
+        onClick={open}
         className={cn(
           "flex w-full flex-col gap-2 rounded-lg border bg-card p-3 text-left transition-colors",
           targetId ? "hover:bg-accent/40" : "cursor-default",
@@ -452,7 +462,7 @@ function StudentTile({
           </span>
           {student.last_total !== null && (
             <Badge tone={student.last_total < threshold ? "danger" : "success"} data-role="last-score">
-              {formatScore(student.last_total)}
+              последняя: {formatScore(student.last_total)}
             </Badge>
           )}
         </div>

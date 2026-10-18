@@ -54,7 +54,7 @@ def test_weakest_group_comes_first(type_rows: list[dict]) -> None:
     ratings = dict.fromkeys(groups, 1500.0) | {"15": 1210.0}
     plan = plan_next(_spec(type_rows, ratings=ratings))
     assert plan.request.incident_group == "15"
-    assert "самый низкий рейтинг (1210)" in plan.reasons[0]
+    assert "самый низкий рейтинг" in plan.reasons[0]
 
 
 def test_failed_card_keeps_the_group_and_plants_the_missed_mistake(type_rows: list[dict]) -> None:

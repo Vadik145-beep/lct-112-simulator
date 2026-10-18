@@ -142,6 +142,14 @@ class Settings(BaseSettings):
     cloud_voice_voice_id_elder_male: str | None = None
     cloud_voice_voice_id_elder_female: str | None = None
     cloud_voice_voice_id_young: str | None = None
+    # The people of a ДДС card, each his own voice (decision of 18.10.2026: all of them spoke
+    # with the default one). The squad chief and his reports keep the default (Nikolay).
+    cloud_voice_voice_id_specialist: str | None = "drOVtcvHhJKNEXv5h1l5"  # Vladislav
+    cloud_voice_voice_id_org_head: str | None = "9AjtU6o19uipv7QL8dLL"  # Alex
+    # Vladimir too: no fifth male voice in the account; the head and the chief of the response
+    # department, both of the trainee's own phone book, keep different voices.
+    cloud_voice_voice_id_response_chief: str | None = "4R4ha50vLnNdjMQDY20a"
+    cloud_voice_voice_id_other_officer: str | None = "4R4ha50vLnNdjMQDY20a"  # Vladimir
     # eleven_flash_v2_5: the only ElevenLabs model that takes the language explicitly (no
     # accent drift on short phrases), also the fastest; eleven_multilingual_v2 guesses it.
     cloud_voice_voice_model: str = "eleven_flash_v2_5"

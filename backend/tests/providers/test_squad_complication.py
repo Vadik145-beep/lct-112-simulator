@@ -30,8 +30,8 @@ def test_specialist_calls_after_the_arrival_on_difficulty_three() -> None:
         "works_done",
     ]
     assert reports[2].text == (
-        "Алло, диспетчер? Специалист аварийной бригады, мы на месте. Нужно перекрыть двор, "
-        "жильцы не дают работать. Нужна помощь управы, сообщите им."
+        "Алло, диспетчер? Специалист аварийной бригады, мы на месте. Нужно перекрыть проезд, "
+        "без этого работать нельзя. Нужна помощь управы, сообщите им."
     )
     medium = card_scenario(NAME).model_copy(update={"difficulty": 2})
     assert complication.STATUS not in [r.status for r in complication.timeline(medium)]
@@ -201,5 +201,58 @@ def test_the_specialist_rings_once_more_when_not_taken() -> None:
     due = reports.next_report(scenario, model, later)
     assert due is not None and due.status == complication.STATUS
     model.service_calls = [*model.service_calls, missed]
+    # Then the squad waits for the service it asked for: the specialist reminds once.
     due = reports.next_report(scenario, model, later + timedelta(minutes=5))
+    assert due is not None and due.status == complication.REMINDER_STATUS
+
+
+def test_the_works_wait_for_the_service_the_squad_asked_for() -> None:
+    """Decision of 18.10.2026: «не пускают, нужна полиция» — no «приступили» until it came."""
+    from app.training import reports
+
+    scenario = hard()
+    attempt = perfect_card_attempt(scenario)
+    rows = [c.model_dump(mode="json") for c in attempt.service_calls]
+    arrived = [c for c in rows if c.get("report_status") in ("response_started", "arrived")]
+    heard = {**complication_call(), "started_at": at(400).isoformat()}
+    heard["ended_at"] = at(420).isoformat()
+    model = Attempt(
+        service_calls=[*arrived, heard],
+        status_log=[s.model_dump(mode="json") for s in attempt.status_log],
+        response_status="arrived",
+    )
+    # Not called: nothing, then one reminder after two minutes, then nothing again.
+    assert reports.next_report(scenario, model, at(420 + 60)) is None
+    due = reports.next_report(scenario, model, at(420 + complication.REMIND_SECONDS))
+    assert due is not None and due.status == complication.REMINDER_STATUS
+    assert "так и нет" in due.text
+    reminder = {
+        "service": "gkh",
+        "kind": "report",
+        "report_status": complication.REMINDER_STATUS,
+        "started_at": at(545).isoformat(),
+        "ended_at": at(560).isoformat(),
+        "answered": True,
+        "dialog": [],
+    }
+    model.service_calls = [*model.service_calls, reminder]
+    assert reports.next_report(scenario, model, at(2000)) is None
+    # Called the service: the works start a minute after that call.
+    told = call_to("territorial_oiv", 600)
+    told = {**told, "started_at": at(600).isoformat(), "ended_at": at(630).isoformat()}
+    model.service_calls = [*model.service_calls, told]
+    assert reports.next_report(scenario, model, at(630 + 59)) is None
+    due = reports.next_report(scenario, model, at(630 + complication.ARRIVE_SECONDS))
     assert due is not None and due.status == "works_started"
+    said = officer.report_said(scenario, model, due)
+    assert complication.arrived_line(scenario) in said
+    assert "ждём" in complication.fact(scenario, model.service_calls).lower()
+
+
+def test_no_complication_words_tie_it_to_housing() -> None:
+    """Stand 18.10.2026: «нас не пускают к стояку» at a railway accident of Gormost."""
+    for service, text in complication.PROBLEMS.items():
+        if service in ("gkh", "moslift"):
+            continue
+        assert not any(w in text.lower() for w in ("стояк", "подъезд", "жилец", "жильц")), text
+    assert set(complication.DETAILS) == set(complication.PROBLEMS)

@@ -83,6 +83,8 @@ def applicable_components(scenario: CardResponseScenario | Mapping | None) -> li
 
 NO_REJECT_SERVICES = frozenset({"103"})
 REJECT_REASON_TITLES = {r["code"]: r["title"] for r in REJECT_REASONS}
+
+
 def _lcs(reference: list[str], actual: list[str]) -> list[str]:
     """Longest common subsequence: reference statuses that appear in order."""
     n, m = len(reference), len(actual)
@@ -104,6 +106,24 @@ def _lcs(reference: list[str], actual: list[str]) -> list[str]:
         else:
             j += 1
     return result
+
+
+# «Принята» closed by «Отказ от выполнения работ» on a card to refuse (decision of 18.10.2026):
+# the memo's correction (p. 32) counts as the refusal, minus this for the wrong «Принята»; on a
+# card to accept the same chain stays a wrong decision.
+WRONG_ACCEPT_POINTS = 6
+
+
+def _refusal_fix(ctx: CardContext) -> StatusEntry | None:
+    """The «Отказ от выполнения работ» with a comment that corrected a wrong «Принята» on a card
+    whose reference is a refusal."""
+    final = ctx.final_primary
+    if ctx.scenario.reference.decision != "reject" or final is None:
+        return None
+    if final.status != sm.ACCEPTED or ctx.primary is not final or sm.REJECTED in ctx.statuses:
+        return None  # only the first «Принята», never after a «Не принята»
+    refusals = [e for e in ctx.entries(sm.WORKS_REFUSED) if (e.comment or "").strip()]
+    return refusals[-1] if refusals else None
 
 
 def _decision(ctx: CardContext, max_points: int) -> Component:
@@ -141,6 +161,11 @@ def _decision(ctx: CardContext, max_points: int) -> Component:
             )
         else:
             fraction, note = 1.0, "решение верно"
+        if corrected and _refusal_fix(ctx) is not None:
+            note += f"; «Принята» исправлена отказом от выполнения работ (−{WRONG_ACCEPT_POINTS})"
+            items.insert(0, {"expected": expected, "actual": actual, "note": note})
+            score = max(0.0, scale(max_points, fraction) - WRONG_ACCEPT_POINTS)
+            return Component("decision", TITLES["decision"], score, max_points, items=items)
         if corrected:
             fraction /= 2
             note += "; решение исправлено после ошибочного первичного статуса"
@@ -170,6 +195,9 @@ def _status_chain(
 ) -> Component:
     reference = [s.status for s in ctx.scenario.reference.status_chain]
     actual = ctx.statuses
+    if _refusal_fix(ctx) is not None:
+        # The corrected refusal stands for «Не принята»: «Принята» + «Отказ…» is that one step.
+        actual = [sm.REJECTED if s == sm.WORKS_REFUSED else s for s in actual if s != sm.ACCEPTED]
     matched = _lcs(reference, actual) if reference else []
     missing = [s for s in reference if s not in matched]
     extra = [s for s in actual if s not in reference]
@@ -201,6 +229,8 @@ def _comments(ctx: CardContext, max_points: int, embeddings: EmbeddingProvider) 
             continue
         entries = ctx.entries(step.status)
         entry = entries[0] if entries else None
+        if entry is None and step.status == sm.REJECTED:
+            entry = _refusal_fix(ctx)  # the corrected refusal carries the comment
         parts: list[float] = []
         item: dict = {"status": step.status, "title": sm.title(step.status)}
         if entry is None:

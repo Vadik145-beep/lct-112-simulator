@@ -14,6 +14,7 @@ the reports skip it. The dispatcher is expected to call the named service after 
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
+from datetime import datetime, timedelta
 
 from app.domain.evaluation.schemas import BrigadeReport, CallIntakeScenario, CardResponseScenario
 from app.domain.scenarios.officers import spoken_service
@@ -40,16 +41,40 @@ PROBLEMS: dict[str, str] = {
     "gkh": "Залило электрощиток в подъезде, нужен электрик",
     "moslift": "В лифте застрял жилец, двери не открываются",
     "gormost": "По пролёту пошла трещина, движение опасно",
-    "territorial_oiv": "Нужно перекрыть двор, жильцы не дают работать",
-    "101": "Задымление в подвале, похоже, загорелся кабель",
-    "102": "На месте конфликт, нас не пускают к стояку",
-    "103": "Жильцу стало плохо, нужна медицинская помощь",
-    "104": "Запах газа в подъезде",
+    "territorial_oiv": "Нужно перекрыть проезд, без этого работать нельзя",
+    "101": "Задымление, похоже, загорелся кабель",
+    "102": "На месте конфликт, нас не подпускают к месту работ",
+    "103": "Человеку на месте стало плохо",
+    "104": "Рядом с местом работ запах газа",
 }
+# What the specialist answers when asked what exactly happened (decision of 18.10.2026: the
+# words fit any squad — gas, bridge, housing; stand: «не пускают к стояку» at a railway).
+DETAILS: dict[str, str] = {
+    "mosgaz": "пахнет газом сильно, людей рядом нет, огня нет",
+    "moek": "парит из-под земли рядом с местом работ, горячая вода выходит на поверхность",
+    "mosvodokanal": "вода идёт из-под земли и уходит в колодец, место работ подтапливает",
+    "gkh": "вода попала на электрощиток, электричество отключать сами не можем",
+    "moslift": "человек в лифте, двери не открываются, ему плохо не стало, просит помочь",
+    "gormost": "трещина свежая, длинная, проезд над ней опасен",
+    "territorial_oiv": "машины едут вплотную к месту работ, своими силами перекрыть не можем",
+    "101": "дым из подвала или колодца, открытого огня не видно, людей рядом нет",
+    "102": "двое посторонних мужчин ругаются, мешают оцепить место, на просьбы не реагируют, "
+    "драки нет",
+    "103": "мужчина из прохожих, в сознании, жалуется на сердце, сидит",
+    "104": "запах газа рядом с местом работ, откуда — не видно, людей отвели",
+}
+GENERIC_DETAILS = "сами не справимся, нужна помощь этой службы"
 GENERIC_PROBLEM = "Сами не справимся"
 # The specialist's call not answered rings once more, then the squad tells it in its next
 # calls (stand 18.10.2026: the call dropped, the chief and the reports forgot the complication).
 MAX_RINGS = 2
+# The squad cannot work without the service it asked for (decision of 18.10.2026): the work
+# starts once that service has come, a minute after the dispatcher's call to it; not called,
+# the specialist reminds once after two minutes, then the squad keeps waiting.
+ARRIVE_SECONDS = 60
+REMIND_SECONDS = 120
+REMINDER_STATUS = "complication_reminder"
+WORK_STATUSES = frozenset({"works_started", "works_done"})
 OFF_THE_POINT = "Диспетчер, это специалист бригады, нам нужна помощь другой службы."
 
 
@@ -70,6 +95,10 @@ def applies(scenario: CardResponseScenario) -> bool:
 
 def problem(scenario: CardResponseScenario) -> str:
     return PROBLEMS.get(service_needed(scenario) or "", GENERIC_PROBLEM)
+
+
+def details(scenario: CardResponseScenario) -> str:
+    return DETAILS.get(service_needed(scenario) or "", GENERIC_DETAILS)
 
 
 def calls_about(calls: Iterable[Mapping]) -> list[Mapping]:
@@ -128,19 +157,99 @@ def unheard_line(scenario: CardResponseScenario) -> str:
     )
 
 
+def _at(value: object) -> datetime | None:
+    if isinstance(value, datetime):
+        return value
+    return datetime.fromisoformat(value) if isinstance(value, str) and value else None
+
+
+def help_called_at(scenario: CardResponseScenario, calls: Iterable[Mapping]) -> datetime | None:
+    """When the dispatcher's call to the service the squad asked for ended (``None`` while he
+    has not called it after the complication, or the call still goes on)."""
+    rows = list(calls)
+    about = calls_about(rows)
+    needed = service_needed(scenario)
+    if not about or needed is None:
+        return None
+    since = str(about[0].get("started_at") or "")
+    for c in rows:
+        if (
+            (c.get("kind") or "outgoing") == "outgoing"
+            and c.get("service") == needed
+            and c.get("answered")
+            and str(c.get("started_at") or "") >= since
+            and any(t.get("role") == "operator" for t in c.get("dialog") or [])
+        ):
+            ended = _at(c.get("ended_at"))
+            if ended is not None:
+                return ended
+    return None
+
+
+def help_arrives_at(scenario: CardResponseScenario, calls: Iterable[Mapping]) -> datetime | None:
+    called = help_called_at(scenario, calls)
+    return called + timedelta(seconds=ARRIVE_SECONDS) if called is not None else None
+
+
+def help_here(scenario: CardResponseScenario, calls: Iterable[Mapping], now: datetime) -> bool:
+    arrives = help_arrives_at(scenario, calls)
+    return arrives is not None and arrives <= now
+
+
+def reminded(calls: Iterable[Mapping]) -> bool:
+    return any(
+        c.get("kind") == "report" and c.get("report_status") == REMINDER_STATUS for c in calls
+    )
+
+
+def remind_due(calls: Iterable[Mapping], now: datetime) -> bool:
+    """The specialist reminds once, ``REMIND_SECONDS`` after his last call about it."""
+    rows = list(calls)
+    about = calls_about(rows)
+    if not about or reminded(rows) or not settled(rows):
+        return False
+    ended = _at(about[-1].get("ended_at"))
+    return ended is not None and ended + timedelta(seconds=REMIND_SECONDS) <= now
+
+
+def reminder(scenario: CardResponseScenario) -> BrigadeReport:
+    service = service_needed(scenario) or ""
+    text = (
+        f"Диспетчер, это снова специалист бригады. Помощи {spoken_service(service, service)} так "
+        "и нет, работать не можем. Вы им сообщили?"
+    )
+    return BrigadeReport(status=REMINDER_STATUS, after_seconds=0, text=text)
+
+
+def arrived_line(scenario: CardResponseScenario) -> str:
+    """The first words of the report of the works once the service has come."""
+    service = service_needed(scenario) or ""
+    return f"Помощь {spoken_service(service, service)} подъехала."
+
+
 def fact(scenario: CardResponseScenario, calls: Iterable[Mapping]) -> str:
     """The complication as the own organization knows it, for the prompt of anyone of it."""
+    rows = list(calls)
     service = service_needed(scenario) or ""
     name = spoken_service(service, service)
-    if heard(calls):
+    what = (
+        f"на месте осложнение: {problem(scenario).lower()} ({details(scenario)}); без помощи "
+        f"{name} работы не начинаете"
+    )
+    if help_called_at(scenario, rows) is not None:
         return (
-            f"на месте осложнение: {problem(scenario).lower()}; специалист попросил диспетчера "
-            f"вызвать помощь {name}. Если диспетчер говорит, что вызвал её, — «Понял, ждём, "
-            "работаем дальше»; на вопрос о помощи — нужна помощь " + name
+            f"{what}. Диспетчер уже сообщил им: помощь {name} едет или уже на месте — что именно, "
+            "смотри в строке «где бригада». Скажет, что вызвал, — «Понял, ждём»"
+        )
+    if heard(rows):
+        return (
+            f"{what}; специалист попросил диспетчера вызвать помощь {name}, её пока нет. "
+            f"Если диспетчер говорит, что вызвал, — «Понял, ждём»; спросит — «Помощи {name} пока "
+            "нет, без неё не начинаем»"
         )
     return (
-        f"на месте осложнение: {problem(scenario).lower()}; специалист звонил диспетчеру, но "
-        f"не дозвонился. Сам скажи диспетчеру и попроси сообщить {name}: нужна их помощь"
+        f"{what}; специалист звонил диспетчеру, но не дозвонился. Сам скажи диспетчеру и "
+        f"попроси сообщить {name}: нужна их помощь"
     )
 
 

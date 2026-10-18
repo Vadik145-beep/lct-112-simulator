@@ -38,7 +38,7 @@ def test_the_server_never_takes_control_of_the_call() -> None:
     assistant = vapi.build_assistant(chief)
     assert "monitorPlan" not in assistant
     prompt = vapi.role_prompt(chief)
-    assert prompt.startswith("Ты начальник аварийной бригады")
+    assert "Ты — начальник аварийной бригады" in prompt
     assert "Служебная подсказка" not in prompt
     assert "Так, стоп" in prompt  # the hurry is a line of the prompt
     for name in ("hint_message", "say_message", "said_note", "send_control", "control_url"):
@@ -113,7 +113,7 @@ def test_the_chief_knows_his_truth_from_the_prompt() -> None:
     prompt = vapi.role_prompt(chief)
     assert "свободных машин нет" in prompt
     # No misheard house (18.10.2026): the chief repeats the address as it was said.
-    assert "ОДИН раз повторяешь вслух адрес" in prompt
+    assert "Адрес вслух повторяешь один раз" in prompt
     easy = officer.call_scenario(card_scenario(NAME), new_call("moek"), Attempt(service_calls=[]))
     assert no_vehicles.FACT_KEY not in easy.caller.facts
 
@@ -153,9 +153,9 @@ def test_every_squad_number_is_said_digit_by_digit() -> None:
     leader = officers.report_scenario(scenario, report, "МОЭК")
     assert f"«{spoken}»" in leader.caller.facts["наряд"]
     for built in (chief, leader):
-        assert vapi.DIGITS_RULE in vapi.role_prompt(built)
+        assert "по одной цифре через запятую" in " ".join(vapi.role_prompt(built).split())
     for prompt in (vapi.OFFICER_PROMPT, vapi.OFFICER_REPEAT_PROMPT, vapi.STAFF_PROMPT):
-        assert "{digits}" in prompt
+        assert "по одной цифре через запятую" in " ".join(prompt.split())
 
 
 def test_the_journal_shows_dashes_not_heard_colons() -> None:
@@ -167,3 +167,76 @@ def test_the_journal_shows_dashes_not_heard_colons() -> None:
         "Фиксирую адрес: Елисеевский переулок."
     )
     assert cloud.written("Принял, выезжаем.") == "Принял, выезжаем."
+
+
+def test_the_chief_prompt_keeps_the_lines_that_held_it_before_the_final() -> None:
+    """Stand 18.10.2026: questions in a heap, «Пострадавший. Есть.», «Принято» to a question."""
+    for prompt in (
+        vapi.CHIEF_PROMPT,
+        vapi.OFFICER_PROMPT,
+        vapi.OFFICER_REPEAT_PROMPT,
+        vapi.SQUAD_PROMPT,
+        vapi.STAFF_PROMPT,
+    ):
+        assert "#### Роль" in prompt and "#### Алгоритм диалога" in prompt
+        assert "«Принято» на вопрос не отвечают" in " ".join(prompt.split())
+    assert "больше одного вопроса за реплику" in vapi.CHIEF_PROMPT
+    assert "Сам на свои вопросы не отвечаешь" in vapi.CHIEF_PROMPT
+    assert "не торопясь" not in vapi.DIGITS_RULE
+
+
+def test_the_no_vehicles_chief_has_nothing_about_going_out() -> None:
+    """Stand 18.10.2026: on a «машин нет» card the chief said «Принял, выезжаем, наряд 7-4-3-1»."""
+    scenario = card_scenario(NAME).model_copy(update={"difficulty": 3})
+    call = {**new_call("moek"), no_vehicles.PLAN_KEY: no_vehicles.PLAN_NO_VEHICLES}
+    built = officer.call_scenario(scenario, call, Attempt(service_calls=[call]))
+    prompt = " ".join(vapi.role_prompt(built).split())
+    assert "Свободных машин сейчас нет" in prompt
+    assert "«Принял, выезжаем" not in prompt
+    assert "пять, два, семь, два" not in prompt
+    assert "твой наряд" not in prompt
+
+
+def test_not_ours_is_said_at_once() -> None:
+    assert "Адрес не повторяешь" in " ".join(vapi.CHIEF_NOT_OURS.split())
+    assert "Карточку не принимайте" not in vapi.CHIEF_NOT_OURS
+
+
+def test_every_person_of_a_card_has_his_own_voice() -> None:
+    """Decision of 18.10.2026: all the people of a ДДС card spoke with one voice."""
+    from app.config import get_settings
+
+    s = get_settings()
+    scenario = card_scenario(NAME).model_copy(update={"difficulty": 3})
+    attempt = Attempt(service_calls=[])
+
+    def voice(call: dict) -> str:
+        return vapi.voice_config(officer.call_scenario(scenario, call, attempt), s)["voiceId"]
+
+    chief = voice(new_call("moek"))
+    other = voice(new_call("101"))
+    staff_calls = {
+        role: voice({"id": role, "service": "moek", "kind": "staff", "role": role})
+        for role in (staff.ROLE_HEAD, staff.ROLE_RESPONSE_CHIEF, staff.ROLE_SQUAD_SPECIALIST)
+    }
+    report = next(r for r in scenario.reference.reports if r.status == "arrived")
+    squad = vapi.voice_config(officers.report_scenario(scenario, report, "МОЭК"), s)["voiceId"]
+    assert chief == squad == s.cloud_voice_voice_id
+    assert other == s.cloud_voice_voice_id_other_officer
+    assert staff_calls[staff.ROLE_HEAD] == s.cloud_voice_voice_id_org_head
+    assert staff_calls[staff.ROLE_RESPONSE_CHIEF] == s.cloud_voice_voice_id_response_chief
+    assert staff_calls[staff.ROLE_SQUAD_SPECIALIST] == s.cloud_voice_voice_id_specialist
+    voices = {chief, other, *staff_calls.values()}
+    assert len(voices) == 4  # the response department shares the other services' voice
+    assert staff_calls[staff.ROLE_HEAD] != staff_calls[staff.ROLE_RESPONSE_CHIEF]
+    # Same voice as the other services, another manner.
+    office = vapi.voice_config(
+        officer.call_scenario(
+            scenario,
+            {"id": "rc", "service": "moek", "kind": "staff", "role": staff.ROLE_RESPONSE_CHIEF},
+            attempt,
+        ),
+        s,
+    )
+    duty = vapi.voice_config(officer.call_scenario(scenario, new_call("101"), attempt), s)
+    assert office["speed"] < duty["speed"] and office["stability"] > duty["stability"]

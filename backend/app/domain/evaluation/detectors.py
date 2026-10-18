@@ -614,7 +614,9 @@ def report_not_taken(ctx: CardContext) -> ErrorItem | None:
 
 
 def _report_title(status: str) -> str:
-    return complication.TITLE if status == complication.STATUS else sm.title(status)
+    if status in (complication.STATUS, complication.REMINDER_STATUS):
+        return complication.TITLE
+    return sm.title(status)
 
 
 def complication_not_passed(ctx: CardContext) -> ErrorItem | None:

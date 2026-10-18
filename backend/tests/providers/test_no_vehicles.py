@@ -306,3 +306,46 @@ def test_asked_what_to_do_the_chief_sends_to_the_head() -> None:
     assert talk(scenario, attempt, call, "И что делать?") == no_vehicles.TO_HEAD
     built = officer.officer_scenario(scenario, "gkh", "ЕДЦ ЖКХ", attempt)
     assert no_vehicles.TO_HEAD in built.caller.facts[no_vehicles.FACT_KEY]
+
+
+def test_called_again_on_no_vehicles_the_chief_does_not_take_the_card_anew() -> None:
+    """Stand 18.10.2026: the second call asked the address all over again."""
+    scenario = hard()
+    first = chief_call()
+    attempt = Attempt(service_calls=[first])
+    accepted(attempt)
+    talk(scenario, attempt, first, ADDRESS)
+    first["ended_at"] = (NOW + timedelta(seconds=40)).isoformat()
+    built = officer.call_scenario(scenario, first, attempt)
+    again = {**chief_call(), "id": "again"}
+    attempt.service_calls = [*attempt.service_calls, again]
+    built = officer.call_scenario(scenario, again, attempt)
+    assert built.caller.facts[no_vehicles.FACT_KEY] == no_vehicles.FACT_AGAIN
+
+
+def test_called_back_after_a_missed_report_the_chief_says_he_called() -> None:
+    scenario = hard()
+    sent = {**chief_call(no_vehicles.PLAN_COMPLICATION), "ended_at": NOW.isoformat()}
+    sent["dialog"] = [{"role": "caller", "text": "Принял, выезжаем.", "topics": ["order_taken"]}]
+    missed = {
+        "id": "rep",
+        "service": "gkh",
+        "kind": officer.KIND_REPORT,
+        "report_status": "arrived",
+        "started_at": (NOW + timedelta(seconds=60)).isoformat(),
+        "ended_at": (NOW + timedelta(seconds=150)).isoformat(),
+        "answered": False,
+        "dialog": [],
+    }
+    back = {**chief_call(), "id": "back", "repeat": True, "answered": False}
+    back["started_at"] = (NOW + timedelta(seconds=160)).isoformat()
+    attempt = Attempt(service_calls=[sent, missed, back])
+    built = officer.call_scenario(scenario, back, attempt)
+    assert officer.MISSED_REPORT_LINE in built.caller.opening
+    assert "пропущенный звонок" in built.caller.facts
+    # Told once in an answered call: not again.
+    attempt.service_calls = [sent, missed, {**back, "answered": True}]
+    later = {**back, "id": "later", "started_at": (NOW + timedelta(seconds=300)).isoformat()}
+    attempt.service_calls = [*attempt.service_calls, later]
+    built = officer.call_scenario(scenario, later, attempt)
+    assert officer.MISSED_REPORT_LINE not in built.caller.opening

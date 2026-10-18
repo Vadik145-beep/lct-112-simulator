@@ -9,6 +9,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy import delete, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.admin import health
 from app.admin import settings as admin_settings
@@ -23,6 +24,7 @@ from app.models import (
     MODE_CARD_RESPONSE,
     SESSION_DRAFT,
     SESSION_RUNNING,
+    AiCard,
     Attempt,
     Group,
     IncidentGroup,
@@ -308,7 +310,19 @@ async def create_session(
         ip=client_ip(request),
     )
     await session.commit()
+    await _write_first_cards(session, ts)
     return await _session_out(session, ts)
+
+
+async def _write_first_cards(session: AsyncSession, ts: TrainingSession) -> None:
+    """A lesson of AI cards gets each trainee's first card written as soon as it exists, so
+    the card is there the moment the lesson starts (stand 18.10.2026: an empty journal for up
+    to twenty seconds after «Начать»). Writing it again on start is a no-op (one slot per
+    card)."""
+    if not ai_cards.is_ai(ts) or ts.group_id is None:
+        return
+    members = await lessons.group_members(session, [ts.group_id])
+    ai_cards.spawn_first(ts, [m.id for m in members.get(ts.group_id, [])])
 
 
 @router.get("/sessions/{session_id}", response_model=SessionOut)
@@ -337,6 +351,10 @@ async def update_session(
     spec = lessons.SessionSettings(**{**current, **changes})
     await lessons.validate_settings(session, spec, user)
     lessons.apply_settings(ts, spec)
+    rewrite = ai_cards.is_ai(ts) and bool(set(changes) - {"title", "hints_enabled"})
+    if rewrite:
+        # The cards written ahead follow the old settings: written again for the new ones.
+        await session.execute(delete(AiCard).where(AiCard.session_id == ts.id))
     await write_audit(
         session,
         action="session.update",
@@ -348,6 +366,8 @@ async def update_session(
         ip=client_ip(request),
     )
     await session.commit()
+    if rewrite:
+        await _write_first_cards(session, ts)
     return await _session_out(session, ts)
 
 

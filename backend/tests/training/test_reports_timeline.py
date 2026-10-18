@@ -207,3 +207,14 @@ def test_no_departure_call_once_the_chief_named_his_squad() -> None:
     )
     due = reports.next_report(scenario, attempt(calls=[call]), now(3600))
     assert due is not None and due.status == "arrived"
+
+
+def test_an_answered_call_without_a_word_is_dead_after_two_minutes() -> None:
+    """Stand 18.10.2026: the backend restarted mid-call, the answered report stayed open."""
+    lost = {**report_call("arrived", 40, None, spoken=False), "answered": True, "dialog": []}
+    lost["answered_at"] = iso(50)
+    a = attempt(calls=[lost])
+    assert reports.dead_call(a, now(50 + reports.DEAD_CALL_SECONDS - 1)) is None
+    assert reports.dead_call(a, now(50 + reports.DEAD_CALL_SECONDS)) is lost
+    talking = attempt(calls=[{**lost, "dialog": [{"role": "caller", "text": "Алло"}]}])
+    assert reports.dead_call(talking, now(10_000)) is None
