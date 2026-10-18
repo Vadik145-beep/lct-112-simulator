@@ -61,20 +61,15 @@ CARD_FINISHED = "finished"
 CARDS_AT_ONCE = {1: 1, 2: 1, 3: 3}
 
 # «Вал карточек» (issue #264, app.training.stream): at difficulty 3 a card response lesson gets
-# its cards on a timer, about STREAM_PER_MINUTE a minute for STREAM_MINUTES, not on the journal.
+# its cards on a timer, not on the journal: the first at once, then one every STREAM_GAP_SECONDS
+# (at random within), STREAM_CARDS in all — the same in a lesson of written cards (#265).
 STREAM_DIFFICULTY = 3
-STREAM_PER_MINUTE = 4
-STREAM_MINUTES = 5
+STREAM_CARDS = 5
+STREAM_GAP_SECONDS = (20.0, 25.0)
 
 
 def is_stream(ts: TrainingSession) -> bool:
-    # A lesson whose cards are written for each trainee gives them one at a time, the stream
-    # of such cards is not there yet (issue #265).
-    return (
-        ts.mode == MODE_CARD_RESPONSE
-        and ts.difficulty == STREAM_DIFFICULTY
-        and not ai_cards.is_ai(ts)
-    )
+    return ts.mode == MODE_CARD_RESPONSE and ts.difficulty == STREAM_DIFFICULTY
 
 
 # Journal numbers look like real АРМ-112 incident numbers (8 digits).
@@ -360,7 +355,7 @@ async def issue_next(
         if want <= 0:
             return [], []
     if ai_cards.is_ai(ts):
-        candidates = await ai_cards.ready_for(session, ts, student, done)
+        candidates = await ai_cards.ready_for(session, ts, student, done, want)
     else:
         candidates = [s for s in await scenario_queue(session, ts) if s.id not in set(done)]
     if hold is not None:

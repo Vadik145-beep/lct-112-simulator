@@ -21,8 +21,8 @@ from app.models import (
     User,
 )
 from app.training import ai_cards
-from app.training.service import utcnow
-from app.training.stream import issue_stream_cards
+from app.training.service import STREAM_CARDS, utcnow
+from app.training.stream import issue_stream_cards, trainee_schedule
 from tests.api.conftest import DATA_DIR
 from tests.api.test_sessions import create_session, journal, set_status, start
 from tests.conftest import bearer, login
@@ -173,26 +173,61 @@ async def test_next_card_is_written_after_the_scored_one_by_its_mistakes(
     assert mine["advice"] == row["advice"]
 
 
-async def test_difficulty_3_is_an_emergency_with_two_mistakes_one_card_at_a_time(
+async def test_difficulty_3_is_a_stream_of_written_cards_with_two_mistakes(
     client: AsyncClient,
 ) -> None:
+    """At difficulty 3 the written cards come as the stream of an ordinary lesson: the first
+    at once, then one every 20–25 s, five in all. They are written two ahead, so a card is
+    there when its time comes; each is an emergency with two of the operator's mistakes."""
     teacher = await login(client, "teacher1")
     lesson = await ai_lesson(client, teacher, difficulty=3)
+    async with SessionLocal() as session:
+        ts = await session.get(TrainingSession, uuid.UUID(lesson))
+        me = await session.scalar(select(User).where(User.login == "student4"))
+        assert ts is not None and me is not None and ts.started_at is not None
+        times = trainee_schedule(ts, me.id)
+        begin = ts.started_at
+
+    async def written() -> list[int]:
+        async with SessionLocal() as session:
+            rows = await session.scalars(
+                select(AiCard.seq).where(
+                    AiCard.session_id == uuid.UUID(lesson),
+                    AiCard.student_id == me.id,
+                    AiCard.status == AI_CARD_READY,
+                )
+            )
+            return sorted(rows)
+
+    async def sweep(seconds: float) -> None:
+        # A hundredth over: a timedelta drops what is below a microsecond.
+        async with SessionLocal() as session:
+            await issue_stream_cards(session, begin + timedelta(seconds=seconds + 0.01))
+            await session.commit()
+        await ai_cards.wait_all()
+
     student = await login(client, "student4")
+    # The journal adds nothing in a stream; two cards are written as the lesson starts.
+    assert (await journal(client, student, lesson))["items"] == []
+    assert await written() == [1, 2]
+    await sweep(0)
+    assert len((await journal(client, student, lesson))["items"]) == 1
+    assert await written() == [1, 2, 3]  # card 3 started as card 1 came
+    await sweep(times[1])
+    assert len((await journal(client, student, lesson))["items"]) == 2
+    assert await written() == [1, 2, 3, 4]
+    await sweep(3600)
+    await sweep(3600)
     items = (await journal(client, student, lesson))["items"]
-    assert len(items) == 1
+    assert len(items) == STREAM_CARDS == 5
+    assert await written() == [1, 2, 3, 4, 5]  # no sixth card is written either
+
     body = await body_of(await scenario_of(items[0]["attempt_id"]))
     assert len(body["injected_errors"]) == 2
     assert body["service"] == await service_of("student4")
     assert body["card"]["flags"]["emergency"] is True
     card = await client.get(f"/api/attempts/{items[0]['attempt_id']}", headers=bearer(student))
     assert card.json()["card"]["emergency"] is True  # «ЧС» in the card header
-    # No stream of cards on a timer for such a lesson.
-    async with SessionLocal() as session:
-        issued = await issue_stream_cards(session, utcnow() + timedelta(minutes=3))
-        await session.commit()
-    assert all(str(e.session_id) != lesson for e in issued)
-    assert len((await journal(client, student, lesson))["items"]) == 1
 
 
 async def test_a_card_lost_in_writing_is_written_by_the_template(client: AsyncClient) -> None:

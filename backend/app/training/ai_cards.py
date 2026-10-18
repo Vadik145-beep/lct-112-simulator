@@ -61,6 +61,9 @@ EVENT_READY = "ai_card.ready"
 MODEL_SECONDS = 30.0
 # A card «being written» for longer was lost (the server restarted): the template rewrites it.
 STALE_SECONDS = 90.0
+# In a stream (difficulty 3) the cards come on a timer, so they are written this many ahead of
+# the trainee: the first two as the lesson starts, card k+2 as card k reaches him.
+STREAM_AHEAD = 2
 # Difficulty 3 cards are emergencies: the card carries the ЧС mark of the АРМ-112 header.
 EMERGENCY_DIFFICULTY = 3
 FLAG_EMERGENCY = "emergency"
@@ -106,58 +109,70 @@ async def _issued(
     )
 
 
-def _next_seq(rows: list[AiCard], ts: TrainingSession, done: set[uuid.UUID]) -> int | None:
-    """Number of the card to write now; ``None`` while one waits to be issued or is being
-    written, or when the trainee has all his cards."""
-    if any(r.status == AI_CARD_READY and r.scenario_id not in done for r in rows):
-        return None
-    if any(r.status == AI_CARD_GENERATING for r in rows):
-        return None
-    if len([r for r in rows if r.status != AI_CARD_FAILED]) >= cards_for(ts):
-        return None
-    return max((r.seq for r in rows), default=0) + 1
+def _ahead(ts: TrainingSession) -> int:
+    from app.training.service import is_stream
+
+    return STREAM_AHEAD if is_stream(ts) else 1
+
+
+def _to_write(rows: list[AiCard], ts: TrainingSession, done: set[uuid.UUID]) -> list[int]:
+    """Numbers of the cards to start writing now: as many as keep ``_ahead`` cards written or
+    being written beyond those issued, up to the trainee's cards of the lesson. One ahead (a
+    card at a time): nothing while one waits to be issued or is being written."""
+    issued = sum(1 for r in rows if r.scenario_id in done)
+    live = sum(1 for r in rows if r.status != AI_CARD_FAILED)
+    target = min(cards_for(ts), issued + _ahead(ts))
+    start = max((r.seq for r in rows), default=0) + 1
+    return list(range(start, start + max(target - live, 0)))
 
 
 async def prepare_next(session: AsyncSession, ts: TrainingSession, student_id: uuid.UUID) -> None:
     """Starts writing the trainee's next card right after a card is scored."""
     if not is_ai(ts):
         return
-    seq = _next_seq(
-        await _cards(session, ts, student_id), ts, await _issued(session, ts, student_id)
-    )
-    if seq is not None:
+    rows = await _cards(session, ts, student_id)
+    for seq in _to_write(rows, ts, await _issued(session, ts, student_id)):
         spawn(ts.id, student_id, seq)
 
 
 async def ready_for(
-    session: AsyncSession, ts: TrainingSession, student: User, done: list[uuid.UUID]
+    session: AsyncSession,
+    ts: TrainingSession,
+    student: User,
+    done: list[uuid.UUID],
+    want: int = 1,
 ) -> list[Scenario]:
-    """The trainee's next written card, if there is one. Otherwise starts writing it (in the
-    background) and returns nothing; a card lost in writing is rewritten by the template at
-    once. ``done`` are the scenarios the trainee already had in this lesson."""
+    """Up to ``want`` of the trainee's written cards, in order; the next ones start being
+    written (in the background). A card lost in writing is rewritten by the template at once.
+    ``done`` are the scenarios the trainee already had in this lesson."""
     rows = await _cards(session, ts, student.id)
     ready = [r for r in rows if r.status == AI_CARD_READY and r.scenario_id not in set(done)]
-    if ready:
-        scenario = await session.get(Scenario, ready[0].scenario_id)
-        return [scenario] if scenario is not None else []
-    writing = [r for r in rows if r.status == AI_CARD_GENERATING]
-    if writing:
-        row = writing[0]
-        if _age_seconds(row.created_at) < STALE_SECONDS:
-            return []
-        try:
-            async with session.begin_nested():
-                await _write_into(session, row, template_only=True)
-        except Exception:  # the journal must open whatever happened to the card
-            log.exception("ai card rewrite failed", session_id=str(ts.id), seq=row.seq)
-            row.status = AI_CARD_FAILED
-            return []
-        scenario = await session.get(Scenario, row.scenario_id) if row.scenario_id else None
-        return [scenario] if scenario is not None else []
-    seq = _next_seq(rows, ts, set(done))
-    if seq is not None:
+    if not ready:
+        stale = [
+            r
+            for r in rows
+            if r.status == AI_CARD_GENERATING and _age_seconds(r.created_at) >= STALE_SECONDS
+        ]
+        if stale:
+            row = stale[0]
+            try:
+                async with session.begin_nested():
+                    await _write_into(session, row, template_only=True)
+            except Exception:  # the journal must open whatever happened to the card
+                log.exception("ai card rewrite failed", session_id=str(ts.id), seq=row.seq)
+                row.status = AI_CARD_FAILED
+            else:
+                ready = [row]
+    picked = ready[:want]
+    # In a stream the cards being issued now already count, so the ones after them get written
+    # ahead; one at a time, the next is written only once this one is scored (by its errors).
+    issued = set(done)
+    if _ahead(ts) > 1:
+        issued |= {r.scenario_id for r in picked if r.scenario_id}
+    for seq in _to_write(rows, ts, issued):
         spawn(ts.id, student.id, seq)
-    return []
+    scenarios = [await session.get(Scenario, r.scenario_id) for r in picked if r.scenario_id]
+    return [s for s in scenarios if s is not None]
 
 
 def _age_seconds(created_at: datetime) -> float:
@@ -176,10 +191,11 @@ def spawn(session_id: uuid.UUID, student_id: uuid.UUID, seq: int) -> None:
     task.add_done_callback(_tasks.discard)
 
 
-def spawn_first(session_id: uuid.UUID, student_ids: list[uuid.UUID]) -> None:
-    """The first card of every trainee, written as the lesson starts."""
+def spawn_first(ts: TrainingSession, student_ids: list[uuid.UUID]) -> None:
+    """The first card of every trainee (two in a stream), written as the lesson starts."""
     for student_id in student_ids:
-        spawn(session_id, student_id, 1)
+        for seq in range(1, min(_ahead(ts), cards_for(ts)) + 1):
+            spawn(ts.id, student_id, seq)
 
 
 async def wait_all(max_seconds: float = 60.0) -> None:
@@ -198,13 +214,14 @@ async def write_card(session_id: uuid.UUID, student_id: uuid.UUID, seq: int) -> 
             await session.commit()
         except IntegrityError:
             return
+        row_id = row.id  # the rollback below expires the row
         try:
             events = await _write_into(session, row, template_only=False)
             await session.commit()
         except Exception:  # the trainee must not be left waiting whatever happened
             log.exception("ai card failed", session_id=str(session_id), seq=seq)
             await session.rollback()
-            failed = await session.get(AiCard, row.id)
+            failed = await session.get(AiCard, row_id)
             if failed is not None:
                 failed.status = AI_CARD_FAILED
                 await session.commit()

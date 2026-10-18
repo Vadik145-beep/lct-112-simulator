@@ -124,14 +124,14 @@ describe("Card stream at difficulty 3", () => {
     existing.current = null;
     renderForm("/teacher/sessions/new", false);
     fireEvent.change(screen.getByLabelText("Сложность"), { target: { value: "3" } });
-    expect(screen.getByText(/Вал: карточки приходят сами, около 4 в минуту в течение 5 минут, каждому до 20/)).toBeInTheDocument();
+    expect(screen.getByText("Вал: 5 карточек: первая сразу, дальше по одной каждые 20–25 с.")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Сложность"), { target: { value: "1" } });
     expect(screen.getByText("Каждый обучающийся получит одну карточку.")).toBeInTheDocument();
   });
 });
 
 describe("«Задания формирует ИИ»", () => {
-  it("sends the lesson as written for each trainee, five cards, one at a time, no stream", () => {
+  it("sends the lesson as written for each trainee, five cards; at difficulty 3 as the same stream", () => {
     existing.current = null;
     mutation.mutate.mockClear();
     renderForm("/teacher/sessions/new", false);
@@ -139,9 +139,13 @@ describe("«Задания формирует ИИ»", () => {
     fireEvent.click(screen.getByLabelText("Задания формирует ИИ"));
     fireEvent.change(screen.getByLabelText("Сложность"), { target: { value: "3" } });
     expect(
-      screen.getByText("Каждый обучающийся получит 5 своих карточек по одной: ЧС, по две ошибки оператора 112 в карточке."),
+      screen.getByText(
+        "Вал своих карточек каждому — 5 карточек: первая сразу, дальше по одной каждые 20–25 с; ЧС, по две ошибки оператора 112 в карточке.",
+      ),
     ).toBeInTheDocument();
-    expect(screen.queryByText(/Вал: карточки приходят сами/)).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Сложность"), { target: { value: "2" } });
+    expect(screen.getByText("Каждый обучающийся получит 5 своих карточек по одной.")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Сложность"), { target: { value: "3" } });
     expect(screen.getByText(/готовые сценарии не нужны/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Создать занятие" }));
     expect(mutation.mutate).toHaveBeenCalledWith(

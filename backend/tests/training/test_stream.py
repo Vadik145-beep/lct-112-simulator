@@ -1,39 +1,40 @@
-"""«Вал карточек» (issue #264): the schedule (an opening burst, then the rate with spread) and
-the summary of how the trainee held the stream."""
+"""«Вал карточек» (issue #264): the schedule (the first card at once, then one every 20–25
+seconds, five in all) and the summary of how the trainee held the stream."""
 
 import uuid
 from datetime import UTC, datetime, timedelta
+from itertools import pairwise
 
 from app.models import ATTEMPT_FINISHED, ATTEMPT_RECEIVED, MODE_CARD_RESPONSE, Attempt
-from app.training.stream import JITTER, OPENING_BURST, due_count, schedule, stream_summary
+from app.training.service import STREAM_CARDS, STREAM_GAP_SECONDS
+from app.training.stream import due_count, schedule, stream_summary
 
 T0 = datetime(2026, 10, 17, 10, 0, tzinfo=UTC)
 NORM = 30
 
 
-def test_rate_and_length_hold_with_spread() -> None:
+def test_first_card_at_once_then_one_every_20_to_25_seconds_five_in_all() -> None:
+    lo, hi = STREAM_GAP_SECONDS
+    assert (STREAM_CARDS, lo, hi) == (5, 20.0, 25.0)
     for seed in ("a", "b", "c", "d"):
-        times = schedule(seed, 4, 5)
-        assert 0.8 * 20 <= len(times) <= 20
-        assert times == sorted(times)
-        assert times[-1] <= 5 * 60
-        # The shift does not start empty: two or three cards in the first seconds.
-        assert due_count(times, 5.0) in range(OPENING_BURST[0], OPENING_BURST[1] + 1)
-        gaps = [
-            b - a
-            for a, b in zip(times[OPENING_BURST[1] :], times[OPENING_BURST[1] + 1 :], strict=False)
-        ]
-        assert all(15 * (1 - JITTER) - 1e-9 <= g <= 15 * (1 + JITTER) + 1e-9 for g in gaps)
+        times = schedule(seed)
+        assert len(times) == 5
+        assert times[0] == 0.0
+        gaps = [b - a for a, b in pairwise(times)]
+        assert all(lo <= g <= hi for g in gaps)
+        assert due_count(times, 0.0) == 1
+        assert due_count(times, lo - 0.1) == 1
+        # Nothing comes after the fifth card, however long the lesson runs.
+        assert due_count(times, 3600.0) == 5
 
 
 def test_schedule_is_stable_per_seed_and_differs_between_trainees() -> None:
-    assert schedule("lesson:student1", 6, 3) == schedule("lesson:student1", 6, 3)
-    assert schedule("lesson:student1", 6, 3) != schedule("lesson:student2", 6, 3)
+    assert schedule("lesson:student1") == schedule("lesson:student1")
+    assert schedule("lesson:student1") != schedule("lesson:student2")
 
 
-def test_nothing_when_the_stream_is_off() -> None:
-    assert schedule("x", 0, 5) == []
-    assert schedule("x", 4, 0) == []
+def test_nothing_when_no_cards() -> None:
+    assert schedule("x", cards=0) == []
     assert due_count([], 100.0) == 0
 
 
