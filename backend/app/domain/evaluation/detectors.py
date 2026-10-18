@@ -555,15 +555,23 @@ def _report_title(status: str) -> str:
 
 def complication_not_passed(ctx: CardContext) -> ErrorItem | None:
     """The squad's specialist asked for another service and the dispatcher did not call it
-    afterwards (issue #263). An unanswered call is ``report_not_taken``, not this."""
+    afterwards (issue #263). Asked: the dispatcher answered the specialist, or — when he did
+    not get through — a later call of the own organization told it (18.10.2026). An
+    unanswered call is ``report_not_taken``, not this."""
     needed = complication.service_needed(ctx.scenario)
     calls = ctx.attempt.service_calls
-    asked = [
+    about = [c for c in calls if c.kind == "report" and c.report_status == complication.STATUS]
+    if not about or needed is None:
+        return None
+    asked = [c for c in about if c.answered] or [
         c
         for c in calls
-        if c.kind == "report" and c.report_status == complication.STATUS and c.answered
+        if c.answered
+        and c.service == ctx.scenario.service
+        and c.report_status != complication.STATUS
+        and c.started_at >= about[0].started_at
     ]
-    if not asked or needed is None:
+    if not asked:
         return None
     told = any(
         c.kind == "outgoing"

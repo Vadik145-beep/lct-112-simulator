@@ -145,6 +145,8 @@ def next_report(
     if not reports or attempt.response_status not in RESPONDING_STATUSES:
         return None
     delivered = officer.delivered_reports(attempt)
+    if not complication.settled(calls):  # the specialist did not get through: he rings again
+        delivered = [s for s in delivered if s != complication.STATUS]
     pending = [r for r in reports if r.status not in delivered]
     if not pending or officer.open_call(attempt) is not None:
         return None

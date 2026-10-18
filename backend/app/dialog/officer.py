@@ -241,6 +241,7 @@ def officer_scenario(
     attempt: Attempt,
     *,
     repeat: bool = False,
+    call_id: str | None = None,
 ) -> CallIntakeScenario:
     """The officer of ``service`` as he is now: the progress answer follows the squad, the
     built-in replies carry their studio recordings when the installation has them. On a
@@ -258,24 +259,8 @@ def officer_scenario(
         hurried = built.caller.model_copy(update={"opening": rush.opening(built.caller.opening)})
         built = built.model_copy(update={"caller": hurried})
     calls = calls_of(attempt)
-    asked = next(
-        (c for c in calls if is_report(c) and c.get("report_status") == complication.STATUS),
-        None,
-    )
-    if service == scenario.service and asked is not None:
-        # His specialist asked the dispatcher for another service (stand 18.10.2026: told «мы
-        # запросили подкрепление», the chief took it for a request of his own).
-        needed = complication.service_needed(scenario) or ""
-        name = SAID_SERVICE_NAMES.get(needed, needed)
-        facts = {
-            **built.caller.facts,
-            "осложнение": f"твой специалист с места попросил диспетчера вызвать службу «{name}»; "
-            "если диспетчер говорит, что вызвал или запросил её, — «Понял, ждём, работаем "
-            "дальше», сам ничего не запрашиваешь",
-        }
-        built = built.model_copy(
-            update={"caller": built.caller.model_copy(update={"facts": facts})}
-        )
+    if service == scenario.service:
+        built = _knows_complication(built, scenario, calls, besides=call_id, opening=repeat)
     if (
         service == scenario.service
         and no_vehicles.plan_of(calls) == no_vehicles.PLAN_NO_VEHICLES
@@ -289,6 +274,27 @@ def officer_scenario(
             update={"caller": built.caller.model_copy(update={"facts": facts})}
         )
     return with_studio_audio(built, service)
+
+
+def _knows_complication(
+    built: CallIntakeScenario,
+    scenario: CardResponseScenario,
+    calls: list[dict],
+    *,
+    besides: str | None,
+    opening: bool,
+) -> CallIntakeScenario:
+    """Anyone of the own organization knows of the complication on site, answered or not
+    (stand 18.10.2026: the specialist's call dropped and the chief said «осматриваемся»).
+    While the dispatcher has not been told, the call opens with it (``opening``)."""
+    if not complication.happened(calls):
+        return built
+    caller = built.caller
+    facts = {**caller.facts, "осложнение": complication.fact(scenario, calls)}
+    update: dict = {"facts": facts}
+    if opening and not complication.told(calls, scenario.service, besides=besides):
+        update["opening"] = f"{caller.opening.rstrip()} {complication.unheard_line(scenario)}"
+    return built.model_copy(update={"caller": caller.model_copy(update=update)})
 
 
 def call_scenario(
@@ -313,7 +319,16 @@ def call_scenario(
             if role == staff.ROLE_SQUAD_SPECIALIST
             else staff.OFFICE_PROGRESS.get(state, officers.PROGRESS_REPLIES[state])
         )
+        if (
+            role == staff.ROLE_SQUAD_SPECIALIST
+            and complication.happened(calls_of(attempt))
+            and not complication.told(calls_of(attempt), scenario.service, besides=call.get("id"))
+        ):
+            progress = complication.specialist_line(scenario)
         person = staff.person_scenario(role, scenario, org, progress)
+        person = _knows_complication(
+            person, scenario, calls_of(attempt), besides=call.get("id"), opening=False
+        )
         if role == staff.ROLE_SQUAD_SPECIALIST and squad_out(attempt, scenario):
             # He rides with the squad: he knows its number (stand 18.10.2026: asked for it, he
             # sent the dispatcher to the head of the organization).
@@ -330,8 +345,13 @@ def call_scenario(
         leader = officers.report_scenario(scenario, report, title)
         if report.status == complication.STATUS:
             return with_studio_audio(complication.specialist(leader), complication.STUDIO_KEY)
+        leader = _knows_complication(
+            leader, scenario, calls_of(attempt), besides=call.get("id"), opening=True
+        )
         return with_studio_audio(leader, STUDIO_SQUAD_KEY)
-    return officer_scenario(scenario, call["service"], title, attempt, repeat=is_repeat(call))
+    return officer_scenario(
+        scenario, call["service"], title, attempt, repeat=is_repeat(call), call_id=call.get("id")
+    )
 
 
 def _report_of(scenario: CardResponseScenario, call: dict) -> BrigadeReport:
@@ -1252,10 +1272,12 @@ async def _report_audio(
 ) -> str | None:
     """The squad leader's report: the recording of the scenario when it has one, else a
     synthesis cached per scenario version and text (issue #67)."""
-    reply = CallerReply(
-        text=leader.caller.opening, topics=["report"], operator_topics=[], audio=report.audio
-    )
-    stem = f"report-{report.status}-{_text_key(report.text)}"
+    opening = leader.caller.opening
+    # The opening may say more than the report (the complication the squad tells): then the
+    # recording of the report alone does not fit.
+    audio = report.audio if opening == report.text else None
+    reply = CallerReply(text=opening, topics=["report"], operator_topics=[], audio=audio)
+    stem = f"report-{report.status}-{_text_key(opening)}"
     return await dialog.reply_audio(None, version, leader, reply, stem=stem)
 
 
