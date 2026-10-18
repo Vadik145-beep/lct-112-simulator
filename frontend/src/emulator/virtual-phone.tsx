@@ -149,7 +149,9 @@ export function VirtualPhone({
                       attempt.reports_expected &&
                       REPORTING_STATUSES.has(attempt.response_status) &&
                       shownCall.kind === "outgoing" &&
-                      shownCall.service === ownService
+                      shownCall.service === ownService &&
+                      // Nothing passed, nothing sent: no report to wait for (18.10.2026).
+                      attempt.squad_state !== "waiting"
                     }
                     noVehicles={attempt.squad_state === "no_vehicles"}
                     headNumber={book.data?.entries.find((e) => e.role === "head")?.number ?? null}
