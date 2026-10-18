@@ -21,7 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { acceptanceTimer, formatDateTime, formatSeconds, useNow } from "@/emulator/time";
 import { useSessionEvents, type SessionEvent } from "@/emulator/ws";
 import { cn } from "@/lib/utils";
-import { CARDS_AT_ONCE, DIFFICULTY_TITLES, MODE_TITLES, RESPONSE_STATUS_TITLES, SESSION_STATUS_TITLES, formatScore, plural } from "@/teacher/labels";
+import { CARDS_AT_ONCE, MODE_TITLES, difficultyTitle, RESPONSE_STATUS_TITLES, SESSION_STATUS_TITLES, formatScore, plural } from "@/teacher/labels";
 import { STAGE_TITLES, applyEvent, summarize, withSnapshot, type MonitorState } from "@/teacher/monitor";
 
 const STATUS_TONES: Record<string, BadgeTone> = { draft: "neutral", running: "success", finished: "primary" };
@@ -134,7 +134,7 @@ function SettingsSummary({ session }: { session: SessionOut }) {
   return (
     <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 text-sm">
       <dt className="text-muted-foreground">Сложность</dt>
-      <dd>{DIFFICULTY_TITLES[session.difficulty] ?? session.difficulty}</dd>
+      <dd>{difficultyTitle(session.difficulty, session.card_source === "ai")}</dd>
       <dt className="text-muted-foreground">Норматив</dt>
       <dd>{session.mode === "call_intake" ? `${session.norm_seconds} с на вызов` : `${session.norm_seconds} с до первичного статуса`}</dd>
       <dt className="text-muted-foreground">Порог зачёта</dt>
@@ -168,6 +168,20 @@ function DraftOverview({ session }: { session: SessionOut }) {
           <SettingsSummary session={session} />
         </CardContent>
       </Card>
+      {session.card_source === "ai" ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Карточки пишет ИИ</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            {/* Stand 18.10.2026: the library's scenarios shown here looked like the cards to come. */}
+            <p>
+              Во время занятия каждому обучающемуся — {session.cards_per_student} своих карточек по одной: следующая
+              пишется под ошибки предыдущей. Готовые сценарии не используются.
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
       <Card>
         <CardHeader>
           <CardTitle>Подходящие сценарии · {session.queue.length}</CardTitle>
@@ -193,6 +207,7 @@ function DraftOverview({ session }: { session: SessionOut }) {
           )}
         </CardContent>
       </Card>
+      )}
       <Card>
         <CardHeader>
           <CardTitle>

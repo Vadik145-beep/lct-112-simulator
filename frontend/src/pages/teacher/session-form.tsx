@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CARDS_AT_ONCE, DIFFICULTY_TITLES, STREAM } from "@/teacher/labels";
+import { CARDS_AT_ONCE, STREAM, difficultyTitle } from "@/teacher/labels";
 import { cn } from "@/lib/utils";
 
 const HOUR = 3600;
@@ -499,7 +499,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
             <select id="difficulty" className={selectClass} value={form.difficulty} onChange={(e) => patch({ difficulty: Number(e.target.value) })}>
               {[1, 2, 3].map((d) => (
                 <option key={d} value={d}>
-                  {DIFFICULTY_TITLES[d]}
+                  {difficultyTitle(d, aiCards)}
                 </option>
               ))}
             </select>
