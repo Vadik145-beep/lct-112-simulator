@@ -1,6 +1,6 @@
 import { ChevronDown, ChevronRight, Download } from "lucide-react";
-import { Fragment, useState } from "react";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Fragment, useEffect, useState } from "react";
+import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 
 import { downloadReport, type ExportFormat } from "@/api/review";
 import { useReport, type ReportAttempt, type ReportStudent } from "@/api/teacher";
@@ -25,7 +25,14 @@ export function SessionReportPage() {
 /** «Отчёт о занятии»: a row per trainee, expandable to attempts with a link to the review. */
 function Report({ sessionId }: { sessionId: string }) {
   const query = useReport(sessionId);
-  const [open, setOpen] = useState<Set<string>>(() => new Set());
+  // «?student=…» from the trainee's tile: his row comes open and in view.
+  const [params] = useSearchParams();
+  const focus = params.get("student");
+  const [open, setOpen] = useState<Set<string>>(() => new Set(focus ? [focus] : []));
+  const loaded = query.isSuccess;
+  useEffect(() => {
+    if (loaded && focus) document.querySelector(`[data-student-id="${focus}"]`)?.scrollIntoView({ block: "center" });
+  }, [loaded, focus]);
 
   if (query.isPending) return <LoadingState text="Считаем отчёт…" />;
   if (query.isError) return <ErrorState message={query.error.message} onRetry={() => void query.refetch()} />;
@@ -177,7 +184,7 @@ function StudentRow({ student, open, onToggle, threshold }: { student: ReportStu
   const s = student;
   const low = s.average !== null && s.average < threshold;
   return (
-    <tr className="border-b last:border-0" data-student={s.login}>
+    <tr className="border-b last:border-0" data-student={s.login} data-student-id={s.student_id}>
       <td className="py-2 pl-2">
         {s.attempts_total > 0 && (
           <button type="button" onClick={onToggle} className="rounded p-1 hover:bg-accent" aria-expanded={open} aria-label={`Попытки: ${s.full_name}`}>

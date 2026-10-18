@@ -148,7 +148,7 @@ test.describe("Волна 4: занятие целиком", () => {
     await setStatus(student, "Проведение работ", { comment: "Мусоропровод вскрыт, тлеющий мусор удалён" });
     await setStatus(student, "Работы завершены", { comment: "Задымление устранено, ствол промыт, пострадавших нет" });
     await expect(student.getByTestId("card-score")).toHaveText(/^\d+$/, { timeout: 15_000 });
-    await expect(tile.locator("[data-role=last-score]")).toHaveText(/^\d+(\.\d)?$/, { timeout: LIVE_MS + 1000 });
+    await expect(tile.locator("[data-role=last-score]")).toHaveText(/^последняя: \d+(\.\d)?$/, { timeout: LIVE_MS + 1000 });
     await expect(tile).toContainText("закрыто 1");
 
     // Second card: accepted only, left open; the third one is never touched.
