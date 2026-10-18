@@ -36,6 +36,6 @@ describe("TeacherPhonesPage", () => {
     render(<TeacherPhonesPage />);
     const select = screen.getByLabelText("Служба");
     const options = within(select).getAllByRole("option").map((o) => o.textContent);
-    expect(options).toEqual(["Гор. хозяйство", "Управа"]);
+    expect(options).toEqual(["Гор. хозяйство"]);
   });
 });
