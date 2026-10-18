@@ -1,8 +1,10 @@
 import { Delete, Phone, PhoneIncoming, X } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { usePhoneBook } from "@/api/phones";
-import type { AttemptOut } from "@/api/training";
+import { useRinging, type AttemptOut } from "@/api/training";
+import { OtherCardCalls } from "@/emulator/ring-elsewhere";
 import { ServiceCallPanel } from "@/emulator/service-call";
 import { callTitle, describeCall } from "@/emulator/service-call-model";
 import type { CardCalls } from "@/emulator/use-card-calls";
@@ -48,6 +50,11 @@ export function VirtualPhone({
     openCall && openCall.kind === "report" && !openCall.answered,
   );
   const ownService = attempt.card.services.find((s) => s.is_own)?.code;
+  // A squad calling about another card rings here too, in orange (#263).
+  const navigate = useNavigate();
+  const ringingNow = useRinging(attempt.session.id);
+  const elsewhere = (ringingNow.data ?? []).filter((r) => r.attempt_id !== attempt.id);
+  const other = !ringing && elsewhere.length > 0;
 
   const entries = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -75,17 +82,24 @@ export function VirtualPhone({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        aria-label={ringing ? "Телефон: входящий вызов" : "Телефон"}
+        aria-label={
+          ringing
+            ? "Телефон: входящий вызов"
+            : other
+              ? "Телефон: звонок по другой карточке"
+              : "Телефон"
+        }
         aria-expanded={open}
-        title={ringing ? "Входящий вызов" : "Телефон"}
+        title={ringing ? "Входящий вызов" : other ? "Звонок по другой карточке" : "Телефон"}
         data-testid="virtual-phone-button"
         className={cn(
           "fixed bottom-[72px] right-[calc(var(--trainer-panel-width,36px)_+_12px)] z-40 flex size-14 items-center justify-center rounded-full text-white shadow-lg hover:brightness-110",
           "bg-[var(--arm-green)]",
           ringing && "ring-4 ring-[var(--arm-red)]",
+          other && "ring-4 ring-[var(--arm-orange)]",
         )}
       >
-        {ringing ? (
+        {ringing || other ? (
           <PhoneIncoming className="size-6" aria-hidden />
         ) : (
           <Phone className="size-6" aria-hidden />
@@ -110,6 +124,10 @@ export function VirtualPhone({
           </header>
 
           <div className="flex flex-col gap-3 overflow-y-auto p-3">
+            <OtherCardCalls
+              calls={elsewhere}
+              onGo={(id) => navigate(`/student/attempts/${id}`)}
+            />
             {shownCall ? (
               <>
                 {/* The transcript grows into the room it is given: here a fixed height. */}

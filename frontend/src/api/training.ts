@@ -8,6 +8,7 @@ import type { components } from "@/api/schema";
 export type AssignmentOut = components["schemas"]["AssignmentOut"];
 export type JournalOut = components["schemas"]["JournalOut"];
 export type JournalItem = components["schemas"]["JournalItem"];
+export type RingingOut = components["schemas"]["RingingOut"];
 export type AttemptOut = components["schemas"]["AttemptOut"];
 export type StatusRequest = components["schemas"]["StatusRequest"];
 export type StatusResponse = components["schemas"]["StatusResponse"];
@@ -66,6 +67,27 @@ export const journalKey = (sessionId: string) =>
   ["journal", sessionId] as const;
 export const attemptKey = (attemptId: string) =>
   ["attempt", attemptId] as const;
+export const ringingKey = (sessionId: string) =>
+  ["ringing", sessionId] as const;
+
+// The events refresh it; the poll only covers a dropped WebSocket.
+const RINGING_POLL_MS = 10000;
+
+/** Squads ringing now on the trainee's cards of the lesson: the phone rings on the whole
+ * workstation, not only inside the card it is about (#263). */
+export function useRinging(sessionId: string | undefined) {
+  return useQuery({
+    queryKey: ringingKey(sessionId ?? ""),
+    queryFn: () =>
+      unwrap(
+        api.GET("/api/sessions/{session_id}/ringing", {
+          params: { path: { session_id: sessionId ?? "" } },
+        }),
+      ),
+    enabled: Boolean(sessionId),
+    refetchInterval: RINGING_POLL_MS,
+  });
+}
 
 // «Мои задания» has no WebSocket of its own: a lesson the teacher starts shows up on
 // the next poll.

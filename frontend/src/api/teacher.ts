@@ -129,6 +129,17 @@ export function useQueuePreview(body: QueuePreviewIn) {
   });
 }
 
+/** Service → incident group → number of types: what cards written by AI can give a service's
+ * ДДС (the lesson form offers only these groups in the mode «Задания формирует ИИ»). */
+export function useAiCardGroups(enabled: boolean) {
+  return useQuery({
+    queryKey: ["teacher", "ai-card-groups"],
+    queryFn: () => unwrap(api.GET("/api/ai-card-groups")),
+    enabled,
+    staleTime: Infinity,
+  });
+}
+
 export type SessionGenerateIn = components["schemas"]["SessionGenerateIn"];
 export type SessionGenerateOut = components["schemas"]["SessionGenerateOut"];
 

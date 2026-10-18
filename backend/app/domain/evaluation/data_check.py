@@ -13,6 +13,7 @@ without «д.» and spaces, everything else lower-cased without punctuation).
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 from rapidfuzz import fuzz
@@ -25,7 +26,12 @@ from app.domain.evaluation.schemas import (
     FlaggedField,
     InjectedError,
 )
-from app.domain.evaluation.text import normalize_house, normalize_text, streets_match
+from app.domain.evaluation.text import (
+    normalize_house,
+    normalize_text,
+    streets_match,
+    words_to_numbers,
+)
 from app.domain.reference_data import REJECT_REASONS
 
 KEY = "data_check"
@@ -126,8 +132,56 @@ class DataCheckOutcome:
     false_alarms: list[FlaggedField]
 
 
+# The part of the address a correction names by its own word: «дом 20», «корпус 2».
+_ADDRESS_WORDS = {
+    "address.house": r"(?:дом|д)",
+    "address.building": r"(?:корпус|корп|к)",
+    "address.structure": r"(?:строение|стр)",
+    "address.entrance": r"(?:подъезд|под)",
+    "address.floor": r"этаж",
+    "address.apartment": r"(?:квартира|кв)",
+}
+
+
+def _named_part(error: InjectedError, text: str) -> str | None:
+    """The right value of the planted part when a correction of the address names it."""
+    if error.field == "address.street":
+        if streets_match(error.correct_value, text) or normalize_text(
+            error.correct_value
+        ) in normalize_text(text):
+            return error.correct_value
+        return None
+    word = _ADDRESS_WORDS.get(error.field)
+    if word is None:
+        return None
+    spoken = words_to_numbers(normalize_text(text))
+    named = re.findall(rf"(?<![а-я]){word}\.?\s*(\d+\s*[а-я]?)(?![а-я0-9])", spoken)
+    right = normalize_house(error.correct_value)
+    return next((value for value in named if normalize_house(value) == right), None)
+
+
+def _by_meaning(scenario: CardResponseScenario, flags: list[FlaggedField]) -> list[FlaggedField]:
+    """An address flag counts for the part its correction names (stand 18.10.2026: the part
+    list said «Улица» by default, the trainee wrote «улица Доктора Гааза, дом 20» — the house
+    was found, not a false alarm on the street)."""
+    planted = [e for e in scenario.injected_errors if e.field.startswith("address.")]
+    taken = {f.field for f in flags}
+    result: list[FlaggedField] = []
+    for flag in flags:
+        if flag.field.startswith("address.") and flag.field not in {e.field for e in planted}:
+            for error in (e for e in planted if e.field not in taken):
+                value = _named_part(error, flag.corrected_value)
+                if value is not None:
+                    taken.add(error.field)
+                    flag = flag.model_copy(update={"field": error.field, "corrected_value": value})
+                    break
+        result.append(flag)
+    return result
+
+
 def check(scenario: CardResponseScenario, attempt: CardResponseAttempt) -> DataCheckOutcome:
-    flagged = {f.field: f for f in attempt.flagged_fields}
+    flags = _by_meaning(scenario, list(attempt.flagged_fields))
+    flagged = {f.field: f for f in flags}
     found: list[InjectedError] = []
     wrong: list[tuple[InjectedError, FlaggedField]] = []
     missed: list[InjectedError] = []
@@ -148,7 +202,7 @@ def check(scenario: CardResponseScenario, attempt: CardResponseAttempt) -> DataC
             found.append(error)
         else:
             wrong.append((error, flag))
-    false_alarms = [f for f in attempt.flagged_fields if f.field not in planted_fields]
+    false_alarms = [f for f in flags if f.field not in planted_fields]
     return DataCheckOutcome(found, wrong, missed, false_alarms)
 
 

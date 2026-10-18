@@ -45,7 +45,13 @@ def test_service_103_has_no_reject_statuses() -> None:
         ("accepted", "unknown", "unknown_status", "Неизвестный статус"),
         ("received", "rejected", "comment_required", "обязателен комментарий"),
         ("accepted", "works_done", "comment_required", "«Работы завершены» обязателен комментарий"),
-        ("accepted", "response_started", "order_number_required", "обязателен номер наряда"),
+        # Since 18.10.2026 the progress statuses need a comment too (memo p. 31, example 6).
+        (
+            "accepted",
+            "response_started",
+            "comment_required",
+            "«Начало реагирования» обязателен комментарий",
+        ),
     ],
 )
 def test_invalid_transition_gives_a_clear_error(
@@ -62,7 +68,7 @@ def test_valid_transitions_pass() -> None:
     sm.validate_transition("received", "accepted")
     sm.validate_transition("received", "rejected", comment="дубль")
     sm.validate_transition("rejected", "accepted")
-    sm.validate_transition("accepted", "response_started", order_number="14-217")
+    sm.validate_transition("accepted", "response_started", comment="выехали", order_number="14-217")
     sm.validate_transition("response_started", "works_done", comment="сделано")
     sm.validate_transition("accepted", "works_refused", comment="передано в 101")
 
@@ -84,3 +90,11 @@ def test_check_log_keeps_valid_entries_and_reports_invalid_ones() -> None:
         ("arrived", "card_closed"),
     ]
     assert check.last_status == "works_done"
+
+
+def test_the_departure_needs_its_squad_number_besides_the_comment() -> None:
+    with pytest.raises(sm.TransitionError) as exc:
+        sm.validate_transition("accepted", "response_started", comment="выехали")
+    assert exc.value.code == "order_number_required"
+    for status in sm.PROGRESS_STATUSES:
+        assert sm.needs_comment(status)

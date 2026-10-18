@@ -113,3 +113,22 @@ def test_lesson_advice_names_habits_found_mistakes_and_trend() -> None:
     assert "«Дом»" in advice[1]
     assert advice[2] == "Баллы выросли: первая карточка — 40, последняя — 88; зачтено 1 из 3."
     assert session_advice([]) == []
+
+
+def test_progress_advice_names_what_was_wrong() -> None:
+    """Stand 18.10.2026: every status was set, only «Начало реагирования» had no comment."""
+    from app.domain.evaluation.advice import card_advice
+
+    bare = "Ход работ не отражён в карточке: без комментария «Начало реагирования»."
+    points = card_advice({"errors": [{"code": "progress_missing", "explanation": bare}]})
+    assert points[0].startswith("Пишите комментарий к статусу «Начало реагирования»")
+    assert "Ведите карточку до конца" not in points[0]
+    missing = "Ход работ не отражён в карточке: не проставлены «Прибытие»."
+    points = card_advice({"errors": [{"code": "progress_missing", "explanation": missing}]})
+    assert points[0].startswith("Ведите карточку до конца")
+
+
+def test_lesson_advice_counts_cards_in_russian() -> None:
+    assert session_advice([_result(total=50)])[-1] == "Зачтено 0 из 1 карточки."
+    assert session_advice([_result(total=50)] * 5)[-1] == "Зачтено 0 из 5 карточек."
+    assert session_advice([_result(total=50)] * 21)[-1] == "Зачтено 0 из 21 карточки."

@@ -20,7 +20,8 @@ import {
 import { useCallback, useMemo, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 
-import { journalKey, useJournal, type JournalItem } from "@/api/training";
+import { journalKey, ringingKey, useJournal, useRinging, type JournalItem } from "@/api/training";
+import { JournalPhone } from "@/emulator/ring-elsewhere";
 import { ErrorState, LoadingState } from "@/components/states";
 import { clockParts, formatDate, formatLongDate, formatTime, useNow } from "@/emulator/time";
 import { ArmButton, TimerBadge, TrainerPanel } from "@/emulator/widgets";
@@ -50,7 +51,9 @@ function Journal({ sessionId }: { sessionId: string }) {
   // The live workstation refreshes the list by itself; «уведомления» only re-reads it on demand.
   const onEvent = useCallback(() => {
     void client.invalidateQueries({ queryKey: journalKey(sessionId) });
+    void client.invalidateQueries({ queryKey: ringingKey(sessionId) });
   }, [client, sessionId]);
+  const ringing = useRinging(sessionId);
   const connection = useSessionEvents(sessionId, query.data?.last_seq, onEvent);
 
   const items = useMemo(() => {
@@ -93,6 +96,8 @@ function Journal({ sessionId }: { sessionId: string }) {
   const pages = Math.max(1, Math.ceil(total / perPage));
   const clock = clockParts(now);
   const activeCount = data.items.filter((i) => ACTIVE_STATES.has(i.state)).length;
+  // «уведомления» of the original АРМ: how many cards came and are not opened yet (#263).
+  const newCount = data.items.filter((i) => i.state === "issued").length;
 
   return (
     <div className="arm flex min-h-dvh min-w-[1280px]">
@@ -126,7 +131,12 @@ function Journal({ sessionId }: { sessionId: string }) {
             <div>
               <div className="text-sm font-medium">{formatLongDate(now)}</div>
               <div className="mt-1 flex items-center gap-2 text-xs text-[var(--arm-on-dark-muted)]">
-                <span className="max-w-56 truncate">, {data.arm.dispatcher}</span>
+                {/* The organization comes first, as «, УМЦ Оп» on the customer's screenshot: whose ДДС
+                    the trainee is (the lesson's choice in the mode «Задания формирует ИИ»). */}
+                <span className="max-w-44 truncate" title={`${data.session.service?.title ?? ""} ${data.arm.dispatcher}`.trim()}>
+                  , {data.session.service ? `ДДС ${data.session.service.short_title} · ` : ""}
+                  {data.arm.dispatcher}
+                </span>
                 <span className="inline-flex items-center gap-1.5" title={`оп. ${data.arm.operator_no}, АРМ ${data.arm.arm_no}`}>
                   <Monitor className="size-3" aria-hidden />
                   <Settings className="size-3" aria-hidden />
@@ -165,6 +175,15 @@ function Journal({ sessionId }: { sessionId: string }) {
                 title="Обновить список"
               >
                 <Bell className="size-3.5" aria-hidden /> уведомления
+                {newCount > 0 && (
+                  <span
+                    className="ml-1 rounded-full bg-[var(--arm-orange)] px-1.5 text-[10px] font-semibold text-white"
+                    data-testid="new-cards"
+                    title="Новые карточки, ещё не открытые"
+                  >
+                    {newCount}
+                  </span>
+                )}
               </button>
               <span className="rounded-sm bg-[var(--arm-dark-2)] px-2 py-1 text-[var(--arm-on-dark-muted)]">выберите что показать ▾</span>
             </div>
@@ -261,6 +280,7 @@ function Journal({ sessionId }: { sessionId: string }) {
         </section>
       </div>
 
+      <JournalPhone calls={ringing.data ?? []} onGo={(id) => navigate(`/student/attempts/${id}`)} />
       <TrainerPanel connection={connection} collapsedByDefault>
         <div>
           <div className="text-xs text-[var(--arm-text-muted)]">Занятие</div>

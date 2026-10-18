@@ -1,5 +1,5 @@
 import { ArrowRight, ClipboardList } from "lucide-react";
-import { Link, Navigate, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { useAssignments, type AssignmentOut } from "@/api/training";
 import { useAuth } from "@/app/use-auth";
@@ -15,11 +15,6 @@ const MODE_TITLES: Record<string, string> = {
   call_intake: "Приём вызова (оператор 112)",
 };
 
-/** The workstation of a lesson: the journal of the ДДС or the 112 operator's calls. */
-function workplace(a: AssignmentOut): string {
-  return a.mode === "call_intake" ? `/student/sessions/${a.id}/calls` : `/student/sessions/${a.id}/journal`;
-}
-
 const STATUS_TITLES: Record<string, string> = {
   running: "идёт сейчас",
   draft: "ещё не началось",
@@ -30,7 +25,6 @@ const STATUS_TITLES: Record<string, string> = {
 export function StudentAssignmentsPage() {
   const query = useAssignments();
   const callIntake = useAuth().user?.call_intake_access ?? false;
-  const entry = (useLocation().state as { entry?: boolean } | null)?.entry === true;
 
   if (query.isPending) return <LoadingState text="Загружаем задания…" />;
   if (query.isError) return <ErrorState message={query.error.message} onRetry={() => void query.refetch()} />;
@@ -40,14 +34,6 @@ export function StudentAssignmentsPage() {
   const visible = callIntake ? query.data : query.data.filter((a) => a.mode !== "call_intake");
   const running = visible.filter((a) => a.status === "running");
   const rest = visible.filter((a) => a.status !== "running");
-
-  // Right after the login a trainee with one running lesson lands on its workstation, as the live
-  // АРМ-112 opens on the journal (customer's recommendations 4 and 6). None or several running,
-  // or the lesson still needs the trainee's phone number: this page.
-  const only = running.length === 1 ? running[0] : null;
-  if (entry && only && !(only.phone_calls && !only.lesson_phone)) {
-    return <Navigate to={workplace(only)} replace />;
-  }
 
   return (
     <div className="space-y-6">

@@ -110,6 +110,17 @@ class CardOut(BaseModel):
     services: list[ServiceStatusOut]
 
 
+class RingingOut(BaseModel):
+    """A squad calling the dispatcher about one of their cards (#263): the phone rings on the
+    whole workstation, not only inside that card."""
+
+    attempt_id: uuid.UUID
+    call_id: str
+    card_number: str
+    incident_title: str
+    address: str
+
+
 class JournalItem(BaseModel):
     attempt_id: uuid.UUID
     card_number: str

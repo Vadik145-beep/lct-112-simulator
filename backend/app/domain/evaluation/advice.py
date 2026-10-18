@@ -9,6 +9,7 @@ mistakes were found and how the score went. Pure: works on the stored results.
 
 from __future__ import annotations
 
+import re
 from collections import Counter
 from collections.abc import Mapping, Sequence
 
@@ -81,11 +82,29 @@ def card_advice(result: Mapping) -> list[str]:
         code = str(error.get("code") or "")
         if code in SKIP_ERRORS:
             continue
+        if code == "progress_missing":
+            points.append(_progress_advice(str(error.get("explanation") or "")))
+            continue
         points.append(ERROR_ADVICE.get(code) or _from_error(error))
     points = list(dict.fromkeys(p for p in points if p))[:MAX_POINTS]
     if not points and result.get("passed"):
         points.append(PASSED_ADVICE)
     return points
+
+
+def _progress_advice(explanation: str) -> str:
+    """The progress advice for what was actually wrong (stand 18.10.2026: all statuses were
+    set, only «Начало реагирования» had no comment, and the advice said «ведите до конца»)."""
+    parts = []
+    if "не проставлены" in explanation:
+        parts.append(ERROR_ADVICE["progress_missing"])
+    bare = re.search(r"без комментария (.+?)\.?$", explanation)
+    if bare:
+        parts.append(
+            f"Пишите комментарий к статусу {bare.group(1)}: что доложила бригада — "
+            "например, «бригада выехала, наряд 3294»."
+        )
+    return " ".join(parts) or ERROR_ADVICE["progress_missing"]
 
 
 def session_advice(results: Sequence[Mapping]) -> list[str]:
@@ -103,7 +122,9 @@ def session_advice(results: Sequence[Mapping]) -> list[str]:
     for code, count in habits.most_common():
         if count < REPEATED or code not in ERROR_ADVICE:
             continue
-        points.append(f"Повторялось в {count} из {len(scored)} карточек. {ERROR_ADVICE[code]}")
+        points.append(
+            f"Повторялось в {count} из {len(scored)} {_cards_of(len(scored))}. {ERROR_ADVICE[code]}"
+        )
     planted = [
         item for r in scored for item in _data_check(r) if item.get("verdict") != "false_alarm"
     ]
@@ -130,8 +151,13 @@ def session_advice(results: Sequence[Mapping]) -> list[str]:
             f"{round(totals[-1])}; зачтено {passed} из {len(scored)}."
         )
     else:
-        points.append(f"Зачтено {passed} из {len(scored)} карточек.")
+        points.append(f"Зачтено {passed} из {len(scored)} {_cards_of(len(scored))}.")
     return points[:MAX_POINTS]
+
+
+def _cards_of(n: int) -> str:
+    """«из 1 карточки», «из 2 карточек», «из 21 карточки»."""
+    return "карточки" if n % 10 == 1 and n % 100 != 11 else "карточек"
 
 
 def _data_check(result: Mapping) -> list[Mapping]:

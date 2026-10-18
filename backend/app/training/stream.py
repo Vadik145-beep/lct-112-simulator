@@ -1,13 +1,16 @@
 """«Вал карточек» (issue #264): in a card response lesson at difficulty 3
 (``service.is_stream``) cards reach the trainee on a timer instead of when the journal asks.
 
-Each trainee has his own schedule, fixed by the lesson and the trainee: an opening burst of two
-or three cards, then one card every ``60 / STREAM_PER_MINUTE`` seconds give or take
-``JITTER``, until ``STREAM_MINUTES`` pass. The sweeper (app.training.sweeper) issues the cards
-that are due; fewer when the queue runs out.
+Each trainee has his own schedule, fixed by the lesson and the trainee: the first card at once,
+then one every ``STREAM_GAP_SECONDS`` (at random within), ``STREAM_CARDS`` in all; nothing
+comes after. The sweeper (app.training.sweeper) issues the cards that are due; fewer when the
+queue runs out. In a lesson of cards written for each trainee (#265) the cards come on the same
+schedule, written ahead (``app.training.ai_cards``).
 
 A repeated call (a scenario with ``duplicate_of``, the number of the earlier card) comes as in
-life: ``REPEAT_DELAY`` seconds after its original reached the trainee, outside the schedule.
+life: ``REPEAT_DELAY`` seconds after its original reached the trainee, outside the schedule but
+within the ``STREAM_CARDS`` of the lesson: once the original has come, the repeat keeps one of
+those places, so the schedule brings one ordinary card less.
 """
 
 from __future__ import annotations
@@ -32,36 +35,29 @@ from app.models import (
     SessionEvent,
     TrainingSession,
 )
-from app.training import present
+from app.training import ai_cards, present
 from app.training import service as training
 from app.training.schemas import StreamSummary
 from app.training.sessions import group_members
 
-# Cards that arrive together at the start of the stream: the shift does not start empty.
-OPENING_BURST = (2, 3)
-OPENING_SECONDS = 5.0
-# Spread of the interval between cards: real calls do not come on the beat.
-JITTER = 0.3
 # Seconds between a card and the repeated call about the same incident.
 REPEAT_DELAY = (60.0, 120.0)
 
 
-def schedule(seed: str, per_minute: int, minutes: int) -> list[float]:
-    """Seconds from the start of the lesson at which each card of the stream arrives."""
-    if per_minute <= 0 or minutes <= 0:
-        return []
+def schedule(
+    seed: str,
+    cards: int = training.STREAM_CARDS,
+    gap: tuple[float, float] = training.STREAM_GAP_SECONDS,
+) -> list[float]:
+    """Seconds from the start of the lesson at which each card of the stream arrives: the first
+    at once, each next one a random ``gap`` after the previous (real calls do not come on the
+    beat)."""
     rng = random.Random(seed)  # noqa: S311 - a training schedule, not security
-    total = per_minute * minutes
-    end = minutes * 60.0
-    burst = min(total, rng.randint(*OPENING_BURST))
-    times = sorted(rng.uniform(0, OPENING_SECONDS) for _ in range(burst))
-    step = 60.0 / per_minute
-    at = times[-1]
-    while len(times) < total:
-        at += step * rng.uniform(1 - JITTER, 1 + JITTER)
-        if at > end:
-            break
+    times: list[float] = []
+    at = 0.0
+    for _ in range(cards):
         times.append(at)
+        at += rng.uniform(*gap)
     return times
 
 
@@ -71,7 +67,7 @@ def due_count(times: list[float], elapsed_seconds: float) -> int:
 
 
 def trainee_schedule(ts: TrainingSession, student_id: uuid.UUID) -> list[float]:
-    return schedule(f"{ts.id}:{student_id}", training.STREAM_PER_MINUTE, training.STREAM_MINUTES)
+    return schedule(f"{ts.id}:{student_id}")
 
 
 def repeat_delay(ts: TrainingSession, student_id: uuid.UUID, scenario_id: uuid.UUID) -> float:
@@ -130,7 +126,9 @@ def ready_repeats(
 
 async def issue_stream_cards(session: AsyncSession, now: datetime) -> list[SessionEvent]:
     """Issues the cards that are due in every running stream lesson. The lesson row is locked
-    with ``SKIP LOCKED`` so two sweepers never issue the same card twice."""
+    with ``SKIP LOCKED`` so two sweepers never issue the same card twice; ``NO KEY UPDATE``, so
+    rows that refer to the lesson (events, the cards being written for it) are still added
+    meanwhile — a full ``FOR UPDATE`` would block them and deadlock with their writers."""
     lessons = list(
         await session.scalars(
             select(TrainingSession)
@@ -140,7 +138,7 @@ async def issue_stream_cards(session: AsyncSession, now: datetime) -> list[Sessi
                 TrainingSession.difficulty == training.STREAM_DIFFICULTY,
                 TrainingSession.started_at.is_not(None),
             )
-            .with_for_update(skip_locked=True)
+            .with_for_update(skip_locked=True, key_share=True)
         )
     )
     events: list[SessionEvent] = []
@@ -155,19 +153,30 @@ async def issue_stream_cards(session: AsyncSession, now: datetime) -> list[Sessi
             .order_by(Attempt.issued_at)
         ):
             issued.setdefault(student_id, []).append(IssuedCard(sid, number, at))
-        repeats = await repeats_of(session, await training.scenario_queue(session, ts))
+        # Written cards (#265) have no shared queue and no repeated calls.
+        queue = [] if ai_cards.is_ai(ts) else await training.scenario_queue(session, ts)
+        repeats = await repeats_of(session, queue)
         members = (await group_members(session, [ts.group_id])).get(ts.group_id, [])
         for student in members:
             mine = issued.get(student.id, [])
+            left = training.STREAM_CARDS - len(mine)
+            # A repeated call whose original has come keeps its place among the lesson's cards
+            # until its own time: no more than STREAM_CARDS reach the trainee in all.
+            numbers = {i.card_number for i in mine}
+            got = {i.scenario_id for i in mine}
+            waiting = sum(1 for sid, o in repeats.items() if o in numbers and sid not in got)
             # A repeated call comes on its own time and takes no place in the schedule.
-            ready = ready_repeats(ts, student.id, repeats, mine, now)
+            ready = set(sorted(ready_repeats(ts, student.id, repeats, mine, now))[: max(left, 0)])
             if ready:
                 _, issued_events = await training.issue_next(
                     session, ts, student, len(ready), hold=lambda s, ok=ready: s.id not in ok
                 )
                 events.extend(issued_events)
+                left -= len(issued_events)
+                waiting -= len(issued_events)
             in_schedule = sum(1 for i in mine if i.scenario_id not in repeats)
-            want = due_count(trainee_schedule(ts, student.id), elapsed) - in_schedule
+            due = due_count(trainee_schedule(ts, student.id), elapsed)
+            want = min(due - in_schedule, left - waiting)
             if want > 0:
                 _, issued_events = await training.issue_next(
                     session, ts, student, want, hold=lambda s, held=repeats: s.id in held

@@ -120,6 +120,9 @@ function Card({ attemptId }: { attemptId: string }) {
   const onEvent = useCallback(
     (event: SessionEvent) => {
       const id = event.payload.attempt_id as string | undefined;
+      // A squad may ring about any card of the lesson: the phone shows it here too (#263).
+      if (event.type.startsWith("service_call."))
+        void client.invalidateQueries({ queryKey: ["ringing"] });
       if (id === attemptId)
         void client.invalidateQueries({ queryKey: attemptKey(attemptId) });
       else if (event.type === "attempt.issued" && id) setNextCardId(id);
@@ -954,6 +957,7 @@ function CardView({
       <TrainerPanel
         connection={connection}
         collapsedByDefault
+        journalTo={`/student/sessions/${attempt.session.id}/journal`}
         // The result of the card lives in the panel: it opens for it. It opens too once the
         // card can be finished (its «Завершить работу с карточкой» is there): «Не принята»
         // does not close the card by itself. The conversation is in the virtual phone (#263).

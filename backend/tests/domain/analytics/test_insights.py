@@ -124,3 +124,16 @@ def test_forecast_features_survive_an_abandoned_attempt() -> None:
     records = [record(i, 60, seconds=30.0) for i in range(9)]
     records.append(record(9, 21, seconds=75_547.0, norm_seconds=90))
     assert compute_features(records).values["time_ratio"] <= MAX_TIME_RATIO
+
+
+def test_weakest_group_tip_keeps_the_rating_for_the_teacher_only() -> None:
+    state = RatingState()
+    state.ratings[("1", "card_response")] = 1360.0
+    titles = {"1": "Пожары и задымления"}
+    teacher = insights.weakest_group_tip(state, titles)
+    trainee = insights.weakest_group_tip(state, titles, with_rating=False)
+    assert teacher is not None and "рейтинг 1360" in teacher
+    assert trainee == (
+        "Слабое место — «Пожары и задымления» (карточки): "
+        "возьмите карточки этой группы на следующем занятии."
+    )

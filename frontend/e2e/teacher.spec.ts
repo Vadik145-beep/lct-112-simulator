@@ -8,6 +8,8 @@ const SHOTS = "../docs/screenshots/wave-04";
 const PASSWORD = process.env.SEED_PASSWORD ?? "Demo12345";
 // PRD 12 / plan wave 4: an action reaches the other side in under 2 seconds.
 const LIVE_MS = 2000;
+// The stream's cards are issued by the sweeper, once every 5 seconds.
+const SWEEP_MS = 5000;
 
 test.describe.configure({ mode: "serial" });
 
@@ -107,12 +109,12 @@ test.describe("Волна 4: занятие целиком", () => {
     await expect(student.getByText("Занятие ещё не начато")).toBeVisible();
     await expect(student.getByRole("status").filter({ hasText: "связь есть" })).toBeVisible();
 
-    // --- teacher starts, student gets three cards in under 2 s -----------------------------
+    // --- teacher starts: a stream at difficulty 3, the first card at once, then one every
+    // 20–25 s (the sweeper issues them, every 5 s), three in a minute ------------------------
     await teacher.getByRole("button", { name: "Начать занятие" }).click();
     await expect(teacher.getByText("Идёт", { exact: true })).toBeVisible();
-    const startedAt = Date.now();
-    await expect(student.locator("tr[data-attempt]")).toHaveCount(3, { timeout: LIVE_MS + 1000 });
-    expect(Date.now() - startedAt).toBeLessThan(LIVE_MS + 1000);
+    await expect(student.locator("tr[data-attempt]")).toHaveCount(1, { timeout: SWEEP_MS + LIVE_MS });
+    await expect(student.locator("tr[data-attempt]")).toHaveCount(3, { timeout: 60_000 });
     await expect(teacher.getByRole("list", { name: "Обучающиеся" }).getByRole("listitem")).toHaveCount(2);
     await teacher.screenshot({ path: `${SHOTS}/04-monitor-start.png`, fullPage: true });
 
@@ -142,7 +144,7 @@ test.describe("Волна 4: занятие целиком", () => {
 
     // Student closes the first card with the full chain, the tile shows the score.
     await setStatus(student, "Начало реагирования", { orderNumber: "14-217", comment: "Направлен дежурный слесарь, наряд 14-217" });
-    await setStatus(student, "Прибытие");
+    await setStatus(student, "Прибытие", { comment: "Бригада прибыла на место" });
     await setStatus(student, "Проведение работ", { comment: "Мусоропровод вскрыт, тлеющий мусор удалён" });
     await setStatus(student, "Работы завершены", { comment: "Задымление устранено, ствол промыт, пострадавших нет" });
     await expect(student.getByTestId("card-score")).toHaveText(/^\d+$/, { timeout: 15_000 });

@@ -14,14 +14,13 @@ from app.events import events_after
 from app.models import Attempt, Group, Scenario, TrainingSession, User
 from app.scenarios import jobs
 from app.training import ai_cards
-from app.training.service import sweep_not_notified, utcnow
+from app.training.service import STREAM_CARDS, sweep_not_notified, utcnow
 from app.training.stream import (
     REPEAT_DELAY,
-    due_count,
     issue_stream_cards,
     trainee_schedule,
 )
-from tests.api.conftest import DATA_DIR, issue_now
+from tests.api.conftest import DATA_DIR, issue_now, status_body
 from tests.conftest import bearer, login
 
 pytestmark = pytest.mark.skipif(
@@ -67,7 +66,9 @@ async def journal(client: AsyncClient, token: dict, session_id: str) -> dict:
 
 
 async def set_status(client: AsyncClient, token: dict, attempt_id: str, **body):
-    return await client.post(f"/api/attempts/{attempt_id}/status", headers=bearer(token), json=body)
+    return await client.post(
+        f"/api/attempts/{attempt_id}/status", headers=bearer(token), json=status_body(body)
+    )
 
 
 async def events(session_id: str, after: int = 0) -> list:
@@ -357,8 +358,8 @@ async def test_monitor_tile_reaches_all_closed_at_difficulty_1(client: AsyncClie
 
 
 async def test_monitor_counts_the_stream_of_each_trainee(client: AsyncClient) -> None:
-    """In a stream the tile's «всего» is what this trainee's schedule brings while the queue
-    lasts; a repeated call adds one once its original has reached him."""
+    """In a stream the tile's «всего» is the five cards of the lesson, a repeated call among
+    them: it does not add one when its original reaches the trainee."""
     keys = [
         "card_2-1_dubl",
         "card_2-1_zadymlenie_musoroprovoda",
@@ -384,19 +385,13 @@ async def test_monitor_counts_the_stream_of_each_trainee(client: AsyncClient) ->
         tile = next(s for s in r.json()["students"] if s["login"] == "student1")
         return tile["cards_total"]
 
-    async with SessionLocal() as session:
-        ts = await session.get(TrainingSession, uuid.UUID(created["id"]))
-        me = await session.scalar(select(User).where(User.login == "student1"))
-        assert ts is not None and me is not None
-        scheduled = min(len(trainee_schedule(ts, me.id)), len(keys) - 1)
-    # Before the original of the repeated call arrives, only the schedule counts.
-    assert await tile_total() == scheduled
+    assert await tile_total() == STREAM_CARDS == 5
     async with SessionLocal() as session:
         await issue_stream_cards(
             session, datetime.fromisoformat(started["started_at"]) + timedelta(seconds=40)
         )
         await session.commit()
-    assert await tile_total() == scheduled + 1
+    assert await tile_total() == STREAM_CARDS
 
 
 async def test_monitor_counts_five_cards_when_the_cards_are_written_by_ai(
@@ -537,27 +532,34 @@ async def test_unfinished_threshold_marks_card(
 
 async def test_difficulty_3_is_a_stream_of_cards_on_a_timer(client: AsyncClient) -> None:
     """«Вал карточек» (issue #264): at difficulty 3 the journal itself adds nothing, the sweeper
-    issues the cards each trainee's schedule says are due; the report and the trainee's
-    progress sum the stream up."""
+    issues the cards each trainee's schedule says are due — the first at once, then one every
+    20–25 s, five in all; the report and the trainee's progress sum the stream up."""
     teacher = await login(client, "teacher1")
     created = await create_session(client, teacher, service_profile=[], difficulty=3)
     started = await start(client, teacher, created["id"])
     student = await login(client, "student1")
     assert (await journal(client, student, created["id"]))["total"] == 0
+    begin = datetime.fromisoformat(started["started_at"])
+
+    async def sweep(seconds: float) -> list:
+        # A hundredth over: a timedelta drops what is below a microsecond.
+        async with SessionLocal() as session:
+            issued = await issue_stream_cards(session, begin + timedelta(seconds=seconds + 0.01))
+            await session.commit()
+        return [e for e in issued if str(e.session_id) == created["id"]]
 
     async with SessionLocal() as session:
         ts = await session.get(TrainingSession, uuid.UUID(created["id"]))
         me = await session.scalar(select(User).where(User.login == "student1"))
         assert ts is not None and me is not None
-        due = due_count(trainee_schedule(ts, me.id), 40.0)
-        at = datetime.fromisoformat(started["started_at"]) + timedelta(seconds=40)
-        issued = await issue_stream_cards(session, at)
-        await session.commit()
-        again = await issue_stream_cards(session, at)
-        await session.commit()
-    assert due >= 3
-    assert {e.type for e in issued} == {"attempt.issued"}
-    assert again == []
+        times = trainee_schedule(ts, me.id)
+    mine = lambda events: [e for e in events if str(e.student_id) == str(me.id)]  # noqa: E731
+    assert len(mine(await sweep(0))) == 1  # the first card at once
+    assert mine(await sweep(times[1] - 1)) == []  # not before its time
+    issued = mine(await sweep(times[2]))
+    assert len(issued) == 2 and {e.type for e in issued} == {"attempt.issued"}
+    assert await sweep(times[2]) == []
+    due = 3
     items = (await journal(client, student, created["id"]))["items"]
     assert len(items) == due
 
@@ -572,15 +574,21 @@ async def test_difficulty_3_is_a_stream_of_cards_on_a_timer(client: AsyncClient)
     assert (row["stream"]["arrived"], row["stream"]["no_reaction"]) == (due, due - 1)
     assert row["stream"]["advice"][0].startswith(f"{due - 1} ")
     r = await client.get("/api/me/progress", headers=bearer(student))
-    mine = next(s for s in r.json()["sessions"] if s["session_id"] == created["id"])
-    assert mine["stream"] == row["stream"]
+    progress = next(s for s in r.json()["sessions"] if s["session_id"] == created["id"])
+    assert progress["stream"] == row["stream"]
+
+    # Five in all: nothing more however long the lesson runs.
+    await sweep(3600)
+    assert len((await journal(client, student, created["id"]))["items"]) == STREAM_CARDS
+    assert mine(await sweep(7200)) == []
 
 
 async def test_repeated_call_in_a_stream_comes_a_minute_or_two_after_its_original(
     client: AsyncClient,
 ) -> None:
     """A repeated call about the same incident (``duplicate_of``) does not come right after its
-    original: one to two minutes later, and it takes no place in the schedule of the stream."""
+    original: one to two minutes later, as one of the lesson's five cards (the schedule then
+    brings one ordinary card less)."""
     keys = [
         "card_2-1_dubl",
         "card_2-1_zadymlenie_musoroprovoda",
@@ -617,7 +625,7 @@ async def test_repeated_call_in_a_stream_comes_a_minute_or_two_after_its_origina
             await issue_stream_cards(session, at)
             await session.commit()
 
-    # The schedule gives at least three cards by 40 s: the repeat, first in the queue, waits.
+    # The schedule gives two or three cards by 40 s: the repeat, first in the queue, waits.
     await sweep(begin + timedelta(seconds=40))
     first = await numbers()
     assert "38260311" in first and "38260340" not in first
@@ -635,13 +643,9 @@ async def test_repeated_call_in_a_stream_comes_a_minute_or_two_after_its_origina
     await sweep(original_at + timedelta(seconds=REPEAT_DELAY[1] + 1))
     after = await numbers()
     assert after.count("38260340") == 1
-    async with SessionLocal() as session:
-        ts = await session.get(TrainingSession, uuid.UUID(created["id"]))
-        me = await session.scalar(select(User).where(User.login == "student1"))
-        assert ts is not None and me is not None
-        elapsed = (original_at - begin).total_seconds() + REPEAT_DELAY[1] + 1
-        due = due_count(trainee_schedule(ts, me.id), elapsed)
-    assert len(after) == min(due, len(keys) - 1) + 1
+    assert len(after) == STREAM_CARDS
+    await sweep(begin + timedelta(hours=1))
+    assert len(await numbers()) == STREAM_CARDS
 
 
 async def test_lower_difficulty_is_no_stream(client: AsyncClient) -> None:

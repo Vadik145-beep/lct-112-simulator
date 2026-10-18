@@ -674,7 +674,7 @@ function ReviewView({
         <div className="flex flex-wrap gap-2">
           <Button asChild>
             <Link to={`/student/sessions/${attempt.session.id}/journal`}>
-              Следующая карточка <ArrowRight />
+              В журнал <ArrowRight />
             </Link>
           </Button>
           <Button asChild variant="outline">

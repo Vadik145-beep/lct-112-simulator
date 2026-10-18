@@ -55,6 +55,9 @@ class ProgressSession(BaseModel):
     stream: StreamSummary | None = None
     # Advice for further training after the lesson (issue #265), from its scored cards.
     advice: list[str] = []
+    # Critical errors of the cards scored at or above the pass threshold that still failed:
+    # why «не зачтено» although the score is enough.
+    critical_failures: list[str] = []
 
 
 class FrequentError(BaseModel):
@@ -164,6 +167,7 @@ async def build_progress(session: AsyncSession, student: User) -> ProgressOut:
                 if training.is_stream(ts)
                 else None,
                 advice=advice.session_advice([a.result for a in rows_of if a.result]),
+                critical_failures=_critical_failures(rows_of, ts.pass_threshold),
             )
         )
         all_totals += totals
@@ -199,6 +203,20 @@ async def build_progress(session: AsyncSession, student: User) -> ProgressOut:
         dynamics=extras.dynamics,
         demo_data=extras.demo_data,
     )
+
+
+def _critical_failures(attempts: list[Attempt], pass_threshold: int) -> list[str]:
+    """Names of the critical errors that failed a card whose score reached the threshold."""
+    found: list[str] = []
+    for a in attempts:
+        r = a.result or {}
+        if not r or r.get("passed") or float(r.get("total") or 0) < pass_threshold:
+            continue
+        for e in r.get("errors") or []:
+            title = str(e.get("title") or e.get("code") or "")
+            if e.get("critical") and title and title not in found:
+                found.append(title)
+    return found
 
 
 def _overdue_mode(late: Counter, timed: Counter) -> str | None:
