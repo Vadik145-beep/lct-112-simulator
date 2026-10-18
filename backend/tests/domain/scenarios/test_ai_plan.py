@@ -132,3 +132,84 @@ def test_third_card_is_sent_to_the_wrong_service_from_difficulty_2(type_rows: li
     assert plan_next(
         _spec(type_rows, seq=2, own_service="gkh", earlier=[missed])
     ).request.wrong_service
+
+
+# --- the lesson's service and variety (stand 17.10.2026) ------------------------------------
+
+
+def test_lesson_service_is_the_teachers_choice_shared_round_the_group() -> None:
+    members = ["a", "b", "c"]
+    assert ai_plan.lesson_service([], members, "b", "gkh") == "gkh"  # no choice: own service
+    assert ai_plan.lesson_service(["moek"], members, "b", "gkh") == "moek"
+    two = ["gkh", "mosvodokanal"]
+    assert [ai_plan.lesson_service(two, members, m, None) for m in members] == [
+        "gkh",
+        "mosvodokanal",
+        "gkh",
+    ]
+    assert ai_plan.lesson_service(two, members, "stranger", None) in two
+
+
+def test_service_groups_count_the_types_a_service_is_always_notified_of(
+    type_rows: list[dict],
+) -> None:
+    groups = ai_plan.service_groups(type_rows)
+    assert groups["gkh"]["1"] > 0  # ЖКХ takes part in fires
+    # Only the services with an emergency squad: not 103, not the district councils.
+    assert set(groups) <= set(ai_plan.DDS_SERVICES)
+    assert "103" not in groups and "territorial_oiv" not in groups
+    for code, count in groups["gkh"].items():
+        rows = [
+            r
+            for r in type_rows
+            if r.get("final_title")
+            and str(r.get("group_code")) == code
+            and "gkh" in resolve_services(r.get("service_rules") or [], [])
+        ]
+        assert len(rows) == count
+
+
+def test_first_cards_spread_over_the_types_not_the_groups(type_rows: list[dict]) -> None:
+    """Two groups of 3 and 6 types: each type about as likely, not each group."""
+    firsts = [
+        str(
+            plan_next(
+                _spec(type_rows, difficulty=1, own_service="gkh", trainee_key=f"l{i}|a")
+            ).request.incident_type
+        )
+        for i in range(300)
+    ]
+    by_group: dict[str, int] = {}
+    for code in firsts:
+        by_group[_group(code)] = by_group.get(_group(code), 0) + 1
+    sizes = {
+        g: len(
+            {
+                str(r["code"])
+                for r in type_rows
+                if str(r.get("group_code")) == g
+                and r.get("final_title")
+                and "gkh" in resolve_services(r.get("service_rules") or [], [])
+            }
+        )
+        for g in by_group
+    }
+    if len(sizes) > 1:
+        big, small = max(sizes, key=sizes.get), min(sizes, key=sizes.get)
+        if sizes[big] > sizes[small]:
+            assert by_group[big] > by_group[small]
+
+
+def test_a_type_the_trainee_had_in_another_lesson_is_not_given_again(
+    type_rows: list[dict],
+) -> None:
+    first = plan_next(_spec(type_rows, difficulty=1, own_service="gkh"))
+    again = plan_next(
+        _spec(
+            type_rows,
+            difficulty=1,
+            own_service="gkh",
+            seen_types=[str(first.request.incident_type)],
+        )
+    )
+    assert again.request.incident_type != first.request.incident_type

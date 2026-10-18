@@ -15,6 +15,16 @@ export const DIFFICULTY_TITLES: Record<number, string> = {
   3: "3 — ЧС, две ошибки, карточки идут валом (около 4 в минуту)",
 };
 
+/** With cards written by AI there is no stream: one card at a time at every difficulty. */
+export const AI_DIFFICULTY_TITLES: Record<number, string> = {
+  ...DIFFICULTY_TITLES,
+  3: "3 — ЧС, две ошибки оператора 112",
+};
+
+export function difficultyTitle(difficulty: number, ai: boolean): string {
+  return (ai ? AI_DIFFICULTY_TITLES : DIFFICULTY_TITLES)[difficulty] ?? String(difficulty);
+}
+
 /** How many cards are on the trainee's screen at once at each difficulty (backend CARDS_AT_ONCE). */
 export const CARDS_AT_ONCE: Record<number, number> = { 1: 1, 2: 1, 3: 3 };
 

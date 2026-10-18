@@ -12,11 +12,23 @@ const mutation = { isPending: false, isError: false, mutate: vi.fn() };
 
 vi.mock("@/api/teacher", () => ({
   useGroups: () => loaded([{ id: "g1", title: "Группа 1", members: [] }]),
-  useClassifierTree: () => loaded({ groups: [] }),
-  useServices: () => loaded([]),
+  useClassifierTree: () =>
+    loaded({
+      groups: [
+        { code: "1", title: "Пожары и задымления" },
+        { code: "13", title: "Запах газа" },
+      ],
+    }),
+  useServices: () =>
+    loaded([
+      { code: "gkh", title: "ЕДЦ ЖКХ", short_title: "ЕДЦ ЖКХ" },
+      { code: "dgp", title: "ДГП (АРМ-112)", short_title: "ДГП" },
+    ]),
+  useAiCardGroups: () => loaded({ by_service: { gkh: { "1": 127 }, dgp: { "1": 43 } } }),
   useModels: () =>
     loaded({ dialog: true, tts: true, stt: true, cloud: false, phone: false }),
-  useQueuePreview: () => loaded({ total: 3, harder_only: false }),
+  useQueuePreview: () =>
+    loaded({ total: 3, harder_only: false, queue: [{ service_code: "gkh", incident_type_code: "14.1" }] }),
   useCreateSession: () => mutation,
   useUpdateSession: () => mutation,
   useTeacherSession: () => loaded(existing.current),
@@ -143,9 +155,36 @@ describe("«Задания формирует ИИ»", () => {
     ).toBeInTheDocument();
     expect(screen.queryByText(/Вал: карточки приходят сами/)).not.toBeInTheDocument();
     expect(screen.getByText(/готовые сценарии не нужны/)).toBeInTheDocument();
+    // Whose ДДС the trainees are is required (decision of 17.10.2026).
+    expect(screen.getByRole("button", { name: "Создать занятие" })).toBeDisabled();
+    fireEvent.click(screen.getByLabelText("ЕДЦ ЖКХ"));
     fireEvent.click(screen.getByRole("button", { name: "Создать занятие" }));
     expect(mutation.mutate).toHaveBeenCalledWith(
-      expect.objectContaining({ card_source: "ai", cards_per_student: 5, difficulty: 3 }),
+      expect.objectContaining({ card_source: "ai", cards_per_student: 5, difficulty: 3, service_profile: ["gkh"] }),
+      expect.anything(),
+    );
+  });
+
+  it("offers only the groups the chosen service takes part in, with the number of types", () => {
+    existing.current = null;
+    mutation.mutate.mockClear();
+    renderForm("/teacher/sessions/new", false);
+    fireEvent.change(screen.getByLabelText("Название"), { target: { value: "ИИ" } });
+    fireEvent.click(screen.getByLabelText("Задания формирует ИИ"));
+    expect(screen.getByText("ДДС какой службы")).toBeInTheDocument();
+    // Only the services the trainer is prepared for, not every organization of the classifier.
+    expect(screen.queryByLabelText("ДГП (АРМ-112)")).not.toBeInTheDocument();
+    expect(screen.getByText("Сначала выберите службу ДДС.")).toBeInTheDocument();
+    expect(screen.queryByLabelText(/Пожары и задымления/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText("ЕДЦ ЖКХ"));
+    expect(screen.getByLabelText(/Пожары и задымления/)).toBeInTheDocument();
+    expect(screen.getByText(/видов: 127/)).toBeInTheDocument();
+    // ЖКХ never gets «Запах газа»: it cannot be checked, so it is never ignored silently.
+    expect(screen.queryByLabelText(/Запах газа/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText(/Пожары и задымления/));
+    fireEvent.click(screen.getByRole("button", { name: "Создать занятие" }));
+    expect(mutation.mutate).toHaveBeenCalledWith(
+      expect.objectContaining({ service_profile: ["gkh"], incident_groups: ["1"] }),
       expect.anything(),
     );
   });

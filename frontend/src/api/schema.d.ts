@@ -1306,6 +1306,27 @@ export interface paths {
         patch: operations["update_group_api_groups__group_id__patch"];
         trace?: never;
     };
+    "/api/ai-card-groups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ai Card Groups
+         * @description For the lesson form in the mode «Задания формирует ИИ»: which incident groups each
+         *     service takes part in, so a group the chosen ДДС never gets cannot be checked.
+         */
+        get: operations["ai_card_groups_api_ai_card_groups_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sessions/preview": {
         parameters: {
             query?: never;
@@ -2439,6 +2460,19 @@ export interface components {
             is_blocked?: boolean | null;
             /** Call Intake Access */
             call_intake_access?: boolean | null;
+        };
+        /**
+         * AiCardGroupsOut
+         * @description Service → incident group → number of incident types the classifier notifies the
+         *     service of: what a lesson with cards written by AI can give that service's ДДС.
+         */
+        AiCardGroupsOut: {
+            /** By Service */
+            by_service: {
+                [key: string]: {
+                    [key: string]: number;
+                };
+            };
         };
         /** AnswerResponse */
         AnswerResponse: {
@@ -7813,6 +7847,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ai_card_groups_api_ai_card_groups_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiCardGroupsOut"];
                 };
             };
         };

@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 
 import {
+  useAiCardGroups,
   useClassifierTree,
   useCreateSession,
   useGroups,
@@ -19,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CARDS_AT_ONCE, DIFFICULTY_TITLES, STREAM } from "@/teacher/labels";
+import { CARDS_AT_ONCE, STREAM, difficultyTitle } from "@/teacher/labels";
 import { cn } from "@/lib/utils";
 
 const HOUR = 3600;
@@ -186,11 +187,23 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
     mode: "card_response",
     card_source: form.card_source,
     scenario_ids: [],
-    incident_groups: form.incident_groups ?? [],
+    // With cards written by AI the service comes first and the groups depend on it.
+    incident_groups: aiCards ? [] : (form.incident_groups ?? []),
     difficulty: 3,
     service_profile: [],
   });
   const servicesWithCards = new Set((servicesAvailable.data?.queue ?? []).map((q) => q.service_code).filter(Boolean));
+  // Cards written by AI (decision of 17.10.2026): the teacher picks whose ДДС the trainees are,
+  // the groups are those the classifier involves that service in — nothing checked is ignored.
+  const aiGroups = useAiCardGroups(aiCards);
+  const aiByService = aiGroups.data?.by_service ?? {};
+  const aiGroupTypes = new Map<string, number>();
+  for (const code of form.service_profile ?? []) {
+    for (const [group, types] of Object.entries(aiByService[code] ?? {})) {
+      aiGroupTypes.set(group, Math.max(aiGroupTypes.get(group) ?? 0, types));
+    }
+  }
+  const aiNeedsService = aiCards && (form.service_profile ?? []).length === 0;
   const mutation = existing ? update : create;
 
   if (groups.isPending || tree.isPending || services.isPending) return <LoadingState text="Готовим форму…" />;
@@ -211,6 +224,8 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
     const body: SessionIn = {
       ...form,
       cards_per_student: aiCards ? AI_CARDS.perTrainee : cardsFor(form.difficulty, form.mode),
+      // A group the chosen services never get would be ignored by the AI: it is not sent.
+      incident_groups: (form.incident_groups ?? []).filter((g) => !aiCards || aiGroupTypes.has(g)),
       title: form.title.trim(),
       group_id: groupId,
       // «Не завершено» через: поля в форме нет, остаётся значение занятия (по умолчанию 48 ч).
@@ -218,6 +233,67 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
     };
     mutation.mutate(body, { onSuccess: (data) => navigate(`/teacher/sessions/${data.id}`) });
   }
+
+  const groupsFieldset = (
+    <fieldset className="lg:col-span-2">
+      <legend className="mb-2 text-sm font-medium">Группы происшествий</legend>
+      <div className="grid max-h-96 gap-x-4 gap-y-3 overflow-y-auto rounded-md border p-3 sm:grid-cols-2 lg:grid-cols-4">
+        {aiNeedsService && <p className="text-xs text-muted-foreground sm:col-span-4">Сначала выберите службу ДДС.</p>}
+        {tree.data.groups
+          .filter((g) =>
+            aiCards
+              ? aiGroupTypes.has(g.code)
+              : !available.data || groupsWithCards.has(g.code) || form.incident_groups?.includes(g.code),
+          )
+          .map((g) => (
+          <label key={g.code} className="flex items-start gap-2 text-sm">
+            <input
+              type="checkbox"
+              className="mt-0.5"
+              checked={form.incident_groups?.includes(g.code) ?? false}
+              onChange={() => toggle("incident_groups", g.code)}
+            />
+            <span>
+              {g.title}
+              {aiCards && <span className="text-muted-foreground"> — видов: {aiGroupTypes.get(g.code)}</span>}
+            </span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
+  // Оператор 112 не относится ни к одной службе: профиль службы только для ДДС.
+  const servicesFieldset = form.mode !== "call_intake" && (
+    <fieldset className="lg:col-span-2">
+      <legend className="mb-2 text-sm font-medium">{aiCards ? "ДДС какой службы" : "Профиль службы"}</legend>
+      {aiCards && (
+        <p className={cn("mb-2 text-xs", aiNeedsService ? "text-destructive" : "text-muted-foreground")}>
+          Обязательно. Обучающийся всё занятие работает за одну службу; если отмечено несколько, они делятся
+          между обучающимися группы по списку.
+        </p>
+      )}
+      <div className="grid max-h-96 gap-x-4 gap-y-3 overflow-y-auto rounded-md border p-3 sm:grid-cols-2 lg:grid-cols-4">
+        {services.data
+          .filter((s) =>
+            // With AI too only the services the trainer is prepared for (ready cards, voices, the
+            // phone book), not every organization of the classifier (stand 18.10.2026: «ДГП (АРМ-112)»).
+            (!aiCards || s.code in aiByService) &&
+            (!servicesAvailable.data || servicesWithCards.has(s.code) || form.service_profile?.includes(s.code)),
+          )
+          .map((s) => (
+          <label key={s.code} className="flex items-start gap-2 text-sm">
+            <input
+              type="checkbox"
+              className="mt-0.5"
+              checked={form.service_profile?.includes(s.code) ?? false}
+              onChange={() => toggle("service_profile", s.code)}
+            />
+            <span>{s.title}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
 
   return (
     <form onSubmit={submit} className="space-y-6" aria-label={existing ? "Настройки занятия" : "Новое занятие"}>
@@ -378,51 +454,23 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               </label>
               <p className="text-xs text-muted-foreground">
                 Каждому обучающемуся система сама пишет свои карточки — {AI_CARDS.perTrainee} по одной, следующую под
-                ошибки предыдущей, — оценивает их и даёт советы. Группы и службы ниже сужают выбор, если отмечены.
+                ошибки предыдущей, — оценивает их и даёт советы. Выберите ниже, за какую службу работает ДДС; группы
+                происшествий сужают выбор, если отмечены.
               </p>
             </div>
           )}
-          {/* Списки групп и служб — на всю ширину друг под другом, по четыре колонки. */}
-          <fieldset className="lg:col-span-2">
-            <legend className="mb-2 text-sm font-medium">Группы происшествий</legend>
-            <div className="grid max-h-96 gap-x-4 gap-y-3 overflow-y-auto rounded-md border p-3 sm:grid-cols-2 lg:grid-cols-4">
-              {tree.data.groups
-                .filter((g) => !available.data || groupsWithCards.has(g.code) || form.incident_groups?.includes(g.code))
-                .map((g) => (
-                <label key={g.code} className="flex items-start gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    className="mt-0.5"
-                    checked={form.incident_groups?.includes(g.code) ?? false}
-                    onChange={() => toggle("incident_groups", g.code)}
-                  />
-                  <span>
-                    {g.title}
-                  </span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
-          {/* Оператор 112 не относится ни к одной службе: профиль службы только для ДДС. */}
-          {form.mode !== "call_intake" && (
-          <fieldset className="lg:col-span-2">
-            <legend className="mb-2 text-sm font-medium">Профиль службы</legend>
-            <div className="grid max-h-96 gap-x-4 gap-y-3 overflow-y-auto rounded-md border p-3 sm:grid-cols-2 lg:grid-cols-4">
-              {services.data
-                .filter((s) => !servicesAvailable.data || servicesWithCards.has(s.code) || form.service_profile?.includes(s.code))
-                .map((s) => (
-                <label key={s.code} className="flex items-start gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    className="mt-0.5"
-                    checked={form.service_profile?.includes(s.code) ?? false}
-                    onChange={() => toggle("service_profile", s.code)}
-                  />
-                  <span>{s.title}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
+          {/* Списки групп и служб — на всю ширину друг под другом, по четыре колонки; в режиме ИИ сначала служба:
+              от неё зависят группы. */}
+          {aiCards ? (
+            <>
+              {servicesFieldset}
+              {groupsFieldset}
+            </>
+          ) : (
+            <>
+              {groupsFieldset}
+              {servicesFieldset}
+            </>
           )}
           <div className="lg:col-span-2" data-testid="queue-preview" aria-live="polite">
             {aiCards ? (
@@ -451,7 +499,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
             <select id="difficulty" className={selectClass} value={form.difficulty} onChange={(e) => patch({ difficulty: Number(e.target.value) })}>
               {[1, 2, 3].map((d) => (
                 <option key={d} value={d}>
-                  {DIFFICULTY_TITLES[d]}
+                  {difficultyTitle(d, aiCards)}
                 </option>
               ))}
             </select>
@@ -519,7 +567,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
       {mutation.isError && <ErrorState message={mutation.error.message} />}
 
       <div className={cn("flex flex-wrap gap-2")}>
-        <Button type="submit" disabled={mutation.isPending || !groupId}>
+        <Button type="submit" disabled={mutation.isPending || !groupId || aiNeedsService}>
           {mutation.isPending ? "Сохраняем…" : existing ? "Сохранить настройки" : "Создать занятие"}
         </Button>
         <Button type="button" variant="outline" onClick={() => navigate(existing ? `/teacher/sessions/${existing.id}` : "/teacher")}>
