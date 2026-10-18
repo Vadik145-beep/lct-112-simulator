@@ -31,11 +31,11 @@ function lesson(id: string, status = "running") {
   };
 }
 
-function open(entry: boolean) {
+function open() {
   const user = makeUser({ role: "student" });
   render(
     <AuthContext.Provider value={makeAuth({ status: "authenticated", user })}>
-      <MemoryRouter initialEntries={[{ pathname: "/student", state: entry ? { entry: true } : null }]}>
+      <MemoryRouter initialEntries={["/student"]}>
         <Routes>
           <Route path="/student" element={<StudentAssignmentsPage />} />
           <Route path="/student/sessions/:sessionId/journal" element={<p>Журнал АРМ</p>} />
@@ -46,27 +46,14 @@ function open(entry: boolean) {
 }
 
 describe("Where the trainee lands after the login", () => {
-  it("goes straight to the journal of the one running lesson", () => {
+  it("stays on «Мои задания» even with one running lesson, the journal is one click away", () => {
     lessons.current = [lesson("a"), lesson("b", "finished")];
-    open(true);
-    expect(screen.getByText("Журнал АРМ")).toBeInTheDocument();
-  });
-
-  it("stays on «Мои задания» when several lessons run", () => {
-    lessons.current = [lesson("a"), lesson("b")];
-    open(true);
+    open();
     expect(screen.getByRole("heading", { name: "Мои задания" })).toBeInTheDocument();
-  });
-
-  it("stays on «Мои задания» when none runs", () => {
-    lessons.current = [lesson("a", "finished")];
-    open(true);
-    expect(screen.getByRole("heading", { name: "Мои задания" })).toBeInTheDocument();
-  });
-
-  it("does not send back to the journal a trainee who came from it to the cabinet", () => {
-    lessons.current = [lesson("a")];
-    open(false);
-    expect(screen.getByRole("heading", { name: "Мои задания" })).toBeInTheDocument();
+    expect(screen.queryByText("Журнал АРМ")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Открыть журнал АРМ-112/ })).toHaveAttribute(
+      "href",
+      "/student/sessions/a/journal",
+    );
   });
 });
