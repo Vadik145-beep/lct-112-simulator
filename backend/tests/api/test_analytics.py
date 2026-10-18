@@ -98,6 +98,8 @@ async def test_my_progress_carries_ratings_and_dynamics(client: AsyncClient) -> 
     assert all(rt["title"] and rt["n"] > 0 for rt in ratings)
     assert len(progress["dynamics"]) >= 4
     assert progress["recommendations"][0].startswith("Слабое место")
+    # The trainee sees the weak group without the rating number (decision of 18.10).
+    assert "рейтинг" not in progress["recommendations"][0]
     assert 1 <= len(progress["recommendations"]) <= 4
 
     fresh = await login(client, "student7")

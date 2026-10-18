@@ -306,5 +306,7 @@ async def progress_extras(session: AsyncSession, student: User) -> ProgressExtra
         ],
         dynamics=[WeekPointOut(**p.__dict__) for p in insights.dynamics(records, since=since)],
         demo_data=history.demo_data,
-        weakest_tip=insights.weakest_group_tip(state, group_titles) if records else None,
+        weakest_tip=insights.weakest_group_tip(state, group_titles, with_rating=False)
+        if records
+        else None,
     )
