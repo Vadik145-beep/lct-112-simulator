@@ -64,8 +64,8 @@ CARDS_AT_ONCE = {1: 1, 2: 1, 3: 3}
 # its cards on a timer, not on the journal: the first at once, then one every STREAM_GAP_SECONDS
 # (at random within), STREAM_CARDS in all — the same in a lesson of written cards (#265).
 STREAM_DIFFICULTY = 3
-STREAM_CARDS = 5
-STREAM_GAP_SECONDS = (20.0, 25.0)
+STREAM_CARDS = 3
+STREAM_GAP_SECONDS = (40.0, 50.0)
 
 
 def is_stream(ts: TrainingSession) -> bool:

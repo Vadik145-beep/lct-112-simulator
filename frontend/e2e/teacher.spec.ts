@@ -110,11 +110,11 @@ test.describe("Волна 4: занятие целиком", () => {
     await expect(student.getByRole("status").filter({ hasText: "связь есть" })).toBeVisible();
 
     // --- teacher starts: a stream at difficulty 3, the first card at once, then one every
-    // 20–25 s (the sweeper issues them, every 5 s), three in a minute ------------------------
+    // 40–50 s (the sweeper issues them, every 5 s), three in under two minutes --------------
     await teacher.getByRole("button", { name: "Начать занятие" }).click();
     await expect(teacher.getByText("Идёт", { exact: true })).toBeVisible();
     await expect(student.locator("tr[data-attempt]")).toHaveCount(1, { timeout: SWEEP_MS + LIVE_MS });
-    await expect(student.locator("tr[data-attempt]")).toHaveCount(3, { timeout: 60_000 });
+    await expect(student.locator("tr[data-attempt]")).toHaveCount(3, { timeout: 110_000 });
     await expect(teacher.getByRole("list", { name: "Обучающиеся" }).getByRole("listitem")).toHaveCount(2);
     await teacher.screenshot({ path: `${SHOTS}/04-monitor-start.png`, fullPage: true });
 

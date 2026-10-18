@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CARDS_AT_ONCE, STREAM, difficultyTitle } from "@/teacher/labels";
+import { CARDS_AT_ONCE, STREAM, difficultyTitle, plural } from "@/teacher/labels";
 import { cn } from "@/lib/utils";
 
 const HOUR = 3600;
@@ -97,7 +97,7 @@ const isStream = (mode: string, difficulty: number) =>
   mode === "card_response" && difficulty === STREAM.difficulty;
 const cardsFor = (difficulty: number, mode: string) =>
   isStream(mode, difficulty) ? STREAM.cards : (CARDS_AT_ONCE[difficulty] ?? 1);
-const STREAM_HINT = `${STREAM.cards} карточек: первая сразу, дальше по одной каждые ${STREAM.gap} с`;
+const STREAM_HINT = `${STREAM.cards} ${plural(STREAM.cards, "карточка", "карточки", "карточек")}: первая сразу, дальше по одной каждые ${STREAM.gap} с`;
 const NORM_DEFAULT = { card_response: 30, call_intake: 60 } as const;
 // «Задания формирует ИИ» (issue #265): each trainee gets his own cards written during the lesson,
 // one at a time, the next by the mistakes of the previous one; ДДС lessons only.
