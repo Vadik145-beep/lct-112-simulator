@@ -268,6 +268,15 @@ def test_a_card_to_refuse_gets_no_turn_and_the_chief_does_not_go() -> None:
     assert not any("наряд" in r.text.lower() for r in built.replies)
     prompt = vapi.role_prompt(built)
     assert "НЕ ПО ПРОФИЛЮ" in prompt and officers.NOT_OURS in prompt
+    # The head says the same: refuse the card (decision of 18.10.2026).
+    head = head_call(NOW + timedelta(seconds=60))
+    attempt.service_calls = [*attempt.service_calls, head]
+    person = officer.call_scenario(scenario, head, attempt)
+    assert staff.HEAD_NOT_OURS in vapi.role_prompt(person)
+    assert [r.text for r in person.replies if r.topic == "confirm"] == [staff.HEAD_NOT_OURS]
+    assert officer.squad_state(attempt) == officers.SQUAD_STATE_WAITING
+    plain_head = officer.call_scenario(hard(), head, Attempt(service_calls=[head]))
+    assert staff.HEAD_NOT_OURS not in vapi.role_prompt(plain_head)
     # An accepted card's chief knows nothing of it.
     plain = officer.officer_scenario(hard(), "gkh", "ЕДЦ ЖКХ", Attempt(service_calls=[]))
     assert "НЕ ПО ПРОФИЛЮ" not in vapi.role_prompt(plain)

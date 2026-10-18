@@ -117,6 +117,13 @@ OFFICE_PROGRESS: dict[str, str] = {
 # The dispatcher sends the squad through the wrong person (#263, «позвонил не тому»).
 TOPIC_WRONG_CONTACT = "wrong_contact"
 WRONG_CONTACT = "Распоряжение на выезд — начальнику аварийной бригады, звоните ему."
+# The head on a card the own service must refuse (``officers.not_ours``): one truth with the
+# squad chief's «не наш профиль» (decision of 18.10.2026).
+HEAD_NOT_OURS = "Это не в нашей компетенции, карточку отклоняйте с комментарием."
+HEAD_NOT_OURS_FACT = (
+    "происшествие не в компетенции вашей организации: машину и людей не даёшь, на доклад "
+    f"говоришь «{HEAD_NOT_OURS}»"
+)
 # Ids apart from the officers' (1000) and the caller's (2000) banks, a hundred per role.
 REPLY_ID_BASE = 3000
 

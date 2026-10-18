@@ -325,6 +325,17 @@ def call_scenario(
             facts = {**person.caller.facts, no_vehicles.HEAD_FACT_KEY: no_vehicles.HEAD_FACT}
             caller = person.caller.model_copy(update={"facts": facts})
             person = person.model_copy(update={"caller": caller})
+        if role == staff.ROLE_HEAD and officers.not_ours(scenario):
+            # He takes the report and sends it back: the card is to be refused.
+            facts = {**person.caller.facts, officers.NOT_OURS_FACT_KEY: staff.HEAD_NOT_OURS_FACT}
+            caller = person.caller.model_copy(update={"facts": facts})
+            replies = [
+                r.model_copy(update={"text": staff.HEAD_NOT_OURS, "audio": None})
+                if r.topic in ("confirm", "progress")
+                else r
+                for r in person.replies
+            ]
+            person = person.model_copy(update={"caller": caller, "replies": replies})
         return with_studio_audio(person, f"{STUDIO_STAFF_KEY}/{role}")
     if is_report(call):
         report = _report_for(scenario, call, attempt)
