@@ -38,7 +38,7 @@ def test_the_server_never_takes_control_of_the_call() -> None:
     assistant = vapi.build_assistant(chief)
     assert "monitorPlan" not in assistant
     prompt = vapi.role_prompt(chief)
-    assert prompt.startswith("Ты начальник аварийной бригады")
+    assert "Ты — начальник аварийной бригады" in prompt
     assert "Служебная подсказка" not in prompt
     assert "Так, стоп" in prompt  # the hurry is a line of the prompt
     for name in ("hint_message", "say_message", "said_note", "send_control", "control_url"):
@@ -113,7 +113,7 @@ def test_the_chief_knows_his_truth_from_the_prompt() -> None:
     prompt = vapi.role_prompt(chief)
     assert "свободных машин нет" in prompt
     # No misheard house (18.10.2026): the chief repeats the address as it was said.
-    assert "ОДИН раз повторяешь вслух адрес" in prompt
+    assert "Адрес вслух повторяешь один раз" in prompt
     easy = officer.call_scenario(card_scenario(NAME), new_call("moek"), Attempt(service_calls=[]))
     assert no_vehicles.FACT_KEY not in easy.caller.facts
 
@@ -153,9 +153,9 @@ def test_every_squad_number_is_said_digit_by_digit() -> None:
     leader = officers.report_scenario(scenario, report, "МОЭК")
     assert f"«{spoken}»" in leader.caller.facts["наряд"]
     for built in (chief, leader):
-        assert vapi.DIGITS_RULE in vapi.role_prompt(built)
+        assert "по одной цифре через запятую" in " ".join(vapi.role_prompt(built).split())
     for prompt in (vapi.OFFICER_PROMPT, vapi.OFFICER_REPEAT_PROMPT, vapi.STAFF_PROMPT):
-        assert "{digits}" in prompt
+        assert "по одной цифре через запятую" in " ".join(prompt.split())
 
 
 def test_the_journal_shows_dashes_not_heard_colons() -> None:
@@ -171,11 +171,17 @@ def test_the_journal_shows_dashes_not_heard_colons() -> None:
 
 def test_the_chief_prompt_keeps_the_lines_that_held_it_before_the_final() -> None:
     """Stand 18.10.2026: questions in a heap, «Пострадавший. Есть.», «Принято» to a question."""
-    prompt = vapi.CHIEF_PROMPT
-    assert "Не задаёшь подряд много вопросов" in prompt
-    assert "Сам себе на свои вопросы не отвечаешь" in prompt
-    assert "Не пересказываешь заново" in prompt
-    assert "на вопрос «Принято» не отвечают" in prompt
+    for prompt in (
+        vapi.CHIEF_PROMPT,
+        vapi.OFFICER_PROMPT,
+        vapi.OFFICER_REPEAT_PROMPT,
+        vapi.SQUAD_PROMPT,
+        vapi.STAFF_PROMPT,
+    ):
+        assert "#### Роль" in prompt and "#### Алгоритм диалога" in prompt
+        assert "«Принято» на вопрос не отвечают" in " ".join(prompt.split())
+    assert "больше одного вопроса за реплику" in vapi.CHIEF_PROMPT
+    assert "Сам на свои вопросы не отвечаешь" in vapi.CHIEF_PROMPT
     assert "не торопясь" not in vapi.DIGITS_RULE
 
 

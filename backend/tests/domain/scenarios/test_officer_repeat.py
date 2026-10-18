@@ -33,10 +33,10 @@ def test_cloud_gets_the_repeat_instruction_only_on_a_repeat_call() -> None:
     ref = ServiceCallRef(service="mosgaz")
     first = officers.officer_scenario(scenario, ref, "Мосгаз", "arrived")
     again = officers.officer_scenario(scenario, ref, "Мосгаз", "arrived", repeat=True)
-    assert "ПРИНЯТЬ информацию" in vapi.role_prompt(first)
+    assert "принять информацию" in vapi.role_prompt(first)
     prompt = vapi.role_prompt(again)
-    assert "уже принял от него в прошлом" in prompt
-    assert "ПРИНЯТЬ информацию" not in prompt
+    assert "уже принял от него" in prompt
+    assert "принять информацию" not in prompt
 
 
 def test_repeat_officer_gets_its_own_generate_prompt() -> None:

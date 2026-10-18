@@ -261,6 +261,8 @@ def officer_scenario(
     calls = calls_of(attempt)
     if service == scenario.service:
         built = _knows_complication(built, scenario, calls, besides=call_id, opening=repeat)
+    if service == scenario.service and repeat and _missed_report(calls, service, call_id):
+        built = _tells_missed_report(built)
     if (
         service == scenario.service
         and no_vehicles.plan_of(calls) == no_vehicles.PLAN_NO_VEHICLES
@@ -269,11 +271,54 @@ def officer_scenario(
         # One truth for the cloud too (#263): the chief knows he has no vehicles, and no squad
         # number to name until there is one (stand 18.10.2026: «выезжаем по наряду 8-43»).
         facts = {k: v for k, v in built.caller.facts.items() if k != "твой наряд"}
-        facts[no_vehicles.FACT_KEY] = no_vehicles.FACT
+        said = no_vehicles.announced(c for c in calls if c.get("id") != call_id)
+        facts[no_vehicles.FACT_KEY] = no_vehicles.FACT_AGAIN if said else no_vehicles.FACT
         built = built.model_copy(
             update={"caller": built.caller.model_copy(update={"facts": facts})}
         )
     return with_studio_audio(built, service)
+
+
+# The squad chief called with a report the dispatcher did not take; called back, he says so
+# (#263, 18.10.2026), then where the squad is.
+MISSED_REPORT_LINE = "Я вам звонил, вы не взяли."
+MISSED_REPORT_FACT = "ты звонил диспетчеру с докладом, он не взял трубку"
+
+
+def _missed_report(calls: list[dict], service: str, besides: str | None) -> bool:
+    """A report of the squad went unanswered and no answered call of the own service since."""
+    missed = [
+        c
+        for c in calls
+        if is_report(c)
+        and not c.get("answered")
+        and c.get("ended_at")
+        and c.get("report_status") != complication.STATUS
+    ]
+    if not missed:
+        return False
+    since = str(missed[-1].get("started_at") or "")
+    return not any(
+        c.get("answered")
+        and c.get("id") != besides
+        and c.get("service") == service
+        and str(c.get("started_at") or "") > since
+        for c in calls
+    )
+
+
+def _tells_missed_report(built: CallIntakeScenario) -> CallIntakeScenario:
+    caller = built.caller
+    passed = "Карточку от вас уже принял."
+    opening = (
+        caller.opening.replace(passed, f"{passed} {MISSED_REPORT_LINE}", 1)
+        if passed in caller.opening
+        else f"{caller.opening.rstrip()} {MISSED_REPORT_LINE}"
+    )
+    facts = {**caller.facts, "пропущенный звонок": MISSED_REPORT_FACT}
+    return built.model_copy(
+        update={"caller": caller.model_copy(update={"opening": opening, "facts": facts})}
+    )
 
 
 def _knows_complication(
