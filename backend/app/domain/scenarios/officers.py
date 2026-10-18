@@ -176,12 +176,12 @@ DEFAULT_REPORTS: list[tuple[str, int, str]] = [
     (
         "response_started",
         30,
-        "Алло, диспетчер? Это начальник аварийной бригады. Выехали по адресу: {address}.",
+        "Алло, диспетчер? Это начальник аварийной бригады. Выехали по адресу {address}.",
     ),
     (
         "arrived",
         45,
-        "Алло, это снова начальник аварийной бригады. Прибыли по адресу: {address}, приступаем.",
+        "Алло, это снова начальник аварийной бригады. Прибыли по адресу {address}, приступаем.",
     ),
     ("works_started", 30, "Алло, диспетчер, начальник аварийной бригады. Докладываю: {comment}"),
     ("works_done", 60, "Алло, диспетчер? Начальник аварийной бригады. Работы завершены: {comment}"),
@@ -198,23 +198,64 @@ _OLD_TITLES: list[tuple[re.Pattern[str], str]] = [
 ]
 
 
-# A reference comment that itself starts with «Работы завершены» (stand 17.10.2026: «Работы
-# завершены: работы завершены, пострадавших нет.»).
-_DOUBLE_DONE = re.compile(r"Работы завершены:\s+работы (?:завершены|выполнены)([.,]?)")
-
-
-def _done_once(match: re.Match[str]) -> str:
-    if match.group(1):
-        return f"Работы завершены{match.group(1)}"
-    return "Работы завершены" if match.end() == len(match.string) else "Работы завершены,"
-
-
 def renamed(text: str) -> str:
-    """The squad leader of an older wording called by the customer's title; «Работы
-    завершены» said once."""
+    """The squad leader of an older wording called by the customer's title, and the report said
+    as a person says it (``spoken_report``)."""
     for pattern, title in _OLD_TITLES:
         text = pattern.sub(title, text)
-    return _DOUBLE_DONE.sub(_done_once, text)
+    return spoken_report(text)
+
+
+# A report is said, not read out (decision of 18.10.2026): no colons, nothing twice — «Работы
+# завершены, газоснабжение восстановлено», not «Работы завершены: работы … завершены».
+_TO_ADDRESS = re.compile(r"(Выехали|Прибыли) по адресу:\s*")
+_STARTED = re.compile(r"Докладываю:\s*(.+)$", re.DOTALL)
+_DONE = re.compile(r"Работы завершены:\s*(.+)$", re.DOTALL)
+_DONE_AGAIN = re.compile(r"^работы\s+(завершены|выполнены)[\s,.:;—-]*", re.IGNORECASE)
+_SAYS_DONE = re.compile(r"заверш|выполн", re.IGNORECASE)
+_SAYS_WORKS = re.compile(r"\bработ", re.IGNORECASE)
+# Names a comment lowered after «Докладываю:» / «Работы завершены:» in older cards.
+_NAMES = {
+    "мосгаз": "Мосгаз",
+    "мосводоканал": "Мосводоканал",
+    "мослифт": "Мослифт",
+    "гормост": "Гормост",
+    "моэк": "МОЭК",
+    "мчс": "МЧС",
+}
+
+
+def _sentence(text: str) -> str:
+    text = text.strip()
+    return text[:1].upper() + text[1:] if text else text
+
+
+def _names(text: str) -> str:
+    for low, name in _NAMES.items():
+        text = re.sub(rf"\b{low}(\w*)", lambda m, n=name: n + m.group(1), text, flags=re.IGNORECASE)
+    return text
+
+
+def spoken_report(text: str) -> str:
+    """«Выехали по адресу улица Свободы…», «Работы начаты, перекрыт стояк…», «Работы
+    завершены, вода подана…»: commas instead of colons, «работы» said once."""
+    text = _TO_ADDRESS.sub(r"\1 по адресу ", text)
+    started = _STARTED.search(text)
+    if started:
+        said = _names(started.group(1).strip())
+        line = _sentence(said) if _SAYS_WORKS.search(said) else f"Работы начаты, {said}"
+        text = text[: started.start()] + line
+    done = _DONE.search(text)
+    if done:
+        said = _names(_DONE_AGAIN.sub("", done.group(1).strip()))
+        if not said:
+            line = "Работы завершены."
+        elif _SAYS_DONE.search(said) and _SAYS_WORKS.search(said):
+            line = _sentence(said)
+        else:
+            line = f"Работы завершены, {said}"
+        text = text[: done.start()] + line
+    return text
 
 
 DEFAULT_WORK_COMMENTS: dict[str, str] = {

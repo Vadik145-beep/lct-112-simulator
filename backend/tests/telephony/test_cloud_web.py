@@ -121,7 +121,8 @@ async def test_service_call_is_played_by_the_cloud(
     assert "ЗАЯВИТЕЛЯ" not in prompt
     assert "номер наряда — наряд твой" in prompt
     assert "где он находится" in prompt
-    assert assistant["monitorPlan"] == {"controlEnabled": True}
+    # The server says nothing to the cloud mid-call (18.10.2026): no Live Call Control.
+    assert "monitorPlan" not in assistant
     # Трубку кладёт диспетчер: дежурному функция завершения звонка не даётся.
     assert assistant["endCallFunctionEnabled"] is False
     assert "на другой язык" in prompt and "Не кладёшь трубку" in prompt
@@ -130,7 +131,7 @@ async def test_service_call_is_played_by_the_cloud(
     assert "Второй раз адрес не проговариваешь НИКОГДА" in prompt
     assert "goodbye" in prompt.lower()
     # На «понял» — «Принято», а не «Молчу.» (стенд 17.10.2026).
-    assert "одним словом: «Принято»" in prompt
+    assert "На согласие диспетчера отвечаешь «Принято»." in prompt
     assert "не отвечаешь ничего" not in prompt.lower()
     assert "как губка" in prompt
     assert "НИЧЕГО НЕ ПРИДУМЫВАЕШЬ" in prompt

@@ -79,12 +79,12 @@ def test_the_fields_house_sends_the_squad_and_is_named_as_a_mistake() -> None:
     assert "дом 17" in errors_of(scenario, attempt)["wrong_address_passed"]
 
 
-def test_the_misheard_house_is_two_off_the_truth() -> None:
+def test_the_truth_is_taken_as_said() -> None:
+    """No misheard house any more (18.10.2026): the true address said, the squad goes."""
     scenario = card(2)
     call = new_call("moek")
     attempt = Attempt(service_calls=[call])
-    assert talk(scenario, attempt, call, TRUTH) == "Записал: Зелёный проспект, дом 19?"
-    assert talk(scenario, attempt, call, "Нет, дом семнадцать.").startswith("Понял, дом 17.")
+    assert not talk(scenario, attempt, call, TRUTH).startswith("Записал:")
 
 
 def test_no_question_about_a_fact_already_named_in_the_cards_words() -> None:

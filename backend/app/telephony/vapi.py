@@ -236,7 +236,7 @@ OFFICER_PROMPT = """Ты дежурный службы: {service}. Тебе зв
    другой службы: номер своего наряда ему НЕ называешь, бригаду не обещаешь и о ходе работ
    ему не докладываешь — это не его карточка.
 5. Дальше молчишь. Отвечаешь только если диспетчер о чём-то спросил, и одной фразой.
-   На «хорошо», «понял», «давайте», «спасибо» отвечаешь одним словом: «Принято».
+   На согласие диспетчера отвечаешь «Принято».
    Никогда не говоришь «молчу» и не описываешь, что молчишь.
 
 Чего не делаешь никогда:
@@ -287,7 +287,7 @@ CHIEF_PROMPT = """Ты начальник аварийной бригады сл
    ОДНОЙ ЦИФРЕ, как там написано: по номеру тренажёр отправляет бригаду. Если в списке ниже
    есть строка «машины» — она важнее этого шага.
 5. Дальше молчишь. Отвечаешь только если диспетчер о чём-то спросил, и одной фразой.
-   На «хорошо», «понял», «давайте», «спасибо» отвечаешь одним словом: «Принято».
+   На согласие диспетчера отвечаешь «Принято».
    Никогда не говоришь «молчу» и не описываешь, что молчишь.
 {hurry}
 Чего не делаешь никогда:
@@ -299,7 +299,6 @@ CHIEF_PROMPT = """Ты начальник аварийной бригады сл
 - Не переходишь на другой язык ни в одном слове: только русский, всегда.
 - НИЧЕГО НЕ ПРИДУМЫВАЕШЬ. Повторяешь вслух только то, что диспетчер сказал своими словами.
 
-{hints}
 
 Как говорить: по-русски, коротко и по-деловому, одно-два предложения за реплику, без
 канцелярита и без описаний своих действий в скобках.
@@ -309,16 +308,11 @@ CHIEF_PROMPT = """Ты начальник аварийной бригады сл
 """
 CHIEF_REPEATS_ADDRESS = """Когда он закончил передавать карточку, ОДИН раз повторяешь вслух адрес и
    происшествие, чтобы он услышал, что ты записал верно."""
-# From difficulty 2 the server says how the chief repeats the address (the misheard house).
-CHIEF_LEAVES_ADDRESS = """Адрес вслух сам не повторяешь: если нужно, тренажёр скажет это за тебя."""
-MISHEARD_DIFFICULTY = 2
+# The squad chief is in a hurry from this difficulty on (``app.domain.scenarios.rush``).
+HURRY_DIFFICULTY = 3
 CHIEF_HURRY = """
-Ты торопишься, у тебя ещё вызовы: говоришь резко и коротко. Если диспетчер говорит долго —
-обрываешь: «Так, стоп, давайте коротко: адрес и что случилось»."""
-HINTS_RULE = """Во время звонка тебе могут приходить служебные подсказки тренажёра (сообщения,
-которые начинаются словами «Служебная подсказка тренажёра»). Диспетчер их не слышит.
-Отвечая на следующую фразу диспетчера, обязательно скажи по смыслу то, что в подсказке,
-своими словами; подсказку не упоминаешь и не зачитываешь дословно."""
+Ты торопишься: говоришь коротко; если диспетчер говорит долго — «Так, стоп, давайте коротко:
+адрес и что случилось»."""
 # What each person of the organization is for (#263, рекомендации заказчика п. 8).
 STAFF_DUTIES: dict[str, str] = {
     "organization_head": "Принимаешь доклады о происшествиях. Решаешь то, что бригаде не по "
@@ -345,8 +339,8 @@ OFFICER_REPEAT_PROMPT = """Ты дежурный службы: {service}. Теб
   «Отрабатываем своими силами», без номеров нарядов и подробностей.
 - Если диспетчер сообщает новое (появились пострадавшие, изменилась обстановка), одной фразой
   подтверждаешь: «Принял».
-- На «хорошо», «понял», «принято», «спасибо» отвечаешь одним словом: «Принято». Никогда
-  не говоришь «молчу» и не описываешь, что молчишь.
+- На согласие диспетчера отвечаешь «Принято».
+- Никогда не говоришь «молчу» и не описываешь, что молчишь.
 
 Чего не делаешь: не придумываешь того, чего нет в списке ниже; не кладёшь трубку и не
 прощаешься — разговор заканчивает диспетчер; не переходишь на другой язык ни в одном слове.
@@ -364,8 +358,8 @@ SQUAD_PROMPT = """Ты начальник аварийной бригады сл
 - Молчишь и ждёшь, пока диспетчер не заговорит. На его вопрос или сообщение («пожарные
   приехали», «поправка: дом 24») отвечаешь коротко и по-человечески: «Понял», «Принял, дом
   24». Никогда не рассуждаешь, вопрос это или нет, и не говоришь «жду вопроса».
-- На «хорошо», «понял», «принято», «спасибо», «давайте» отвечаешь одним словом: «Принято»:
-  доклад принят, разговор окончен с твоей стороны. Никогда не говоришь «молчу».
+- На согласие диспетчера отвечаешь «Принято».
+- Никогда не говоришь «молчу».
 - На вопрос отвечаешь одним предложением по факту: сроки, люди, помощь, обстановка.
 - По просьбе повторяешь доклад теми же словами — один раз.
 - Никогда не повторяешь «продолжаю работу», «доложу дальше», «остаюсь на связи» дважды.
@@ -400,7 +394,6 @@ STAFF_PROMPT = """Ты сотрудник городской службы, ра�
 - Не выдумываешь того, чего нет в списке ниже; не кладёшь трубку и не прощаешься —
   разговор заканчивает диспетчер; не переходишь на другой язык ни в одном слове.
 
-{hints}
 
 Что ты знаешь:
 {facts}
@@ -429,17 +422,13 @@ def role_prompt(scenario: CallIntakeScenario) -> str:
         repeat = REPEAT_FACT_KEY in caller.facts
         if scenario.title.startswith(SQUAD_CHIEF_TITLE) and not repeat:
             return CHIEF_PROMPT.format(
-                address_rule=CHIEF_LEAVES_ADDRESS
-                if scenario.difficulty >= MISHEARD_DIFFICULTY
-                else CHIEF_REPEATS_ADDRESS,
+                address_rule=CHIEF_REPEATS_ADDRESS,
                 service=service,
                 facts=facts or "- ничего особенного",
                 hurry=CHIEF_HURRY if scenario.difficulty >= HURRY_DIFFICULTY else "",
-                hints=HINTS_RULE,
             )
         template = OFFICER_REPEAT_PROMPT if repeat else OFFICER_PROMPT
-        prompt = template.format(service=service, facts=facts or "- ничего особенного")
-        return f"{prompt}\n{HINTS_RULE}\n"
+        return template.format(service=service, facts=facts or "- ничего особенного")
     if caller.persona == SQUAD_LEADER_PERSONA:
         return SQUAD_PROMPT.format(service=service, facts=facts or "- ничего особенного")
     if caller.persona in _staff_personas():
@@ -447,7 +436,6 @@ def role_prompt(scenario: CallIntakeScenario) -> str:
             title=scenario.title,
             behaviour=caller.behaviour or "",
             duties=STAFF_DUTIES.get(caller.persona, ""),
-            hints=HINTS_RULE,
             facts=facts or "- ничего особенного",
         )
     return caller_prompt(scenario)
@@ -531,72 +519,6 @@ def transcriber_config(
     else:
         config["language"] = s.cloud_voice_language
     return config
-
-
-# Live Call Control (#263): the server adds a note to the assistant's conversation. The
-# assistant answers the dispatcher's phrase itself; the note steers that answer.
-HINT_PREFIX = "Служебная подсказка тренажёра, диспетчер её не слышит."
-# The squad chief is in a hurry from this difficulty on (``app.domain.scenarios.rush``).
-HURRY_DIFFICULTY = 3
-HINT_TRIGGERS_RESPONSE = False
-CONTROL_TIMEOUT_SECONDS = 5.0
-
-
-def hint_message(decision: str) -> dict[str, Any]:
-    """The control message carrying the server's decision («Записал: …, дом 19?»)."""
-    return {
-        "type": "add-message",
-        "message": {
-            "role": "system",
-            "content": (
-                f"{HINT_PREFIX} Отвечая диспетчеру, скажи по смыслу: «{decision}». "
-                "Своими словами, коротко, не упоминай подсказку."
-            ),
-        },
-        "triggerResponseEnabled": HINT_TRIGGERS_RESPONSE,
-    }
-
-
-def say_message(line: str) -> dict[str, Any]:
-    """The control message that makes the assistant say ``line`` word for word."""
-    return {"type": "say", "content": line, "endCallAfterSpoken": False}
-
-
-def said_note(line: str) -> dict[str, Any]:
-    """After a line said word for word: the assistant knows it said it and keeps to it."""
-    return {
-        "type": "add-message",
-        "message": {
-            "role": "system",
-            "content": (
-                f"{HINT_PREFIX} Ты только что сказал диспетчеру: «{line}». Это твоя реплика: "
-                "дальше говори в согласии с ней, не повторяй её и не противоречь ей."
-            ),
-        },
-        "triggerResponseEnabled": False,
-    }
-
-
-def control_url(message: dict) -> str | None:
-    """Where the call takes control messages: Vapi sends it with the call's messages when the
-    assistant has ``monitorPlan.controlEnabled``."""
-    monitor = (message.get("call") or {}).get("monitor") or {}
-    url = monitor.get("controlUrl")
-    return str(url) if url else None
-
-
-async def send_control(url: str, body: dict[str, Any]) -> bool:
-    try:
-        async with httpx.AsyncClient(timeout=CONTROL_TIMEOUT_SECONDS) as client:
-            response = await client.post(url, json=body)
-    except httpx.HTTPError as exc:
-        log.warning("vapi control failed", error=str(exc))
-        return False
-    if response.status_code >= 400:
-        log.warning("vapi control refused", status=response.status_code, body=response.text[:200])
-        return False
-    log.info("vapi control sent", type=body.get("type"))
-    return True
 
 
 # The form the cloud fills after a call to the squad chief (#263): the evaluation reads the
@@ -712,9 +634,6 @@ def build_assistant(
         # Диспетчер передаёт карточку кусками, с паузами: дежурный ждёт дольше обычного,
         # чтобы не отвечать на каждую его фразу (замечание пользователя 23.09.2026).
         **({} if is_caller(scenario) else {"startSpeakingPlan": {"waitSeconds": 1.5}}),
-        # The server steers the people of the card mid-call (#263): the misheard house and
-        # «машин нет», voiced word for word.
-        **({} if is_caller(scenario) else {"monitorPlan": {"controlEnabled": True}}),
         # After a call to the squad chief the cloud fills the form the evaluation reads.
         **(
             {

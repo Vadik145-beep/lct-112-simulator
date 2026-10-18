@@ -35,16 +35,17 @@ def test_hurried_greeting_only_on_difficulty_three_and_the_own_service() -> None
     assert not opening(medium, "gkh").endswith(rush.OPENING_TAIL)
 
 
-def test_long_phrase_is_cut_once_then_the_house_is_misheard() -> None:
+def test_long_phrase_is_cut_once_per_call() -> None:
     scenario = hard()
     call = new_call()
     attempt = Attempt(service_calls=[call])
     assert rush.is_long(LONG)
     assert talk(scenario, attempt, call, LONG) == rush.CUT_IN
+    # No misheard house after the cut (18.10.2026), and the cut comes once per call.
+    said = talk(scenario, attempt, call, ADDRESS)
+    assert said is None or not said.startswith("Записал:")
+    assert talk(scenario, attempt, call, LONG) != rush.CUT_IN
     assert misheard.state(attempt.service_calls) is None
-    assert talk(scenario, attempt, call, ADDRESS) == "Записал: улица Свободы, дом 44, корпус 2?"
-    # Cut in once per call: the next long phrase with the house corrects him.
-    assert talk(scenario, attempt, call, LONG) == "Понял, дом 42. Исправил, записал."
 
 
 def test_short_phrases_and_other_services_are_not_cut() -> None:

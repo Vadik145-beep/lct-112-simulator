@@ -47,9 +47,9 @@ def test_works_done_is_said_once() -> None:
         "Алло, диспетчер? Начальник аварийной бригады. Работы завершены, пострадавших нет."
     )
     assert officers.renamed("Работы завершены: работы выполнены.") == "Работы завершены."
-    assert officers.renamed("Работы завершены: работы выполнены") == "Работы завершены"
+    # No colons in a report said aloud (18.10.2026).
     assert officers.renamed("Работы завершены: заменили участок трубы.") == (
-        "Работы завершены: заменили участок трубы."
+        "Работы завершены, заменили участок трубы."
     )
 
 
@@ -110,3 +110,43 @@ def test_a_squad_number_said_digit_by_digit_is_still_the_number() -> None:
     assert says_number("Принял, выезжаем. Наряд восемь-пять-один-три.", "8513")
     assert says_number("наряд 8-5-1-3", "8513")
     assert "восемь-пять-один-три" in officers.said_order("8513")
+
+
+def test_reports_are_said_without_colons_and_repeats() -> None:
+    """Decision of 18.10.2026: «Работы завершены, газоснабжение восстановлено»."""
+    head = "Алло, диспетчер? Начальник аварийной бригады. "
+    assert officers.renamed(head + "Работы завершены: газоснабжение восстановлено.") == (
+        head + "Работы завершены, газоснабжение восстановлено."
+    )
+    assert officers.renamed(head + "Работы завершены: работы завершены, пострадавших нет.") == (
+        head + "Работы завершены, пострадавших нет."
+    )
+    assert officers.renamed(
+        head + "Работы завершены: работы по устранению аварии завершены, вода подана."
+    ) == (head + "Работы по устранению аварии завершены, вода подана.")
+    assert officers.renamed(head + "Докладываю: перекрыт стояк.") == (
+        head + "Работы начаты, перекрыт стояк."
+    )
+    assert officers.renamed(head + "Докладываю: проводятся работы на месте.") == (
+        head + "Проводятся работы на месте."
+    )
+    assert officers.renamed("Выехали по адресу: улица Свободы, дом 42.") == (
+        "Выехали по адресу улица Свободы, дом 42."
+    )
+    assert "Мосгаз утечку" in officers.renamed("Работы завершены: мосгаз утечку не нашёл.")
+
+
+def test_every_seed_report_is_said_without_a_colon() -> None:
+    import json
+
+    from tests.domain.evaluation.helpers import SCENARIOS_DIR
+
+    for path in sorted(SCENARIOS_DIR.glob("*.json")):
+        body = json.loads(path.read_text("utf-8"))
+        if body.get("kind") != "card_response":
+            continue
+        reports = (body.get("reference") or {}).get("reports")
+        for report in reports if reports is not None else officers.default_reports(body):
+            said = officers.renamed(report["text"])
+            assert ":" not in said, (path.name, said)
+            assert said.lower().count("работы завершены") <= 1, (path.name, said)

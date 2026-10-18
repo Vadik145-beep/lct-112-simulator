@@ -1,6 +1,6 @@
-"""The squad chief mishears the house (issue #263): on difficulty 2 he repeats the address
-with a wrong house, the dispatcher corrects him or lets it pass; a squad sent to the wrong
-house names it in its reports, and the review counts the miss."""
+"""The squad chief no longer mishears the house (decision of 18.10.2026, issue #263): the bot
+never says the address wrong on purpose, at any difficulty. The 112 operator's mistakes in the
+card stay and are scored as before."""
 
 from __future__ import annotations
 
@@ -66,44 +66,15 @@ def test_difficulty_one_hears_right() -> None:
     assert talk(easy, attempt, call, ADDRESS) is None
 
 
-def test_corrected_in_the_same_call_is_no_error(scenario: CardResponseScenario) -> None:
-    call = new_call()
-    attempt = Attempt(service_calls=[call])
-    assert talk(scenario, attempt, call, ADDRESS) == "Записал: улица Свободы, дом 44, корпус 2?"
-    assert talk(scenario, attempt, call, "Нет.") == misheard.ASK_HOUSE
-    assert talk(scenario, attempt, call, "Дом сорок два.") == ("Понял, дом 42. Исправил, записал.")
-    found = misheard.state(attempt.service_calls)
-    assert found is not None and found.fixed and found.house_said == "44"
-    # Asked once per card: the house named again later is just a fact.
-    assert talk(scenario, attempt, call, ADDRESS) is None
-    assert "misheard_not_fixed" not in errors_of(scenario, attempt)
-
-
-def test_let_pass_sends_the_squad_to_the_wrong_house(scenario: CardResponseScenario) -> None:
-    call = new_call()
-    attempt = Attempt(service_calls=[call])
-    talk(scenario, attempt, call, ADDRESS)
-    assert talk(scenario, attempt, call, "Да.") == misheard.AGREED
-    found = misheard.state(attempt.service_calls)
-    assert found is not None and found.squad_has_wrong_house
-
-    report = scenario.reference.reports[0]
-    text = misheard.report_text(report.text, scenario.card, found)
-    assert "улица Свободы, дом 44, корпус 2" in text
-    assert "дом 42" not in text
-    errors = errors_of(scenario, attempt)
-    assert "дом 44" in errors["misheard_not_fixed"]
-    assert "выехала по неверному адресу" in errors["misheard_not_fixed"]
-
-    # Corrected on the squad's report: the squad turns round, the error stays.
-    report_call = new_call(kind=officer.KIND_REPORT, report_status=report.status)
-    attempt.service_calls = [*attempt.service_calls, report_call]
-    said = talk(scenario, attempt, report_call, "Не тот дом, нужен дом 42.")
-    assert said == "Понял, дом 42. Ошиблись адресом, переезжаем."
-    found = misheard.state(attempt.service_calls)
-    assert found is not None and found.fixed_late and not found.squad_has_wrong_house
-    assert misheard.report_text(report.text, scenario.card, found) == report.text
-    assert "исправлен позже" in errors_of(scenario, attempt)["misheard_not_fixed"]
+def test_no_misheard_house_at_any_difficulty() -> None:
+    for level in (2, 3):
+        hard = card_scenario(NAME).model_copy(update={"difficulty": level})
+        call = new_call()
+        attempt = Attempt(service_calls=[call])
+        said = talk(hard, attempt, call, ADDRESS)
+        assert said is None or not said.startswith("Записал:")
+        assert misheard.state(attempt.service_calls) is None
+        assert "misheard_not_fixed" not in errors_of(hard, attempt)
 
 
 def test_only_the_first_address_to_the_own_service(scenario: CardResponseScenario) -> None:
