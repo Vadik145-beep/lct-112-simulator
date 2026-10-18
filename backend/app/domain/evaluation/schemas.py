@@ -210,6 +210,9 @@ class ServiceCallLog(BaseModel):
     started_at: datetime
     kind: Literal["outgoing", "report", "caller", "staff"] = "outgoing"
     role: str | None = None  # who answers a «staff» call (``app.domain.scenarios.staff``)
+    # The turn of a difficulty 3 card fixed on the first call to the squad chief
+    # (``app.domain.scenarios.no_vehicles``): «машин нет» or a complication.
+    squad_plan: str | None = None
     report_status: str | None = None  # the status a report stands for
     answered: bool = False
     ended_at: datetime | None = None

@@ -8,8 +8,12 @@ import { VirtualPhone } from "@/emulator/virtual-phone";
 
 const ringing = { current: [] as unknown[] };
 const navigate = vi.fn();
+const location = { current: { pathname: "/student/attempts/a1", state: null as unknown } };
 vi.mock("@/api/training", () => ({ useRinging: () => ({ data: ringing.current }) }));
-vi.mock("react-router-dom", () => ({ useNavigate: () => navigate }));
+vi.mock("react-router-dom", () => ({
+  useNavigate: () => navigate,
+  useLocation: () => location.current,
+}));
 
 vi.mock("@/api/phones", () => ({
   usePhoneBook: () => ({
@@ -66,9 +70,15 @@ function calls(overrides: Partial<CardCalls> = {}): CardCalls {
 }
 
 /** The phone with the open state of the shared hook kept in a real component. */
-function Phone({ overrides = {} }: { overrides?: Partial<CardCalls> }) {
+function Phone({
+  overrides = {},
+  card = attempt,
+}: {
+  overrides?: Partial<CardCalls>;
+  card?: AttemptOut;
+}) {
   const [phoneOpen, setPhoneOpen] = useState(false);
-  return <VirtualPhone attempt={attempt} calls={calls({ phoneOpen, setPhoneOpen, ...overrides })} />;
+  return <VirtualPhone attempt={card} calls={calls({ phoneOpen, setPhoneOpen, ...overrides })} />;
 }
 
 describe("VirtualPhone", () => {
@@ -139,8 +149,54 @@ describe("VirtualPhone and the other cards", () => {
     expect(screen.getByTestId("other-card-calls")).toHaveTextContent(
       "Звонок по другой карточке № 34451676",
     );
-    fireEvent.click(screen.getByRole("button", { name: "Перейти в карточку" }));
-    expect(navigate).toHaveBeenCalledWith("/student/attempts/a2");
+    fireEvent.click(screen.getByRole("button", { name: "Перейти в карточку и ответить" }));
+    expect(navigate).toHaveBeenCalledWith("/student/attempts/a2", {
+      state: { answerCallId: "c2" },
+    });
     ringing.current = [];
+  });
+});
+
+describe("VirtualPhone after «Перейти в карточку и ответить»", () => {
+  const report = {
+    id: "c2",
+    kind: "report",
+    answered: false,
+    ended_at: null,
+  } as CardCalls["openCall"];
+
+  afterEach(() => {
+    location.current = { pathname: "/student/attempts/a1", state: null };
+    navigate.mockClear();
+  });
+
+  it("picks up the ringing call at once, one time only (стенд 18.10.2026, Б36)", () => {
+    location.current = { pathname: "/student/attempts/a1", state: { answerCallId: "c2" } };
+    const answer = vi.fn();
+    const { rerender } = render(<Phone overrides={{ openCall: report, answer }} />);
+    expect(answer).toHaveBeenCalledTimes(1);
+    expect(navigate).toHaveBeenCalledWith("/student/attempts/a1", { replace: true, state: null });
+    // A new render before the state is cleared does not pick up twice.
+    rerender(<Phone overrides={{ openCall: report, answer: () => answer() }} />);
+    expect(answer).toHaveBeenCalledTimes(1);
+  });
+
+  it("waits while the card does not show the call yet", () => {
+    location.current = { pathname: "/student/attempts/a1", state: { answerCallId: "c2" } };
+    const answer = vi.fn();
+    const { rerender } = render(<Phone overrides={{ answer }} />);
+    expect(answer).not.toHaveBeenCalled();
+    rerender(<Phone overrides={{ openCall: report, answer }} />);
+    expect(answer).toHaveBeenCalledTimes(1);
+  });
+
+  it("leaves a call that stopped ringing meanwhile", () => {
+    location.current = { pathname: "/student/attempts/a1", state: { answerCallId: "c2" } };
+    const answer = vi.fn();
+    const ended = { ...report, ended_at: "2026-10-18T10:41:30Z" };
+    const card = { ...attempt, service_calls: [ended] } as unknown as AttemptOut;
+    render(<Phone card={card} overrides={{ answer }} />);
+    expect(answer).not.toHaveBeenCalled();
+    expect(navigate).toHaveBeenCalledWith("/student/attempts/a1", { replace: true, state: null });
   });
 });

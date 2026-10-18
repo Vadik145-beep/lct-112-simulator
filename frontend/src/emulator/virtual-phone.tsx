@@ -1,9 +1,10 @@
 import { Delete, Phone, PhoneIncoming, X } from "lucide-react";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { usePhoneBook } from "@/api/phones";
 import { useRinging, type AttemptOut } from "@/api/training";
+import { goAndAnswer, type AnswerOnArrival } from "@/emulator/answer-on-arrival";
 import { OtherCardCalls } from "@/emulator/ring-elsewhere";
 import { ServiceCallPanel } from "@/emulator/service-call";
 import { callTitle, describeCall } from "@/emulator/service-call-model";
@@ -55,6 +56,22 @@ export function VirtualPhone({
   const ringingNow = useRinging(attempt.session.id);
   const elsewhere = (ringingNow.data ?? []).filter((r) => r.attempt_id !== attempt.id);
   const other = !ringing && elsewhere.length > 0;
+  // Came here by «Перейти в карточку и ответить»: the call is picked up as soon as this card
+  // shows it ringing, once; a call that stopped ringing meanwhile is left alone.
+  const location = useLocation();
+  const answerCallId = (location.state as AnswerOnArrival | null)?.answerCallId ?? null;
+  const { answer, busy } = calls;
+  const awaited = attempt.service_calls.find((c) => c.id === answerCallId);
+  const answerNow = Boolean(answerCallId && ringing && openCall?.id === answerCallId && !busy);
+  const rangOff = Boolean(answerCallId && awaited && awaited.ended_at !== null);
+  const pickedUp = useRef<string | null>(null);
+  useEffect(() => {
+    if (!answerNow && !rangOff) return;
+    navigate(location.pathname, { replace: true, state: null });
+    if (!answerNow || pickedUp.current === answerCallId) return;
+    pickedUp.current = answerCallId;
+    answer();
+  }, [answerNow, rangOff, answerCallId, answer, navigate, location.pathname]);
 
   const entries = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -126,7 +143,7 @@ export function VirtualPhone({
           <div className="flex flex-col gap-3 overflow-y-auto p-3">
             <OtherCardCalls
               calls={elsewhere}
-              onGo={(id) => navigate(`/student/attempts/${id}`)}
+              onGo={(call) => goAndAnswer(navigate, call)}
             />
             {shownCall ? (
               <>

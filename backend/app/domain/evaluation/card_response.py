@@ -287,11 +287,14 @@ def _grammar(grammar: GrammarResult | None, max_points: int) -> Component:
     return Component("grammar", TITLES["grammar"], score, max_points, items=items)
 
 
+def comments_of(attempt: CardResponseAttempt) -> list[str]:
+    """The dispatcher's comments of the attempt, in the order the statuses were set."""
+    return [c for e in attempt.status_log if (c := (e.comment or "").strip())]
+
+
 def comment_texts(attempt: CardResponseAttempt) -> str:
-    """Text the grammar provider should check for this attempt."""
-    return "\n".join(
-        (e.comment or "").strip() for e in attempt.status_log if (e.comment or "").strip()
-    )
+    """The comments as the review shows them, one per line; grammar offsets point into it."""
+    return "\n".join(comments_of(attempt))
 
 
 def evaluate_card_response(

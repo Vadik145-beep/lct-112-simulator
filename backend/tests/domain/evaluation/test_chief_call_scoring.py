@@ -136,3 +136,41 @@ def test_order_to_the_head_is_the_wrong_contact() -> None:
     assert "«руководитель организации»" in errors(scenario, head, good)["wrong_contact"]
     assert officer.wrong_contact_reply(head_call, "Докладываю: течь на Свободы") is None
     assert officer.wrong_contact_reply({"kind": "outgoing"}, "Выезжайте") is None
+
+
+def test_no_order_is_not_blamed_when_the_chief_has_no_vehicles() -> None:
+    """Stand 18.10.2026, card 08978084 (decision of the user): the chief said «машин нет», the
+    head of the organization gave the vehicle — there was nobody to give the order to."""
+    scenario = card_scenario(NAME).model_copy(update={"difficulty": 3})
+    call = chief(
+        turn("operator", FACTS, 41),
+        turn("caller", no_vehicles.ANNOUNCE, 44, [no_vehicles.TOPIC_NO_VEHICLES]),
+        turn("operator", "И что делать?", 45),
+    )
+    head = {
+        "service": "gkh",
+        "kind": "staff",
+        "role": staff.ROLE_HEAD,
+        "started_at": at(120),
+        "answered": True,
+        "ended_at": at(150),
+        "dialog": [
+            turn("operator", "У бригады нет машин.", 121),
+            turn("caller", no_vehicles.RESOLVED, 122, [no_vehicles.TOPIC_VEHICLES_FOUND]),
+        ],
+    }
+    assert "no_order_given" not in errors(scenario, call, head)
+    # The order loses nothing either; the number is still to be taken.
+    assert fraction(scenario, call, head) == pytest.approx(1.0 - 0.075)
+    component = service_call_component(scenario, attempt_of(scenario, call, head), MAX)
+    assert component.items[0]["order_given"] is False  # the review says what was said
+
+
+def test_no_order_on_a_card_turned_to_no_vehicles_before_the_chief_said_it() -> None:
+    """The turn is fixed on the first call to the chief: the card goes the «машин нет» way even
+    when the record lost the chief's words."""
+    scenario = card_scenario(NAME).model_copy(update={"difficulty": 3})
+    call = chief(turn("operator", FACTS, 41), turn("caller", "Принял.", 42))
+    assert "no_order_given" in errors(scenario, call)
+    planned = {**call, "squad_plan": no_vehicles.PLAN_NO_VEHICLES}
+    assert "no_order_given" not in errors(scenario, planned)

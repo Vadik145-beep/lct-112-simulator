@@ -100,6 +100,12 @@ def resolving_call(calls: Iterable[Mapping]) -> Mapping | None:
     return next((c for c in calls if _said(c, TOPIC_VEHICLES_FOUND)), None)
 
 
+def on_path(calls: Iterable[Mapping]) -> bool:
+    """The card went the «машин нет» way: its turn was fixed so, or the chief said it."""
+    rows = list(calls)
+    return plan_of(rows) == PLAN_NO_VEHICLES or announced(rows)
+
+
 def held(calls: Iterable[Mapping]) -> bool:
     """The card is a «машин нет» one and the head has not found a vehicle yet: the squad
     cannot leave, whatever was said (one truth from the start of the card)."""

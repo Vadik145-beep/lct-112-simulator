@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useDial } from "@/api/phones";
 import {
+  endServiceCallOf,
   useAnswerServiceCall,
   useEndServiceCall,
   useSayToOfficer,
@@ -34,6 +35,8 @@ export function useCardCalls(attempt: AttemptOut) {
   // Занятие с облачным голосом: собеседников играет облако прямо из браузера.
   const cloudLesson = attempt.session.dialog_mode === "cloud";
   const cloudCall = useRef<CloudCall | null>(null);
+  // The record of the card the cloud call carries: the voice lives exactly as long as it.
+  const cloudCallId = useRef<string | null>(null);
   const [cloudState, setCloudState] = useState<CloudState>("off");
   const [cloudMuted, setCloudMuted] = useState(false);
   const finished = attempt.state === "finished" || attempt.state === "evaluated";
@@ -46,6 +49,7 @@ export function useCardCalls(attempt: AttemptOut) {
   const stopCloudCall = useCallback(async () => {
     const call = cloudCall.current;
     cloudCall.current = null;
+    cloudCallId.current = null;
     setCloudState("off");
     setCloudMuted(false);
     if (call) await call.stop();
@@ -66,18 +70,21 @@ export function useCardCalls(attempt: AttemptOut) {
       }
       const call = new CloudCall();
       cloudCall.current = call;
+      cloudCallId.current = callId;
       call
         .on("started", () => setCloudState("live"))
         .on("failed", () => {
           if (cloudCall.current !== call) return;
           void call.stop();
           cloudCall.current = null;
+          cloudCallId.current = null;
           setCloudState("failed");
           answerCall.mutate(callId);
         })
         .on("ended", () => {
           if (cloudCall.current !== call) return;
           cloudCall.current = null;
+          cloudCallId.current = null;
           setCloudState("off");
         });
       try {
@@ -101,6 +108,25 @@ export function useCardCalls(attempt: AttemptOut) {
     setShownCallId(openCallId);
     setPhoneOpen(true);
   }, [openCallId]);
+  // The server closed the call (a report not taken in time, the officer hung up): the voice
+  // goes down with it, or it would hold the line and no other call would connect (stand
+  // 18.10.2026: after one card the calls of the others stayed «Соединение со службой…»).
+  useEffect(() => {
+    if (cloudCall.current && cloudCallId.current !== openCallId) void stopCloudCall();
+  }, [openCallId, stopCloudCall]);
+  // The page shows another card or closes: the call of the card left ends, voice and record.
+  useEffect(() => {
+    const attemptId = attempt.id;
+    return () => {
+      const call = cloudCall.current;
+      const callId = cloudCallId.current;
+      if (!call) return;
+      cloudCall.current = null;
+      cloudCallId.current = null;
+      void call.stop();
+      if (callId) void endServiceCallOf(attemptId, callId);
+    };
+  }, [attempt.id]);
   // A closed card has nothing to call about: the phone folds and leaves the result in view.
   useEffect(() => {
     if (finished) setPhoneOpen(false);

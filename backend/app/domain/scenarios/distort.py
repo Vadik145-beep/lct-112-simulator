@@ -229,31 +229,32 @@ def lookalike_street(body: dict, rng: random.Random, ctx: Context) -> dict | Non
     }
 
 
+def _branch(code: str) -> str:
+    """The classifier branch of a type: group, first and second sign («3.2.2» for «Взрыв МЦК»
+    and its kinds «… (поезд)», «… (станция, тоннель)»)."""
+    return ".".join(code.split(".")[:3])
+
+
 def sibling_incident_type(body: dict, rng: random.Random, ctx: Context) -> dict | None:
     """A neighbouring type of the classifier (same group, other final title); the description
-    tells what really happened."""
+    tells what really happened. Never a type of the same branch: a kind for its parent or the
+    other way round tells nothing a person can catch (stand 18.10.2026: «Взрыв МЦК (станция,
+    тоннель)» for «Взрыв МЦК»)."""
     card = body["card"]
     code = str(card.get("incident_type") or "")
     rows = {str(r["code"]): r for r in ctx.type_rows}
     row = rows.get(code)
     if row is None or not row.get("final_title"):
         return None
-    prefix = code.rsplit(".", 1)[0] + "."
+    group = str(row.get("group_code") or code.split(".")[0])
     siblings = [
         r
         for c, r in rows.items()
-        if c != code and c.startswith(prefix) and r.get("final_title") != row.get("final_title")
+        if _branch(c) != _branch(code)
+        and str(r.get("group_code")) == group
+        and r.get("final_title")
+        and r.get("final_title") != row.get("final_title")
     ]
-    if not siblings:
-        group = str(row.get("group_code") or code.split(".")[0])
-        siblings = [
-            r
-            for c, r in rows.items()
-            if c != code
-            and str(r.get("group_code")) == group
-            and r.get("final_title")
-            and r.get("final_title") != row.get("final_title")
-        ]
     if not siblings:
         return None
     wrong_row = rng.choice(sorted(siblings, key=lambda r: str(r["code"])))

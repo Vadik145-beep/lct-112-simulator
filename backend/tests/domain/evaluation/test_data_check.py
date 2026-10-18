@@ -170,6 +170,31 @@ def test_values_match_by_field_kind() -> None:
     assert not values_match("caller.phone", "+7 916 402-17-55", "+7 916 402-17-56")
 
 
+def test_a_type_typed_in_other_word_forms_is_right() -> None:
+    """Stand 18.10.2026, card 08978084: «взрыв в жилом доме» for «Взрыв жилое здание» was
+    counted a wrong correction (half the share)."""
+    right = "Взрыв жилое здание"
+    assert values_match("incident_type", "3.1.1.0", "взрыв в жилом доме", label=right)
+    assert values_match("incident_type", "3.1.1.0", "Взрыв, жилое здание", label=right)
+    # Another type of the branch is not the right one.
+    assert not values_match("incident_type", "3.1.1.0", "взрыв в частном доме", label=right)
+    assert not values_match("incident_type", "3.1.2.0", "взрыв в жилом доме", "Взрыв частный дом")
+    assert not values_match("incident_type", "3.1.1.0", "взрыв в метро", label=right)
+    assert values_match(
+        "incident_type", "3.1.5.0", "взрыв в лечебном заведении", "Взрыв лечебное учреждение"
+    )
+
+
+def test_the_planted_longer_type_typed_back_is_not_a_correction() -> None:
+    """«Взрыв МЦК (станция, тоннель)» holds every word of «Взрыв МЦК»: typed for it, it is the
+    planted mistake again, not the right type."""
+    wrong = "Взрыв МЦК (станция, тоннель)"
+    assert not values_match("incident_type", "3.2.2.0", wrong, "Взрыв МЦК", wrong)
+    assert values_match("incident_type", "3.2.2.0", "взрыв на МЦК", "Взрыв МЦК", wrong)
+    # The other way round the longer title is the right one.
+    assert values_match("incident_type", "3.2.2.2", "взрыв МЦК станция", wrong, "Взрыв МЦК")
+
+
 WRONG_SERVICE = {
     "field": "service",
     "wrong_value": "moslift",

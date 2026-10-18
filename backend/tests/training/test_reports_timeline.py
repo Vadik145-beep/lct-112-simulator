@@ -36,7 +36,14 @@ def attempt(status: str = "accepted", *, log=None, calls=None) -> SimpleNamespac
     )
 
 
-def report_call(status: str, start: float, end: float | None, *, spoken: bool = True) -> dict:
+def report_call(
+    status: str,
+    start: float,
+    end: float | None,
+    *,
+    spoken: bool = True,
+    answered: bool | None = None,
+) -> dict:
     dialog = [{"role": "caller", "text": "доклад", "topics": ["report"], "at": iso(start)}]
     if spoken:
         dialog.append({"role": "operator", "text": "принял", "topics": [], "at": iso(start + 5)})
@@ -46,7 +53,7 @@ def report_call(status: str, start: float, end: float | None, *, spoken: bool = 
         "kind": "report",
         "report_status": status,
         "started_at": iso(start),
-        "answered": True,
+        "answered": spoken if answered is None else answered,
         "ended_at": iso(end) if end is not None else None,
         "dialog": dialog,
     }
@@ -175,6 +182,9 @@ def test_ignored_report_is_stale_after_the_timeout_and_the_timeline_goes_on() ->
     # A report the dispatcher is talking to is never stale.
     spoken = attempt(calls=[report_call("response_started", 40, None)])
     assert reports.stale_report(spoken, now(10_000)) is None
+    # Answered at the last second and not spoken to yet: his to end, not «не принят».
+    picked = attempt(calls=[report_call("response_started", 40, None, spoken=False, answered=True)])
+    assert reports.stale_report(picked, after) is None
     # Once the stale call is closed (ended_at set), the next delay counts from its end.
     closed = attempt(calls=[{**ignored, "ended_at": iso(130)}])
     assert reports.next_report(SCENARIO, closed, now(130 + SECOND.after_seconds - 1)) is None
