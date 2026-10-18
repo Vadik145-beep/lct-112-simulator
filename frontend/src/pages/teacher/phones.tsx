@@ -1,5 +1,5 @@
 import { Plus, Save, Trash2 } from "lucide-react";
-import { useMemo, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 
 import {
   useAddPhone,
@@ -22,15 +22,27 @@ type Roles = PhoneDirectoryOut["roles"];
  * the virtual phone of the card — up to ten per dispatch service, the customer's four roles.
  * One directory for all teachers.
  */
+/** City dispatch services with emergency squads and the district councils: whose ДДС a
+ * trainee is (the customer's four roles of the phone fit them). */
+const DDS_SERVICES = new Set([
+  "gkh",
+  "moek",
+  "mosgaz",
+  "mosvodokanal",
+  "gormost",
+  "moslift",
+  "oek",
+  "moesk",
+  "mosvodostok",
+  "moscollector",
+  "territorial_oiv",
+  "territorial_oiv_tinao",
+]);
+
 export function TeacherPhonesPage() {
   const directory = usePhoneDirectory();
   const services = useServices();
   const [picked, setPicked] = useState<string | null>(null);
-
-  const withNumbers = useMemo(
-    () => new Set((directory.data?.entries ?? []).map((e) => e.service_code)),
-    [directory.data],
-  );
 
   if (directory.isPending || services.isPending) return <LoadingState text="Загружаем справочник…" />;
   if (directory.isError)
@@ -38,7 +50,9 @@ export function TeacherPhonesPage() {
   if (services.isError)
     return <ErrorState message={services.error.message} onRetry={() => void services.refetch()} />;
 
-  const list = services.data.filter((s) => s.via_arm112 || withNumbers.has(s.code));
+  // Only the dispatch services a trainee works for, not the emergency lines (101–104) and
+  // the rest of the classifier: every service got default numbers, so «has numbers» was all.
+  const list = services.data.filter((s) => DDS_SERVICES.has(s.code));
   const service = picked ?? list[0]?.code ?? "";
   const entries = directory.data.entries.filter((e) => e.service_code === service);
   const max = directory.data.max_per_service;
