@@ -100,8 +100,13 @@ const cardsFor = (difficulty: number, mode: string) =>
 const STREAM_HINT = `${STREAM.cards} ${plural(STREAM.cards, "карточка", "карточки", "карточек")}: первая сразу, дальше по одной каждые ${STREAM.gap} с`;
 const NORM_DEFAULT = { card_response: 30, call_intake: 60 } as const;
 // «Задания формирует ИИ» (issue #265): each trainee gets his own cards written during the lesson,
-// one at a time, the next by the mistakes of the previous one; ДДС lessons only.
-const AI_CARDS = { source: "ai", perTrainee: 5 } as const;
+// one at a time, the next by the mistakes of the previous one; ДДС lessons only. One card at
+// difficulty 1, two at 2 (backend ai_plan.CARDS_PER_TRAINEE), the stream at 3.
+const AI_CARDS = { source: "ai", byDifficulty: { 1: 1, 2: 2 } as Record<number, number> } as const;
+const aiCardsFor = (difficulty: number) =>
+  isStream("card_response", difficulty) ? STREAM.cards : (AI_CARDS.byDifficulty[difficulty] ?? 1);
+const aiCardsHint = (n: number) =>
+  n === 1 ? "Каждый обучающийся получит одну свою карточку." : `Каждый обучающийся получит ${n} ${plural(n, "свою карточку", "своих карточки", "своих карточек")} по очереди.`;
 
 const selectClass =
   "flex h-9 w-full rounded-md border border-input bg-background text-foreground px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50";
@@ -224,7 +229,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
     e.preventDefault();
     const body: SessionIn = {
       ...form,
-      cards_per_student: aiCards ? AI_CARDS.perTrainee : cardsFor(form.difficulty, form.mode),
+      cards_per_student: aiCards ? aiCardsFor(form.difficulty) : cardsFor(form.difficulty, form.mode),
       // A group the chosen services never get would be ignored by the AI: it is not sent.
       incident_groups: (form.incident_groups ?? []).filter((g) => !aiCards || aiGroupTypes.has(g)),
       title: form.title.trim(),
@@ -454,9 +459,8 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                 Задания формирует ИИ
               </label>
               <p className="text-xs text-muted-foreground">
-                Каждому обучающемуся система сама пишет свои карточки — {AI_CARDS.perTrainee} по одной, следующую под
-                ошибки предыдущей, — оценивает их и даёт советы. Выберите ниже, за какую службу работает ДДС; группы
-                происшествий сужают выбор, если отмечены.
+                Каждому обучающемуся система сама пишет свои карточки с учётом ошибок в предыдущих, оценивает их и
+                даёт советы. Сколько карточек, зависит от сложности. Для активации поставьте галочку.
               </p>
             </div>
           )}
@@ -473,10 +477,9 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               {servicesFieldset}
             </>
           )}
+          {!aiCards && (
           <div className="lg:col-span-2" data-testid="queue-preview" aria-live="polite">
-            {aiCards ? (
-              <p className="text-sm">Карточки будут написаны во время занятия — готовые сценарии не нужны.</p>
-            ) : preview.isPending ? (
+            {preview.isPending ? (
               <p className="text-xs text-muted-foreground">Считаем подходящие карточки…</p>
             ) : preview.isError ? (
               <p className="text-xs text-destructive">Не удалось посчитать карточки: {preview.error.message}</p>
@@ -495,6 +498,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
               </p>
             )}
           </div>
+          )}
           <div className="space-y-1.5">
             <Label htmlFor="difficulty">Сложность</Label>
             <select id="difficulty" className={selectClass} value={form.difficulty} onChange={(e) => patch({ difficulty: Number(e.target.value) })}>
@@ -512,7 +516,7 @@ function SessionForm({ existing }: { existing?: SessionOut }) {
                 : aiCards
                   ? isStream(form.mode, form.difficulty)
                     ? `Вал своих карточек каждому — ${STREAM_HINT}; ЧС, по две ошибки оператора 112 в карточке.`
-                    : `Каждый обучающийся получит ${AI_CARDS.perTrainee} своих карточек по одной.`
+                    : aiCardsHint(aiCardsFor(form.difficulty))
                   : isStream(form.mode, form.difficulty)
                   ? `Вал: ${STREAM_HINT}.`
                   : "Каждый обучающийся получит одну карточку."}

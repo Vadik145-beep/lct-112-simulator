@@ -63,9 +63,9 @@ test("«Задания формирует ИИ»: разные карточки 
   const groupSelect = form.getByLabel("Группа");
   await groupSelect.selectOption((await groupSelect.locator("option", { hasText: groupTitle }).getAttribute("value"))!);
   await form.getByLabel("Задания формирует ИИ").check();
-  await expect(form.getByText(/готовые сценарии не нужны/)).toBeVisible();
+  await expect(form.getByTestId("queue-preview")).toHaveCount(0);
   await form.getByLabel("Сложность").selectOption("2");
-  await expect(form.getByText("Каждый обучающийся получит 5 своих карточек по одной.")).toBeVisible();
+  await expect(form.getByText("Каждый обучающийся получит 2 своих карточки по очереди.")).toBeVisible();
   await form.getByRole("button", { name: "Создать занятие" }).click();
   await expect(teacher.getByRole("heading", { name: title })).toBeVisible();
   const sessionId = teacher.url().split("/sessions/")[1]!.split("/")[0]!;

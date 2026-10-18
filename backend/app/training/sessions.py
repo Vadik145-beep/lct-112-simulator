@@ -297,9 +297,9 @@ def apply_settings(ts: TrainingSession, spec: SessionSettings) -> None:
     ts.dialog_mode = spec.dialog_mode
     ts.adaptive = spec.adaptive
     if spec.card_source == ai_cards.CARD_SOURCE_AI:
-        # The cards are written during the lesson: no queue, a fixed number per trainee.
+        # The cards are written during the lesson: no queue, a number per trainee by the difficulty.
         ts.scenario_ids = []
-        ts.cards_per_student = ai_cards.CARDS_PER_TRAINEE
+        ts.cards_per_student = ai_cards.lesson_cards(spec.difficulty)
         ts.adaptive = False
     ts.phone_calls = spec.phone_calls
     # The number matters only with the checkbox; stored as MultiFon dials it.

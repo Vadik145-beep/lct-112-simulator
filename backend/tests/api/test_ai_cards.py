@@ -55,9 +55,9 @@ async def ai_lesson(client: AsyncClient, teacher: dict, difficulty: int) -> str:
         card_source="ai",
         difficulty=difficulty,
         service_profile=[],
-        cards_per_student=3,  # the form's own number is replaced by the lesson's five
+        cards_per_student=5,  # the form's own number is replaced by the difficulty's
     )
-    assert created["cards_per_student"] == ai_cards.CARDS_PER_TRAINEE
+    assert created["cards_per_student"] == {1: 1, 2: 2, 3: 3}[difficulty]
     await start(client, teacher, created["id"])
     await ai_cards.wait_all()
     return created["id"]

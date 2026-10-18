@@ -3,7 +3,7 @@ recommendations 9–10 of the customer: the system forms the cards, gives them o
 and advises without the teacher).
 
 The teacher only picks the group and the difficulty and starts the lesson. Each trainee then
-gets ``CARDS_PER_TRAINEE`` cards one at a time, each written for him when the previous one is
+gets ``CARDS_PER_TRAINEE`` of its difficulty cards one at a time (a stream at 3), each written for him when the previous one is
 scored (``app.domain.scenarios.ai_plan`` chooses what, the generation provider writes it, the
 template when the model is down or slow). Writing takes seconds, so it runs in the background:
 writing of the next card starts as soon as the previous one is scored (``prepare_next``, while
@@ -91,7 +91,15 @@ def cards_for(ts: TrainingSession) -> int:
     """Cards a trainee gets: those of the stream at difficulty 3, else the lesson's number."""
     from app.training.service import STREAM_CARDS, is_stream
 
-    return STREAM_CARDS if is_stream(ts) else ts.cards_per_student or CARDS_PER_TRAINEE
+    return STREAM_CARDS if is_stream(ts) else ts.cards_per_student or lesson_cards(ts.difficulty)
+
+
+def lesson_cards(difficulty: int) -> int:
+    """Cards of a trainee in a lesson of written cards: one at difficulty 1, two at 2, the stream
+    at 3 (a lesson of written cards is always a card response one)."""
+    from app.training.service import STREAM_CARDS, STREAM_DIFFICULTY
+
+    return STREAM_CARDS if difficulty >= STREAM_DIFFICULTY else CARDS_PER_TRAINEE[difficulty]
 
 
 # ---------------------------------------------------------------- issuing
