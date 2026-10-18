@@ -52,7 +52,7 @@ REASON_PHRASES: list[tuple[str, tuple[str, ...]]] = [
     ("other_card", ("по другой карточке", "по кп", "другой карточк")),
     ("no_contract", ("нет договора",)),
     ("not_our_territory", ("территор",)),
-    ("not_in_competence", ("компетенц", "не относится")),
+    ("not_in_competence", ("компетенц", "не относится", "профил", "не к нам")),
     ("transferred", ("передан", "передал")),
     ("not_our_object", ("не обслужива", "объект")),
 ]
