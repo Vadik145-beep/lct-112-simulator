@@ -317,13 +317,25 @@ def call_scenario(
         if role == staff.ROLE_SQUAD_SPECIALIST and squad_out(attempt, scenario):
             # He rides with the squad: he knows its number (stand 18.10.2026: asked for it, he
             # sent the dispatcher to the head of the organization).
-            facts = {**person.caller.facts, "наряд бригады": squad_order(scenario)}
+            order = officers.said_order(squad_order(scenario))
+            facts = {**person.caller.facts, "наряд бригады": order}
             caller = person.caller.model_copy(update={"facts": facts})
             person = person.model_copy(update={"caller": caller})
         if role == staff.ROLE_HEAD and no_vehicles.held(calls_of(attempt)):
             facts = {**person.caller.facts, no_vehicles.HEAD_FACT_KEY: no_vehicles.HEAD_FACT}
             caller = person.caller.model_copy(update={"facts": facts})
             person = person.model_copy(update={"caller": caller})
+        if role == staff.ROLE_HEAD and officers.not_ours(scenario):
+            # He takes the report and sends it back: the card is to be refused.
+            facts = {**person.caller.facts, officers.NOT_OURS_FACT_KEY: staff.HEAD_NOT_OURS_FACT}
+            caller = person.caller.model_copy(update={"facts": facts})
+            replies = [
+                r.model_copy(update={"text": staff.HEAD_NOT_OURS, "audio": None})
+                if r.topic in ("confirm", "progress")
+                else r
+                for r in person.replies
+            ]
+            person = person.model_copy(update={"caller": caller, "replies": replies})
         return with_studio_audio(person, f"{STUDIO_STAFF_KEY}/{role}")
     if is_report(call):
         report = _report_for(scenario, call, attempt)
@@ -466,8 +478,8 @@ async def _squad_plan(
 ) -> str | None:
     """The turn of a card of difficulty 3, once per card: «машин нет» or a complication,
     alternating over the trainee's cards of the lesson in the order he calls on them,
-    «машин нет» first."""
-    if not no_vehicles.applies(scenario.difficulty):
+    «машин нет» first. A card to refuse has no squad to hold up (stand 18.10.2026)."""
+    if not no_vehicles.applies(scenario.difficulty) or scenario.reference.decision != "accept":
         return None
     if no_vehicles.plan_of(calls_of(attempt)) is not None:
         return None
@@ -736,10 +748,15 @@ def set_analysis(
     _store(attempt, {**call, "analysis": analysis, "facts_passed": facts})
 
 
+# A squad number is said one digit at a time (``officers.spoken_digits``), zeros too.
+_ZERO = re.compile(r"\b(ноль|нуль)\b")
+
+
 def says_number(text: str, number: str) -> bool:
     """The phrase names the squad's number, in digits or in words («девяносто пять тридцать
-    семь»)."""
-    spoken = re.sub(r"\D", "", words_to_numbers(normalize_text(text)))
+    семь», «восемь, ноль, ноль, ноль»)."""
+    said = _ZERO.sub("0", normalize_text(text))
+    spoken = re.sub(r"\D", "", words_to_numbers(said))
     return bool(number) and number in spoken
 
 
@@ -1163,6 +1180,21 @@ def chief_reply(
             method=method,
         )
 
+    if officers.not_ours(scenario):
+        # Not his service's business: once he knows what happened he says so, and goes nowhere
+        # however the dispatcher insists (decision of 18.10.2026).
+        if "incident_type" in missing:
+            if engine.gives_order(text):
+                return answer(ASK_INCIDENT, ["incident_type"], "order")
+            return answer(TAKEN, ["confirm"], "order") if _dispatching(reply) else reply
+        refused = any(
+            officers.TOPIC_NOT_OURS in (t.get("topics") or [])
+            for c in calls
+            for t in c.get("dialog") or []
+        )
+        if refused and not engine.gives_order(text) and not _dispatching(reply):
+            return reply
+        return answer(officers.NOT_OURS, [officers.TOPIC_NOT_OURS], "not_ours")
     if missing:
         if engine.gives_order(text):
             ask = ASK_ADDRESS if "address" in missing else ASK_INCIDENT
@@ -1174,6 +1206,8 @@ def chief_reply(
         if not no_vehicles.announced(everything):
             line = no_vehicles.SHORTAGE if fixed else no_vehicles.ANNOUNCE
             return answer(line, [no_vehicles.TOPIC_NO_VEHICLES], "no_vehicles")
+        if no_vehicles.blocked(everything) and no_vehicles.asks_what_to_do(text):
+            return answer(no_vehicles.TO_HEAD, [no_vehicles.TOPIC_NO_VEHICLES], "no_vehicles")
         if no_vehicles.blocked(everything) and (engine.gives_order(text) or _dispatching(reply)):
             return answer(no_vehicles.STILL_NONE, [no_vehicles.TOPIC_NO_VEHICLES], "no_vehicles")
         if no_vehicles.blocked(everything):

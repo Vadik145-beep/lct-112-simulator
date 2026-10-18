@@ -33,8 +33,18 @@ ANNOUNCE = f"Принял. {SHORTAGE}"
 STILL_NONE = "Машин так и нет, все на выездах."
 # The chief's fact sheet on a «машин нет» card, until the head finds a vehicle.
 FACT_KEY = "машины"
+# Asked straight what to do, the chief sends the dispatcher to the head; he never hints it
+# unasked (decision of 18.10.2026: he said «ожидаю освобождения машины»).
+TO_HEAD = "Это к руководителю, только он может снять машину."
+ASKS_WHAT_TO_DO = re.compile(
+    r"что\s+(же\s+|нам\s+|мне\s+|теперь\s+|тогда\s+)?(делать|делаем|будем\s+делать|предлагаете)"
+    r"|как\s+(же\s+)?(быть|поступить)"
+)
 # One short line of the chief's prompt (decision of 18.10.2026: no notes mid-call).
-FACT = "свободных машин нет, все на выездах, наряд не называешь"
+FACT = (
+    "свободных машин нет, все на выездах, наряд не называешь; только если диспетчер прямо "
+    f"спросит, что делать, — «{TO_HEAD}»"
+)
 RESOLVED = (
     "Понял. Снимаю машину с планового выезда, бригада выедет через десять минут. "
     "Держите на контроле."
@@ -101,13 +111,36 @@ def held(calls: Iterable[Mapping]) -> bool:
 FOUND_WORDS = re.compile(r"планов")
 HEAD_FACT_KEY = "машины"
 HEAD_FACT = "если адрес не назван — спроси адрес, потом снимаешь машину с планового выезда"
-# The chief's own words on a «машин нет» card, read from the record of a cloud call.
-NONE_WORDS = re.compile(r"машин\w*\s+(так\s+и\s+)?нет|нет\s+(свободн\w+\s+)?машин")
+# The chief's own words on a «машин нет» card, read from the record of a cloud call (stand
+# 18.10.2026: «Свободных нет, все на выездах, выехать не могу» was not heard as «машин нет»).
+# Only what is said of vehicles and squads: «пострадавших нет», «доступа нет» are not here.
+_SQUADS = r"(машин\w*|бригад\w*|экипаж\w*)"
+_STILL = r"(так\s+и\s+|пока\s+|сейчас\s+)?"
+NONE_WORDS = re.compile(
+    rf"машин\w*\s+{_STILL}нет"
+    r"|нет\s+(свободн\w+\s+)?машин"
+    rf"|свободн\w*\s+({_SQUADS}\s+)?{_STILL}нет"
+    rf"|нет\s+свободн\w*(\s+{_SQUADS}|\s+(все|сейчас|пока)\b|$)"
+    rf"|все\s+({_SQUADS}\s+)?(на\s+выезд|в\s+разъезд)"
+    r"|машин\w*\s+(все\s+)?занят"
+    r"|некого\s+(отправ|направ|посла)"
+    r"|не\s+на\s+чем\s+(ехать|выех)"
+)
+# «Выехать не могу» is «машин нет» unless he says what he is missing («без адреса …»).
+CANNOT_GO = re.compile(r"выех\w*\s+(\w+\s+)?не\s+с?мо[гж]\w*|не\s+с?мо[гж]\w*\s+(\w+\s+)?выех")
+MISSING_SAID = re.compile(r"\bбез\b|адрес|распоряжен|команд")
 
 
 def says_none(text: str) -> bool:
     """The squad chief says there are no vehicles."""
-    return bool(NONE_WORDS.search(normalize_text(text)))
+    said = normalize_text(text)
+    if NONE_WORDS.search(said):
+        return True
+    return bool(CANNOT_GO.search(said)) and not MISSING_SAID.search(said)
+
+
+def asks_what_to_do(text: str) -> bool:
+    return bool(ASKS_WHAT_TO_DO.search(normalize_text(text)))
 
 
 def finds_vehicle(text: str) -> bool:

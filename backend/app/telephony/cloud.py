@@ -82,6 +82,17 @@ ENDED_STATUS = "ended"
 LEG_LOST_GRACE_SECONDS = 3.0
 EVENT_CLOUD_FALLBACK = "call.cloud_fallback"
 _DIGITS = re.compile(r"\d+")
+# Vapi's transcript of the bot is what was heard, not what was written: a pause comes as a colon
+# (stand 18.10.2026: «Как начнём работы: доложу», «Едем на адрес:.» for «Как начнём работы —
+# доложу», «Едем на адрес.»; «Номер наряда: 4-641»). The journal shows the dash instead.
+_COLON_AT_END = re.compile(r"\s*:\s*(?=[.!?…]|$)")
+_COLON_PAUSE = re.compile(r"(?<=\w):\s+(?=[a-zа-яё0-9])")
+
+
+def written(text: str) -> str:
+    """A phrase of the transcript as the journal shows it: pauses heard as colons are dashes,
+    a colon before the end of the sentence is dropped; «адрес: Елисеевский…» stays."""
+    return _COLON_PAUSE.sub(" — ", _COLON_AT_END.sub("", text))
 
 
 def new_token() -> str:
@@ -148,7 +159,7 @@ async def record_transcript(call: CloudTurns, message: dict) -> dict | None:
     if message.get("transcriptType", "final") != "final":
         return None
     role = TRANSCRIPT_ROLES.get(str(message.get("role")))
-    text = str(message.get("transcript") or "")
+    text = written(str(message.get("transcript") or ""))
     if not role:
         return None
     latency = call.pending_latency_ms if role == "caller" else None
@@ -214,7 +225,7 @@ async def apply_report(call: CloudTurns, message: dict) -> None:
     added; stored turns are never rewritten."""
     artifact = message.get("artifact") or {}
     reported = [
-        (TRANSCRIPT_ROLES[m["role"]], str(m.get("message") or ""))
+        (TRANSCRIPT_ROLES[m["role"]], written(str(m.get("message") or "")))
         for m in artifact.get("messages") or []
         if m.get("role") in TRANSCRIPT_ROLES
     ]

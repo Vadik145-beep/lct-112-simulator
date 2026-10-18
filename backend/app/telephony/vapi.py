@@ -215,6 +215,12 @@ def caller_state(persona: str | None) -> str:
     return "calm"
 
 
+# How every official on the phone says a squad number (stand 18.10.2026: «Номер наряда: 4-641»):
+# words, one digit at a time, commas for the voice to pause (``officers.spoken_digits``).
+DIGITS_RULE = """Номер наряда, если называешь его, — только словами, по одной цифре, через
+запятую и не торопясь, как он записан в списке ниже; никогда не цифрами, не через дефис и
+не «тысяча…»."""
+
 # Роли служебных звонков ДДС (app.domain.scenarios.officers). Заявителю здесь не место:
 # звонит не пострадавший, а диспетчер дежурно-диспетчерской службы.
 OFFICER_PROMPT = """Ты дежурный службы: {service}. Тебе звонит диспетчер дежурно-диспетчерской
@@ -257,6 +263,7 @@ OFFICER_PROMPT = """Ты дежурный службы: {service}. Тебе зв
 
 Как говорить: по-русски, коротко и по-деловому, одно-два предложения за реплику, спокойным
 голосом дежурного. Без канцелярита, без эмоций, без описаний своих действий в скобках.
+{digits}
 
 Что ты знаешь о себе и о бригаде:
 {facts}
@@ -289,7 +296,7 @@ CHIEF_PROMPT = """Ты начальник аварийной бригады сл
 5. Дальше молчишь. Отвечаешь только если диспетчер о чём-то спросил, и одной фразой.
    На согласие диспетчера отвечаешь «Принято».
    Никогда не говоришь «молчу» и не описываешь, что молчишь.
-{hurry}
+{hurry}{not_ours}
 Чего не делаешь никогда:
 - Не спрашиваешь у диспетчера, где он находится, что он видит и как он себя чувствует: он не
   на месте происшествия, он сидит на АРМ-112 и читает карточку.
@@ -302,6 +309,7 @@ CHIEF_PROMPT = """Ты начальник аварийной бригады сл
 
 Как говорить: по-русски, коротко и по-деловому, одно-два предложения за реплику, без
 канцелярита и без описаний своих действий в скобках.
+{digits}
 
 Что ты знаешь о себе и о бригаде:
 {facts}
@@ -313,11 +321,19 @@ HURRY_DIFFICULTY = 3
 CHIEF_HURRY = """
 Ты торопишься: говоришь коротко; если диспетчер говорит долго — «Так, стоп, давайте коротко:
 адрес и что случилось»."""
+# A card the own service must refuse (``officers.not_ours``): the chief goes nowhere.
+CHIEF_NOT_OURS = """
+Это происшествие НЕ ПО ПРОФИЛЮ твоей службы, и это важнее шагов 3–4: когда диспетчер сказал,
+что случилось, говоришь «Это не наш профиль, нам такое не передают». На выезд не соглашаешься,
+«выезжаем» не говоришь и номер наряда не называешь, даже если диспетчер настаивает. «Машин
+нет» не говоришь: дело не в машинах."""
 # What each person of the organization is for (#263, рекомендации заказчика п. 8).
 STAFF_DUTIES: dict[str, str] = {
     "organization_head": "Принимаешь доклады о происшествиях. Решаешь то, что бригаде не по "
     "силам: машины, люди, техника. Бригаду сам не высылаешь — распоряжение на выезд даёт "
-    "диспетчер начальнику аварийной бригады.",
+    "диспетчер начальнику аварийной бригады. Номера наряда не знаешь и никогда его не "
+    "называешь: на вопрос о номере бригады — «Номер вам начальник бригады скажет, он "
+    "перезвонит».",
     "response_chief": "Принимаешь доклад о происшествии и ставишь его на контроль, уточняешь, "
     "какие силы направлены. Бригаду не высылаешь и машинами не распоряжаешься. О бригаде "
     "говоришь только то, что в строке «где бригада», и ничего не обещаешь: на выезд её "
@@ -346,6 +362,7 @@ OFFICER_REPEAT_PROMPT = """Ты дежурный службы: {service}. Теб
 прощаешься — разговор заканчивает диспетчер; не переходишь на другой язык ни в одном слове.
 
 Как говорить: по-русски, коротко и по-деловому, одно-два предложения за реплику.
+{digits}
 
 Что ты знаешь о себе и о бригаде:
 {facts}
@@ -369,6 +386,7 @@ SQUAD_PROMPT = """Ты начальник аварийной бригады сл
 не завершаешь звонок сам, не прощаешься и не переходишь на другой язык ни в одном слове.
 
 Как говорить: по-русски, коротко, по-деловому, одно-два предложения за реплику.
+{digits}
 
 Что ты знаешь:
 {facts}
@@ -393,6 +411,7 @@ STAFF_PROMPT = """Ты сотрудник городской службы, ра�
 - Отвечаешь на последнюю фразу диспетчера одним-двумя короткими предложениями.
 - Не выдумываешь того, чего нет в списке ниже; не кладёшь трубку и не прощаешься —
   разговор заканчивает диспетчер; не переходишь на другой язык ни в одном слове.
+{digits}
 
 
 Что ты знаешь:
@@ -417,7 +436,11 @@ def role_prompt(scenario: CallIntakeScenario) -> str:
     facts = "\n".join(f"- {key}: {value}" for key, value in caller.facts.items())
     service = caller.facts.get("служба", "службы")
     if caller.persona == OFFICER_PERSONA:
-        from app.domain.scenarios.officers import REPEAT_FACT_KEY, SQUAD_CHIEF_TITLE
+        from app.domain.scenarios.officers import (
+            NOT_OURS_FACT_KEY,
+            REPEAT_FACT_KEY,
+            SQUAD_CHIEF_TITLE,
+        )
 
         repeat = REPEAT_FACT_KEY in caller.facts
         if scenario.title.startswith(SQUAD_CHIEF_TITLE) and not repeat:
@@ -426,17 +449,24 @@ def role_prompt(scenario: CallIntakeScenario) -> str:
                 service=service,
                 facts=facts or "- ничего особенного",
                 hurry=CHIEF_HURRY if scenario.difficulty >= HURRY_DIFFICULTY else "",
+                not_ours=CHIEF_NOT_OURS if NOT_OURS_FACT_KEY in caller.facts else "",
+                digits=DIGITS_RULE,
             )
         template = OFFICER_REPEAT_PROMPT if repeat else OFFICER_PROMPT
-        return template.format(service=service, facts=facts or "- ничего особенного")
+        return template.format(
+            service=service, facts=facts or "- ничего особенного", digits=DIGITS_RULE
+        )
     if caller.persona == SQUAD_LEADER_PERSONA:
-        return SQUAD_PROMPT.format(service=service, facts=facts or "- ничего особенного")
+        return SQUAD_PROMPT.format(
+            service=service, facts=facts or "- ничего особенного", digits=DIGITS_RULE
+        )
     if caller.persona in _staff_personas():
         return STAFF_PROMPT.format(
             title=scenario.title,
             behaviour=caller.behaviour or "",
             duties=STAFF_DUTIES.get(caller.persona, ""),
             facts=facts or "- ничего особенного",
+            digits=DIGITS_RULE,
         )
     return caller_prompt(scenario)
 

@@ -4,6 +4,7 @@ finds one, and the dispatcher who never tells the head gets «Не доложе�
 
 from __future__ import annotations
 
+import asyncio
 import uuid
 from datetime import UTC, datetime, timedelta
 
@@ -13,6 +14,7 @@ from app.domain.evaluation.schemas import CardResponseAttempt, CardResponseScena
 from app.domain.scenarios import misheard, no_vehicles, officers, staff
 from app.models import Attempt
 from app.providers.dialog import CallerReply
+from app.telephony import vapi
 from app.training import reports
 from tests.domain.evaluation.helpers import card_scenario, grammar_ok, perfect_card_attempt
 
@@ -213,3 +215,81 @@ def test_the_chief_knows_his_specialist_asked_for_another_service() -> None:
     attempt = Attempt(service_calls=[report])
     built = officer.officer_scenario(scenario, "gkh", "ЕДЦ ЖКХ", attempt, repeat=True)
     assert "попросил диспетчера вызвать" in built.caller.facts["осложнение"]
+
+
+def test_the_chiefs_other_words_for_no_vehicles_are_heard() -> None:
+    """Stand 18.10.2026: «Свободных нет, все на выездах, выехать не могу» was not «машин нет»."""
+    for said in (
+        "Свободных нет, все на выездах, выехать не могу.",
+        "Все на выездах.",
+        "Нет свободных бригад.",
+        "Выехать не могу.",
+        "Не можем выехать, машины все заняты.",
+        "Некого отправить.",
+        no_vehicles.ANNOUNCE,
+        no_vehicles.STILL_NONE,
+    ):
+        assert no_vehicles.says_none(said), said
+    for said in (
+        "Пострадавших нет, доступа нет.",
+        "Нет свободного доступа в подъезд.",
+        "Без адреса выехать не могу.",
+        "Принял, выезжаем. Наряд: четыре, шесть, четыре, один.",
+    ):
+        assert not no_vehicles.says_none(said), said
+
+
+def not_ours() -> CardResponseScenario:
+    body = hard().model_dump()
+    body["reference"]["decision"] = "reject"
+    body["reference"]["reject_reason"] = "not_in_competence"
+    return CardResponseScenario.model_validate(body)
+
+
+def test_a_card_to_refuse_gets_no_turn_and_the_chief_does_not_go() -> None:
+    """Stand 18.10.2026: on a «не в компетенции» card the chief took it, said «машин нет», and
+    the head found a vehicle. Decision: «Это не наш профиль», no squad, no turn."""
+    scenario = not_ours()
+    attempt = Attempt(service_calls=[])
+    assert asyncio.run(officer._squad_plan(None, attempt, scenario)) is None  # type: ignore[arg-type]
+
+    call = chief_call()
+    call.pop(no_vehicles.PLAN_KEY)
+    attempt.service_calls = [call]
+    assert talk(scenario, attempt, call, ADDRESS) == officers.NOT_OURS
+    assert talk(scenario, attempt, call, "Всё равно выезжайте.") == officers.NOT_OURS
+    assert not officer.squad_sent(attempt.service_calls)
+    assert officer.squad_state(attempt) == officers.SQUAD_STATE_WAITING
+
+    built = officer.officer_scenario(scenario, "gkh", "ЕДЦ ЖКХ", attempt)
+    assert "твой наряд" not in built.caller.facts
+    assert "где бригада" not in built.caller.facts
+    assert officers.NOT_OURS_FACT_KEY in built.caller.facts
+    assert not any("наряд" in r.text.lower() for r in built.replies)
+    prompt = vapi.role_prompt(built)
+    assert "НЕ ПО ПРОФИЛЮ" in prompt and officers.NOT_OURS in prompt
+    # The head says the same: refuse the card (decision of 18.10.2026).
+    head = head_call(NOW + timedelta(seconds=60))
+    attempt.service_calls = [*attempt.service_calls, head]
+    person = officer.call_scenario(scenario, head, attempt)
+    assert staff.HEAD_NOT_OURS in vapi.role_prompt(person)
+    assert [r.text for r in person.replies if r.topic == "confirm"] == [staff.HEAD_NOT_OURS]
+    assert officer.squad_state(attempt) == officers.SQUAD_STATE_WAITING
+    plain_head = officer.call_scenario(hard(), head, Attempt(service_calls=[head]))
+    assert staff.HEAD_NOT_OURS not in vapi.role_prompt(plain_head)
+    # An accepted card's chief knows nothing of it.
+    plain = officer.officer_scenario(hard(), "gkh", "ЕДЦ ЖКХ", Attempt(service_calls=[]))
+    assert "НЕ ПО ПРОФИЛЮ" not in vapi.role_prompt(plain)
+
+
+def test_asked_what_to_do_the_chief_sends_to_the_head() -> None:
+    """Stand 18.10.2026: «И что делать?» — «Ожидаю освобождения машины». Decision: «Это к
+    руководителю», and only when asked."""
+    scenario = hard()
+    call = chief_call()
+    attempt = Attempt(service_calls=[call])
+    assert talk(scenario, attempt, call, ADDRESS) == no_vehicles.ANNOUNCE
+    assert talk(scenario, attempt, call, "Понял.") != no_vehicles.TO_HEAD
+    assert talk(scenario, attempt, call, "И что делать?") == no_vehicles.TO_HEAD
+    built = officer.officer_scenario(scenario, "gkh", "ЕДЦ ЖКХ", attempt)
+    assert no_vehicles.TO_HEAD in built.caller.facts[no_vehicles.FACT_KEY]

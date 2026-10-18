@@ -9,9 +9,9 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 
 from app.dialog import officer
-from app.domain.scenarios import no_vehicles, staff
+from app.domain.scenarios import no_vehicles, officers, staff
 from app.models import Attempt
-from app.telephony import vapi
+from app.telephony import cloud, vapi
 from app.training import reports
 from tests.domain.evaluation.helpers import card_scenario
 from tests.providers.test_officer_misheard import new_call
@@ -78,7 +78,8 @@ def test_no_vehicles_from_the_prompts_and_the_head_from_the_record() -> None:
     accepted(attempt)
     chief = officer.call_scenario(scenario, chief_call, attempt)
     assert chief.caller.facts[no_vehicles.FACT_KEY] == (
-        "свободных машин нет, все на выездах, наряд не называешь"
+        "свободных машин нет, все на выездах, наряд не называешь; только если диспетчер прямо "
+        "спросит, что делать, — «Это к руководителю, только он может снять машину.»"
     )
     assert "твой наряд" not in chief.caller.facts
     number = officer.squad_order(scenario)
@@ -128,3 +129,41 @@ def test_the_cloud_agrees_with_one_line() -> None:
         assert "не отвечаешь ничего" not in prompt.lower()
         assert "На согласие диспетчера отвечаешь «Принято»." in prompt
         assert "На «хорошо»" not in prompt
+
+
+def test_the_head_does_not_know_the_squad_number() -> None:
+    """Stand 18.10.2026: asked «номер бригады какой?», the head made up «Бригада No4»."""
+    scenario = card_scenario(NAME).model_copy(update={"difficulty": 3})
+    call = new_call("moek", kind=officer.KIND_STAFF, **{no_vehicles.ROLE_KEY: staff.ROLE_HEAD})
+    head = officer.call_scenario(scenario, call, Attempt(service_calls=[call]))
+    prompt = vapi.role_prompt(head)
+    assert "Номер вам начальник бригады скажет, он перезвонит" in prompt
+    assert "твой наряд" not in head.caller.facts and "наряд бригады" not in head.caller.facts
+
+
+def test_every_squad_number_is_said_digit_by_digit() -> None:
+    """Stand 18.10.2026: the specialist said «Номер наряда: 4-641»."""
+    scenario = card_scenario(NAME).model_copy(update={"difficulty": 3})
+    order = officer.squad_order(scenario)
+    spoken = officers.spoken_digits(order)
+    assert spoken.count(", ") == len(order) - 1
+    chief = officer.call_scenario(scenario, new_call("moek"), Attempt(service_calls=[]))
+    assert f"«{spoken}»" in chief.caller.facts["твой наряд"]
+    report = next(r for r in scenario.reference.reports if r.status == "arrived")
+    leader = officers.report_scenario(scenario, report, "МОЭК")
+    assert f"«{spoken}»" in leader.caller.facts["наряд"]
+    for built in (chief, leader):
+        assert vapi.DIGITS_RULE in vapi.role_prompt(built)
+    for prompt in (vapi.OFFICER_PROMPT, vapi.OFFICER_REPEAT_PROMPT, vapi.STAFF_PROMPT):
+        assert "{digits}" in prompt
+
+
+def test_the_journal_shows_dashes_not_heard_colons() -> None:
+    """Stand 18.10.2026: Vapi's transcript of the bot came with colons for pauses."""
+    assert cloud.written("Как начнём работы: доложу.") == "Как начнём работы — доложу."
+    assert cloud.written("Едем на адрес:.") == "Едем на адрес."
+    assert cloud.written("Номер наряда: 4-641.") == "Номер наряда — 4-641."
+    assert cloud.written("Фиксирую адрес: Елисеевский переулок.") == (
+        "Фиксирую адрес: Елисеевский переулок."
+    )
+    assert cloud.written("Принял, выезжаем.") == "Принял, выезжаем."
