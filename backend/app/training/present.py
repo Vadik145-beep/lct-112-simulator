@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain.evaluation.data_check import field_title
 from app.domain.evaluation.status_machine import STATUSES
-from app.domain.scenarios import complication, staff
+from app.domain.scenarios import complication, no_vehicles, officers, staff
 from app.models import (
     MODE_CALL_INTAKE,
     Attempt,
@@ -321,10 +321,20 @@ def session_info(ts: TrainingSession, lookups: Lookups, service_code: str | None
     )
 
 
-def _squad_state(attempt: Attempt) -> str | None:
+def squad_state_told(attempt: Attempt) -> str | None:
+    """Where the own squad is as far as the trainee has been told: «машин нет» only once the
+    chief has said it (stand 18.10.2026: the hint showed on hanging up before a word was said,
+    the plan is fixed on dialling). The squad itself is held from the start all the same."""
     from app.dialog import officer  # the dialog package imports the training service
 
-    return officer.squad_state(attempt) if attempt.service_calls else None
+    if not attempt.service_calls:
+        return None
+    state = officer.squad_state(attempt)
+    if state == officers.SQUAD_STATE_NO_VEHICLES and not no_vehicles.announced(
+        officer.calls_of(attempt)
+    ):
+        return officers.SQUAD_STATE_WAITING
+    return state
 
 
 def arm_info(student: User) -> ArmInfo:
@@ -561,7 +571,7 @@ def attempt_out(
             c.get("service") for c in (body.get("reference") or {}).get("service_calls") or []
         ],
         reports_expected=bool((body.get("reference") or {}).get("reports")),
-        squad_state=_squad_state(attempt),
+        squad_state=squad_state_told(attempt),
         transitions=[TransitionOut(**t.__dict__) for t in transitions],
         reject_reasons=[
             RejectReasonOut(code=r.code, title=r.title)
