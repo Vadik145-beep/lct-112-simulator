@@ -431,7 +431,8 @@ def service_call_out(attempt: Attempt, body: dict, call: dict, lookups: Lookups)
     )
     started = datetime.fromisoformat(call["started_at"])
     ended = datetime.fromisoformat(call["ended_at"]) if call.get("ended_at") else None
-    turns = call.get("dialog") or []
+    # The server's decisions for the cloud are not phrases anyone said (#263).
+    turns = [t for t in call.get("dialog") or [] if not t.get("hint")]
     report_status = call.get("report_status")
     return ServiceCallOut(
         id=call["id"],

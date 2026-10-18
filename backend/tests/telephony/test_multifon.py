@@ -313,10 +313,10 @@ async def test_service_call_of_a_cloud_lesson_goes_to_vapi(
     assert not fake_ari.calls("POST", "/snoop")
     assert not fake_ari.calls("POST", "/play")
 
-    # Vapi asks for the assistant: the officer of the service, not the 112 caller.
+    # Vapi asks for the assistant: the squad chief of the own service (#263), not the caller.
     reply = await manager.webhook(message("assistant-request", call))
     assistant = reply["assistant"]
-    assert "дежурный службы" in assistant["model"]["messages"][0]["content"].lower()
+    assert "начальник аварийной бригады" in assistant["model"]["messages"][0]["content"].lower()
 
     # Vapi picks up: its leg is bridged, the record is answered without our greeting.
     await fake_ari.emit(

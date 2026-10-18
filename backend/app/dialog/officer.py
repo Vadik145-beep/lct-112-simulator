@@ -258,6 +258,17 @@ def officer_scenario(
     if service == scenario.service and not repeat and rush.applies(scenario.difficulty):
         hurried = built.caller.model_copy(update={"opening": rush.opening(built.caller.opening)})
         built = built.model_copy(update={"caller": hurried})
+    calls = calls_of(attempt)
+    if (
+        service == scenario.service
+        and no_vehicles.plan_of(calls) == no_vehicles.PLAN_NO_VEHICLES
+        and no_vehicles.resolving_call(calls) is None
+    ):
+        # One truth for the cloud too (#263): the chief knows he has no vehicles.
+        facts = {**built.caller.facts, no_vehicles.FACT_KEY: no_vehicles.FACT}
+        built = built.model_copy(
+            update={"caller": built.caller.model_copy(update={"facts": facts})}
+        )
     return with_studio_audio(built, service)
 
 
@@ -317,10 +328,11 @@ def _report_for(scenario: CardResponseScenario, call: dict, attempt: Attempt) ->
 
 
 def passes_facts(call: dict) -> bool:
-    """Facts are passed to a duty officer only: a report brings them, and a call back to the
-    caller of the card is not about passing anything (ответ заказчика 23.09.2026), and a
-    report to the own head is not a call to a service (#263)."""
-    return not is_report(call) and not is_caller(call) and not is_staff(call)
+    """Facts are passed to a duty officer and reported to a person of the own organization
+    (#263: «переданы:» of a report to the head); a squad's report brings them, and a call back
+    to the caller of the card is not about passing anything (ответ заказчика 23.09.2026). The
+    evaluation of the service calls reads the dispatcher's calls to services only."""
+    return not is_report(call) and not is_caller(call)
 
 
 def _context(attempt: Attempt, call: dict, officer: CallIntakeScenario) -> DialogContext:
@@ -622,11 +634,19 @@ async def external_turn(
     *,
     now: datetime | None = None,
     latency_ms: int | None = None,
+    ts: TrainingSession | None = None,
+    decide: bool = False,
 ) -> tuple[dict | None, list[SessionEvent]]:
     """One phrase of a service call heard from the cloud voice (issue #59, browser calls):
     the dispatcher's own words as the provider transcribed them, or the reply of the officer
     (the squad leader on a report). Topics come from keywords, so the evaluation reads the
-    turn like any other. ``role`` is «operator» (the trainee) or «caller» (the other side)."""
+    turn like any other. ``role`` is «operator» (the trainee) or «caller» (the other side).
+
+    ``decide`` (a phrase heard live, #263): the server decides on the dispatcher's words what
+    the other side must say — the misheard house, the order taken, «машин нет», the head
+    finding a vehicle — exactly as in a call without the cloud. The decision is kept as a
+    hidden turn (``HINT_KEY``) the truth of the card reads, and ``hint_of`` hands it to the
+    cloud to say in its own words."""
     if role not in ("operator", "caller"):
         raise ValueError(f"unknown dialog role: {role!r}")
     text = text.strip()
@@ -651,7 +671,15 @@ async def external_turn(
         heard=role == "operator",
         latency_ms=latency_ms if role == "caller" else None,
     )
+    decided = None
+    if decide and role == "operator" and not is_caller(call):
+        decided = cloud_decision(lesson_scenario(scenario, ts), attempt, call, text)
     turns = [*(call.get("dialog") or []), turn]
+    if decided is not None:
+        reply, extra = decided
+        turn["topics"] = list(dict.fromkeys([*turn["topics"], *reply.operator_topics]))
+        hidden = _turn("caller", reply.text, reply.topics, now, method=reply.method, **extra)
+        turns.append({**hidden, HINT_KEY: True})
     facts = list(call.get("facts_passed") or [])
     if passes_facts(call):
         facts = engine.facts_from_dialog(
@@ -679,6 +707,55 @@ async def external_turn(
         pending_reply=False,
     )
     return turn, [event]
+
+
+# A turn the server decided for the cloud: it is not shown in the transcript, the cloud says it
+# in its own words, and the truth of the card (the misheard house, the order taken, the vehicle
+# found) reads it like any reply.
+HINT_KEY = "hint"
+# What the server decides on its own: the rest of the talk is the cloud's.
+SERVER_METHODS = frozenset({"misheard", "order", "no_vehicles", "wrong_contact"})
+
+
+def is_hint(turn: dict) -> bool:
+    return bool(turn.get(HINT_KEY))
+
+
+# Where the cloud ignored the note on the stand (17.10.2026): the squad chief repeated the
+# house right and sent the squad with no vehicles. These lines are said word for word.
+VERBATIM_TOPICS = frozenset({misheard.TOPIC_MISHEARD, no_vehicles.TOPIC_NO_VEHICLES})
+
+
+def hint_of(call: dict) -> str | None:
+    """The decision the cloud has to voice: the hidden turn right after the last phrase."""
+    turns = call.get("dialog") or []
+    return str(turns[-1]["text"]) if turns and is_hint(turns[-1]) else None
+
+
+def hint_is_verbatim(call: dict) -> bool:
+    """The decision must be said word for word, not in the cloud's own words."""
+    turns = call.get("dialog") or []
+    if not turns or not is_hint(turns[-1]):
+        return False
+    return bool(VERBATIM_TOPICS & set(turns[-1].get("topics") or []))
+
+
+def cloud_decision(
+    scenario: CardResponseScenario, attempt: Attempt, call: dict, text: str
+) -> tuple[CallerReply, dict] | None:
+    """What the other side must say to the dispatcher's phrase, decided by the server alone:
+    the same rules as a call without the cloud, with no model to ask. ``None`` leaves the
+    answer to the cloud."""
+    special = (
+        misheard_reply(scenario, attempt, call, text)
+        or head_reply(attempt, call, text)
+        or wrong_contact_reply(call, text)
+    )
+    reply, extra = special or (CallerReply(text="", topics=[], operator_topics=[]), {})
+    reply = chief_reply(scenario, attempt, call, text, reply)
+    if not reply.text or reply.method not in SERVER_METHODS:
+        return None
+    return reply, extra
 
 
 async def say(
@@ -717,6 +794,7 @@ async def say(
         reply = await dialog.provider_for(ts).reply(_context(attempt, call, officer), text)
         extra = {}
     reply = known_facts_reply(scenario, call, text, reply, officer)
+    reply = report_taken_reply(scenario, call, text, reply, officer)
     reply = chief_reply(scenario, attempt, call, text, reply)
     operator = _turn("operator", text, reply.operator_topics, now, action_id=action_id, heard=heard)
     audio = await dialog.reply_audio(None, version, officer, reply, stem=_reply_stem(call, reply))
@@ -744,7 +822,7 @@ async def say(
     call = {**call, "dialog": turns, "facts_passed": facts}
     _store(attempt, call)
     pending = False
-    if reply.generated and passes_facts(call):
+    if reply.generated and passes_facts(call) and not is_staff(call):
         pending = _add_pending_reply(version, call["service"], reply)
     await session.flush()
     event = await _event(
@@ -824,6 +902,39 @@ TAKEN = "Принял."
 def _dispatching(reply: CallerReply) -> bool:
     text = reply.text.strip()
     return not text.endswith("?") and bool(_DISPATCHING.search(text.lower()))
+
+
+# A report long enough to be one, even when it names no fact the keyword table knows.
+REPORT_WORDS = 6
+
+
+def report_taken_reply(
+    scenario: CardResponseScenario,
+    call: dict,
+    text: str,
+    reply: CallerReply,
+    other_side: CallIntakeScenario,
+) -> CallerReply:
+    """A person of the organization takes a report instead of asking to repeat it (#263: the
+    head answered a full report with «Повторите, не расслышал»)."""
+    if not is_staff(call) or not ({"repeat", "unknown"} & set(reply.topics)):
+        return reply
+    said = engine.facts_from_dialog(
+        engine.true_card(scenario), [DialogTurn(role="operator", text=text, topics=[])]
+    )
+    if not said and len(text.split()) < REPORT_WORDS:
+        return reply
+    confirm = next((r for r in other_side.replies if r.topic == "confirm"), None)
+    if confirm is None:
+        return reply
+    return CallerReply(
+        text=confirm.text,
+        topics=["confirm"],
+        operator_topics=reply.operator_topics,
+        reply_id=confirm.id,
+        audio=confirm.audio,
+        method="report",
+    )
 
 
 def known_facts_reply(

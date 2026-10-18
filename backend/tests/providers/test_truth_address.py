@@ -102,3 +102,20 @@ def test_no_question_about_a_fact_already_named_in_the_cards_words() -> None:
     assert {"address", "incident_type"} <= set(reply.operator_topics)
     # Asked for what is still missing: the injured, then the access.
     assert reply.text in officers.FACT_REQUESTS
+
+
+def test_the_head_takes_a_full_report_instead_of_asking_to_repeat() -> None:
+    """A report to the head (#263): «Повторите» on a full report was the keyword table not
+    knowing the words; the head confirms, and the facts of the report are counted."""
+    scenario = card()
+    head_call = {**new_call("moek"), "kind": officer.KIND_STAFF, "role": "head"}
+    attempt = Attempt(service_calls=[head_call])
+    head = officer.call_scenario(scenario, head_call, attempt)
+    repeat = CallerReply(text="Повторите, не расслышал.", topics=["repeat"], operator_topics=[])
+    report = "Докладываю: на Зелёном проспекте, дом 17, нет отопления во всех подъездах."
+    reply = officer.report_taken_reply(scenario, head_call, report, repeat, head)
+    assert reply.topics == ["confirm"]
+    assert reply.text == "Понял, принял. Держите на контроле."
+    # A short unclear word is still met with «повторите».
+    assert officer.report_taken_reply(scenario, head_call, "Алло", repeat, head) is repeat
+    assert officer.passes_facts(head_call)
