@@ -4057,6 +4057,11 @@ export interface components {
              * @default []
              */
             advice: string[];
+            /**
+             * Critical Failures
+             * @default []
+             */
+            critical_failures: string[];
         };
         /** PublicConfig */
         PublicConfig: {

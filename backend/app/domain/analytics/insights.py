@@ -154,16 +154,21 @@ def group_summary(
     return " ".join(parts)
 
 
-def weakest_group_tip(ratings: RatingState, group_titles: Mapping[str, str]) -> str | None:
-    """The advice about the lowest-rated incident group; None without ratings."""
+def weakest_group_tip(
+    ratings: RatingState, group_titles: Mapping[str, str], with_rating: bool = True
+) -> str | None:
+    """The advice about the lowest-rated incident group; None without ratings. The trainee's
+    «Мой прогресс» shows it without the number (``with_rating=False``): to him the rating
+    means nothing, the teacher's analytics keep it."""
     weakest = sorted(ratings.ratings.items(), key=lambda kv: kv[1])
     if not weakest:
         return None
     (group, mode), rating = weakest[0]
     title = group_titles.get(group, f"группа {group}")
     mode_title = "приём вызова" if mode == "call_intake" else "карточки"
+    rating_part = f", рейтинг {rating:.0f}" if with_rating else ""
     return (
-        f"Слабое место — «{title}» ({mode_title}), рейтинг {rating:.0f}: "
+        f"Слабое место — «{title}» ({mode_title}){rating_part}: "
         "возьмите карточки этой группы на следующем занятии."
     )
 
