@@ -83,7 +83,8 @@ def test_the_chief_goes_once_he_knows_where_and_what() -> None:
     assert officer.squad_state(attempt) == officers.SQUAD_STATE_WAITING
     said = talk(scenario, attempt, call, AS_IN_CARD + " Нет отопления в домах.")
     assert said == f"Принял, выезжаем. Наряд {squad(scenario)}."
-    assert officer.squad_state(attempt) == officers.SQUAD_STATE_PENDING
+    # Named in the call: on its way, no «выехали» call comes (18.10.2026).
+    assert officer.squad_state(attempt) == "response_started"
 
 
 def test_no_squad_number_while_something_is_missing() -> None:

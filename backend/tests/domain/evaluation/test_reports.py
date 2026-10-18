@@ -292,3 +292,17 @@ def test_departure_set_before_the_chief_named_his_squad_is_early() -> None:
     calls = _chief_named_squad(scenario, perfect, named)
     errors = errors_of(scenario, with_changes(perfect, status_log=log, service_calls=calls))
     assert "«Начало реагирования»" in errors["status_before_report"]
+
+
+def test_a_status_set_early_is_one_mistake_not_two() -> None:
+    """Decision of 18.10.2026: «Прибытие» set before the squad said «прибыли» costs
+    «status_before_report» only, not «report_not_reflected» as well."""
+    scenario = card_scenario(NAME)
+    perfect = perfect_card_attempt(scenario)
+    log = [e.model_dump() for e in perfect.status_log]
+    for entry in log:
+        if entry["status"] == "arrived":
+            entry["at"] = at(STEP_SECONDS["arrived"] - 60)
+    errors = errors_of(scenario, with_changes(perfect, status_log=log))
+    assert "status_before_report" in errors
+    assert "report_not_reflected" not in errors

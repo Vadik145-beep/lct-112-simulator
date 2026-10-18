@@ -195,3 +195,21 @@ def test_reports_say_the_real_house_not_the_operators_mistake() -> None:
     )
     said = officer.report_said(scenario, Attempt(service_calls=[]), report)
     assert "дом 42" in said and "дом 41" not in said
+
+
+def test_the_chief_knows_his_specialist_asked_for_another_service() -> None:
+    """Stand 18.10.2026: told «мы запросили подкрепление», the chief said «запрос передан»."""
+    scenario = hard()
+    report = {
+        "id": "r-c",
+        "service": "gkh",
+        "kind": officer.KIND_REPORT,
+        "report_status": "complication",
+        "started_at": NOW.isoformat(),
+        "answered": True,
+        "ended_at": NOW.isoformat(),
+        "dialog": [],
+    }
+    attempt = Attempt(service_calls=[report])
+    built = officer.officer_scenario(scenario, "gkh", "ЕДЦ ЖКХ", attempt, repeat=True)
+    assert "попросил диспетчера вызвать" in built.caller.facts["осложнение"]

@@ -185,3 +185,15 @@ def test_card_without_reports_never_rings() -> None:
     plain = card_scenario("card_2-1_zadymlenie_musoroprovoda")
     assert plain.reference.reports == []
     assert reports.next_report(plain, attempt(), now(10_000)) is None
+
+
+def test_no_departure_call_once_the_chief_named_his_squad() -> None:
+    """Stand 18.10.2026: «выезжаем, наряд 8513» in the call and then a call «выехали» — the
+    trainee set «Прибытие» on it. One call — one status: the next report is the arrival."""
+    scenario = card_scenario(NAME)
+    call = officer_call(20, 60)
+    call["dialog"].append(
+        {"role": "caller", "text": "Принял, выезжаем. Наряд 4127.", "topics": ["order_taken"]}
+    )
+    due = reports.next_report(scenario, attempt(calls=[call]), now(3600))
+    assert due is not None and due.status == "arrived"

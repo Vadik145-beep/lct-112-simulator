@@ -264,13 +264,30 @@ def order_number(scenario: CardResponseScenario, service: str) -> str:
     return str(1000 + int(digest[:4], 16) % 9000)
 
 
+DIGIT_WORDS = ("ноль", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять")
+
+
+def spoken_digits(number: str) -> str:
+    """«8513» → «восемь-пять-один-три»: the cloud's voice read a squad number as «8-5/13»
+    (stand 18.10.2026); one digit at a time it is heard and written down right."""
+    return "-".join(DIGIT_WORDS[int(d)] for d in number if d.isdigit()) or number
+
+
+def said_order(number: str) -> str:
+    """The squad number as the cloud must say it: the digits and how to say them."""
+    spoken = spoken_digits(number)
+    return f"{number} — вслух по одной цифре: «{spoken}»" if spoken != number else number
+
+
 def with_order(text: str, status: str, number: str) -> str:
     """The squad names itself when it reports the departure: «Выехали по адресу …. Наряд 2750.»
     (stand 18.10.2026: on the head's vehicle nobody named the squad and the dispatcher had no
     number for «Начало реагирования»)."""
     if status != "response_started" or not number or number in re.sub(r"\D", "", text):
         return text
-    return f"{text.rstrip()} Наряд {number}."
+    if spoken_digits(number) in text:
+        return text
+    return f"{text.rstrip()} Наряд {spoken_digits(number)}."
 
 
 def squad_state(delivered: list[str]) -> str:
@@ -401,7 +418,7 @@ def officer_scenario(
     chief of its emergency squad (#263)."""
     facts = {
         "служба": service_title,
-        "твой наряд": ref.order_number or order_number(scenario, ref.service),
+        "твой наряд": said_order(ref.order_number or order_number(scenario, ref.service)),
         "что знает": "о происшествии — только то, что сообщает диспетчер",
         "где бригада": PROGRESS_REPLIES[state],
     }

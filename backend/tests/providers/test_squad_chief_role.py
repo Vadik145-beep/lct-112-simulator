@@ -95,7 +95,18 @@ def test_seed_links_a_report_recording_only_when_it_says_the_same_words(tmp_path
 def test_the_departure_report_names_the_squad() -> None:
     """Stand 18.10.2026: on the head's vehicle nobody named the squad."""
     said = "Алло, диспетчер? Начальник аварийной бригады. Выехали: улица Свободы, дом 42."
-    assert officers.with_order(said, "response_started", "2750") == f"{said} Наряд 2750."
+    # One digit at a time: the cloud's voice read «8513» as «8-5/13» (18.10.2026).
+    assert officers.with_order(said, "response_started", "2750") == (
+        f"{said} Наряд два-семь-пять-ноль."
+    )
     named = f"{said} Наряд 2750."
     assert officers.with_order(named, "response_started", "2750") == named
     assert officers.with_order("Прибыли.", "arrived", "2750") == "Прибыли."
+
+
+def test_a_squad_number_said_digit_by_digit_is_still_the_number() -> None:
+    from app.dialog.officer import says_number
+
+    assert says_number("Принял, выезжаем. Наряд восемь-пять-один-три.", "8513")
+    assert says_number("наряд 8-5-1-3", "8513")
+    assert "восемь-пять-один-три" in officers.said_order("8513")

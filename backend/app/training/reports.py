@@ -50,6 +50,10 @@ RESPONDING_STATUSES = frozenset(
 )
 
 
+# The report of the departure, left out when the chief already named his squad.
+DEPARTURE = "response_started"
+
+
 def _at(value: str | None) -> datetime | None:
     return datetime.fromisoformat(value) if value else None
 
@@ -133,6 +137,11 @@ def next_report(
         reports = list(scenario.reference.reports)  # one stress per card, not both
     else:
         reports = complication.timeline(scenario, titles)
+    if officer.squad_sent(officer.chief_calls(attempt, scenario)):
+        # The chief named his squad in the dispatcher's call: that was the departure, a call
+        # «выехали» would tell it twice and shift the trainee's statuses a step (stand
+        # 18.10.2026: «Прибытие» set on «выехали»). One call — one status.
+        reports = [r for r in reports if r.status != DEPARTURE]
     if not reports or attempt.response_status not in RESPONDING_STATUSES:
         return None
     delivered = officer.delivered_reports(attempt)

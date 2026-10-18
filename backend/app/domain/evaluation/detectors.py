@@ -500,9 +500,14 @@ def report_not_reflected(ctx: CardContext) -> ErrorItem | None:
     for status, report in delivered.items():
         assert report is not None
         known = _known_at(ctx, status, report) or report.at
+        if not ctx.entries(status):
+            missed.append(status)
+            continue
         entries = [e for e in ctx.entries(status) if e.at >= known]
         if not entries:
-            missed.append(status)
+            # Set before the report: that is «status_before_report» alone, one mistake is one
+            # penalty (decision of 18.10.2026).
+            continue
         elif (seconds_between(report.at, entries[0].at) or 0.0) > REPORT_REACTION_SECONDS:
             late.append(status)
     if not missed and not late:

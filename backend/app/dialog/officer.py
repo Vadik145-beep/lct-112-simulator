@@ -170,6 +170,8 @@ def squad_state(attempt: Attempt) -> str:
     sent = squad_sent(outgoing) or no_vehicles.resolving_call(calls) is not None
     if state == officers.SQUAD_STATE_PENDING and not sent:
         return officers.SQUAD_STATE_WAITING
+    if state == officers.SQUAD_STATE_PENDING and squad_sent(outgoing):
+        return "response_started"  # named in the call: on its way, no «выехали» call comes
     return state
 
 
@@ -256,13 +258,33 @@ def officer_scenario(
         hurried = built.caller.model_copy(update={"opening": rush.opening(built.caller.opening)})
         built = built.model_copy(update={"caller": hurried})
     calls = calls_of(attempt)
+    asked = next(
+        (c for c in calls if is_report(c) and c.get("report_status") == complication.STATUS),
+        None,
+    )
+    if service == scenario.service and asked is not None:
+        # His specialist asked the dispatcher for another service (stand 18.10.2026: told «мы
+        # запросили подкрепление», the chief took it for a request of his own).
+        needed = complication.service_needed(scenario) or ""
+        name = SAID_SERVICE_NAMES.get(needed, needed)
+        facts = {
+            **built.caller.facts,
+            "осложнение": f"твой специалист с места попросил диспетчера вызвать службу «{name}»; "
+            "если диспетчер говорит, что вызвал или запросил её, — «Понял, ждём, работаем "
+            "дальше», сам ничего не запрашиваешь",
+        }
+        built = built.model_copy(
+            update={"caller": built.caller.model_copy(update={"facts": facts})}
+        )
     if (
         service == scenario.service
         and no_vehicles.plan_of(calls) == no_vehicles.PLAN_NO_VEHICLES
         and no_vehicles.resolving_call(calls) is None
     ):
-        # One truth for the cloud too (#263): the chief knows he has no vehicles.
-        facts = {**built.caller.facts, no_vehicles.FACT_KEY: no_vehicles.FACT}
+        # One truth for the cloud too (#263): the chief knows he has no vehicles, and no squad
+        # number to name until there is one (stand 18.10.2026: «выезжаем по наряду 8-43»).
+        facts = {k: v for k, v in built.caller.facts.items() if k != "твой наряд"}
+        facts[no_vehicles.FACT_KEY] = no_vehicles.FACT
         built = built.model_copy(
             update={"caller": built.caller.model_copy(update={"facts": facts})}
         )
@@ -732,7 +754,10 @@ def is_hint(turn: dict) -> bool:
 
 # Where the cloud ignored the note on the stand (17.10.2026): the squad chief repeated the
 # house right and sent the squad with no vehicles. These lines are said word for word.
-VERBATIM_TOPICS = frozenset({misheard.TOPIC_MISHEARD, no_vehicles.TOPIC_NO_VEHICLES})
+VERBATIM_TOPICS = frozenset({misheard.TOPIC_MISHEARD})
+# Kept by the server, not sent: the cloud says «машин нет» itself when it has the address and
+# what happened (decision of 18.10.2026 — said word for word at once, it cut its own questions).
+SILENT_TOPICS = frozenset({no_vehicles.TOPIC_NO_VEHICLES})
 
 
 def set_analysis(
@@ -748,7 +773,11 @@ def set_analysis(
 def hint_of(call: dict) -> str | None:
     """The decision the cloud has to voice: the hidden turn right after the last phrase."""
     turns = call.get("dialog") or []
-    return str(turns[-1]["text"]) if turns and is_hint(turns[-1]) else None
+    if not turns or not is_hint(turns[-1]):
+        return None
+    if SILENT_TOPICS & set(turns[-1].get("topics") or []):
+        return None
+    return str(turns[-1]["text"])
 
 
 def hint_is_verbatim(call: dict) -> bool:
