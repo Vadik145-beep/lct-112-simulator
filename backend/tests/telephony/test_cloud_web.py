@@ -117,24 +117,21 @@ async def test_service_call_is_played_by_the_cloud(
     prompt = assistant["model"]["messages"][0]["content"]
     # Своя служба — начальник аварийной бригады (#263): облако принимает информацию и
     # выезжает по распоряжению, а не допрашивает диспетчера, как заявителя в приёме вызова.
-    assert prompt.startswith("Ты начальник аварийной бригады")
+    assert "Ты — начальник аварийной бригады" in prompt  # the template of 18.10.2026
     assert "ЗАЯВИТЕЛЯ" not in prompt
-    assert "номер наряда — наряд твой" in prompt
-    assert "где он находится" in prompt
+    assert "Номер наряда не спрашиваешь у диспетчера" in prompt
     # The server says nothing to the cloud mid-call (18.10.2026): no Live Call Control.
     assert "monitorPlan" not in assistant
     # Трубку кладёт диспетчер: дежурному функция завершения звонка не даётся.
     assert assistant["endCallFunctionEnabled"] is False
-    assert "на другой язык" in prompt and "Не кладёшь трубку" in prompt
-    # Замечания с живого прогона 23.09.2026: адрес проговаривается один раз, прощания нет,
-    # на «хорошо» дежурный молчит.
-    assert "Второй раз адрес не проговариваешь НИКОГДА" in prompt
-    assert "goodbye" in prompt.lower()
-    # На «понял» — «Принято», а не «Молчу.» (стенд 17.10.2026).
+    assert "только по-русски" in prompt and "Трубку не кладёшь" in prompt
+    # Замечания с живого прогона 23.09.2026: адрес проговаривается один раз, прощания нет.
+    assert "Адрес вслух повторяешь один раз" in prompt
+    assert "не прощаешься" in prompt
+    # На «понял» — «Принято», а не «Молчу.» (стенд 17.10.2026); на вопрос — по сути.
     assert "На согласие диспетчера отвечаешь «Принято»." in prompt
     assert "не отвечаешь ничего" not in prompt.lower()
-    assert "как губка" in prompt
-    assert "НИЧЕГО НЕ ПРИДУМЫВАЕШЬ" in prompt
+    assert "Ничего не придумываешь" in prompt
     # Дежурный знает номер своего наряда и называет его сам.
     assert "твой наряд" in prompt
     # Не отвечает на каждую паузу диспетчера: выдержка перед репликой.
