@@ -401,7 +401,12 @@ def call_scenario(
         report = _report_for(scenario, call, attempt)
         leader = officers.report_scenario(scenario, report, title)
         if report.status in (complication.STATUS, complication.REMINDER_STATUS):
-            return with_studio_audio(complication.specialist(leader), complication.STUDIO_KEY)
+            person = complication.specialist(leader)
+            facts = {**person.caller.facts, "подробности": complication.details(scenario)}
+            person = person.model_copy(
+                update={"caller": person.caller.model_copy(update={"facts": facts})}
+            )
+            return with_studio_audio(person, complication.STUDIO_KEY)
         leader = _knows_complication(
             leader, scenario, calls_of(attempt), besides=call.get("id"), opening=True
         )

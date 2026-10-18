@@ -183,3 +183,20 @@ def test_the_chief_prompt_keeps_the_lines_that_held_it_before_the_final() -> Non
     assert "больше одного вопроса за реплику" in vapi.CHIEF_PROMPT
     assert "Сам на свои вопросы не отвечаешь" in vapi.CHIEF_PROMPT
     assert "не торопясь" not in vapi.DIGITS_RULE
+
+
+def test_the_no_vehicles_chief_has_nothing_about_going_out() -> None:
+    """Stand 18.10.2026: on a «машин нет» card the chief said «Принял, выезжаем, наряд 7-4-3-1»."""
+    scenario = card_scenario(NAME).model_copy(update={"difficulty": 3})
+    call = {**new_call("moek"), no_vehicles.PLAN_KEY: no_vehicles.PLAN_NO_VEHICLES}
+    built = officer.call_scenario(scenario, call, Attempt(service_calls=[call]))
+    prompt = " ".join(vapi.role_prompt(built).split())
+    assert "Свободных машин сейчас нет" in prompt
+    assert "«Принял, выезжаем" not in prompt
+    assert "пять, два, семь, два" not in prompt
+    assert "твой наряд" not in prompt
+
+
+def test_not_ours_is_said_at_once() -> None:
+    assert "Адрес не повторяешь" in " ".join(vapi.CHIEF_NOT_OURS.split())
+    assert "Карточку не принимайте" not in vapi.CHIEF_NOT_OURS

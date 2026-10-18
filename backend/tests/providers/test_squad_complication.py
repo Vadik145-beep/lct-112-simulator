@@ -30,8 +30,8 @@ def test_specialist_calls_after_the_arrival_on_difficulty_three() -> None:
         "works_done",
     ]
     assert reports[2].text == (
-        "Алло, диспетчер? Специалист аварийной бригады, мы на месте. Нужно перекрыть двор, "
-        "жильцы не дают работать. Нужна помощь управы, сообщите им."
+        "Алло, диспетчер? Специалист аварийной бригады, мы на месте. Нужно перекрыть проезд, "
+        "без этого работать нельзя. Нужна помощь управы, сообщите им."
     )
     medium = card_scenario(NAME).model_copy(update={"difficulty": 2})
     assert complication.STATUS not in [r.status for r in complication.timeline(medium)]
@@ -247,3 +247,12 @@ def test_the_works_wait_for_the_service_the_squad_asked_for() -> None:
     said = officer.report_said(scenario, model, due)
     assert complication.arrived_line(scenario) in said
     assert "ждём" in complication.fact(scenario, model.service_calls).lower()
+
+
+def test_no_complication_words_tie_it_to_housing() -> None:
+    """Stand 18.10.2026: «нас не пускают к стояку» at a railway accident of Gormost."""
+    for service, text in complication.PROBLEMS.items():
+        if service in ("gkh", "moslift"):
+            continue
+        assert not any(w in text.lower() for w in ("стояк", "подъезд", "жилец", "жильц")), text
+    assert set(complication.DETAILS) == set(complication.PROBLEMS)

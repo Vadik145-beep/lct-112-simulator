@@ -41,12 +41,29 @@ PROBLEMS: dict[str, str] = {
     "gkh": "Залило электрощиток в подъезде, нужен электрик",
     "moslift": "В лифте застрял жилец, двери не открываются",
     "gormost": "По пролёту пошла трещина, движение опасно",
-    "territorial_oiv": "Нужно перекрыть двор, жильцы не дают работать",
-    "101": "Задымление в подвале, похоже, загорелся кабель",
-    "102": "На месте конфликт, нас не пускают к стояку",
-    "103": "Жильцу стало плохо, нужна медицинская помощь",
-    "104": "Запах газа в подъезде",
+    "territorial_oiv": "Нужно перекрыть проезд, без этого работать нельзя",
+    "101": "Задымление, похоже, загорелся кабель",
+    "102": "На месте конфликт, нас не подпускают к месту работ",
+    "103": "Человеку на месте стало плохо",
+    "104": "Рядом с местом работ запах газа",
 }
+# What the specialist answers when asked what exactly happened (decision of 18.10.2026: the
+# words fit any squad — gas, bridge, housing; stand: «не пускают к стояку» at a railway).
+DETAILS: dict[str, str] = {
+    "mosgaz": "пахнет газом сильно, людей рядом нет, огня нет",
+    "moek": "парит из-под земли рядом с местом работ, горячая вода выходит на поверхность",
+    "mosvodokanal": "вода идёт из-под земли и уходит в колодец, место работ подтапливает",
+    "gkh": "вода попала на электрощиток, электричество отключать сами не можем",
+    "moslift": "человек в лифте, двери не открываются, ему плохо не стало, просит помочь",
+    "gormost": "трещина свежая, длинная, проезд над ней опасен",
+    "territorial_oiv": "машины едут вплотную к месту работ, своими силами перекрыть не можем",
+    "101": "дым из подвала или колодца, открытого огня не видно, людей рядом нет",
+    "102": "двое посторонних мужчин ругаются, мешают оцепить место, на просьбы не реагируют, "
+    "драки нет",
+    "103": "мужчина из прохожих, в сознании, жалуется на сердце, сидит",
+    "104": "запах газа рядом с местом работ, откуда — не видно, людей отвели",
+}
+GENERIC_DETAILS = "сами не справимся, нужна помощь этой службы"
 GENERIC_PROBLEM = "Сами не справимся"
 # The specialist's call not answered rings once more, then the squad tells it in its next
 # calls (stand 18.10.2026: the call dropped, the chief and the reports forgot the complication).
@@ -78,6 +95,10 @@ def applies(scenario: CardResponseScenario) -> bool:
 
 def problem(scenario: CardResponseScenario) -> str:
     return PROBLEMS.get(service_needed(scenario) or "", GENERIC_PROBLEM)
+
+
+def details(scenario: CardResponseScenario) -> str:
+    return DETAILS.get(service_needed(scenario) or "", GENERIC_DETAILS)
 
 
 def calls_about(calls: Iterable[Mapping]) -> list[Mapping]:
@@ -212,7 +233,8 @@ def fact(scenario: CardResponseScenario, calls: Iterable[Mapping]) -> str:
     service = service_needed(scenario) or ""
     name = spoken_service(service, service)
     what = (
-        f"на месте осложнение: {problem(scenario).lower()}; без помощи {name} работы не начинаете"
+        f"на месте осложнение: {problem(scenario).lower()} ({details(scenario)}); без помощи "
+        f"{name} работы не начинаете"
     )
     if help_called_at(scenario, rows) is not None:
         return (
