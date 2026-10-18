@@ -1,4 +1,4 @@
-import { AlertTriangle, Check, Clock3, PanelRightClose, PanelRightOpen, Wifi, WifiOff } from "lucide-react";
+import { AlertTriangle, Check, Clock3, List, PanelRightClose, PanelRightOpen, Wifi, WifiOff } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 
@@ -93,6 +93,7 @@ export function TrainerPanel({
   width = "default",
   collapsedByDefault = false,
   expand = false,
+  journalTo,
 }: {
   connection: ConnectionState;
   children: ReactNode;
@@ -103,6 +104,9 @@ export function TrainerPanel({
   collapsedByDefault?: boolean;
   /** Opens the panel when it holds something the trainee must see now (a call, the result). */
   expand?: boolean;
+  /** The lesson's journal: always one click away from a card, folded panel or not (stand
+   * 18.10.2026: the ✕ of the original АРМ in the corner was hard to find). */
+  journalTo?: string;
 }) {
   const [collapsed, setCollapsed] = useState(collapsedByDefault);
   useEffect(() => {
@@ -122,6 +126,11 @@ export function TrainerPanel({
         <button type="button" aria-label="Развернуть панель тренажёра" onClick={() => setCollapsed(false)} className="rounded-sm p-1 hover:bg-[var(--arm-panel-2)]">
           <PanelRightOpen className="size-4" />
         </button>
+        {journalTo && (
+          <Link to={journalTo} aria-label="В журнал" title="В журнал" className="rounded-sm p-1 hover:bg-[var(--arm-panel-2)]">
+            <List className="size-4" />
+          </Link>
+        )}
         <span className="text-[10px] font-semibold uppercase tracking-wide text-[var(--arm-text-muted)] [writing-mode:vertical-rl]">Тренажёр</span>
         <span className={cn("size-2 rounded-full", connection === "online" ? "bg-[var(--arm-green)]" : "bg-[var(--arm-red)]")} title={connection === "online" ? "связь есть" : "связь потеряна"} />
       </aside>
@@ -142,6 +151,11 @@ export function TrainerPanel({
       <div className="flex min-h-0 flex-1 flex-col gap-3">{children}</div>
       <div className="flex flex-col gap-2 border-t border-[#a9adb2] pt-3">
         {footer}
+        {journalTo && (
+          <Link to={journalTo} className="text-xs font-semibold text-[var(--arm-blue-dark)] underline-offset-2 hover:underline">
+            ← В журнал
+          </Link>
+        )}
         <Link to="/student" className="text-xs text-[var(--arm-blue-dark)] underline-offset-2 hover:underline">
           В кабинет обучающегося
         </Link>

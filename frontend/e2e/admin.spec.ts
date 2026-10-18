@@ -132,7 +132,7 @@ test.describe("Волна 9: кабинеты", () => {
     await student.locator("tr[data-attempt]").first().click();
     await setStatus(student, "Принята");
     await setStatus(student, "Начало реагирования", { orderNumber: "14-217", comment: "Направлен дежурный слесарь" });
-    await setStatus(student, "Прибытие");
+    await setStatus(student, "Прибытие", { comment: "Бригада прибыла на место" });
     await setStatus(student, "Проведение работ", { comment: "Мусоропровод вскрыт" });
     await setStatus(student, "Работы завершены", { comment: "Задымление устранено, пострадавших нет" });
     await expect(student.getByTestId("card-score")).toHaveText(/^\d+$/, { timeout: COLD_MS });

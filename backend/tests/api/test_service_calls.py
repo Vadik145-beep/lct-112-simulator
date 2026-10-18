@@ -14,7 +14,7 @@ from app.config import get_settings
 from app.db import SessionLocal
 from app.models import MODE_CARD_RESPONSE, Attempt
 from app.providers.stt import Transcript
-from tests.api.conftest import DATA_DIR
+from tests.api.conftest import DATA_DIR, status_body
 from tests.api.test_dialog import make_attempt
 from tests.conftest import bearer, login
 
@@ -55,7 +55,9 @@ async def end(client: AsyncClient, token: dict, attempt_id: uuid.UUID, call_id: 
 
 
 async def status(client: AsyncClient, token: dict, attempt_id: uuid.UUID, **body):
-    return await client.post(f"/api/attempts/{attempt_id}/status", headers=bearer(token), json=body)
+    return await client.post(
+        f"/api/attempts/{attempt_id}/status", headers=bearer(token), json=status_body(body)
+    )
 
 
 async def test_dds_lesson_carries_its_dialog_mode(

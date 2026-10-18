@@ -558,6 +558,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/sessions/{session_id}/ringing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ringing
+         * @description Reports of the squads ringing now on the trainee's cards of the lesson (stand
+         *     18.10.2026: a report about card A was missed while the trainee sat in card B).
+         */
+        get: operations["ringing_api_sessions__session_id__ringing_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sessions/{session_id}/journal": {
         parameters: {
             query?: never;
@@ -4494,6 +4515,26 @@ export interface components {
             comment: string;
         };
         /**
+         * RingingOut
+         * @description A squad calling the dispatcher about one of their cards (#263): the phone rings on the
+         *     whole workstation, not only inside that card.
+         */
+        RingingOut: {
+            /**
+             * Attempt Id
+             * Format: uuid
+             */
+            attempt_id: string;
+            /** Call Id */
+            call_id: string;
+            /** Card Number */
+            card_number: string;
+            /** Incident Title */
+            incident_title: string;
+            /** Address */
+            address: string;
+        };
+        /**
          * Role
          * @enum {string}
          */
@@ -6417,6 +6458,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AssignmentOut"][];
+                };
+            };
+        };
+    };
+    ringing_api_sessions__session_id__ringing_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RingingOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

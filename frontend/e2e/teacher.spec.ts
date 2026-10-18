@@ -142,7 +142,7 @@ test.describe("Волна 4: занятие целиком", () => {
 
     // Student closes the first card with the full chain, the tile shows the score.
     await setStatus(student, "Начало реагирования", { orderNumber: "14-217", comment: "Направлен дежурный слесарь, наряд 14-217" });
-    await setStatus(student, "Прибытие");
+    await setStatus(student, "Прибытие", { comment: "Бригада прибыла на место" });
     await setStatus(student, "Проведение работ", { comment: "Мусоропровод вскрыт, тлеющий мусор удалён" });
     await setStatus(student, "Работы завершены", { comment: "Задымление устранено, ствол промыт, пострадавших нет" });
     await expect(student.getByTestId("card-score")).toHaveText(/^\d+$/, { timeout: 15_000 });
