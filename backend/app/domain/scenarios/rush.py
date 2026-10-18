@@ -2,8 +2,8 @@
 торопит „Короче, что у вас?“; „Стоп, короче“ после длинного доклада — имитация перебивания,
 настоящего перебивания нет»).
 
-On a card of difficulty 3 the officer of the dispatcher's own service picks up with «Короче,
-что у вас?», and once per call cuts a long phrase short. It is pressure, not a mistake of the
+On a card of difficulty 3 the officer of the dispatcher's own service picks up with «Только
+быстро — что у вас?», and once per call cuts a long phrase short. It is pressure, not a mistake of the
 dispatcher: nothing is scored for it.
 """
 
@@ -15,8 +15,9 @@ from app.domain.evaluation.text import normalize_text
 
 MIN_DIFFICULTY = 3
 TOPIC_RUSH = "rush"
-OPENING_TAIL = "Короче, что у вас?"
-CUT_IN = "Стоп, короче. Адрес и что случилось — в двух словах."
+# Stand 18.10.2026: «Короче, что у вас?» sounded rude, not hurried.
+OPENING_TAIL = "Только быстро — что у вас?"
+CUT_IN = "Так, стоп, давайте коротко: адрес и что случилось."
 # A phrase longer than this is «a long report»: the address, the incident, the injured and
 # the access fit in about twenty words.
 LONG_PHRASE_WORDS = 30

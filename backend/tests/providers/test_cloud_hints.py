@@ -112,7 +112,7 @@ def test_the_people_of_the_card_take_control_and_know_their_duties() -> None:
     assert assistant["monitorPlan"] == {"controlEnabled": True}
     prompt = vapi.role_prompt(chief)
     assert prompt.startswith("Ты начальник аварийной бригады")
-    assert "Адрес какой?" in prompt and "Стоп, короче" in prompt
+    assert "Адрес какой?" in prompt and "Так, стоп" in prompt
     assert "БЕЗ АДРЕСА" in prompt  # stand 18.10.2026: the chief went with no address
     assert "Служебная подсказка тренажёра" in prompt
     head_call = {**new_call("moek"), "kind": officer.KIND_STAFF, "role": staff.ROLE_HEAD}
