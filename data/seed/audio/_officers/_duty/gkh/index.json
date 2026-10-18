@@ -1,0 +1,130 @@
+{
+  "0f11c82d": {
+    "sha256": "6f519396a23a2065cdbffa98dc2889289f5da541",
+    "voice_id": "Ub7uk2SbJdkjKWYvlnLN",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Понял, происшествие принял.",
+    "bytes": 33061
+  },
+  "2fa708d1": {
+    "sha256": "4a5eb7c15ad78028cef91f190b5c7ddd43aaae30",
+    "voice_id": "Ub7uk2SbJdkjKWYvlnLN",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принял, сантехник ОДС выезжает.",
+    "bytes": 35569
+  },
+  "34ca5ac3": {
+    "sha256": "989b2fe80cdf391bebb45ce26510d08b5ac43a80",
+    "voice_id": "Ub7uk2SbJdkjKWYvlnLN",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Что именно произошло? Какой тип происшествия по карточке?",
+    "bytes": 52287
+  },
+  "575f5e40": {
+    "sha256": "5aea6ba0e1e8c94c1f89c05e7d38111a05422873",
+    "voice_id": "Ub7uk2SbJdkjKWYvlnLN",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Это не ко мне, давайте по происшествию.",
+    "bytes": 40585
+  },
+  "5a8ac4a0": {
+    "sha256": "87827b1fc57d7836d32e14c10dce919d3a0552f5",
+    "voice_id": "Ub7uk2SbJdkjKWYvlnLN",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принято, по пострадавшим понял.",
+    "bytes": 34315
+  },
+  "6dc5ac0d": {
+    "sha256": "05a7a521f4ed263db22e61b40bbc66fc2842c264",
+    "voice_id": "Ub7uk2SbJdkjKWYvlnLN",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Повторите, пожалуйста, плохо слышно.",
+    "bytes": 34315
+  },
+  "7480c6b2": {
+    "sha256": "d7fc1981379d81efbc1e91596c67fb352e996669",
+    "voice_id": "Ub7uk2SbJdkjKWYvlnLN",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Адрес принял. Подъезд, этаж известны?",
+    "bytes": 48526
+  },
+  "9335295f": {
+    "sha256": "84b45c6896f9a922088885520d8e6640d1f082d6",
+    "voice_id": "Ub7uk2SbJdkjKWYvlnLN",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Отрабатываем своими силами.",
+    "bytes": 34315
+  },
+  "95edcb1a": {
+    "sha256": "3300e86fbfa1c9d248dbb4b7eae25f34e4a5335f",
+    "voice_id": "Ub7uk2SbJdkjKWYvlnLN",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Понял, доступ есть.",
+    "bytes": 24284
+  },
+  "9d0fd099": {
+    "sha256": "5e9826be70e245c4c4275dbdfdac731a2b9aec5d",
+    "voice_id": "Ub7uk2SbJdkjKWYvlnLN",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Пострадавшие есть?",
+    "bytes": 26792
+  },
+  "ac1951ae": {
+    "sha256": "9587355de0c78cf2955e5c5198f1577a68553eb0",
+    "voice_id": "Ub7uk2SbJdkjKWYvlnLN",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Назовите адрес: улица, дом, корпус.",
+    "bytes": 46018
+  },
+  "b14648d7": {
+    "sha256": "3cecee9169dd37b31cac5498ad72137844b2af38",
+    "voice_id": "Ub7uk2SbJdkjKWYvlnLN",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Дежурный ЕДЦ ЖКХ, слушаю. Карточку от вас уже приняли, отрабатываем.",
+    "bytes": 88232
+  },
+  "b35d1419": {
+    "sha256": "8a83fb165c24d73c31815c131ab7472cdbcf3ba5",
+    "voice_id": "Ub7uk2SbJdkjKWYvlnLN",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Доступ на объект есть? Кто встретит бригаду?",
+    "bytes": 48526
+  },
+  "d5b754e8": {
+    "sha256": "e8cb93503e417f3e0c852df710af1ef923747981",
+    "voice_id": "Ub7uk2SbJdkjKWYvlnLN",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Информацию принял, отработаем.",
+    "bytes": 34315
+  },
+  "f353da67": {
+    "sha256": "c4ec00cc9cbd51b42ce6b43ca5d6f3cee9d005eb",
+    "voice_id": "Ub7uk2SbJdkjKWYvlnLN",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Стояк, кровля или подвал? Квартиры заливает?",
+    "bytes": 59811
+  },
+  "fc6e47a7": {
+    "sha256": "95bae44cdf7c3c6f248468521fba003994cea6e3",
+    "voice_id": "Ub7uk2SbJdkjKWYvlnLN",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Дежурный ЕДЦ ЖКХ, слушаю.",
+    "bytes": 39331
+  }
+}

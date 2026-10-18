@@ -1,4 +1,12 @@
 {
+  "08f59dd5": {
+    "sha256": "72d8d493883a07eb9e9799f054d8ef7569b12a83",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принял, выезжаем. Наряд семь, пять, шесть, четыре.",
+    "bytes": 46018
+  },
   "0a2198fd": {
     "sha256": "6ff412f62dd635c378ac9194e41b79b8631f7bcd",
     "voice_id": "4R4ha50vLnNdjMQDY20a",
@@ -8,20 +16,36 @@
     "bytes": 17598
   },
   "0f11c82d": {
-    "sha256": "8ddda7744c7dc16239a88e205a4ea1c545b3d212",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "5ca122be83d1a87e9cfb7bbbd14a0049547ad6c8",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Понял, происшествие принял.",
-    "bytes": 34316
+    "bytes": 30554
+  },
+  "1236da0e": {
+    "sha256": "97830fbf29d72bc2d3cfc264e7a4880a9b316a54",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады управы, слушаю. Только быстро — что у вас?",
+    "bytes": 63990
+  },
+  "13204978": {
+    "sha256": "abb5e20874730b72e891eec94734634edd40df7f",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Что случилось? С чем выезжать?",
+    "bytes": 34315
   },
   "14f3c6c9": {
-    "sha256": "cdd54b065011696048e111d6cdb84ef3f31fd46e",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "af24f99b9bb0ed8a3636af770b706f8f332702e7",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Бригада в пути, едем на адрес. По прибытии доложим.",
-    "bytes": 52288
+    "bytes": 51034
   },
   "1d27906e": {
     "sha256": "e7ef87e90b6fd91c3db980ad51fa6e93cccc8f8a",
@@ -31,69 +55,149 @@
     "text": "Информацию принял, бригаду направляю.",
     "bytes": 38078
   },
+  "205eb18d": {
+    "sha256": "7848f81b01f0e2ab30221d0084f7e67a22bb8919",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады управы, слушаю. Карточку от вас уже принял. Бригаду собираем, выезжаем. Как выедем — доложу.",
+    "bytes": 114981
+  },
+  "251c56dd": {
+    "sha256": "b840d4f0e3318f7c0e38dd97e324f074bf3abcb1",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Информацию принял, направляю наряд один, один, семь, два, бригада выезжает.",
+    "bytes": 72767
+  },
   "2d44c18b": {
-    "sha256": "93b8d41eac39603375765617469b35690016f298",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "e0f2312b7a1ce2a9f35df55c8e627190b07c5d92",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Бригаду собираем, выезжаем. Как выедем — доложу.",
-    "bytes": 67753
+    "bytes": 43510
   },
   "2e30ed8e": {
-    "sha256": "150d657bc7e4e301c76c5ba99676cd8e8ee1e5fd",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "7f686e49169d5443c8633e8b5c22e20a1259d1cb",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Бригада на месте, осматриваемся. Как начнём работы — доложу.",
-    "bytes": 66499
+    "bytes": 58557
   },
   "2f51cba1": {
-    "sha256": "b524a235ac6a938876a12f1876f33b55342ee7c8",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "356ead4d6b0b2dc4237ca920f905d3bda6ca7bda",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Принято. Как будем на месте, доложу.",
-    "bytes": 40586
+    "bytes": 38077
   },
   "34ca5ac3": {
-    "sha256": "ab59eaa27a774a09b3e4379a9fa27b66fc8a7f07",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "d2be918901acf3da8ddb9ccb9931cc2b2b3a1455",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Что именно произошло? Какой тип происшествия по карточке?",
-    "bytes": 67753
+    "bytes": 61065
+  },
+  "371c865d": {
+    "sha256": "747dc6c3c2ba8c690be5846cf266b0a30efbeca2",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Информацию принял, направляю наряд семь, пять, шесть, четыре, бригада выезжает.",
+    "bytes": 66498
+  },
+  "3802662c": {
+    "sha256": "b7c5a0d6398b81cd0a87344479f0bc66c923b8da",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд семь, пять, шесть, четыре, он и выезжает.",
+    "bytes": 41838
+  },
+  "39d630ad": {
+    "sha256": "a98148d3b3528d95f96cbc865280a4006e6317bd",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады управы, слушаю.",
+    "bytes": 43510
+  },
+  "3af1ad74": {
+    "sha256": "c1f3767da59c4187c836bd803dced5532928056a",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады управы, слушаю. Карточку от вас уже принял. Бригада на базе. Назовите адрес и что случилось — выедем.",
+    "bytes": 113727
+  },
+  "45250844": {
+    "sha256": "cb8e8bbdb462cea60b04dd961d4de9314b3470a6",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принял, направляю наряд один, один, семь, два.",
+    "bytes": 38077
+  },
+  "4edb8c53": {
+    "sha256": "20f841c5a402653b200a75324166aaf9c128d0fe",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады управы, слушаю. Карточку от вас уже принял. Машин так и нет, все на выездах.",
+    "bytes": 99517
   },
   "575f5e40": {
-    "sha256": "d2f1769f9c5f7db47c5394804b72dc87b2404f3b",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "18d25d6c02773027dd89a16ff37c1432ed508811",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Это не ко мне, давайте по происшествию.",
-    "bytes": 51035
+    "bytes": 35569
   },
   "5a8ac4a0": {
-    "sha256": "5b61f272dc68079191cd94a78748b498db9f8263",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "c487f7ade91892ebbf629d126f0d9fd4232c2ac3",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Принято, по пострадавшим понял.",
-    "bytes": 30555
+    "bytes": 34315
+  },
+  "5e67c004": {
+    "sha256": "598112cc78f220c4ddb9c2ac10d9d1dd35ed5089",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады управы, слушаю. Карточку от вас уже принял. Я вам звонил, вы не взяли. Бригада на месте, осматриваемся. Как начнём работы — доложу.",
+    "bytes": 147164
+  },
+  "63ae4f1b": {
+    "sha256": "85a339c69261792541ef48d079176a486544d7ec",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады управы, слушаю. Карточку от вас уже принял. Бригада в пути, едем на адрес. По прибытии доложим.",
+    "bytes": 116235
   },
   "6dc5ac0d": {
-    "sha256": "f652eccbade7a76408cb4f353019523a7db4c044",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "f94bbb367d788d67dd52cd3f1b93a084a1a53b80",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Повторите, пожалуйста, плохо слышно.",
-    "bytes": 34316
+    "bytes": 33061
   },
   "7480c6b2": {
-    "sha256": "8a13a32c146f512503e86fb49cdeb375cd682492",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "4bae59ce9d94e32c844c8b861a35f7dc4900e8ef",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Адрес принял. Подъезд, этаж известны?",
-    "bytes": 41839
+    "bytes": 49780
   },
   "81816027": {
     "sha256": "8434203d1278dc79b368602a31f7765d3693452e",
@@ -103,13 +207,37 @@
     "text": "Дежурный управы, слушаю.",
     "bytes": 29301
   },
+  "8ccc2324": {
+    "sha256": "9db2627b40453745cbf00f93bc161894d12975d2",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принял. Только машин нет, все на выездах. Ближайшая освободится часа через полтора.",
+    "bytes": 76529
+  },
+  "8f6e4cc5": {
+    "sha256": "11d8a725647bdb20bc29644f09989ab126c9ce4a",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады управы, слушаю. Карточку от вас уже принял. Я вам звонил, вы не взяли. Бригада в пути, едем на адрес. По прибытии доложим.",
+    "bytes": 148418
+  },
+  "91443688": {
+    "sha256": "04ef42873c057a1117821090c7fd87aef10100cd",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады управы, слушаю. Карточку от вас уже принял. Бригада на месте, осматриваемся. Как начнём работы — доложу.",
+    "bytes": 136715
+  },
   "95edcb1a": {
-    "sha256": "1d6deaddc220376608e7ca290120d6df43f1bf76",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "720ce48352f85f022a973d4e4dc6dd4e91d5d1ab",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Понял, доступ есть.",
-    "bytes": 43511
+    "bytes": 23030
   },
   "9bd07d82": {
     "sha256": "03c5ea598f03c0bf2276352f1d113fa169b73962",
@@ -120,51 +248,155 @@
     "bytes": 23031
   },
   "9d0fd099": {
-    "sha256": "94af9bb914e9423ba6ce11d6a7d24a220ec86fc6",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "712696408f0817d854649f874e0b5039d9e58505",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Пострадавшие есть?",
-    "bytes": 26793
+    "bytes": 33061
+  },
+  "a378daf6": {
+    "sha256": "423268f3a3b6a2890fd4159f6401e5e640c24b51",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Так, стоп, давайте коротко: адрес и что случилось.",
+    "bytes": 48526
+  },
+  "a826c934": {
+    "sha256": "2382dbe06b2bcfc7542f413f396d48c103683647",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Это к руководителю, только он может снять машину.",
+    "bytes": 47272
   },
   "ac1951ae": {
-    "sha256": "a0e10bcba2b9f1c64c9c46c4c3e36464688297c5",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "b03cbcb2e35ca2ae1b81867cd13732e8c96e95ea",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Назовите адрес: улица, дом, корпус.",
-    "bytes": 52288
+    "bytes": 51034
+  },
+  "b1908a85": {
+    "sha256": "63d6d22fd274f1cd337f4672b964542b63f46ca4",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады управы, слушаю. Карточку от вас уже принял. Работы завершены, докладывал. Всё по карточке отражено.",
+    "bytes": 123758
   },
   "b35d1419": {
-    "sha256": "7bec7c3c96acc5e450f7f6b34bbe8bf55ca4f047",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "428a9db3605090a90fbe59f9ea81a89e20f7676f",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Доступ на объект есть? Кто встретит бригаду?",
-    "bytes": 44765
+    "bytes": 49780
+  },
+  "be9c0562": {
+    "sha256": "bede99185f5a60a964285a49a1806ad04558fd1f",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд один, один, семь, два, он и выезжает.",
+    "bytes": 40585
+  },
+  "c255fedd": {
+    "sha256": "7e24fa1e04de432049401d76437493a570d94dae",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Бригада на базе. Назовите адрес и что случилось — выедем.",
+    "bytes": 57303
   },
   "c418bb25": {
-    "sha256": "7b8bf217c26a7371ba69eca812c6bae4926bd230",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "3b9ebb05d80c6bc38fd671d32109c4258d1f7a81",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Работы ведутся, пока без замечаний. По окончании доложу.",
-    "bytes": 59812
+    "bytes": 57303
   },
   "d6638149": {
-    "sha256": "1b22ecdb4465fa72fe00c9c02423f82dfe45c653",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "51bdbc56adac16036cf7d137c1d46f33cd3554eb",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Принял, информацию довожу до дежурного управы.",
-    "bytes": 46019
+    "bytes": 48526
+  },
+  "d7139fc8": {
+    "sha256": "ea84b477b398df7fece9a64ebdf65a7cf12c91b1",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принял.",
+    "bytes": 12581
   },
   "d8e0fc66": {
-    "sha256": "d23c2aa6562384bac51efd1b67baa9c0f6e55825",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "b2343217951a521c44675ba19a94eb77857fd7fc",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Работы завершены, докладывал. Всё по карточке отражено.",
-    "bytes": 63991
+    "bytes": 62318
+  },
+  "da895b7f": {
+    "sha256": "d8d614d58b34ad5cb9165706abceec9b7f4d866b",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принял, выезжаем. Наряд один, один, семь, два.",
+    "bytes": 46018
+  },
+  "e2c80443": {
+    "sha256": "a232f287a89550c0f87edfbde9fc5cfcbdba3eac",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Адрес какой? Куда выезжать?",
+    "bytes": 33061
+  },
+  "e6e1e18f": {
+    "sha256": "af15f780b74a8d347a51f7af9cc6342b166a2bb8",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принял, направляю наряд семь, пять, шесть, четыре.",
+    "bytes": 39331
+  },
+  "e7a4c913": {
+    "sha256": "3ea3411273366726676c421b62a468b68bc4c66b",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады управы, слушаю. Карточку от вас уже принял. Я вам звонил, вы не взяли. Работы завершены, докладывал. Всё по карточке отражено.",
+    "bytes": 157195
+  },
+  "f53f5f20": {
+    "sha256": "43b3f468ba3e4144edee219213d51b93892d4544",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады управы, слушаю. Карточку от вас уже принял. Я вам звонил, вы не взяли. Работы ведутся, пока без замечаний. По окончании доложу.",
+    "bytes": 158449
+  },
+  "f72aa634": {
+    "sha256": "5cf8854510b46790390e32c99bd798283333ab8e",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады управы, слушаю. Карточку от вас уже принял. Работы ведутся, пока без замечаний. По окончании доложу.",
+    "bytes": 122505
+  },
+  "fbe09d1d": {
+    "sha256": "a2aa57dc1396c18498772fd36e7cf06c3eb0a1a4",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[sighs]",
+    "text": "Машин так и нет, все на выездах.",
+    "bytes": 41838
   }
 }

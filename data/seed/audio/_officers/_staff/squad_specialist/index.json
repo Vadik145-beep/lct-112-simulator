@@ -1,0 +1,242 @@
+{
+  "04500a3f": {
+    "sha256": "493179d07daf27fed652ccc690e7bf1af365f30c",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Специалист аварийной бригады, слушаю. Вода уходит в колодец, похоже, порыв водопровода. Нужна помощь Мосводоканала, сообщите им.",
+    "bytes": 147164
+  },
+  "05d7214b": {
+    "sha256": "03bd93c6b3293caf660bd1a3d45ac03079d4d1f6",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Специалист аварийной бригады, слушаю. Работаем, пока без замечаний.",
+    "bytes": 65244
+  },
+  "0f1f8cda": {
+    "sha256": "37b5513bf4216f8f12794020f53357106cba61f9",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Специалист аварийной бригады, слушаю. Закончили, сворачиваемся.",
+    "bytes": 72767
+  },
+  "1ca6b779": {
+    "sha256": "9a1d958b54bfe2f882d4f7c18df66518b229cb61",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Работаем, пока без замечаний.",
+    "bytes": 41838
+  },
+  "26211f70": {
+    "sha256": "9f83f57964c543b69ec2e64e5400ac888ba0c4a0",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "На месте, осматриваемся.",
+    "bytes": 36823
+  },
+  "2a5edbf9": {
+    "sha256": "fe8a3638d16f146c5716a2f8dc2d7b73f240eca1",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Специалист аварийной бригады, слушаю. На месте, осматриваемся.",
+    "bytes": 72767
+  },
+  "3be327e8": {
+    "sha256": "8fcc6b06db918c4da527ca740325da841f57ee1b",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Закончили, сворачиваемся.",
+    "bytes": 39331
+  },
+  "479bcadd": {
+    "sha256": "45f8f9d5230b9fcf582bc04920411883db486fa6",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Специалист аварийной бригады, слушаю. Нужно перекрыть проезд, без этого работать нельзя. Нужна помощь управы, сообщите им.",
+    "bytes": 129192
+  },
+  "4e649109": {
+    "sha256": "fbe4f8f018f0ab6cd4b7a5aaac2f38f6b5d366f7",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Специалист аварийной бригады, слушаю. Задымление, похоже, загорелся кабель. Нужна помощь пожарной охраны, сообщите им.",
+    "bytes": 121251
+  },
+  "503b0339": {
+    "sha256": "112fbb82314ee13fbd00b24833c6d1c84b3dabef",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Специалист аварийной бригады, слушаю. Стоим, машин нет.",
+    "bytes": 58557
+  },
+  "5533c8dc": {
+    "sha256": "1993dcf9afcfb1100024b47e3311615b5b876434",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Специалист аварийной бригады, слушаю. В лифте застрял жилец, двери не открываются. Нужна помощь Мослифта, сообщите им.",
+    "bytes": 132954
+  },
+  "6bc70947": {
+    "sha256": "98e8d46bb86f7ca57ac75d356966b236ab2ca708",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Распоряжение на выезд — начальнику аварийной бригады, звоните ему.",
+    "bytes": 63990
+  },
+  "75cdf469": {
+    "sha256": "d018be1792055fa10f5cd0d61aaeb5cd0ffb8d90",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Едем на адрес.",
+    "bytes": 18851
+  },
+  "772bc486": {
+    "sha256": "cb9e0aa67fe508b70258c59037f5b13bee530774",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Собираемся, выезжаем.",
+    "bytes": 33061
+  },
+  "7c6a6a26": {
+    "sha256": "587d2d090eb6d147275a29bd777f64f891cfa1b9",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Специалист аварийной бригады, слушаю. Запах газа в подвале, похоже, задели трубу. Нужна помощь Мосгаза, сообщите им.",
+    "bytes": 129192
+  },
+  "827bf87d": {
+    "sha256": "3c517e185b5f8dead65dfe56c5abbdc54e003d52",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Распоряжения на выезд — начальнику бригады, я на месте работаю.",
+    "bytes": 66498
+  },
+  "8d791005": {
+    "sha256": "cce2acf64e12e28ed8d2759a84913ade434af236",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "В лифте застрял жилец, двери не открываются. Нужна помощь Мослифта, сообщите им.",
+    "bytes": 86978
+  },
+  "a18a016f": {
+    "sha256": "cc7fe131ff1f646c8ccee829b039fad4c261c57d",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Задымление, похоже, загорелся кабель. Нужна помощь пожарной охраны, сообщите им.",
+    "bytes": 79037
+  },
+  "a3902a52": {
+    "sha256": "706a379922968c144ea9a4b58795623838a55a82",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Специалист аварийной бригады, слушаю. Ждём команды на выезд.",
+    "bytes": 61065
+  },
+  "aa9a14e5": {
+    "sha256": "5b21d67bb21d73b5d0f614ee665eace940817847",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Понял, передам начальнику.",
+    "bytes": 33061
+  },
+  "b5e523d9": {
+    "sha256": "be499b52442975d9f4917838eca09fc0f5e57f9b",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Специалист аварийной бригады, слушаю. Собираемся, выезжаем.",
+    "bytes": 84470
+  },
+  "b5f8cac8": {
+    "sha256": "0938d40eded318254745434da50ee001e259f463",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Стоим, машин нет.",
+    "bytes": 30554
+  },
+  "baafc2d6": {
+    "sha256": "d66d5befff5c4b166773a103f053757fd89cbe82",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Запах газа в подвале, похоже, задели трубу. Нужна помощь Мосгаза, сообщите им.",
+    "bytes": 94501
+  },
+  "bb768e81": {
+    "sha256": "d3589bb912320aff4921d05f9fd0d509dc6aef1b",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Вода уходит в колодец, похоже, порыв водопровода. Нужна помощь Мосводоканала, сообщите им.",
+    "bytes": 114981
+  },
+  "bfb6c2e7": {
+    "sha256": "5be50fb38acb4afca175fd26f96739ca0e1af056",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Залило электрощиток в подъезде, нужен электрик. Нужна помощь ЕДЦ ЖКХ, сообщите им.",
+    "bytes": 113727
+  },
+  "c7dea406": {
+    "sha256": "4635f93acce0244e7735f6853a56e2f0d92f720c",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Специалист аварийной бригады, слушаю. Залило электрощиток в подъезде, нужен электрик. Нужна помощь ЕДЦ ЖКХ, сообщите им.",
+    "bytes": 144238
+  },
+  "c8db14c7": {
+    "sha256": "2c95d3fb951215c550f0ac579565d8e00c9c837f",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Нужно перекрыть проезд, без этого работать нельзя. Нужна помощь управы, сообщите им.",
+    "bytes": 93247
+  },
+  "cfa4e1e3": {
+    "sha256": "20a456d54bd5ac03e6467f1492296c98172f8deb",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Ждём команды на выезд.",
+    "bytes": 33061
+  },
+  "d4b68548": {
+    "sha256": "0caa086db30855bfd905281eeda7c38507fd8a0e",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Плохо слышно, повторите.",
+    "bytes": 29300
+  },
+  "fba1a7d2": {
+    "sha256": "26e82faa0bc3ce88a9b70cb7b2b570c66a3257e1",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Специалист аварийной бригады, слушаю. Едем на адрес.",
+    "bytes": 49780
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "0e63b477": {
+    "sha256": "d6bcf1ad72a5537c921ed7f362a1a1185ae771f4",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник отдела реагирования управы, слушаю.",
+    "bytes": 46018
+  },
+  "14dcc6fe": {
+    "sha256": "4dafc4de72d1d9bf83f47925c3c98efa8d6f015b",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник отдела реагирования скорой помощи, слушаю.",
+    "bytes": 49780
+  },
+  "18b5b7cf": {
+    "sha256": "8039c68ae3b7d30c52ae48f572017d068066856c",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принял, ставлю на контроль. О ходе работ докладывайте.",
+    "bytes": 51034
+  },
+  "25403595": {
+    "sha256": "a1201ef9bdf64058a47b834cbfcb0b1270f51485",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник отдела реагирования Мосводоканала, слушаю.",
+    "bytes": 51034
+  },
+  "36ee307b": {
+    "sha256": "37ed896b74004dcfee8fb25d4327ab88b7064337",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник отдела реагирования МОЭК, слушаю.",
+    "bytes": 44764
+  },
+  "57e770a6": {
+    "sha256": "58c28f21b617ff5afde6781ad99bdb6426ca1b1d",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Бригада на месте.",
+    "bytes": 20105
+  },
+  "61732331": {
+    "sha256": "96383f126caaa2762955418ef64569519b94dd47",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Бригада на базе, распоряжения на выезд пока не было.",
+    "bytes": 47272
+  },
+  "6bc70947": {
+    "sha256": "3a167a841cafa5dd8d69673f7dc5027e184a6d3e",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Распоряжение на выезд — начальнику аварийной бригады, звоните ему.",
+    "bytes": 66498
+  },
+  "833796ef": {
+    "sha256": "8f71deba50597a8384e3432f79909a58023179ee",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Бригада в пути на адрес.",
+    "bytes": 30554
+  },
+  "847ab166": {
+    "sha256": "8b9b5fd388610f1d0701d226a0c081902f2f8930",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Не расслышал, повторите.",
+    "bytes": 29300
+  },
+  "963897c3": {
+    "sha256": "74ef7d47720fa3605334980eacdeea687a625aff",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Бригада собирается на выезд.",
+    "bytes": 29300
+  },
+  "a6475ae8": {
+    "sha256": "baf8e95c4db9ba219c7e36fa1dd06653eceb5eb7",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник отдела реагирования Гормоста, слушаю.",
+    "bytes": 44764
+  },
+  "b2d4160d": {
+    "sha256": "2c7fa9a71088ec2855c7b972f32d750189489d38",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "У бригады нет свободных машин.",
+    "bytes": 30554
+  },
+  "b5ca5445": {
+    "sha256": "4df61481c38c9a56c167c30264ed37b4ebf548da",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Докладывайте: что случилось, где, какие силы направлены.",
+    "bytes": 54795
+  },
+  "c244d26c": {
+    "sha256": "2bd20487bdeaa4c5e47e6fa546be76cf3e0fac97",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник отдела реагирования ЕДЦ ЖКХ, слушаю.",
+    "bytes": 49780
+  },
+  "de81ab84": {
+    "sha256": "4d1e430119c4ad34d4be4c0e5bcd379326288478",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Бригада ведёт работы.",
+    "bytes": 26792
+  },
+  "ea9694a0": {
+    "sha256": "f3e32d6c9801a8f48c4b484dc2d5b271bf421034",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник отдела реагирования Мосгаза, слушаю.",
+    "bytes": 44764
+  },
+  "fe8d76d4": {
+    "sha256": "aeb9b61b0be812df1502e810afba6b0c5e102cf0",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Работы завершены.",
+    "bytes": 24284
+  }
+}
