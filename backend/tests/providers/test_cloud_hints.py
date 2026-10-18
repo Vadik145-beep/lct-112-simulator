@@ -53,8 +53,9 @@ def test_no_vehicles_and_the_head_decided_by_the_server() -> None:
     chief = {**new_call("moek"), no_vehicles.PLAN_KEY: no_vehicles.PLAN_NO_VEHICLES}
     attempt = Attempt(service_calls=[chief])
     hear(scenario, attempt, chief, ADDRESS)  # misheard first on difficulty 3
-    hear(scenario, attempt, chief, "Нет, дом 10.")
-    assert hear(scenario, attempt, chief, "Выезжайте.") == no_vehicles.ANNOUNCE
+    said = hear(scenario, attempt, chief, "Нет, дом 10.")
+    assert said == f"Понял, дом 10. Исправил, записал. {no_vehicles.SHORTAGE}"
+    assert hear(scenario, attempt, chief, "Выезжайте.") == no_vehicles.STILL_NONE
     assert no_vehicles.blocked(attempt.service_calls)
     head = {**new_call("moek"), "kind": officer.KIND_STAFF, "role": staff.ROLE_HEAD}
     attempt.service_calls = [*attempt.service_calls, head]
@@ -88,7 +89,7 @@ def test_the_people_of_the_card_take_control_and_know_their_duties() -> None:
     assert assistant["monitorPlan"] == {"controlEnabled": True}
     prompt = vapi.role_prompt(chief)
     assert prompt.startswith("Ты начальник аварийной бригады")
-    assert "Так что делаем-то?" in prompt and "Стоп, короче" in prompt
+    assert "чего не хватает" in prompt and "Стоп, короче" in prompt
     assert "Служебная подсказка тренажёра" in prompt
     head_call = {**new_call("moek"), "kind": officer.KIND_STAFF, "role": staff.ROLE_HEAD}
     head = officer.call_scenario(scenario, head_call, Attempt(service_calls=[]))

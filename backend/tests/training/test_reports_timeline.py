@@ -93,13 +93,13 @@ def test_first_report_comes_after_the_delay_from_the_call_to_the_officer() -> No
     assert due is not None and due.status == "response_started"
 
 
-def test_a_squad_told_but_not_sent_stays_until_the_order() -> None:
-    """The address alone is not the order to go (#263): the squad leaves at the end of the
-    call in which the dispatcher sent it."""
-    told = officer_call(20, 80, said="улица Свободы, дом 42, течёт стояк, пострадавших нет")
-    assert reports.next_report(SCENARIO, attempt(calls=[told]), now(5000)) is None
-    sent = {**officer_call(100, 130, said="Выезжайте."), "id": "o-2"}
-    a = attempt(calls=[told, sent])
+def test_a_squad_leaves_once_its_chief_knows_where_and_what() -> None:
+    """Decision of 17.10.2026: the squad leaves at the end of the call by which the chief
+    learned the address and the incident; «выезжайте» alone sends nobody."""
+    bare = officer_call(20, 40, said="Пострадавших нет, выезжайте.")
+    assert reports.next_report(SCENARIO, attempt(calls=[bare]), now(5000)) is None
+    told = {**officer_call(100, 130, said="Улица Свободы, дом 42, течёт стояк."), "id": "o-2"}
+    a = attempt(calls=[bare, told])
     assert reports.next_report(SCENARIO, a, now(130 + FIRST.after_seconds - 1)) is None
     assert reports.next_report(SCENARIO, a, now(130 + FIRST.after_seconds)) is not None
 

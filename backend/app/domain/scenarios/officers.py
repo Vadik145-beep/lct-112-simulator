@@ -131,7 +131,7 @@ PROGRESS_REPLIES: dict[str, str] = {
     "works_started": "Работы ведутся, пока без замечаний. По окончании доложу.",
     "works_done": "Работы завершены, докладывал. Всё по карточке отражено.",
     SQUAD_STATE_NO_VEHICLES: "Машин так и нет, все на выездах.",
-    SQUAD_STATE_WAITING: "Бригада на базе, ждём вашего распоряжения.",
+    SQUAD_STATE_WAITING: "Бригада на базе. Назовите адрес и что случилось — выедем.",
 }
 # Состояния, в которых бригаду уже видно на месте: это знает и заявитель, если ему позвонить
 # (app.domain.scenarios.caller_back).
@@ -328,7 +328,7 @@ def repeat_opening(
     """The officer's first phrase on a repeat call: the card is with the service already, the
     squad is where the reports put it."""
     first = greeting(service, service_title, chief=chief)
-    passed = "Распоряжение от вас уже получил." if chief else "Карточку от вас уже приняли."
+    passed = "Карточку от вас уже принял." if chief else "Карточку от вас уже приняли."
     return f"{first} {passed} {PROGRESS_REPLIES[state]}"
 
 

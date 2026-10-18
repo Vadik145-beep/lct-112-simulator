@@ -160,7 +160,12 @@ async def test_service_call_is_played_by_the_cloud(
         assert r.status_code == 200, r.text
     attempt = await load(attempt_id)
     record = next(c for c in attempt.service_calls if c["id"] == call_id)
-    assert [t["role"] for t in record["dialog"]] == ["operator", "caller"]
+    # The server's decision for the cloud is a hidden turn, not a phrase (#263): the chief
+    # knows where and what, so he takes the card.
+    spoken = [t for t in record["dialog"] if not t.get("hint")]
+    assert [t["role"] for t in spoken] == ["operator", "caller"]
+    hints = [t["text"] for t in record["dialog"] if t.get("hint")]
+    assert hints and hints[0].startswith("Принял, выезжаем. Наряд")
     assert "Молостовых" in record["dialog"][0]["text"]
     assert record["dialog"][0]["method"] == "cloud" and record["dialog"][0]["heard"] is True
     assert attempt.dialog == []  # карточка ДДС своего диалога не ведёт

@@ -384,7 +384,7 @@ async def test_repeat_call_does_not_take_the_card_again(client: AsyncClient) -> 
     again = r.json()["call"]
     opening = again["turns"][0]["text"]
     # The own service's line is the squad chief (#263): he has the order already.
-    assert "уже получил" in opening and "слушаю" in opening
+    assert "уже принял" in opening and "слушаю" in opening
     assert again["facts_required"] == []
     # Whatever the dispatcher says, the officer does not ask for the card again.
     for text in ("Алло, как там у вас?", "Улица Молостовых, дом 10", "Пострадавших нет"):
