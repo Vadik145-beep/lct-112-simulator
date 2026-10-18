@@ -3,8 +3,8 @@ recommendations 9–10 of the customer: the system forms the cards, gives them o
 and advises without the teacher).
 
 The teacher only picks the group and the difficulty and starts the lesson. Each trainee then
-gets ``CARDS_PER_TRAINEE`` of its difficulty cards one at a time (a stream at 3), each written for him when the previous one is
-scored (``app.domain.scenarios.ai_plan`` chooses what, the generation provider writes it, the
+gets ``CARDS_PER_TRAINEE`` of the difficulty cards one at a time (a stream at 3), each written
+for him when the previous one is scored (``app.domain.scenarios.ai_plan`` chooses what, the generation provider writes it, the
 template when the model is down or slow). Writing takes seconds, so it runs in the background:
 writing of the next card starts as soon as the previous one is scored (``prepare_next``, while
 the trainee reads the result), the journal asks for it (``service.issue_next``), gets nothing
