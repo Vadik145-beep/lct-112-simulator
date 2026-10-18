@@ -21,6 +21,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 
 import { journalKey, ringingKey, useJournal, useRinging, type JournalItem } from "@/api/training";
+import { goAndAnswer } from "@/emulator/answer-on-arrival";
 import { JournalPhone } from "@/emulator/ring-elsewhere";
 import { ErrorState, LoadingState } from "@/components/states";
 import { clockParts, formatDate, formatLongDate, formatTime, useNow } from "@/emulator/time";
@@ -280,7 +281,7 @@ function Journal({ sessionId }: { sessionId: string }) {
         </section>
       </div>
 
-      <JournalPhone calls={ringing.data ?? []} onGo={(id) => navigate(`/student/attempts/${id}`)} />
+      <JournalPhone calls={ringing.data ?? []} onGo={(call) => goAndAnswer(navigate, call)} />
       <TrainerPanel connection={connection} collapsedByDefault>
         <div>
           <div className="text-xs text-[var(--arm-text-muted)]">Занятие</div>

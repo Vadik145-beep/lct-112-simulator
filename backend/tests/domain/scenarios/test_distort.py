@@ -243,3 +243,22 @@ def test_planned_wrong_service_counts_as_one_of_the_mistakes(type_rows: list[dic
 def test_a_card_the_service_serves_is_not_marked(type_rows: list[dict]) -> None:
     body = {**seed_card(), "difficulty": 2}
     assert distort.sent_to_wrong_service(body, CATALOGUE) is body
+
+
+@pytest.mark.parametrize("code", ["3.2.2.0", "3.2.2.2", "3.1.1.0"])
+def test_a_wrong_type_is_never_of_the_same_branch(type_rows: list[dict], code: str) -> None:
+    """Stand 18.10.2026, card 23480297: «Взрыв МЦК (станция, тоннель)» planted for «Взрыв МЦК»
+    is a kind of the same type, nobody tells them apart (decision of the user)."""
+    ctx = context(type_rows)
+    titles = {str(r["code"]): r["final_title"] for r in type_rows}
+    planted = set()
+    for seed in range(40):
+        body = seed_card()
+        body["card"]["incident_type"] = code
+        error = distort.sibling_incident_type(body, random.Random(seed), ctx)  # noqa: S311
+        assert error is not None
+        planted.add(error["wrong_value"])
+        assert not error["wrong_value"].startswith(code.rsplit(".", 1)[0] + "."), error
+        assert error["wrong_label"] == titles[error["wrong_value"]]
+        assert error["wrong_value"].split(".")[0] == code.split(".")[0]  # same group
+    assert len(planted) > 1

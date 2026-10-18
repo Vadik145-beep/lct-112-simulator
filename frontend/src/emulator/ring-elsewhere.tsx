@@ -15,7 +15,7 @@ export function OtherCardCalls({
   title = "Звонок по другой карточке",
 }: {
   calls: RingingOut[];
-  onGo: (attemptId: string) => void;
+  onGo: (call: RingingOut) => void;
   /** In the journal no card is open: «Звонит бригада по карточке». */
   title?: string;
 }) {
@@ -36,10 +36,10 @@ export function OtherCardCalls({
           </span>
           <button
             type="button"
-            onClick={() => onGo(c.attempt_id)}
+            onClick={() => onGo(c)}
             className="self-start rounded-sm bg-[var(--arm-orange)] px-2 py-1 font-semibold text-white hover:brightness-110"
           >
-            Перейти в карточку
+            Перейти в карточку и ответить
           </button>
         </div>
       ))}
@@ -53,7 +53,7 @@ export function JournalPhone({
   onGo,
 }: {
   calls: RingingOut[];
-  onGo: (attemptId: string) => void;
+  onGo: (call: RingingOut) => void;
 }) {
   const [open, setOpen] = useState(false);
   if (calls.length === 0) return null;

@@ -8,7 +8,7 @@ from __future__ import annotations
 from app.domain.evaluation.card_response import evaluate_card_response
 from app.domain.evaluation.detectors import REPORT_REACTION_SECONDS
 from app.domain.evaluation.schemas import BrigadeReport, CardResponseAttempt, DialogTurn
-from app.domain.scenarios import officers
+from app.domain.scenarios import officers, staff
 from app.domain.scenarios.validate import fill_from_reference
 from app.providers.dialog import ROLE_OFFICER, ButtonsDialog, DialogContext
 from tests.domain.evaluation.helpers import (
@@ -306,3 +306,115 @@ def test_a_status_set_early_is_one_mistake_not_two() -> None:
     errors = errors_of(scenario, with_changes(perfect, status_log=log))
     assert "status_before_report" in errors
     assert "report_not_reflected" not in errors
+
+
+def _report_missed_then_asked(
+    scenario, attempt: CardResponseAttempt, status: str, role: str, said: str, second: int
+) -> list[dict]:
+    """The squad's report of ``status`` rang unanswered, then the dispatcher called a person of
+    the organization, who said ``said`` at ``second``."""
+    calls = []
+    for call in attempt.service_calls:
+        row = call.model_dump()
+        if call.kind == "report" and call.report_status == status:
+            row.update(answered=False, dialog=[], end_reason="not_taken")
+        calls.append(row)
+    calls.append(
+        {
+            "service": scenario.service,
+            "kind": "staff",
+            "role": role,
+            "started_at": at(second - 10),
+            "answered": True,
+            "ended_at": at(second + 10),
+            "dialog": [
+                {"role": "caller", "text": f"{role}, слушаю.", "topics": [], "at": at(second - 9)},
+                {"role": "caller", "text": said, "topics": [], "at": at(second)},
+            ],
+        }
+    )
+    return calls
+
+
+def _status_at(attempt: CardResponseAttempt, status: str, second: int) -> list[dict]:
+    log = [e.model_dump() for e in attempt.status_log]
+    for entry in log:
+        if entry["status"] == status:
+            entry["at"] = at(second)
+    return log
+
+
+def test_what_the_squad_specialist_said_on_the_phone_is_the_report() -> None:
+    """Stand 18.10.2026, card 23480297 (decision of the user): the report of the arrival rang
+    unanswered, the dispatcher called the squad's specialist — «На месте, осматриваемся» — and
+    then set «Прибытие». That is the information from the squad, no penalty."""
+    scenario = card_scenario(NAME)
+    perfect = perfect_card_attempt(scenario)
+    said = STEP_SECONDS["arrived"] + 20
+    calls = _report_missed_then_asked(
+        scenario, perfect, "arrived", staff.ROLE_SQUAD_SPECIALIST, "На месте, осматриваемся.", said
+    )
+    log = _status_at(perfect, "arrived", said + 5)
+    errors = errors_of(scenario, with_changes(perfect, status_log=log, service_calls=calls))
+    assert "status_before_report" not in errors
+    assert "report_not_taken" in errors  # not answering the report stays an error of its own
+
+
+def test_status_set_before_the_squad_said_it_is_still_early() -> None:
+    scenario = card_scenario(NAME)
+    perfect = perfect_card_attempt(scenario)
+    said = STEP_SECONDS["arrived"] + 20
+    calls = _report_missed_then_asked(
+        scenario, perfect, "arrived", staff.ROLE_SQUAD_SPECIALIST, "На месте, осматриваемся.", said
+    )
+    log = _status_at(perfect, "arrived", said - 5)
+    errors = errors_of(scenario, with_changes(perfect, status_log=log, service_calls=calls))
+    assert "«Прибытие»" in errors["status_before_report"]
+
+
+def test_the_squad_tells_only_where_it_already_is() -> None:
+    """The specialist called before the arrival was due speaks of the road: «Прибытие» set
+    after that call is still early, whatever words of his matched."""
+    scenario = card_scenario(NAME)
+    perfect = perfect_card_attempt(scenario)
+    said = STEP_SECONDS["response_started"] + 60  # on the way, the arrival report not yet due
+    calls = _report_missed_then_asked(
+        scenario,
+        perfect,
+        "arrived",
+        staff.ROLE_SQUAD_SPECIALIST,
+        "Едем, скоро будем на месте.",
+        said,
+    )
+    log = _status_at(perfect, "arrived", said + 5)
+    errors = errors_of(scenario, with_changes(perfect, status_log=log, service_calls=calls))
+    assert "«Прибытие»" in errors["status_before_report"]
+
+
+def test_the_office_is_not_the_squad() -> None:
+    """The head of the organization knows of the squad from the office: his «бригада на месте»
+    is not the squad's report."""
+    scenario = card_scenario(NAME)
+    perfect = perfect_card_attempt(scenario)
+    said = STEP_SECONDS["arrived"] + 20
+    calls = _report_missed_then_asked(
+        scenario, perfect, "arrived", staff.ROLE_HEAD, "Бригада на месте.", said
+    )
+    log = _status_at(perfect, "arrived", said + 5)
+    errors = errors_of(scenario, with_changes(perfect, status_log=log, service_calls=calls))
+    assert "«Прибытие»" in errors["status_before_report"]
+
+
+def test_the_squad_chief_called_again_tells_the_progress_too() -> None:
+    """Card 23480297: called again, the chief said «бригада на месте, осматриваемся»."""
+    scenario = card_scenario(NAME)
+    perfect = perfect_card_attempt(scenario)
+    said = STEP_SECONDS["arrived"] + 20
+    calls = _report_missed_then_asked(
+        scenario, perfect, "arrived", staff.ROLE_SQUAD_SPECIALIST, "-", said
+    )
+    calls[-1].update(kind="outgoing", role=None)
+    calls[-1]["dialog"][-1]["text"] = "Карточку принял, бригада на месте, осматриваемся."
+    log = _status_at(perfect, "arrived", said + 5)
+    errors = errors_of(scenario, with_changes(perfect, status_log=log, service_calls=calls))
+    assert "status_before_report" not in errors

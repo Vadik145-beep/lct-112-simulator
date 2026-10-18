@@ -8,10 +8,12 @@ it asks the grammar provider for the student's text and picks the engine by scen
 
 from __future__ import annotations
 
+import asyncio
 from collections.abc import Mapping
+from dataclasses import replace
 
 from app.domain.evaluation.call_intake import description_text, evaluate_call_intake
-from app.domain.evaluation.card_response import comment_texts, evaluate_card_response
+from app.domain.evaluation.card_response import comments_of, evaluate_card_response
 from app.domain.evaluation.result import (
     DEFAULT_PASS_THRESHOLD,
     Component,
@@ -38,6 +40,7 @@ __all__ = [
     "TransitionError",
     "allowed_next",
     "apply_weights",
+    "check_comments",
     "evaluate_attempt",
     "evaluate_call_intake",
     "evaluate_card_response",
@@ -95,13 +98,15 @@ async def evaluate_attempt(
     embeddings = embeddings or get_embedding_provider()
     if isinstance(scenario, CardResponseScenario):
         parsed = CardResponseAttempt.model_validate(dict(attempt))
-        text = comment_texts(parsed)
+        grammar = await check_comments(grammar_provider, comments_of(parsed))
     else:
         parsed = CallIntakeAttempt.model_validate(dict(attempt))
         text = description_text(parsed)
-    grammar = (
-        await grammar_provider.check(text) if text else GrammarResult([], grammar_provider.method)
-    )
+        grammar = (
+            await grammar_provider.check(text)
+            if text
+            else GrammarResult([], grammar_provider.method)
+        )
     return evaluate_sync(
         body,
         attempt,
@@ -110,3 +115,20 @@ async def evaluate_attempt(
         embeddings=embeddings,
         pass_threshold=pass_threshold,
     )
+
+
+async def check_comments(provider: GrammarProvider, comments: list[str]) -> GrammarResult:
+    """Each comment checked on its own, the offsets pointing into ``comment_texts``: comments
+    of different statuses run together read as one sentence (stand 18.10.2026: «выехали
+    прибыли, Приступили…» came back as «однородные члены»). A comment is a note in a status
+    field, so its first letter is checked as a capital: alone «на месте» would otherwise be an
+    error of its own, which it never was in the joined text."""
+    results = await asyncio.gather(*(provider.check(c[:1].upper() + c[1:]) for c in comments))
+    if not all(r.available for r in results):
+        return GrammarResult([], "unavailable")
+    matches = []
+    start = 0
+    for comment, result in zip(comments, results, strict=True):
+        matches += [replace(m, offset=m.offset + start) for m in result.matches]
+        start += len(comment) + 1  # the line break of ``comment_texts``
+    return GrammarResult(matches, provider.method)
