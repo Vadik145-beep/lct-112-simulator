@@ -83,11 +83,9 @@ def test_no_vehicles_after_the_house_is_settled_then_the_head_finds_one() -> Non
     call = chief_call()
     attempt = Attempt(service_calls=[call])
     accepted(attempt)
-    # The house is misheard first; «машин нет» comes once the chief knows where and what.
-    assert talk(scenario, attempt, call, ADDRESS).startswith("Записал:")
-    said = talk(scenario, attempt, call, "Нет, дом 42.")
-    assert said == f"Понял, дом 42. Исправил, записал. {no_vehicles.SHORTAGE}"
-    assert misheard.state(attempt.service_calls).fixed
+    # «Машин нет» once the chief knows where and what; no misheard house (18.10.2026).
+    assert talk(scenario, attempt, call, ADDRESS) == no_vehicles.ANNOUNCE
+    assert misheard.state(attempt.service_calls) is None
     assert talk(scenario, attempt, call, "Выезжайте.") == no_vehicles.STILL_NONE
     call["ended_at"] = (NOW + timedelta(seconds=40)).isoformat()
 
@@ -101,11 +99,14 @@ def test_no_vehicles_after_the_house_is_settled_then_the_head_finds_one() -> Non
     attempt.service_calls = [*attempt.service_calls, again]
     assert talk(scenario, attempt, again, "Ну что, выезжаете?") == no_vehicles.STILL_NONE
 
+    # Told of the shortage without the address, the head asks it first (18.10.2026).
     head = head_call(NOW + timedelta(seconds=60))
     attempt.service_calls = [*attempt.service_calls, head]
     assert talk(scenario, attempt, head, "Добрый день, у бригады нет свободных машин.") == (
-        no_vehicles.RESOLVED
+        no_vehicles.ASK_ADDRESS
     )
+    assert officer.squad_state(attempt) == officers.SQUAD_STATE_NO_VEHICLES
+    assert talk(scenario, attempt, head, "Улица Свободы, дом 42, корпус 2.") == no_vehicles.RESOLVED
     head["ended_at"] = (NOW + timedelta(seconds=90)).isoformat()
     assert officer.squad_state(attempt) == officers.SQUAD_STATE_PENDING
     assert reports.dispatched_at(scenario, attempt) == NOW + timedelta(seconds=90)
@@ -116,9 +117,8 @@ def test_a_complication_turn_has_vehicles() -> None:
     scenario = hard()
     call = chief_call(no_vehicles.PLAN_COMPLICATION)
     attempt = Attempt(service_calls=[call])
-    talk(scenario, attempt, call, ADDRESS)
-    said = talk(scenario, attempt, call, "Да.")
-    assert said.startswith(misheard.AGREED) and "Выезжаем, наряд" in said
+    said = talk(scenario, attempt, call, ADDRESS)
+    assert said.startswith("Принял, выезжаем. Наряд")
     assert not no_vehicles.announced(attempt.service_calls)
 
 
@@ -126,7 +126,7 @@ def test_the_head_finds_nothing_when_nothing_is_missing() -> None:
     scenario = hard()
     head = head_call(NOW)
     attempt = Attempt(service_calls=[head])
-    assert officer.head_reply(attempt, head, "Нет свободных машин.") is None
+    assert officer.head_reply(scenario, attempt, head, "Нет свободных машин.") is None
     built = officer.call_scenario(scenario, head, attempt)
     assert built.caller.opening == "Руководитель ЕДЦ ЖКХ, слушаю."
 
@@ -150,3 +150,66 @@ def errors_of(scenario: CardResponseScenario, attempt: Attempt) -> dict[str, str
         scenario, CardResponseAttempt.model_validate(data), grammar=grammar_ok()
     )
     return {e.code: e.explanation for e in result.errors}
+
+
+def test_the_head_named_the_address_at_once_finds_a_vehicle_at_once() -> None:
+    scenario = hard()
+    call = chief_call()
+    attempt = Attempt(service_calls=[call])
+    accepted(attempt)
+    talk(scenario, attempt, call, ADDRESS)
+    head = head_call(NOW + timedelta(seconds=60))
+    attempt.service_calls = [*attempt.service_calls, head]
+    said = talk(scenario, attempt, head, "Улица Свободы, дом 42, корпус 2, у бригады нет машин.")
+    assert said == no_vehicles.RESOLVED
+
+
+def test_after_the_heads_vehicle_a_call_to_the_chief_is_a_repeat() -> None:
+    """Stand 18.10.2026: the squad left on the head's vehicle and a call to its chief started
+    as a new one, «Короче, что у вас?» and «Передано: пока ничего»."""
+    scenario = hard()
+    call = chief_call()
+    attempt = Attempt(service_calls=[call])
+    accepted(attempt)
+    talk(scenario, attempt, call, ADDRESS)
+    call["facts_passed"] = ["address", "incident_type", "injured"]
+    call["ended_at"] = (NOW + timedelta(seconds=40)).isoformat()
+    assert not officer.squad_out(attempt, scenario)
+    head = head_call(NOW + timedelta(seconds=60))
+    attempt.service_calls = [*attempt.service_calls, head]
+    talk(scenario, attempt, head, "Улица Свободы, дом 42, корпус 2: у бригады нет свободных машин.")
+    head["ended_at"] = (NOW + timedelta(seconds=90)).isoformat()
+    assert officer.squad_out(attempt, scenario)
+
+
+def test_reports_say_the_real_house_not_the_operators_mistake() -> None:
+    """Stand 18.10.2026: «прибыли … дом 23» while the caller and the dispatcher said 24."""
+    body = card_scenario(NAME).model_dump()
+    body["card"]["address"]["house"] = "41"  # the 112 operator's mistake; the caller said 42
+    body["injected_errors"] = [
+        {"field": "address.house", "wrong_value": "41", "correct_value": "42", "hint_level": 2}
+    ]
+    scenario = CardResponseScenario.model_validate(body)
+    report = next(r for r in scenario.reference.reports if r.status == "arrived").model_copy(
+        update={"text": "Прибыли по адресу: улица Свободы, дом 41, корпус 2."}
+    )
+    said = officer.report_said(scenario, Attempt(service_calls=[]), report)
+    assert "дом 42" in said and "дом 41" not in said
+
+
+def test_the_chief_knows_his_specialist_asked_for_another_service() -> None:
+    """Stand 18.10.2026: told «мы запросили подкрепление», the chief said «запрос передан»."""
+    scenario = hard()
+    report = {
+        "id": "r-c",
+        "service": "gkh",
+        "kind": officer.KIND_REPORT,
+        "report_status": "complication",
+        "started_at": NOW.isoformat(),
+        "answered": True,
+        "ended_at": NOW.isoformat(),
+        "dialog": [],
+    }
+    attempt = Attempt(service_calls=[report])
+    built = officer.officer_scenario(scenario, "gkh", "ЕДЦ ЖКХ", attempt, repeat=True)
+    assert "попросил диспетчера вызвать" in built.caller.facts["осложнение"]

@@ -101,10 +101,6 @@ class CloudTurns(Protocol):
     operator_stopped_at: float | None
     pending_latency_ms: int | None
     latencies_ms: list[int]
-    # The server's decision to voice next (#263), set by the transcript of the dispatcher;
-    # ``pending_say``: word for word, not in the cloud's own words.
-    pending_hint: str | None
-    pending_say: bool
 
 
 @dataclass
@@ -121,9 +117,6 @@ class CloudCall(Call):
     operator_stopped_at: float | None = None
     pending_latency_ms: int | None = None
     latencies_ms: list[int] = field(default_factory=list)
-    pending_hint: str | None = None
-    pending_say: bool = False
-    control_url: str | None = None
     leg_lost: asyncio.Task | None = None
 
     def __post_init__(self) -> None:
@@ -199,12 +192,7 @@ async def _record_service_transcript(
             text,
             latency_ms=latency,
             ts=loaded.ts,
-            decide=True,
         )
-        if turn is not None and role == "operator":
-            record = officer.find_call(loaded.attempt, call.service_call_id)
-            call.pending_hint = officer.hint_of(record)
-            call.pending_say = officer.hint_is_verbatim(record)
         await session.commit()
     await publish_events(events)
     if turn is not None and role == "caller":
@@ -284,6 +272,23 @@ async def _apply_service_report(call: CloudTurns, reported: list[tuple[str, str]
                 events.extend(turn_events)
         await session.commit()
     await publish_events(events)
+
+
+async def store_analysis(call: CloudTurns, message: dict) -> None:
+    """The cloud's form of a call on the card (``analysis.structuredData`` of the report): the
+    evaluation of the call to the squad chief reads it (#263)."""
+    from app.dialog import officer
+
+    data = (message.get("analysis") or {}).get("structuredData")
+    if not call.service_call_id or not isinstance(data, dict) or not data:
+        return
+    async with SessionLocal() as session:
+        loaded = await load_card_attempt(session, call.attempt_id)
+        if loaded is None:
+            return
+        officer.set_analysis(loaded.attempt, call.service_call_id, data, loaded.scenario)
+        await session.commit()
+    log.info("cloud form stored", call=call.service_call_id, form=data)
 
 
 def report_recording_url(message: dict) -> str | None:
@@ -649,6 +654,7 @@ class CloudCallManager(CallManager):
         elif kind == "end-of-call-report":
             call.vapi_ended = True
             await apply_report(call, message)
+            await store_analysis(call, message)
             await self._end(call, end_reason(str(message.get("endedReason") or "")))
         elif kind == "hang":
             log.warning("vapi reports a delay", attempt=str(call.attempt_id))
@@ -687,7 +693,7 @@ class CloudCallManager(CallManager):
             call=call.service_call_id,
             vapi_call=call.vapi_call_id,
         )
-        return {"assistant": build_assistant(scenario)}
+        return {"assistant": build_assistant(scenario, vocabulary=officer.stt_terms(card))}
 
     # ------------------------------------------------------------ teardown
 

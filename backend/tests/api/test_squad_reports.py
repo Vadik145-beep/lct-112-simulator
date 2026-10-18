@@ -113,12 +113,18 @@ async def test_reports_arrive_on_the_timeline_and_the_dispatcher_reflects_them(
         client, token, attempt_id, call_id, "Улица Молостовых, дом 10, корпус 1, нет отопления"
     )
     await end(client, token, attempt_id, call_id)
-    await rewind(attempt_id, 20)
+    # The chief named his squad in the call: that was the departure, «Начало реагирования» is
+    # set now and no call «выехали» comes (decision of 18.10.2026: one call — one status).
+    r = await status(
+        client, token, attempt_id, status="response_started", order_number="4127", comment="Выехали"
+    )
+    assert r.status_code == 200, r.text
+    await rewind(attempt_id, 31)
     assert await sweep() == []
 
-    await rewind(attempt_id, 11)  # 31 s after the call ended, the delay is 30
+    await rewind(attempt_id, 15)  # 46 s after the call ended, the arrival comes in 45
     events = await sweep()
-    assert started(events) == ["response_started"]
+    assert started(events) == ["arrived"]
     first = next(e for e in events if e["type"] == "service_call.started")
     assert first["kind"] == "report"
     # The squad's call rings: nobody answers it for the dispatcher (issue #103).
@@ -126,8 +132,8 @@ async def test_reports_arrive_on_the_timeline_and_the_dispatcher_reflects_them(
 
     data = await get_attempt(client, token, attempt_id)
     report = next(c for c in data["service_calls"] if c["kind"] == "report")
-    assert report["report_status"] == "response_started"
-    assert report["report_status_title"] == "Начало реагирования"
+    assert report["report_status"] == "arrived"
+    assert report["report_status_title"] == "Прибытие"
     assert report["answered"] is False and report["ended_at"] is None
     assert report["turns"] == []
 
@@ -151,7 +157,7 @@ async def test_reports_arrive_on_the_timeline_and_the_dispatcher_reflects_them(
     report = r.json()["call"]
     assert report["answered"] is True
     assert report["turns"][0]["role"] == "caller"
-    assert "Выехали" in report["turns"][0]["text"]
+    assert "Прибыли" in report["turns"][0]["text"]
     assert report["facts_required"] == []
     # Answering twice changes nothing.
     r = await answer(client, token, attempt_id, report["id"])
@@ -163,24 +169,10 @@ async def test_reports_arrive_on_the_timeline_and_the_dispatcher_reflects_them(
     # not counted on a report; then hangs up and reflects the report.
     r = await say(client, token, attempt_id, report["id"], "Повторите, не расслышал")
     assert r.status_code == 200, r.text
-    assert "Выехали" in r.json()["call"]["turns"][-1]["text"]
+    assert "Прибыли" in r.json()["call"]["turns"][-1]["text"]
     assert r.json()["call"]["facts_passed"] == []
     r = await end(client, token, attempt_id, report["id"])
     assert r.json()["call"]["ended_at"] is not None
-    r = await status(
-        client, token, attempt_id, status="response_started", order_number="4127", comment="Выехали"
-    )
-    assert r.status_code == 200, r.text
-
-    # The next report counts from the end of the previous one (45 s), not from «Принята».
-    # The margins are wide: the real seconds the requests take count towards the delay too.
-    await rewind(attempt_id, 35)
-    assert await sweep() == []
-    await rewind(attempt_id, 15)
-    assert started(await sweep()) == ["arrived"]
-    arrived = (await report_calls(attempt_id))[-1]
-    await answer(client, token, attempt_id, arrived["id"])
-    await end(client, token, attempt_id, arrived["id"])
     r = await status(client, token, attempt_id, status="arrived")
     assert r.status_code == 200, r.text
 
@@ -219,7 +211,7 @@ async def test_reports_arrive_on_the_timeline_and_the_dispatcher_reflects_them(
     assert "report_not_reflected" not in errors
     component = evaluation["components"]["service_call"]
     assert component["items"][0]["called"] is True
-    assert len([c for c in r.json()["attempt"]["service_calls"] if c["kind"] == "report"]) == 4
+    assert len([c for c in r.json()["attempt"]["service_calls"] if c["kind"] == "report"]) == 3
     # A closed card gets no more reports.
     assert await sweep() == []
 

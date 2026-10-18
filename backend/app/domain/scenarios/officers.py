@@ -176,12 +176,12 @@ DEFAULT_REPORTS: list[tuple[str, int, str]] = [
     (
         "response_started",
         30,
-        "Алло, диспетчер? Это начальник аварийной бригады. Выехали по адресу: {address}.",
+        "Алло, диспетчер? Это начальник аварийной бригады. Выехали по адресу {address}.",
     ),
     (
         "arrived",
         45,
-        "Алло, это снова начальник аварийной бригады. Прибыли по адресу: {address}, приступаем.",
+        "Алло, это снова начальник аварийной бригады. Прибыли по адресу {address}, приступаем.",
     ),
     ("works_started", 30, "Алло, диспетчер, начальник аварийной бригады. Докладываю: {comment}"),
     ("works_done", 60, "Алло, диспетчер? Начальник аварийной бригады. Работы завершены: {comment}"),
@@ -199,9 +199,62 @@ _OLD_TITLES: list[tuple[re.Pattern[str], str]] = [
 
 
 def renamed(text: str) -> str:
-    """The squad leader of an older wording called by the customer's title."""
+    """The squad leader of an older wording called by the customer's title, and the report said
+    as a person says it (``spoken_report``)."""
     for pattern, title in _OLD_TITLES:
         text = pattern.sub(title, text)
+    return spoken_report(text)
+
+
+# A report is said, not read out (decision of 18.10.2026): no colons, nothing twice — «Работы
+# завершены, газоснабжение восстановлено», not «Работы завершены: работы … завершены».
+_TO_ADDRESS = re.compile(r"(Выехали|Прибыли) по адресу:\s*")
+_STARTED = re.compile(r"Докладываю:\s*(.+)$", re.DOTALL)
+_DONE = re.compile(r"Работы завершены:\s*(.+)$", re.DOTALL)
+_DONE_AGAIN = re.compile(r"^работы\s+(завершены|выполнены)[\s,.:;—-]*", re.IGNORECASE)
+_SAYS_DONE = re.compile(r"заверш|выполн", re.IGNORECASE)
+_SAYS_WORKS = re.compile(r"\bработ", re.IGNORECASE)
+# Names a comment lowered after «Докладываю:» / «Работы завершены:» in older cards.
+_NAMES = {
+    "мосгаз": "Мосгаз",
+    "мосводоканал": "Мосводоканал",
+    "мослифт": "Мослифт",
+    "гормост": "Гормост",
+    "моэк": "МОЭК",
+    "мчс": "МЧС",
+}
+
+
+def _sentence(text: str) -> str:
+    text = text.strip()
+    return text[:1].upper() + text[1:] if text else text
+
+
+def _names(text: str) -> str:
+    for low, name in _NAMES.items():
+        text = re.sub(rf"\b{low}(\w*)", lambda m, n=name: n + m.group(1), text, flags=re.IGNORECASE)
+    return text
+
+
+def spoken_report(text: str) -> str:
+    """«Выехали по адресу улица Свободы…», «Работы начаты, перекрыт стояк…», «Работы
+    завершены, вода подана…»: commas instead of colons, «работы» said once."""
+    text = _TO_ADDRESS.sub(r"\1 по адресу ", text)
+    started = _STARTED.search(text)
+    if started:
+        said = _names(started.group(1).strip())
+        line = _sentence(said) if _SAYS_WORKS.search(said) else f"Работы начаты, {said}"
+        text = text[: started.start()] + line
+    done = _DONE.search(text)
+    if done:
+        said = _names(_DONE_AGAIN.sub("", done.group(1).strip()))
+        if not said:
+            line = "Работы завершены."
+        elif _SAYS_DONE.search(said) and _SAYS_WORKS.search(said):
+            line = _sentence(said)
+        else:
+            line = f"Работы завершены, {said}"
+        text = text[: done.start()] + line
     return text
 
 
@@ -252,6 +305,32 @@ def order_number(scenario: CardResponseScenario, service: str) -> str:
     return str(1000 + int(digest[:4], 16) % 9000)
 
 
+DIGIT_WORDS = ("ноль", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять")
+
+
+def spoken_digits(number: str) -> str:
+    """«8513» → «восемь-пять-один-три»: the cloud's voice read a squad number as «8-5/13»
+    (stand 18.10.2026); one digit at a time it is heard and written down right."""
+    return "-".join(DIGIT_WORDS[int(d)] for d in number if d.isdigit()) or number
+
+
+def said_order(number: str) -> str:
+    """The squad number as the cloud must say it: the digits and how to say them."""
+    spoken = spoken_digits(number)
+    return f"{number} — вслух по одной цифре: «{spoken}»" if spoken != number else number
+
+
+def with_order(text: str, status: str, number: str) -> str:
+    """The squad names itself when it reports the departure: «Выехали по адресу …. Наряд 2750.»
+    (stand 18.10.2026: on the head's vehicle nobody named the squad and the dispatcher had no
+    number for «Начало реагирования»)."""
+    if status != "response_started" or not number or number in re.sub(r"\D", "", text):
+        return text
+    if spoken_digits(number) in text:
+        return text
+    return f"{text.rstrip()} Наряд {spoken_digits(number)}."
+
+
 def squad_state(delivered: list[str]) -> str:
     """The squad's state from the reports already delivered (progress status codes)."""
     for status in ("works_done", "works_started", "arrived", "response_started"):
@@ -268,6 +347,17 @@ def spoken_service(service: str, service_title: str) -> str:
         return spoken
     without = re.sub(r"\s*\([^()]*\)", "", service_title)
     return re.sub(r"\s{2,}", " ", without).strip(" ,;«»") or service_title
+
+
+# The officer of another service than the dispatcher's own (#263).
+OTHER_SERVICE_DUTY = (
+    "принимаешь информацию и отрабатываешь её в своей службе; диспетчер — из другой службы: "
+    "номер своего наряда ему не называешь и о ходе работ не докладываешь"
+)
+OTHER_SERVICE_CONFIRM = "Информацию принял, отработаем."
+OTHER_SERVICE_PROGRESS = "Отрабатываем своими силами."
+OTHER_SERVICE_REPLY_ID = 90
+ORDER_WORDS = re.compile(r"наряд|доложу", re.IGNORECASE)
 
 
 def builtin_replies(
@@ -323,11 +413,18 @@ def greeting(service: str, service_title: str, *, chief: bool = False) -> str:
 
 
 def repeat_opening(
-    service: str, service_title: str, state: str = SQUAD_STATE_PENDING, *, chief: bool = False
+    service: str,
+    service_title: str,
+    state: str = SQUAD_STATE_PENDING,
+    *,
+    chief: bool = False,
+    other: bool = False,
 ) -> str:
     """The officer's first phrase on a repeat call: the card is with the service already, the
     squad is where the reports put it."""
     first = greeting(service, service_title, chief=chief)
+    if other:  # another service works its own way and does not report to this dispatcher
+        return f"{first} Карточку от вас уже приняли, отрабатываем."
     passed = "Карточку от вас уже принял." if chief else "Карточку от вас уже приняли."
     return f"{first} {passed} {PROGRESS_REPLIES[state]}"
 
@@ -362,17 +459,38 @@ def officer_scenario(
     chief of its emergency squad (#263)."""
     facts = {
         "служба": service_title,
-        "твой наряд": ref.order_number or order_number(scenario, ref.service),
+        "твой наряд": said_order(ref.order_number or order_number(scenario, ref.service)),
         "что знает": "о происшествии — только то, что сообщает диспетчер",
         "где бригада": PROGRESS_REPLIES[state],
     }
     replies = officer_replies(scenario, ref.service, service_title, state)
+    other = ref.service != scenario.service
+    if other:
+        # Another service: the dispatcher only tells it; its squad, its number and its progress
+        # are none of his card (stand 18.10.2026: the district council «sent squad 2-348»).
+        facts = {k: v for k, v in facts.items() if k not in ("твой наряд", "где бригада")}
+        facts["что делаешь"] = OTHER_SERVICE_DUTY
+        replies = [r for r in replies if not ORDER_WORDS.search(r.text) and r.topic != "progress"]
+        replies += [
+            Reply(
+                id=BUILTIN_REPLY_ID_BASE + OTHER_SERVICE_REPLY_ID,
+                topic="confirm",
+                text=OTHER_SERVICE_CONFIRM,
+                approved=True,
+            ),
+            Reply(
+                id=BUILTIN_REPLY_ID_BASE + OTHER_SERVICE_REPLY_ID + 1,
+                topic="progress",
+                text=OTHER_SERVICE_PROGRESS,
+                approved=True,
+            ),
+        ]
     opening = greeting(ref.service, service_title, chief=chief)
     behaviour = SQUAD_CHIEF_BEHAVIOUR if chief else OFFICER_BEHAVIOUR
     required = list(ref.required_facts)
     if repeat:
         facts[REPEAT_FACT_KEY] = REPEAT_FACT
-        opening = repeat_opening(ref.service, service_title, state, chief=chief)
+        opening = repeat_opening(ref.service, service_title, state, chief=chief, other=other)
         behaviour = SQUAD_CHIEF_REPEAT_BEHAVIOUR if chief else OFFICER_REPEAT_BEHAVIOUR
         required = []
         # The officer's questions about the card («Назовите адрес…», «Где запах газа?»).

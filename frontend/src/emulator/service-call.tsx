@@ -53,6 +53,8 @@ export function ServiceCallPanel({
   pending,
   replying = false,
   awaitingReport = false,
+  noVehicles = false,
+  headNumber = null,
   error,
   onSay,
   onSpeak,
@@ -79,6 +81,10 @@ export function ServiceCallPanel({
   replying?: boolean;
   /** The call to the own service is over and the squad leader will call with a report. */
   awaitingReport?: boolean;
+  /** The squad chief said «машин нет»: the hint sends the trainee to the head (#263). */
+  noVehicles?: boolean;
+  /** The head of the organization's number in the phone book, for that hint. */
+  headNumber?: string | null;
   error: string | null;
   onSay: (text: string, actionId: string) => void;
   onSpeak: (blob: Blob, actionId: string) => void;
@@ -529,7 +535,13 @@ export function ServiceCallPanel({
           {END_REASON_TITLES[call.end_reason] ?? call.end_reason}
         </span>
       )}
-      {!open && awaitingReport && call.end_reason === "hangup" && (
+      {!open && awaitingReport && call.end_reason === "hangup" && noVehicles && (
+        <span className="font-semibold text-[var(--arm-orange)]" data-testid="no-vehicles">
+          Машин нет: доложите руководителю организации{headNumber ? ` (${headNumber})` : ""} — только он может дать
+          машину.
+        </span>
+      )}
+      {!open && awaitingReport && call.end_reason === "hangup" && !noVehicles && (
         <span className="font-semibold text-[var(--arm-blue-dark)]" data-testid="await-report">
           Ожидайте доклад: начальник аварийной бригады позвонит сам.
         </span>

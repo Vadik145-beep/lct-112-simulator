@@ -321,6 +321,12 @@ def session_info(ts: TrainingSession, lookups: Lookups, service_code: str | None
     )
 
 
+def _squad_state(attempt: Attempt) -> str | None:
+    from app.dialog import officer  # the dialog package imports the training service
+
+    return officer.squad_state(attempt) if attempt.service_calls else None
+
+
 def arm_info(student: User) -> ArmInfo:
     # Dispatcher numbers are not part of the dataset: a stable pseudo-number from the login
     # keeps the header realistic and distinct per trainee.
@@ -555,6 +561,7 @@ def attempt_out(
             c.get("service") for c in (body.get("reference") or {}).get("service_calls") or []
         ],
         reports_expected=bool((body.get("reference") or {}).get("reports")),
+        squad_state=_squad_state(attempt),
         transitions=[TransitionOut(**t.__dict__) for t in transitions],
         reject_reasons=[
             RejectReasonOut(code=r.code, title=r.title)

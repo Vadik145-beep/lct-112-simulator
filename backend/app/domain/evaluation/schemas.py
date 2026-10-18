@@ -217,6 +217,9 @@ class ServiceCallLog(BaseModel):
     dialog: list[DialogTurn] = Field(default_factory=list)
     # Facts the live dialog counted as passed; the engine recomputes them from the turns.
     facts_passed: list[str] = Field(default_factory=list)
+    # The cloud's form filled after the call (#263): what the dispatcher passed, read by
+    # meaning, not by keywords. When present it is what the evaluation reads.
+    analysis: dict | None = None
 
 
 class CardResponseAttempt(BaseModel):

@@ -50,6 +50,10 @@ RESPONDING_STATUSES = frozenset(
 )
 
 
+# The report of the departure, left out when the chief already named his squad.
+DEPARTURE = "response_started"
+
+
 def _at(value: str | None) -> datetime | None:
     return datetime.fromisoformat(value) if value else None
 
@@ -62,7 +66,9 @@ def accepted_at(attempt: Attempt) -> datetime | None:
     return None
 
 
-def dispatched_at(scenario: CardResponseScenario, attempt: Attempt) -> datetime | None:
+def dispatched_at(
+    scenario: CardResponseScenario, attempt: Attempt, *, cloud: bool = False
+) -> datetime | None:
     """When the squad got its task and could leave, or ``None`` while it has none.
 
     A card the reference sends nobody to call is dispatched by «Принята» alone. Where the card
@@ -79,11 +85,21 @@ def dispatched_at(scenario: CardResponseScenario, attempt: Attempt) -> datetime 
     if accepted is None:
         return None
     calls = officer.calls_of(attempt)
-    if no_vehicles.announced(calls):
+    if no_vehicles.announced(calls) or (
+        cloud and no_vehicles.plan_of(calls) == no_vehicles.PLAN_NO_VEHICLES
+    ):
         released = no_vehicles.released_at(calls)
         return max(released, accepted) if released is not None else None
     if not scenario.reference.service_calls:
         return accepted
+    if cloud:
+        # The cloud plays the chief (decision of 17.10.2026): the squad goes when he has named
+        # its number, not when the server has recognized the dispatcher's words.
+        for call in officer.chief_calls(attempt, scenario):
+            ended = _at(call.get("ended_at"))
+            if ended is not None and officer.squad_sent([call]):
+                return max(ended, accepted)
+        return None
     said: list[str] = []
     for call in officer.chief_calls(attempt, scenario):
         if not call.get("answered"):
@@ -107,6 +123,8 @@ def next_report(
     attempt: Attempt,
     now: datetime,
     titles: Mapping[str, str] | None = None,
+    *,
+    cloud: bool = False,
 ) -> BrigadeReport | None:
     """The report due now, if any: the first one not delivered yet, once its delay after the
     previous milestone has passed and no call is in progress on the card. On difficulty 3 the
@@ -119,6 +137,11 @@ def next_report(
         reports = list(scenario.reference.reports)  # one stress per card, not both
     else:
         reports = complication.timeline(scenario, titles)
+    if officer.squad_sent(officer.chief_calls(attempt, scenario)):
+        # The chief named his squad in the dispatcher's call: that was the departure, a call
+        # «выехали» would tell it twice and shift the trainee's statuses a step (stand
+        # 18.10.2026: «Прибытие» set on «выехали»). One call — one status.
+        reports = [r for r in reports if r.status != DEPARTURE]
     if not reports or attempt.response_status not in RESPONDING_STATUSES:
         return None
     delivered = officer.delivered_reports(attempt)
@@ -133,7 +156,7 @@ def next_report(
             (_at(last["started_at"]) or now) + timedelta(seconds=REPORT_CALL_TIMEOUT_SECONDS)
         )
     else:
-        base = dispatched_at(scenario, attempt)
+        base = dispatched_at(scenario, attempt, cloud=cloud)
         if base is None:
             return None
     if base + timedelta(seconds=report.after_seconds) > now:
@@ -163,6 +186,7 @@ async def sweep_reports(
     events to publish and the report calls that should ring the trainee's phone (the caller
     dials them once the transaction is committed)."""
     from app.dialog import officer
+    from app.dialog import service as dialog
     from app.telephony import service as telephony
 
     now = now or training.utcnow()
@@ -202,7 +226,8 @@ async def sweep_reports(
         if titles is None:
             services = await training.load_services(session)
             titles = {code: s.title for code, s in services.items()}
-        report = next_report(scenario, attempt, now, titles)
+        cloud = dialog.cloud_lesson(lessons[attempt.session_id])
+        report = next_report(scenario, attempt, now, titles, cloud=cloud)
         if report is None:
             continue
         title = titles.get(scenario.service, scenario.service)

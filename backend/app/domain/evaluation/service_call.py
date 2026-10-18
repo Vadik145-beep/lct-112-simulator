@@ -210,6 +210,41 @@ def missing_to_go(scenario: CardResponseScenario, texts: list[str]) -> list[str]
     return missing
 
 
+# The cloud's form after a call to the squad chief (#263, decision of 17.10.2026): the facts
+# are read by meaning; the house named is compared with the card here.
+ANALYSIS_FLAGS = {
+    "incident_named": "incident_type",
+    "injured_named": "injured",
+    "access_named": "access",
+}
+
+
+def facts_from_analysis(scenario: CardResponseScenario, analysis: dict) -> list[str]:
+    """Facts the form says the dispatcher passed; the address counts when the house named is
+    the true one (a house of the operator's mistake is no address passed)."""
+    truth = true_card(scenario).address
+    found = {fact for key, fact in ANALYSIS_FLAGS.items() if analysis.get(key) is True}
+    house = normalize_house(str(analysis.get("house_named") or ""))
+    if analysis.get("address_named") is True and (
+        not truth.house or house == normalize_house(truth.house)
+    ):
+        found.add("address")
+    return [f["code"] for f in SERVICE_CALL_FACTS if f["code"] in found]
+
+
+def call_facts(scenario: CardResponseScenario, log: ServiceCallLog) -> list[str]:
+    """What the dispatcher passed in a call: by the cloud's form when there is one, else by
+    the words of the transcript."""
+    if log.analysis:
+        return facts_from_analysis(scenario, log.analysis)
+    return facts_from_dialog(true_card(scenario), log.dialog)
+
+
+def form_says(logs: list[ServiceCallLog], key: str) -> bool:
+    """Some form of these calls answers ``key`` with yes."""
+    return any((log.analysis or {}).get(key) is True for log in logs)
+
+
 def facts_from_dialog(card: Card, dialog: list[DialogTurn]) -> list[str]:
     """Facts the dispatcher passed in the call, in the order of ``SERVICE_CALL_FACTS``."""
     found: set[str] = set()
@@ -294,7 +329,7 @@ def outcomes(scenario: CardResponseScenario, attempt: CardResponseAttempt) -> li
         # The best of several calls to the same service counts (a second call may fix a miss).
         best: CallOutcome | None = None
         for log in candidates:
-            passed = facts_from_dialog(true_card(scenario), log.dialog)
+            passed = call_facts(scenario, log)
             required = list(ref.required_facts)
             passed_required = [f for f in passed if f in required]
             missing = [f for f in required if f not in passed]
@@ -332,12 +367,12 @@ def _chief_outcome(
     said = [t.text for log in candidates for t in log.dialog if t.role == "operator"]
     heard = [t.text for log in candidates for t in log.dialog if t.role == "caller"]
     order = best.ref.order_number or officers.order_number(scenario, best.ref.service)
-    order_given = any(gives_order(text) for text in said)
+    order_given = any(gives_order(text) for text in said) or form_says(candidates, "order_given")
     number_taken = any(order in text for text in heard) or any(
         (e.order_number or "").strip() for e in attempt.status_log
     )
     mistake = misheard.state(rows)
-    fixed = mistake is None or mistake.fixed
+    fixed = mistake is None or mistake.fixed or form_says(candidates, "house_corrected")
     reached = 1
     required = 1
     head_told: bool | None = None

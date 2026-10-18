@@ -46,7 +46,7 @@ from app.domain.evaluation.schemas import (
     DialogTurn,
     ServiceCallRef,
 )
-from app.domain.evaluation.text import detect_topics
+from app.domain.evaluation.text import detect_topics, normalize_text, words_to_numbers
 from app.domain.scenarios import (
     caller_back,
     complication,
@@ -162,7 +162,7 @@ def squad_state(attempt: Attempt) -> str:
     found one (``no_vehicles``), at the base while the squad chief has not taken the card,
     else by the reports delivered."""
     calls = calls_of(attempt)
-    if no_vehicles.blocked(calls):
+    if no_vehicles.held(calls):
         return officers.SQUAD_STATE_NO_VEHICLES
     state = officers.squad_state(delivered_reports(attempt))
     outgoing = [c for c in calls if (c.get("kind") or KIND_OUTGOING) == KIND_OUTGOING]
@@ -170,6 +170,8 @@ def squad_state(attempt: Attempt) -> str:
     sent = squad_sent(outgoing) or no_vehicles.resolving_call(calls) is not None
     if state == officers.SQUAD_STATE_PENDING and not sent:
         return officers.SQUAD_STATE_WAITING
+    if state == officers.SQUAD_STATE_PENDING and squad_sent(outgoing):
+        return "response_started"  # named in the call: on its way, no «выехали» call comes
     return state
 
 
@@ -256,13 +258,33 @@ def officer_scenario(
         hurried = built.caller.model_copy(update={"opening": rush.opening(built.caller.opening)})
         built = built.model_copy(update={"caller": hurried})
     calls = calls_of(attempt)
+    asked = next(
+        (c for c in calls if is_report(c) and c.get("report_status") == complication.STATUS),
+        None,
+    )
+    if service == scenario.service and asked is not None:
+        # His specialist asked the dispatcher for another service (stand 18.10.2026: told «мы
+        # запросили подкрепление», the chief took it for a request of his own).
+        needed = complication.service_needed(scenario) or ""
+        name = SAID_SERVICE_NAMES.get(needed, needed)
+        facts = {
+            **built.caller.facts,
+            "осложнение": f"твой специалист с места попросил диспетчера вызвать службу «{name}»; "
+            "если диспетчер говорит, что вызвал или запросил её, — «Понял, ждём, работаем "
+            "дальше», сам ничего не запрашиваешь",
+        }
+        built = built.model_copy(
+            update={"caller": built.caller.model_copy(update={"facts": facts})}
+        )
     if (
         service == scenario.service
         and no_vehicles.plan_of(calls) == no_vehicles.PLAN_NO_VEHICLES
         and no_vehicles.resolving_call(calls) is None
     ):
-        # One truth for the cloud too (#263): the chief knows he has no vehicles.
-        facts = {**built.caller.facts, no_vehicles.FACT_KEY: no_vehicles.FACT}
+        # One truth for the cloud too (#263): the chief knows he has no vehicles, and no squad
+        # number to name until there is one (stand 18.10.2026: «выезжаем по наряду 8-43»).
+        facts = {k: v for k, v in built.caller.facts.items() if k != "твой наряд"}
+        facts[no_vehicles.FACT_KEY] = no_vehicles.FACT
         built = built.model_copy(
             update={"caller": built.caller.model_copy(update={"facts": facts})}
         )
@@ -289,9 +311,19 @@ def call_scenario(
         progress = (
             staff.SPECIALIST_PROGRESS.get(state, "")
             if role == staff.ROLE_SQUAD_SPECIALIST
-            else officers.PROGRESS_REPLIES[state]
+            else staff.OFFICE_PROGRESS.get(state, officers.PROGRESS_REPLIES[state])
         )
         person = staff.person_scenario(role, scenario, org, progress)
+        if role == staff.ROLE_SQUAD_SPECIALIST and squad_out(attempt, scenario):
+            # He rides with the squad: he knows its number (stand 18.10.2026: asked for it, he
+            # sent the dispatcher to the head of the organization).
+            facts = {**person.caller.facts, "наряд бригады": squad_order(scenario)}
+            caller = person.caller.model_copy(update={"facts": facts})
+            person = person.model_copy(update={"caller": caller})
+        if role == staff.ROLE_HEAD and no_vehicles.held(calls_of(attempt)):
+            facts = {**person.caller.facts, no_vehicles.HEAD_FACT_KEY: no_vehicles.HEAD_FACT}
+            caller = person.caller.model_copy(update={"facts": facts})
+            person = person.model_copy(update={"caller": caller})
         return with_studio_audio(person, f"{STUDIO_STAFF_KEY}/{role}")
     if is_report(call):
         report = _report_for(scenario, call, attempt)
@@ -317,8 +349,7 @@ def _report_for(scenario: CardResponseScenario, call: dict, attempt: Attempt) ->
     (``misheard``), a report worded before #263 calls him by the customer's title, and a
     recording that no longer matches the words is dropped."""
     report = _report_of(scenario, call)
-    text = officers.renamed(report.text)
-    text = misheard.report_text(text, scenario.card, misheard.state(calls_of(attempt)))
+    text = report_said(scenario, attempt, report)
     if text == report.text:
         return report
     return report.model_copy(update={"text": text, "audio": None})
@@ -407,9 +438,9 @@ async def start(
         # Calling from a card not opened yet still means it was received.
         events += await training.open_attempt(session, attempt, ts)
     call = _new_call(service, service_title, now, telephony=telephony, kind=kind)
-    # The squad chief has the card once he took it; a duty officer, once told.
+    # The squad chief has the card once his squad is out; a duty officer, once told.
     passed = card_passed_to(attempt, service)
-    if service == scenario.service and not squad_sent(chief_calls(attempt, scenario)):
+    if service == scenario.service and not squad_out(attempt, scenario):
         passed = False
     if kind == KIND_OUTGOING and passed:
         call["repeat"] = True
@@ -496,9 +527,7 @@ async def start_report(
     if open_call(attempt) is not None:
         raise ApiError(409, "call_in_progress", "Уже идёт разговор.")
     now = now or training.utcnow()
-    opening = misheard.report_text(
-        officers.renamed(report.text), scenario.card, misheard.state(calls_of(attempt))
-    )
+    opening = report_said(scenario, attempt, report)
     call = {
         **_new_call(scenario.service, service_title, now, telephony=telephony),
         "kind": KIND_REPORT,
@@ -632,18 +661,15 @@ async def external_turn(
     now: datetime | None = None,
     latency_ms: int | None = None,
     ts: TrainingSession | None = None,
-    decide: bool = False,
 ) -> tuple[dict | None, list[SessionEvent]]:
     """One phrase of a service call heard from the cloud voice (issue #59, browser calls):
     the dispatcher's own words as the provider transcribed them, or the reply of the officer
     (the squad leader on a report). Topics come from keywords, so the evaluation reads the
     turn like any other. ``role`` is «operator» (the trainee) or «caller» (the other side).
 
-    ``decide`` (a phrase heard live, #263): the server decides on the dispatcher's words what
-    the other side must say — the misheard house, the order taken, «машин нет», the head
-    finding a vehicle — exactly as in a call without the cloud. The decision is kept as a
-    hidden turn (``HINT_KEY``) the truth of the card reads, and ``hint_of`` hands it to the
-    cloud to say in its own words."""
+    The server says nothing to the cloud in the middle of the call (decision of 18.10.2026):
+    the cloud's own words are read for the record — the squad number its chief named, «машин
+    нет», the head's vehicle (``cloud_marks``) — and the squad and the evaluation follow them."""
     if role not in ("operator", "caller"):
         raise ValueError(f"unknown dialog role: {role!r}")
     text = text.strip()
@@ -668,15 +694,9 @@ async def external_turn(
         heard=role == "operator",
         latency_ms=latency_ms if role == "caller" else None,
     )
-    decided = None
-    if decide and role == "operator" and not is_caller(call):
-        decided = cloud_decision(lesson_scenario(scenario, ts), attempt, call, text)
+    if role == "caller" and not is_caller(call):
+        turn["topics"] = cloud_marks(lesson_scenario(scenario, ts), attempt, call, text)
     turns = [*(call.get("dialog") or []), turn]
-    if decided is not None:
-        reply, extra = decided
-        turn["topics"] = list(dict.fromkeys([*turn["topics"], *reply.operator_topics]))
-        hidden = _turn("caller", reply.text, reply.topics, now, method=reply.method, **extra)
-        turns.append({**hidden, HINT_KEY: True})
     facts = list(call.get("facts_passed") or [])
     if passes_facts(call):
         facts = engine.facts_from_dialog(
@@ -706,53 +726,51 @@ async def external_turn(
     return turn, [event]
 
 
-# A turn the server decided for the cloud: it is not shown in the transcript, the cloud says it
-# in its own words, and the truth of the card (the misheard house, the order taken, the vehicle
-# found) reads it like any reply.
-HINT_KEY = "hint"
-# What the server decides on its own: the rest of the talk is the cloud's.
-SERVER_METHODS = frozenset({"misheard", "order", "no_vehicles", "wrong_contact"})
+def set_analysis(
+    attempt: Attempt, call_id: str, analysis: dict, scenario: CardResponseScenario
+) -> None:
+    """Keeps the cloud's form of a call (#263): the evaluation reads it, and the facts it says
+    were passed show in the call's history."""
+    call = find_call(attempt, call_id)
+    facts = engine.facts_from_analysis(scenario, analysis) if passes_facts(call) else []
+    _store(attempt, {**call, "analysis": analysis, "facts_passed": facts})
 
 
-def is_hint(turn: dict) -> bool:
-    return bool(turn.get(HINT_KEY))
+def says_number(text: str, number: str) -> bool:
+    """The phrase names the squad's number, in digits or in words («девяносто пять тридцать
+    семь»)."""
+    spoken = re.sub(r"\D", "", words_to_numbers(normalize_text(text)))
+    return bool(number) and number in spoken
 
 
-# Where the cloud ignored the note on the stand (17.10.2026): the squad chief repeated the
-# house right and sent the squad with no vehicles. These lines are said word for word.
-VERBATIM_TOPICS = frozenset({misheard.TOPIC_MISHEARD, no_vehicles.TOPIC_NO_VEHICLES})
-
-
-def hint_of(call: dict) -> str | None:
-    """The decision the cloud has to voice: the hidden turn right after the last phrase."""
-    turns = call.get("dialog") or []
-    return str(turns[-1]["text"]) if turns and is_hint(turns[-1]) else None
-
-
-def hint_is_verbatim(call: dict) -> bool:
-    """The decision must be said word for word, not in the cloud's own words."""
-    turns = call.get("dialog") or []
-    if not turns or not is_hint(turns[-1]):
-        return False
-    return bool(VERBATIM_TOPICS & set(turns[-1].get("topics") or []))
-
-
-def cloud_decision(
+def cloud_marks(
     scenario: CardResponseScenario, attempt: Attempt, call: dict, text: str
-) -> tuple[CallerReply, dict] | None:
-    """What the other side must say to the dispatcher's phrase, decided by the server alone:
-    the same rules as a call without the cloud, with no model to ask. ``None`` leaves the
-    answer to the cloud."""
-    special = (
-        misheard_reply(scenario, attempt, call, text)
-        or head_reply(attempt, call, text)
-        or wrong_contact_reply(call, text)
-    )
-    reply, extra = special or (CallerReply(text="", topics=[], operator_topics=[]), {})
-    reply = chief_reply(scenario, attempt, call, text, reply)
-    if not reply.text or reply.method not in SERVER_METHODS:
-        return None
-    return reply, extra
+) -> list[str]:
+    """What a phrase of the cloud means for the squad, read from the record (#263; decision of
+    18.10.2026: the server says nothing mid-call, the record decides after it): the squad chief
+    who names his squad's number has taken the card — the squad goes; on a «машин нет» card he
+    says there are none; the head who takes a vehicle off a planned job releases the squad.
+    Fixed words of their own roles, not guesses at the dispatcher's."""
+    calls = calls_of(attempt)
+    if (call.get("kind") or KIND_OUTGOING) == KIND_OUTGOING and call.get("service") == (
+        scenario.service
+    ):
+        order = reference_for(scenario, scenario.service).order_number or officers.order_number(
+            scenario, scenario.service
+        )
+        if no_vehicles.held(calls):
+            return [no_vehicles.TOPIC_NO_VEHICLES] if no_vehicles.says_none(text) else []
+        if says_number(text, order):
+            return [TOPIC_ORDER_TAKEN, "order_number"]
+        return []
+    if (
+        is_staff(call)
+        and call.get(no_vehicles.ROLE_KEY) == staff.ROLE_HEAD
+        and no_vehicles.held(calls)
+        and no_vehicles.finds_vehicle(text)
+    ):
+        return [no_vehicles.TOPIC_VEHICLES_FOUND]
+    return []
 
 
 async def say(
@@ -846,29 +864,46 @@ async def say(
 def special_reply(
     scenario: CardResponseScenario, attempt: Attempt, call: dict, text: str
 ) -> tuple[CallerReply, dict] | None:
-    """The scripted moves of the squad chief that the dialog provider does not make: cutting a
-    long phrase short (``rush``), mishearing the house (``misheard``). ``None`` leaves the
-    phrase to the provider; the fields of the officer's turn come second."""
+    """The scripted moves the dialog provider does not make: the squad chief cutting a long
+    phrase short (``rush``), the head finding a vehicle, a person of the organization sending
+    the dispatcher to the squad chief. No misheard house (decision of 18.10.2026): the bot never
+    says the address wrong on purpose. ``None`` leaves the phrase to the provider; the fields
+    of the officer's turn come second."""
     return (
         rush_reply(scenario, call, text)
-        or misheard_reply(scenario, attempt, call, text)
-        or head_reply(attempt, call, text)
+        or head_reply(scenario, attempt, call, text)
         or wrong_contact_reply(call, text)
     )
 
 
-def head_reply(attempt: Attempt, call: dict, text: str) -> tuple[CallerReply, dict] | None:
-    """The head of the organization hears that there are no vehicles and finds one."""
+def head_reply(
+    scenario: CardResponseScenario, attempt: Attempt, call: dict, text: str
+) -> tuple[CallerReply, dict] | None:
+    """The head of the organization hears that there are no vehicles and finds one — once he
+    knows where to send it: told of the shortage without the address, he first asks «По
+    какому адресу?» (decision of 18.10.2026)."""
     if not is_staff(call) or call.get(no_vehicles.ROLE_KEY) != staff.ROLE_HEAD:
         return None
-    if not no_vehicles.blocked(calls_of(attempt)) or not no_vehicles.mentions_shortage(text):
+    if not no_vehicles.blocked(calls_of(attempt)):
         return None
-    reply = CallerReply(
-        text=no_vehicles.RESOLVED,
-        topics=[no_vehicles.TOPIC_VEHICLES_FOUND],
-        operator_topics=[],
-        method="no_vehicles",
+    asked = any(
+        t.get("role") == "caller" and no_vehicles.TOPIC_ASK_ADDRESS in (t.get("topics") or [])
+        for t in call.get("dialog") or []
     )
+    if not asked and not no_vehicles.mentions_shortage(text):
+        return None
+    said = [*_said_by_dispatcher([call]), text]  # anywhere in this call, in a few phrases
+    named = any(
+        engine.address_in_phrases(card, said)
+        for card in (engine.true_card(scenario), scenario.card)
+    )
+    if named:
+        line, topics = no_vehicles.RESOLVED, [no_vehicles.TOPIC_VEHICLES_FOUND]
+    elif not asked:
+        line, topics = no_vehicles.ASK_ADDRESS, [no_vehicles.TOPIC_ASK_ADDRESS]
+    else:
+        return None  # asked already: the rest of the talk is the provider's
+    reply = CallerReply(text=line, topics=topics, operator_topics=[], method="no_vehicles")
     return reply, {}
 
 
@@ -1014,6 +1049,66 @@ def _said_by_dispatcher(calls: list[dict]) -> list[str]:
     ]
 
 
+# Services by the name the dispatcher says (the vocabulary of the recognizer).
+SAID_SERVICE_NAMES: dict[str, str] = {
+    "gkh": "ЕДЦ ЖКХ",
+    "moek": "МОЭК",
+    "mosvodokanal": "Мосводоканал",
+    "mosgaz": "Мосгаз",
+    "gormost": "Гормост",
+    "moslift": "Мослифт",
+    "territorial_oiv": "управа",
+    "101": "пожарная охрана",
+    "102": "полиция",
+    "103": "скорая помощь",
+}
+STT_TERMS_MAX = 20
+
+
+def stt_terms(scenario: CardResponseScenario) -> list[str]:
+    """Words of the card for the recognizer of a cloud call (stand 18.10.2026: «улица Доктора
+    Гааза» came as «доктора. Газ.»): the street as the card shows it and as the caller gave it,
+    the services, the incident. No house numbers — a wrong house must be heard as said."""
+    truth = engine.true_card(scenario)
+    terms = [scenario.card.address.street or "", truth.address.street or ""]
+    services = [scenario.service, *(n.service for n in scenario.card.notified)]
+    terms += [SAID_SERVICE_NAMES[s] for s in services if s in SAID_SERVICE_NAMES]
+    if scenario.title and not re.search(r"\d", scenario.title):
+        terms.append(scenario.title)
+    return list(dict.fromkeys(t.strip() for t in terms if t and t.strip()))[:STT_TERMS_MAX]
+
+
+def report_said(scenario: CardResponseScenario, attempt: Attempt, report: BrigadeReport) -> str:
+    """The report as the squad says it: by the customer's title, at the real address — not the
+    house the 112 operator got wrong in the card (stand 18.10.2026: «прибыли … дом 23» while
+    the caller and the dispatcher said 24) — unless the squad went to a misheard house; with
+    its number on the departure."""
+    text = officers.renamed(report.text)
+    truth = engine.true_card(scenario)
+    shown = misheard.spoken_address(scenario.card.address.model_dump())
+    text = text.replace(shown, misheard.spoken_address(truth.address.model_dump()), 1)
+    text = misheard.report_text(text, truth, misheard.state(calls_of(attempt)))
+    return officers.with_order(text, report.status, squad_order(scenario))
+
+
+def squad_order(scenario: CardResponseScenario) -> str:
+    """The number of the own service's squad, as its chief knows it."""
+    ref = reference_for(scenario, scenario.service)
+    return ref.order_number or officers.order_number(scenario, scenario.service)
+
+
+def squad_out(attempt: Attempt, scenario: CardResponseScenario) -> bool:
+    """The squad has left: its chief named it, or the head found a vehicle when there were
+    none, or it already reported (stand 18.10.2026: after «машин нет» and the head's vehicle
+    the chief picked up a repeat call as a new one, «Короче, что у вас?»)."""
+    calls = calls_of(attempt)
+    return (
+        squad_sent(chief_calls(attempt, scenario))
+        or no_vehicles.resolving_call(calls) is not None
+        or bool(delivered_reports(attempt))
+    )
+
+
 def squad_sent(calls: list[dict]) -> bool:
     """The squad chief has taken the card and named his squad: the squad is sent."""
     return any(
@@ -1109,57 +1204,6 @@ def rush_reply(
         method="rush",
     )
     return reply, {}
-
-
-def misheard_reply(
-    scenario: CardResponseScenario, attempt: Attempt, call: dict, text: str
-) -> tuple[CallerReply, dict] | None:
-    """The squad chief mishears the house, or takes the correction (``misheard``); ``None``
-    leaves the phrase to the dialog provider. The fields of the officer's turn come second.
-
-    * The first time the dispatcher names the address to their own service (not a repeat
-      call) on a card of difficulty 2 and up, the officer repeats it with a wrong house.
-    * The house of the card named after that, in this call or any later one with the
-      squad, corrects him.
-    * Right after his question a bare «нет» gets «Какой дом тогда?», a bare «да» is taken.
-    """
-    if is_caller(call) or call.get("service") != scenario.service:
-        return None
-    # The house the caller gave, not a mistake of the operator in the field (#263).
-    card = engine.true_card(scenario)
-    heard = detect_officer_topics(text)
-    current = misheard.state(calls_of(attempt))
-
-    def answer(said: str, topics: list[str], operator_topics: list[str]) -> CallerReply:
-        return CallerReply(
-            text=said, topics=topics, operator_topics=operator_topics, method="misheard"
-        )
-
-    if current is None:
-        if is_report(call) or is_repeat(call):
-            return None
-        if not misheard.applies(scenario.difficulty, card):
-            return None
-        said = [*_said_by_dispatcher([call]), text]
-        if not engine.address_in_phrases(card, said[-engine.ADDRESS_PHRASES :]):
-            return None
-        said = misheard.wrong_house(card.address.house)
-        reply = answer(misheard.question(card), [misheard.TOPIC_MISHEARD], heard)
-        return reply, {misheard.HOUSE_KEY: said}
-    if not current.squad_has_wrong_house:
-        return None
-    if misheard.names_house(card, text):
-        squad_out = call["id"] != current.call_id
-        said = misheard.fixed_reply(card, squad_out=squad_out)
-        return answer(said, ["confirm"], [*heard, misheard.TOPIC_FIXED]), {}
-    officer_turns = [t for t in call.get("dialog") or [] if t.get("role") == "caller"]
-    if not officer_turns or misheard.TOPIC_MISHEARD not in (officer_turns[-1].get("topics") or []):
-        return None
-    if misheard.denies(text):
-        return answer(misheard.ASK_HOUSE, [misheard.TOPIC_MISHEARD], heard), {}
-    if misheard.agrees(text) and not heard:
-        return answer(misheard.AGREED, ["confirm"], heard), {}
-    return None
 
 
 def _text_key(text: str) -> str:

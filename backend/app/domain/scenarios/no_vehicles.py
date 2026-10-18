@@ -33,14 +33,15 @@ ANNOUNCE = f"Принял. {SHORTAGE}"
 STILL_NONE = "Машин так и нет, все на выездах."
 # The chief's fact sheet on a «машин нет» card, until the head finds a vehicle.
 FACT_KEY = "машины"
-FACT = (
-    "свободных машин нет, все на выездах; выехать не можешь: отвечаешь, что машин нет, "
-    "номер наряда не называешь"
-)
+# One short line of the chief's prompt (decision of 18.10.2026: no notes mid-call).
+FACT = "свободных машин нет, все на выездах, наряд не называешь"
 RESOLVED = (
     "Понял. Снимаю машину с планового выезда, бригада выедет через десять минут. "
     "Держите на контроле."
 )
+# Told of the shortage without the address, the head asks it first (decision of 18.10.2026).
+ASK_ADDRESS = "По какому адресу?"
+TOPIC_ASK_ADDRESS = "ask_address"
 # The dispatcher tells the head about the shortage: vehicles, squads, people, equipment.
 _SHORTAGE = re.compile(r"(машин|свободн|бригад|техник|экипаж|\bсил\b|\bнекого\b|\bнечем\b)")
 
@@ -81,6 +82,31 @@ def announced(calls: Iterable[Mapping]) -> bool:
 def resolving_call(calls: Iterable[Mapping]) -> Mapping | None:
     """The call in which the head of the organization found a vehicle."""
     return next((c for c in calls if _said(c, TOPIC_VEHICLES_FOUND)), None)
+
+
+def held(calls: Iterable[Mapping]) -> bool:
+    """The card is a «машин нет» one and the head has not found a vehicle yet: the squad
+    cannot leave, whatever was said (one truth from the start of the card)."""
+    rows = list(calls)
+    return plan_of(rows) == PLAN_NO_VEHICLES and resolving_call(rows) is None
+
+
+# The head's own words when he finds a vehicle (his prompt tells him to say so).
+FOUND_WORDS = re.compile(r"планов")
+HEAD_FACT_KEY = "машины"
+HEAD_FACT = "если адрес не назван — спроси адрес, потом снимаешь машину с планового выезда"
+# The chief's own words on a «машин нет» card, read from the record of a cloud call.
+NONE_WORDS = re.compile(r"машин\w*\s+(так\s+и\s+)?нет|нет\s+(свободн\w+\s+)?машин")
+
+
+def says_none(text: str) -> bool:
+    """The squad chief says there are no vehicles."""
+    return bool(NONE_WORDS.search(normalize_text(text)))
+
+
+def finds_vehicle(text: str) -> bool:
+    """The head says he takes a vehicle off a planned job."""
+    return bool(FOUND_WORDS.search(normalize_text(text)))
 
 
 def blocked(calls: Iterable[Mapping]) -> bool:

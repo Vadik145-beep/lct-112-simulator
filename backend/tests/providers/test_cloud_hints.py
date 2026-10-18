@@ -1,125 +1,107 @@
-"""The cloud voices, the server decides (#263): on the dispatcher's words heard in a cloud call
-the server makes the same decisions as without the cloud — the misheard house, the order
-taken, «машин нет», the head finding a vehicle — keeps them as hidden turns the truth of the
-card reads, and hands them to Vapi as a note in the middle of the call."""
+"""The cloud talks on its own, the record decides (#263, decision of 18.10.2026): the server says
+nothing to Vapi in the middle of a call — no notes, no «say», no Live Call Control. «Машин нет»,
+the hurry and the head's vehicle come through the prompts of the roles; after the call the
+record of the cloud's own words decides about the squad: the chief named it, or the head took
+a vehicle off a planned job."""
 
 from __future__ import annotations
 
-from types import SimpleNamespace
+from datetime import UTC, datetime, timedelta
 
 from app.dialog import officer
-from app.domain.scenarios import misheard, no_vehicles, staff
+from app.domain.scenarios import no_vehicles, staff
 from app.models import Attempt
 from app.telephony import vapi
+from app.training import reports
 from tests.domain.evaluation.helpers import card_scenario
 from tests.providers.test_officer_misheard import new_call
 
 NAME = "card_moek_1_net_otopleniya"  # улица Молостовых, 10, к. 1
-ADDRESS = "Нет отопления в трёх домах, дом 10 корпус 1 по улице Молостовых, пострадавших нет."
+NOW = datetime(2026, 10, 18, 12, 0, tzinfo=UTC)
 
 
-def hear(scenario, attempt: Attempt, call: dict, text: str) -> str | None:
-    """A phrase of the dispatcher as the cloud transcript brings it: the decision is kept as
-    ``external_turn`` keeps it (a hidden turn after the phrase)."""
-    decided = officer.cloud_decision(scenario, attempt, call, text)
-    turns = [{"role": "operator", "text": text, "topics": []}]
-    if decided is not None:
-        reply, extra = decided
-        turns[0]["topics"] = list(reply.operator_topics)
-        turns.append(
-            {"role": "caller", "text": reply.text, "topics": reply.topics, "hint": True, **extra}
-        )
-    turns.append({"role": "caller", "text": "(слова облака)", "topics": []})
-    call["dialog"] = [*call["dialog"], *turns]
+def cloud_said(scenario, attempt: Attempt, call: dict, text: str) -> list[str]:
+    """A phrase of the cloud as the record keeps it (``external_turn`` marks it)."""
+    topics = officer.cloud_marks(scenario, attempt, call, text)
+    call["dialog"] = [*call["dialog"], {"role": "caller", "text": text, "topics": topics}]
     attempt.service_calls = [c if c["id"] != call["id"] else call for c in attempt.service_calls]
-    return decided[0].text if decided is not None else None
+    return topics
 
 
-def test_misheard_and_order_decided_on_the_dispatchers_words() -> None:
-    scenario = officer.lesson_scenario(card_scenario(NAME), SimpleNamespace(difficulty=2))
-    call = new_call("moek")
-    attempt = Attempt(service_calls=[call])
-    assert hear(scenario, attempt, call, ADDRESS) == "Записал: улица Молостовых, дом 12, корпус 1?"
-    assert hear(scenario, attempt, call, "Нет, дом десять.").startswith("Понял, дом 10.")
-    assert misheard.state(attempt.service_calls).fixed
-    # The cloud talks on its own until the order; the order is the server's to take.
-    assert hear(scenario, attempt, call, "Горячая вода есть.") is None
-    assert hear(scenario, attempt, call, "Высылайте бригаду.").startswith("Принял, выезжаем. Наряд")
-    assert officer.order_given(attempt, scenario)
+def accepted(attempt: Attempt) -> None:
+    attempt.status_log = [{"status": "accepted", "at": NOW.isoformat(), "by": "student"}]
 
 
-def test_no_vehicles_and_the_head_decided_by_the_server() -> None:
-    scenario = card_scenario(NAME).model_copy(update={"difficulty": 3})
-    chief = {**new_call("moek"), no_vehicles.PLAN_KEY: no_vehicles.PLAN_NO_VEHICLES}
-    attempt = Attempt(service_calls=[chief])
-    hear(scenario, attempt, chief, ADDRESS)  # misheard first on difficulty 3
-    said = hear(scenario, attempt, chief, "Нет, дом 10.")
-    assert said == f"Понял, дом 10. Исправил, записал. {no_vehicles.SHORTAGE}"
-    assert hear(scenario, attempt, chief, "Выезжайте.") == no_vehicles.STILL_NONE
-    assert no_vehicles.blocked(attempt.service_calls)
-    head = {**new_call("moek"), "kind": officer.KIND_STAFF, "role": staff.ROLE_HEAD}
-    attempt.service_calls = [*attempt.service_calls, head]
-    said = "Докладываю: машин у бригады нет, а на Молостовых нет отопления."
-    assert hear(scenario, attempt, head, said) == no_vehicles.RESOLVED
-    assert not no_vehicles.blocked(attempt.service_calls)
-
-
-def test_hidden_turns_are_hints_not_phrases() -> None:
-    call = {"dialog": [{"role": "operator", "text": "a"}, {"role": "caller", "text": "b"}]}
-    assert officer.hint_of(call) is None
-    call["dialog"].append({"role": "caller", "text": "Записал: дом 12?", "hint": True})
-    assert officer.hint_of(call) == "Записал: дом 12?"
-
-
-def test_hint_message_and_control_url() -> None:
-    body = vapi.hint_message("Записал: дом 12?")
-    assert body["type"] == "add-message"
-    assert body["message"]["role"] == "system"
-    assert "«Записал: дом 12?»" in body["message"]["content"]
-    assert body["message"]["content"].startswith(vapi.HINT_PREFIX)
-    message = {"call": {"id": "c1", "monitor": {"controlUrl": "https://ctl/1"}}}
-    assert vapi.control_url(message) == "https://ctl/1"
-    assert vapi.control_url({"call": {"id": "c1"}}) is None
-
-
-def test_the_people_of_the_card_take_control_and_know_their_duties() -> None:
+def test_the_server_never_takes_control_of_the_call() -> None:
     scenario = card_scenario(NAME).model_copy(update={"difficulty": 3})
     chief = officer.call_scenario(scenario, new_call("moek"), Attempt(service_calls=[]))
     assistant = vapi.build_assistant(chief)
-    assert assistant["monitorPlan"] == {"controlEnabled": True}
+    assert "monitorPlan" not in assistant
     prompt = vapi.role_prompt(chief)
     assert prompt.startswith("Ты начальник аварийной бригады")
-    assert "чего не хватает" in prompt and "Стоп, короче" in prompt
-    assert "Служебная подсказка тренажёра" in prompt
+    assert "Служебная подсказка" not in prompt
+    assert "Так, стоп" in prompt  # the hurry is a line of the prompt
+    for name in ("hint_message", "say_message", "said_note", "send_control", "control_url"):
+        assert not hasattr(vapi, name)
+
+
+def test_the_chief_who_named_his_squad_sends_it_after_the_call() -> None:
+    scenario = card_scenario(NAME)
+    call = new_call("moek")
+    attempt = Attempt(service_calls=[call])
+    accepted(attempt)
+    assert cloud_said(scenario, attempt, call, "Пострадавшие есть?") == []
+    number = officer.squad_order(scenario)
+    words = " ".join(["восемь", "пять", "один", "три"]) if number == "8513" else number
+    assert officer.TOPIC_ORDER_TAKEN in cloud_said(
+        scenario, attempt, call, f"Принял, выезжаем. Наряд {words}."
+    )
+    assert reports.dispatched_at(scenario, attempt, cloud=True) is None  # the call goes on
+    call["ended_at"] = (NOW + timedelta(seconds=50)).isoformat()
+    assert reports.dispatched_at(scenario, attempt, cloud=True) == NOW + timedelta(seconds=50)
+
+
+def test_a_chief_who_named_nobody_sends_nobody() -> None:
+    scenario = card_scenario(NAME)
+    call = new_call("moek")
+    attempt = Attempt(service_calls=[call])
+    accepted(attempt)
+    cloud_said(scenario, attempt, call, "Принял, разберёмся.")
+    call["ended_at"] = (NOW + timedelta(seconds=50)).isoformat()
+    assert reports.dispatched_at(scenario, attempt, cloud=True) is None
+
+
+def test_no_vehicles_from_the_prompts_and_the_head_from_the_record() -> None:
+    scenario = card_scenario(NAME).model_copy(update={"difficulty": 3})
+    chief_call = {**new_call("moek"), no_vehicles.PLAN_KEY: no_vehicles.PLAN_NO_VEHICLES}
+    attempt = Attempt(service_calls=[chief_call])
+    accepted(attempt)
+    chief = officer.call_scenario(scenario, chief_call, attempt)
+    assert chief.caller.facts[no_vehicles.FACT_KEY] == (
+        "свободных машин нет, все на выездах, наряд не называешь"
+    )
+    assert "твой наряд" not in chief.caller.facts
+    number = officer.squad_order(scenario)
+    # The squad stays whatever the cloud says, the number included.
+    assert cloud_said(scenario, attempt, chief_call, "Машин нет, все на выездах.") == [
+        no_vehicles.TOPIC_NO_VEHICLES
+    ]
+    assert cloud_said(scenario, attempt, chief_call, f"Наряд {number}.") == []
+    chief_call["ended_at"] = (NOW + timedelta(seconds=40)).isoformat()
+    assert reports.dispatched_at(scenario, attempt, cloud=True) is None
+
     head_call = {**new_call("moek"), "kind": officer.KIND_STAFF, "role": staff.ROLE_HEAD}
-    head = officer.call_scenario(scenario, head_call, Attempt(service_calls=[]))
-    assert "сверх" in vapi.role_prompt(head) or "не по силам" in vapi.role_prompt(head)
-
-
-def test_misheard_house_and_no_vehicles_are_said_word_for_word() -> None:
-    """On the stand the cloud ignored these two notes (17.10.2026): they go as «say»."""
-    misheard_call = {
-        "dialog": [
-            {"role": "operator", "text": ADDRESS},
-            {"role": "caller", "text": "Записал: …, дом 12?", "topics": ["misheard"], "hint": True},
-        ]
-    }
-    assert officer.hint_is_verbatim(misheard_call)
-    order_call = {
-        "dialog": [
-            {"role": "operator", "text": "Выезжайте."},
-            {"role": "caller", "text": "Принял, выезжаем.", "topics": ["confirm"], "hint": True},
-        ]
-    }
-    assert not officer.hint_is_verbatim(order_call)
-    assert vapi.say_message("Записал: дом 12?") == {
-        "type": "say",
-        "content": "Записал: дом 12?",
-        "endCallAfterSpoken": False,
-    }
-    note = vapi.said_note("Записал: дом 12?")
-    assert note["type"] == "add-message" and note["triggerResponseEnabled"] is False
-    assert "Ты только что сказал диспетчеру: «Записал: дом 12?»" in note["message"]["content"]
+    attempt.service_calls = [*attempt.service_calls, head_call]
+    head = officer.call_scenario(scenario, head_call, attempt)
+    assert head.caller.facts[no_vehicles.HEAD_FACT_KEY] == (
+        "если адрес не назван — спроси адрес, потом снимаешь машину с планового выезда"
+    )
+    assert cloud_said(scenario, attempt, head_call, "По какому адресу?") == []
+    assert cloud_said(scenario, attempt, head_call, "Снимаю машину с планового выезда.") == [
+        no_vehicles.TOPIC_VEHICLES_FOUND
+    ]
+    head_call["ended_at"] = (NOW + timedelta(seconds=90)).isoformat()
+    assert reports.dispatched_at(scenario, attempt, cloud=True) == NOW + timedelta(seconds=90)
 
 
 def test_the_chief_knows_his_truth_from_the_prompt() -> None:
@@ -127,18 +109,16 @@ def test_the_chief_knows_his_truth_from_the_prompt() -> None:
     chief_call = {**new_call("moek"), no_vehicles.PLAN_KEY: no_vehicles.PLAN_NO_VEHICLES}
     attempt = Attempt(service_calls=[chief_call])
     chief = officer.call_scenario(scenario, chief_call, attempt)
-    assert chief.caller.facts[no_vehicles.FACT_KEY] == no_vehicles.FACT
     prompt = vapi.role_prompt(chief)
     assert "свободных машин нет" in prompt
-    # From difficulty 2 the misheard house is the server's to say, not the cloud's.
-    assert vapi.CHIEF_LEAVES_ADDRESS in prompt
+    # No misheard house (18.10.2026): the chief repeats the address as it was said.
+    assert "ОДИН раз повторяешь вслух адрес" in prompt
     easy = officer.call_scenario(card_scenario(NAME), new_call("moek"), Attempt(service_calls=[]))
     assert no_vehicles.FACT_KEY not in easy.caller.facts
-    assert "ОДИН раз повторяешь вслух адрес" in vapi.role_prompt(easy)
 
 
-def test_no_prompt_tells_the_cloud_to_answer_with_nothing() -> None:
-    """«Не отвечаешь ничего» made the cloud say «Молчу.» on «понял» (stand 17.10.2026)."""
+def test_the_cloud_agrees_with_one_line() -> None:
+    """«На согласие диспетчера отвечаешь «Принято».» — no list of words (18.10.2026)."""
     for prompt in (
         vapi.OFFICER_PROMPT,
         vapi.OFFICER_REPEAT_PROMPT,
@@ -146,4 +126,5 @@ def test_no_prompt_tells_the_cloud_to_answer_with_nothing() -> None:
         vapi.SQUAD_PROMPT,
     ):
         assert "не отвечаешь ничего" not in prompt.lower()
-        assert "«Принято»" in prompt
+        assert "На согласие диспетчера отвечаешь «Принято»." in prompt
+        assert "На «хорошо»" not in prompt

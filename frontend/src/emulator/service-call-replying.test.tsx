@@ -115,6 +115,34 @@ describe("ServiceCallPanel after the call to the own service", () => {
     );
   });
 
+  it("sends the trainee to the head when the squad has no vehicles", () => {
+    render(
+      <ServiceCallPanel
+        call={ended(call, "hangup")}
+        telephony={false}
+        sttAvailable={false}
+        micDeviceId={null}
+        devices={[]}
+        onMicDevice={() => {}}
+        onMicOpened={() => {}}
+        pending={false}
+        awaitingReport
+        noVehicles
+        headNumber="3201"
+        error={null}
+        onSay={() => {}}
+        onSpeak={() => {}}
+        onAnswer={() => {}}
+        cloud="off"
+        onEnd={() => {}}
+      />,
+    );
+    expect(screen.getByTestId("no-vehicles")).toHaveTextContent(
+      "Машин нет: доложите руководителю организации (3201)",
+    );
+    expect(screen.queryByTestId("await-report")).not.toBeInTheDocument();
+  });
+
   it("says nothing of a report when none is coming or the call did not end that way", () => {
     const { rerender } = render(after(ended(call, "hangup"), false));
     expect(screen.queryByTestId("await-report")).not.toBeInTheDocument();

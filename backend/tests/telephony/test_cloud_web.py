@@ -12,6 +12,7 @@ import pytest
 from httpx import AsyncClient
 
 from app.config import get_settings
+from app.dialog import officer
 from app.dialog import service as dialog
 from app.models import (
     CALL_ANSWERED,
@@ -120,7 +121,8 @@ async def test_service_call_is_played_by_the_cloud(
     assert "ЗАЯВИТЕЛЯ" not in prompt
     assert "номер наряда — наряд твой" in prompt
     assert "где он находится" in prompt
-    assert assistant["monitorPlan"] == {"controlEnabled": True}
+    # The server says nothing to the cloud mid-call (18.10.2026): no Live Call Control.
+    assert "monitorPlan" not in assistant
     # Трубку кладёт диспетчер: дежурному функция завершения звонка не даётся.
     assert assistant["endCallFunctionEnabled"] is False
     assert "на другой язык" in prompt and "Не кладёшь трубку" in prompt
@@ -129,7 +131,7 @@ async def test_service_call_is_played_by_the_cloud(
     assert "Второй раз адрес не проговариваешь НИКОГДА" in prompt
     assert "goodbye" in prompt.lower()
     # На «понял» — «Принято», а не «Молчу.» (стенд 17.10.2026).
-    assert "одним словом: «Принято»" in prompt
+    assert "На согласие диспетчера отвечаешь «Принято»." in prompt
     assert "не отвечаешь ничего" not in prompt.lower()
     assert "как губка" in prompt
     assert "НИЧЕГО НЕ ПРИДУМЫВАЕШЬ" in prompt
@@ -160,16 +162,54 @@ async def test_service_call_is_played_by_the_cloud(
         assert r.status_code == 200, r.text
     attempt = await load(attempt_id)
     record = next(c for c in attempt.service_calls if c["id"] == call_id)
-    # The server's decision for the cloud is a hidden turn, not a phrase (#263): the chief
-    # knows where and what, so he takes the card.
-    spoken = [t for t in record["dialog"] if not t.get("hint")]
-    assert [t["role"] for t in spoken] == ["operator", "caller"]
-    hints = [t["text"] for t in record["dialog"] if t.get("hint")]
-    assert hints and hints[0].startswith("Принял, выезжаем. Наряд")
+    # The cloud decides when to go (#263, 17.10.2026): no hint of the server, and the squad
+    # is not sent until the chief names its number.
+    assert [t["role"] for t in record["dialog"]] == ["operator", "caller"]
+    assert not any(t.get("hint") for t in record["dialog"])
+    assert not officer.squad_sent([record])
     assert "Молостовых" in record["dialog"][0]["text"]
     assert record["dialog"][0]["method"] == "cloud" and record["dialog"][0]["heard"] is True
     assert attempt.dialog == []  # карточка ДДС своего диалога не ведёт
     assert record["facts_passed"], "переданные факты считаются и в облачном звонке"
+
+    r = await hook(
+        client,
+        {
+            "type": "transcript",
+            "transcriptType": "final",
+            "role": "assistant",
+            "transcript": "Выезжаем, наряд 5600.",
+            "assistant": {"id": keys.json()["assistant_id"]},
+        },
+    )
+    assert r.status_code == 200, r.text
+    record = officer.find_call(await load(attempt_id), call_id)
+    assert officer.squad_sent([record])
+
+    # After the call the cloud's form comes with the report: it is what the evaluation reads.
+    form = {
+        "address_named": True,
+        "house_named": "10",
+        "incident_named": True,
+        "injured_named": False,
+        "access_named": False,
+        "order_given": False,
+        "house_corrected": False,
+    }
+    r = await hook(
+        client,
+        {
+            "type": "end-of-call-report",
+            "endedReason": "customer-ended-call",
+            "assistant": {"id": keys.json()["assistant_id"]},
+            "artifact": {"messages": []},
+            "analysis": {"structuredData": form},
+        },
+    )
+    assert r.status_code == 200, r.text
+    record = officer.find_call(await load(attempt_id), call_id)
+    assert record["analysis"] == form
+    assert record["facts_passed"] == ["address", "incident_type"]
 
 
 async def test_service_cloud_call_refuses_a_local_lesson(client: AsyncClient, web: CloudWebCalls):

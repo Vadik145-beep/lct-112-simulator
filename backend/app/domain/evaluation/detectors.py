@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import datetime
 from math import ceil
 
 from rapidfuzz import fuzz
@@ -25,12 +26,13 @@ from app.domain.evaluation.schemas import (
 )
 from app.domain.evaluation.service_call import (
     address_named,
-    facts_from_dialog,
+    call_facts,
+    form_says,
     gives_order,
     true_card,
     wrong_address_told,
 )
-from app.domain.evaluation.text import normalize_text
+from app.domain.evaluation.text import normalize_house, normalize_text
 from app.domain.evaluation.timing import seconds_between
 from app.domain.reference_data import TYPICAL_ERRORS
 from app.domain.scenarios import complication, misheard, no_vehicles, staff
@@ -372,7 +374,7 @@ def _informed_services(ctx: CardContext) -> tuple[set[str], set[str]]:
             continue
         reached.add(call.service)
         required = required_by_service.get(call.service) or []
-        passed = facts_from_dialog(true_card(ctx.scenario), call.dialog)
+        passed = call_facts(ctx.scenario, call)
         if not required or any(fact in passed for fact in required):
             told.add(call.service)
     return reached, told
@@ -434,6 +436,33 @@ def _reports_delivered(ctx: CardContext) -> dict[str, StatusEntry | None]:
     return delivered
 
 
+# The squad chief named his squad in the dispatcher's call (``app.dialog.officer``).
+ORDER_TAKEN_TOPIC = "order_taken"
+
+
+def _departure_told(ctx: CardContext) -> datetime | None:
+    """When the squad chief told the dispatcher by phone that the squad goes and named it:
+    «Принял, выезжаем. Наряд 4484.» That is the information on the departure the memo sets
+    «Начало реагирования» by (p. 22; decision of 17.10.2026), before the squad calls back."""
+    told = [
+        turn.at or call.started_at
+        for call in ctx.attempt.service_calls
+        if call.kind == "outgoing" and call.service == ctx.scenario.service
+        for turn in call.dialog
+        if turn.role == "caller" and ORDER_TAKEN_TOPIC in turn.topics
+    ]
+    return min(told, default=None)
+
+
+def _known_at(ctx: CardContext, status: str, report: StatusEntry | None) -> datetime | None:
+    """The first moment the dispatcher knew of the milestone: the report call, or for the
+    departure the squad chief's own words if they came first."""
+    moments = [report.at] if report is not None else []
+    if status == sm.RESPONSE_STARTED and (told := _departure_told(ctx)) is not None:
+        moments.append(told)
+    return min(moments, default=None)
+
+
 def status_before_report(ctx: CardContext) -> ErrorItem | None:
     """A progress status set before the squad reported it (customer, 21.09.2026: the
     dispatcher learns about the departure, arrival and works by phone). Only for cards whose
@@ -446,8 +475,8 @@ def status_before_report(ctx: CardContext) -> ErrorItem | None:
     for entry in ctx.log:
         if entry.status not in expected or entry.status not in REPORTED_STATUSES:
             continue
-        report = delivered.get(entry.status)
-        if report is None or entry.at < report.at:
+        known = _known_at(ctx, entry.status, delivered.get(entry.status))
+        if known is None or entry.at < known:
             early.append(entry.status)
     if not early:
         return None
@@ -470,9 +499,15 @@ def report_not_reflected(ctx: CardContext) -> ErrorItem | None:
     late: list[str] = []
     for status, report in delivered.items():
         assert report is not None
-        entries = [e for e in ctx.entries(status) if e.at >= report.at]
-        if not entries:
+        known = _known_at(ctx, status, report) or report.at
+        if not ctx.entries(status):
             missed.append(status)
+            continue
+        entries = [e for e in ctx.entries(status) if e.at >= known]
+        if not entries:
+            # Set before the report: that is «status_before_report» alone, one mistake is one
+            # penalty (decision of 18.10.2026).
+            continue
         elif (seconds_between(report.at, entries[0].at) or 0.0) > REPORT_REACTION_SECONDS:
             late.append(status)
     if not missed and not late:
@@ -559,10 +594,9 @@ def no_order_given(ctx: CardContext) -> ErrorItem | None:
         if c.kind == "outgoing" and c.service == ctx.scenario.service and c.answered
     ]
     said = [t.text for c in chief for t in c.dialog if t.role == "operator"]
-    turns = [t for c in chief for t in c.dialog]
-    if not said or not facts_from_dialog(true_card(ctx.scenario), turns):
+    if not said or not any(call_facts(ctx.scenario, c) for c in chief):
         return None  # no call, or a silent one: those are errors of their own
-    if any(gives_order(text) for text in said):
+    if any(gives_order(text) for text in said) or form_says(chief, "order_given"):
         return None
     return _item(
         "no_order_given",
@@ -580,10 +614,17 @@ def wrong_address_passed(ctx: CardContext) -> ErrorItem | None:
         if c.kind == "outgoing" and c.service == ctx.scenario.service and c.answered
     ]
     said = [t.text for c in chief for t in c.dialog if t.role == "operator"]
-    if not any(wrong_address_told(ctx.scenario, text) for text in said):
-        return None
     truth = true_card(ctx.scenario)
-    if any(address_named(truth, text) for text in said):
+    houses = [normalize_house(str((c.analysis or {}).get("house_named") or "")) for c in chief]
+    wrong_house = normalize_house(ctx.scenario.card.address.house)
+    told_wrong = any(wrong_address_told(ctx.scenario, text) for text in said) or (
+        truth is not ctx.scenario.card and wrong_house in houses
+    )
+    if not told_wrong:
+        return None
+    if any(address_named(truth, text) for text in said) or (
+        normalize_house(truth.address.house) in houses
+    ):
         return None  # corrected in the end
     card = ctx.scenario.card.address
     return _item(
@@ -638,6 +679,8 @@ def misheard_not_fixed(ctx: CardContext) -> ErrorItem | None:
     found = misheard.state(calls)
     if found is None or found.fixed:
         return None
+    if form_says(ctx.attempt.service_calls, "house_corrected"):
+        return None  # the cloud's form heard the correction the words missed
     asked = next(
         (
             t.text

@@ -2638,6 +2638,8 @@ export interface components {
              * @default false
              */
             reports_expected: boolean;
+            /** Squad State */
+            squad_state?: string | null;
             /** Transitions */
             transitions: components["schemas"]["TransitionOut"][];
             /** Reject Reasons */

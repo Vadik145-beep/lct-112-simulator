@@ -59,17 +59,15 @@ def test_lesson_difficulty_wins_over_an_easier_card() -> None:
     assert officer.lesson_scenario(moek(3), SimpleNamespace(difficulty=1)).difficulty == 3
 
 
-def test_address_as_the_card_writes_it_is_misheard_on_a_lesson_of_difficulty_two() -> None:
-    scenario = officer.lesson_scenario(moek(1), SimpleNamespace(difficulty=2))
-    call = new_call("moek")
-    attempt = Attempt(service_calls=[call])
-    assert (
-        talk(scenario, attempt, call, AS_IN_CARD) == "Записал: улица Молостовых, дом 12, корпус 1?"
-    )
-    for spoken in ("Молостовых, д. 10, к. 1", "улица Молостовых дом 10 корпус 1"):
-        again = new_call("moek")
-        fresh = Attempt(service_calls=[again])
-        assert talk(scenario, fresh, again, spoken).startswith("Записал:")
+def test_the_address_is_never_misheard_on_purpose() -> None:
+    """Decision of 18.10.2026: the bot never says the address wrong on purpose, at any
+    difficulty; only the 112 operator's mistakes in the card stay."""
+    for level in (1, 2, 3):
+        scenario = officer.lesson_scenario(moek(1), SimpleNamespace(difficulty=level))
+        for spoken in (AS_IN_CARD, "Молостовых, д. 10, к. 1", "улица Молостовых дом 10 корпус 1"):
+            call = new_call("moek")
+            attempt = Attempt(service_calls=[call])
+            assert not talk(scenario, attempt, call, spoken).startswith("Записал:")
 
 
 def test_the_chief_goes_once_he_knows_where_and_what() -> None:
@@ -83,7 +81,8 @@ def test_the_chief_goes_once_he_knows_where_and_what() -> None:
     assert officer.squad_state(attempt) == officers.SQUAD_STATE_WAITING
     said = talk(scenario, attempt, call, AS_IN_CARD + " Нет отопления в домах.")
     assert said == f"Принял, выезжаем. Наряд {squad(scenario)}."
-    assert officer.squad_state(attempt) == officers.SQUAD_STATE_PENDING
+    # Named in the call: on its way, no «выехали» call comes (18.10.2026).
+    assert officer.squad_state(attempt) == "response_started"
 
 
 def test_no_squad_number_while_something_is_missing() -> None:
@@ -104,8 +103,6 @@ def test_the_address_said_with_a_pause_is_still_the_address() -> None:
     scenario = officer.lesson_scenario(moek(1), SimpleNamespace(difficulty=2))
     call = new_call("moek")
     attempt = Attempt(service_calls=[call])
-    assert talk(scenario, attempt, call, "Нет отопления, улица Молостовых.") != (
-        "Записал: улица Молостовых, дом 12, корпус 1?"
-    )
+    talk(scenario, attempt, call, "Нет отопления, улица Молостовых.")
     said = talk(scenario, attempt, call, "Дом 10, корпус 1.")
-    assert said == "Записал: улица Молостовых, дом 12, корпус 1?"
+    assert said == f"Принял, выезжаем. Наряд {squad(scenario)}."
