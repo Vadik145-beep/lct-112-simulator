@@ -1,5 +1,5 @@
 """«Вал карточек» (issue #264): the schedule (the first card at once, then one every 20–25
-seconds, five in all) and the summary of how the trainee held the stream."""
+seconds, three in all) and the summary of how the trainee held the stream."""
 
 import uuid
 from datetime import UTC, datetime, timedelta
@@ -15,17 +15,17 @@ NORM = 30
 
 def test_first_card_at_once_then_one_every_20_to_25_seconds_five_in_all() -> None:
     lo, hi = STREAM_GAP_SECONDS
-    assert (STREAM_CARDS, lo, hi) == (5, 20.0, 25.0)
+    assert (STREAM_CARDS, lo, hi) == (3, 40.0, 50.0)
     for seed in ("a", "b", "c", "d"):
         times = schedule(seed)
-        assert len(times) == 5
+        assert len(times) == 3
         assert times[0] == 0.0
         gaps = [b - a for a, b in pairwise(times)]
         assert all(lo <= g <= hi for g in gaps)
         assert due_count(times, 0.0) == 1
         assert due_count(times, lo - 0.1) == 1
         # Nothing comes after the fifth card, however long the lesson runs.
-        assert due_count(times, 3600.0) == 5
+        assert due_count(times, 3600.0) == 3
 
 
 def test_schedule_is_stable_per_seed_and_differs_between_trainees() -> None:

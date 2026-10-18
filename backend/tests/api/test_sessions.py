@@ -358,7 +358,7 @@ async def test_monitor_tile_reaches_all_closed_at_difficulty_1(client: AsyncClie
 
 
 async def test_monitor_counts_the_stream_of_each_trainee(client: AsyncClient) -> None:
-    """In a stream the tile's «всего» is the five cards of the lesson, a repeated call among
+    """In a stream the tile's «всего» is the three cards of the lesson, a repeated call among
     them: it does not add one when its original reaches the trainee."""
     keys = [
         "card_2-1_dubl",
@@ -385,7 +385,7 @@ async def test_monitor_counts_the_stream_of_each_trainee(client: AsyncClient) ->
         tile = next(s for s in r.json()["students"] if s["login"] == "student1")
         return tile["cards_total"]
 
-    assert await tile_total() == STREAM_CARDS == 5
+    assert await tile_total() == STREAM_CARDS == 3
     async with SessionLocal() as session:
         await issue_stream_cards(
             session, datetime.fromisoformat(started["started_at"]) + timedelta(seconds=40)
@@ -394,7 +394,7 @@ async def test_monitor_counts_the_stream_of_each_trainee(client: AsyncClient) ->
     assert await tile_total() == STREAM_CARDS
 
 
-async def test_monitor_counts_five_cards_when_the_cards_are_written_by_ai(
+async def test_monitor_counts_the_stream_cards_when_the_cards_are_written_by_ai(
     client: AsyncClient,
 ) -> None:
     teacher = await login(client, "teacher1")
@@ -405,8 +405,8 @@ async def test_monitor_counts_five_cards_when_the_cards_are_written_by_ai(
     await ai_cards.wait_all()
     r = await client.get(f"/api/sessions/{created['id']}/monitor", headers=bearer(teacher))
     assert r.status_code == 200, r.text
-    assert r.json()["cards_total"] == ai_cards.CARDS_PER_TRAINEE == 5
-    assert {s["cards_total"] for s in r.json()["students"]} == {5}
+    assert r.json()["cards_total"] == STREAM_CARDS == 3
+    assert {s["cards_total"] for s in r.json()["students"]} == {3}
     await ai_cards.wait_all(max_seconds=30)
 
 
@@ -533,7 +533,7 @@ async def test_unfinished_threshold_marks_card(
 async def test_difficulty_3_is_a_stream_of_cards_on_a_timer(client: AsyncClient) -> None:
     """«Вал карточек» (issue #264): at difficulty 3 the journal itself adds nothing, the sweeper
     issues the cards each trainee's schedule says are due — the first at once, then one every
-    20–25 s, five in all; the report and the trainee's progress sum the stream up."""
+    40–50 s, three in all; the report and the trainee's progress sum the stream up."""
     teacher = await login(client, "teacher1")
     created = await create_session(client, teacher, service_profile=[], difficulty=3)
     started = await start(client, teacher, created["id"])
@@ -587,7 +587,7 @@ async def test_repeated_call_in_a_stream_comes_a_minute_or_two_after_its_origina
     client: AsyncClient,
 ) -> None:
     """A repeated call about the same incident (``duplicate_of``) does not come right after its
-    original: one to two minutes later, as one of the lesson's five cards (the schedule then
+    original: one to two minutes later, as one of the lesson's three cards (the schedule then
     brings one ordinary card less)."""
     keys = [
         "card_2-1_dubl",
@@ -625,7 +625,7 @@ async def test_repeated_call_in_a_stream_comes_a_minute_or_two_after_its_origina
             await issue_stream_cards(session, at)
             await session.commit()
 
-    # The schedule gives two or three cards by 40 s: the repeat, first in the queue, waits.
+    # The first card comes at once: the repeat, first in the queue, waits.
     await sweep(begin + timedelta(seconds=40))
     first = await numbers()
     assert "38260311" in first and "38260340" not in first

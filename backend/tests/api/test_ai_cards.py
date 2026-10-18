@@ -177,7 +177,7 @@ async def test_difficulty_3_is_a_stream_of_written_cards_with_two_mistakes(
     client: AsyncClient,
 ) -> None:
     """At difficulty 3 the written cards come as the stream of an ordinary lesson: the first
-    at once, then one every 20–25 s, five in all. They are written two ahead, so a card is
+    at once, then one every 40–50 s, three in all. They are written two ahead, so a card is
     there when its time comes; each is an emergency with two of the operator's mistakes."""
     teacher = await login(client, "teacher1")
     lesson = await ai_lesson(client, teacher, difficulty=3)
@@ -215,12 +215,11 @@ async def test_difficulty_3_is_a_stream_of_written_cards_with_two_mistakes(
     assert await written() == [1, 2, 3]  # card 3 started as card 1 came
     await sweep(times[1])
     assert len((await journal(client, student, lesson))["items"]) == 2
-    assert await written() == [1, 2, 3, 4]
-    await sweep(3600)
+    assert await written() == [1, 2, 3]  # no fourth card is written: the stream has three
     await sweep(3600)
     items = (await journal(client, student, lesson))["items"]
-    assert len(items) == STREAM_CARDS == 5
-    assert await written() == [1, 2, 3, 4, 5]  # no sixth card is written either
+    assert len(items) == STREAM_CARDS == 3
+    assert await written() == [1, 2, 3]
 
     body = await body_of(await scenario_of(items[0]["attempt_id"]))
     assert len(body["injected_errors"]) == 2

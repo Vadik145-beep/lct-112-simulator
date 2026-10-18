@@ -88,7 +88,10 @@ def is_ai(ts: TrainingSession) -> bool:
 
 
 def cards_for(ts: TrainingSession) -> int:
-    return ts.cards_per_student or CARDS_PER_TRAINEE
+    """Cards a trainee gets: those of the stream at difficulty 3, else the lesson's number."""
+    from app.training.service import STREAM_CARDS, is_stream
+
+    return STREAM_CARDS if is_stream(ts) else ts.cards_per_student or CARDS_PER_TRAINEE
 
 
 # ---------------------------------------------------------------- issuing

@@ -136,7 +136,7 @@ describe("Card stream at difficulty 3", () => {
     existing.current = null;
     renderForm("/teacher/sessions/new", false);
     fireEvent.change(screen.getByLabelText("Сложность"), { target: { value: "3" } });
-    expect(screen.getByText("Вал: 5 карточек: первая сразу, дальше по одной каждые 20–25 с.")).toBeInTheDocument();
+    expect(screen.getByText("Вал: 3 карточки: первая сразу, дальше по одной каждые 40–50 с.")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Сложность"), { target: { value: "1" } });
     expect(screen.getByText("Каждый обучающийся получит одну карточку.")).toBeInTheDocument();
   });
@@ -152,7 +152,7 @@ describe("«Задания формирует ИИ»", () => {
     fireEvent.change(screen.getByLabelText("Сложность"), { target: { value: "3" } });
     expect(
       screen.getByText(
-        "Вал своих карточек каждому — 5 карточек: первая сразу, дальше по одной каждые 20–25 с; ЧС, по две ошибки оператора 112 в карточке.",
+        "Вал своих карточек каждому — 3 карточки: первая сразу, дальше по одной каждые 40–50 с; ЧС, по две ошибки оператора 112 в карточке.",
       ),
     ).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Сложность"), { target: { value: "2" } });

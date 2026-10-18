@@ -12,8 +12,8 @@ import {
 const SHOTS = "../docs/screenshots/wave-03";
 const PASSWORD = process.env.SEED_PASSWORD ?? "Demo12345";
 const NORM_SECONDS = 30;
-// Three cards of a stream: at 0 s, 20–25 s and 40–50 s, plus a tick of the sweeper (5 s).
-const STREAM_THREE_MS = 60_000;
+// The three cards of a stream: at 0 s, 40–50 s and 80–100 s, plus a tick of the sweeper (5 s).
+const STREAM_THREE_MS = 110_000;
 
 test.describe.configure({ mode: "serial" });
 
@@ -99,7 +99,7 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
     page,
     request,
   }) => {
-    test.setTimeout(180_000);
+    test.setTimeout(300_000);
     const sessionId = await resetDemoSession(request);
     const { problems, foreign } = watchNetwork(page);
 
@@ -113,8 +113,8 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
       new RegExp(`/student/sessions/${sessionId}/journal$`),
     );
 
-    // Difficulty 3 is a stream: the first card at once, then one every 20–25 s; three are
-    // there within a minute, all «Добавлена» / «Зарегистрирована».
+    // Difficulty 3 is a stream: the first card at once, then one every 40–50 s; all three are
+    // there in under two minutes, all «Добавлена» / «Зарегистрирована».
     const rows = page.locator("tr[data-attempt]");
     await expect(rows).toHaveCount(3, { timeout: STREAM_THREE_MS });
     await expect(page.getByText("Список происшествий")).toBeVisible();
