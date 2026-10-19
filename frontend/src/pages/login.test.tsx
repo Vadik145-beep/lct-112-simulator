@@ -102,7 +102,7 @@ describe("LoginPage", () => {
     expect(rows[2]).toContain("Администратор");
     expect(screen.getAllByText("112112112")).toHaveLength(3);
     await userEvent.click(screen.getByRole("button", { name: "Войти как администратор" }));
-    expect(auth.demoLogin).toHaveBeenCalledWith("admin");
+    expect(auth.demoLogin).toHaveBeenCalledWith("admin", "admin");
   });
 
   it("submits login and password and shows the server message on failure", async () => {

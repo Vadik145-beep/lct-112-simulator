@@ -245,6 +245,53 @@ async def test_quick_login_enters_the_stand_accounts_but_not_admin(
                 )
 
 
+async def test_the_stand_shows_and_enters_the_second_trainee(
+    client: AsyncClient, admin_engine: AsyncEngine
+) -> None:
+    """The stand showing its credentials (20.10.2026): student2 is listed and has a button of
+    his own, for the video «преподаватель + 2 обучаемых»; no other login can be slipped in."""
+    created: list[str] = []
+    async with admin_engine.begin() as conn:
+        for login_, role in (
+            ("teacher", "teacher"),
+            ("student", "student"),
+            ("student2", "student"),
+            ("admin", "admin"),
+        ):
+            row = await conn.execute(
+                text(
+                    "INSERT INTO users (id, login, password_hash, full_name, role, service_code) "
+                    "VALUES (gen_random_uuid(), :login, 'x', 'Стенд', :role, :service) "
+                    "ON CONFLICT (login) DO NOTHING RETURNING login"
+                ),
+                {"login": login_, "role": role, "service": "gkh" if role == "student" else None},
+            )
+            created += [r[0] for r in row]
+    settings = get_settings()
+    settings.demo_mode = False
+    settings.quick_login = True
+    settings.show_demo_credentials = True
+    try:
+        shown = (await client.get("/api/config")).json()["demo_credentials"]
+        assert ("student", "student2") in {(c["role"], c["login"]) for c in shown}
+        r = await client.post("/api/auth/demo/student", params={"login": "student2"})
+        assert r.status_code == 200, r.text
+        assert r.json()["user"]["login"] == "student2"
+        r = await client.post("/api/auth/demo/student", params={"login": "teacher"})
+        assert r.status_code == 404
+        r = await client.post("/api/auth/demo/teacher", params={"login": "student2"})
+        assert r.status_code == 404
+    finally:
+        settings.demo_mode = True
+        settings.quick_login = False
+        settings.show_demo_credentials = False
+        if created:
+            async with admin_engine.begin() as conn:
+                await conn.execute(
+                    text("DELETE FROM users WHERE login = ANY(:logins)"), {"logins": created}
+                )
+
+
 async def test_shown_credentials_are_listed_and_locked(client: AsyncClient) -> None:
     """SHOW_DEMO_CREDENTIALS: the login page gets login and password by role; nobody can
     change a password that everybody sees."""
