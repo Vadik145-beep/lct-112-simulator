@@ -592,10 +592,20 @@ def is_caller(scenario: CallIntakeScenario) -> bool:
 def role_prompt(scenario: CallIntakeScenario) -> str:
     """Инструкция облаку по роли собеседника: дежурный службы, начальник аварийной бригады,
     сотрудник своей организации или заявитель."""
-    from app.domain.scenarios.officers import OFFICER_PERSONA, SQUAD_LEADER_PERSONA
+    from app.domain.scenarios.officers import (
+        OFFICER_PERSONA,
+        ORDER_FACT_KEYS,
+        SQUAD_LEADER_PERSONA,
+        said_order,
+    )
 
     caller = scenario.caller
-    facts = "\n".join(f"- {key}: {value}" for key, value in caller.facts.items())
+    # The squad number is spelled word by word for the cloud's voice only: the facts keep the
+    # bare number, which a local model says as it is.
+    facts = "\n".join(
+        f"- {key}: {said_order(value) if key in ORDER_FACT_KEYS else value}"
+        for key, value in caller.facts.items()
+    )
     service = caller.facts.get("служба", "службы")
     if caller.persona == OFFICER_PERSONA:
         from app.domain.scenarios import no_vehicles
