@@ -2,9 +2,9 @@ import { BookOpen, Check, CircleAlert, FilePlus2, Loader2, X } from "lucide-reac
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import { authFetch } from "@/api/client";
 import { callInfo, useDialog } from "@/api/intake";
 import { useScenarioFromAttempt } from "@/api/scenarios";
-import { getAccessToken } from "@/api/token";
 import { useServices } from "@/api/teacher";
 import type { AttemptOut } from "@/api/training";
 import { Button } from "@/components/ui/button";
@@ -395,7 +395,7 @@ export function TokenAudio({ url, label, className }: { url: string; label: stri
       disabled={failed}
       onClick={async () => {
         try {
-          const res = await fetch(url, { headers: { Authorization: `Bearer ${getAccessToken() ?? ""}` } });
+          const res = await authFetch(url);
           if (!res.ok) throw new Error(String(res.status));
           setSrc(URL.createObjectURL(await res.blob()));
         } catch {

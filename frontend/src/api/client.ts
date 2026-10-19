@@ -36,6 +36,21 @@ export async function refreshAccessToken(): Promise<boolean> {
   return refreshing;
 }
 
+/** A request the typed client cannot make (media, files, form uploads) with the bearer token,
+ * renewed and sent again once when it has run out — as the client's own requests are. A voiced
+ * reply fetched the moment the token expired stayed silent (stand, 19.10.2026). */
+export async function authFetch(url: string, init: RequestInit = {}): Promise<Response> {
+  const send = () => {
+    const headers = new Headers(init.headers);
+    const token = getAccessToken();
+    if (token) headers.set("Authorization", `Bearer ${token}`);
+    return fetch(url, { ...init, headers });
+  };
+  const response = await send();
+  if (response.status !== 401 || !(await refreshAccessToken())) return response;
+  return send();
+}
+
 const authMiddleware: Middleware = {
   async onRequest({ request }) {
     const token = getAccessToken();
