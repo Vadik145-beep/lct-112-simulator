@@ -89,7 +89,8 @@ def test_no_squad_number_while_something_is_missing() -> None:
     scenario = moek(1)
     call = new_call("moek")
     attempt = Attempt(service_calls=[call])
-    assert talk(scenario, attempt, call, "Пострадавших нет.") == officer.TAKEN
+    # Not a bare «Принял.» that leads nowhere (stand 19.10.2026): he asks what happened.
+    assert talk(scenario, attempt, call, "Пострадавших нет.") == officer.ASK_INCIDENT
     said = talk(scenario, attempt, call, "Выезжайте.", provider=UNKNOWN)
     assert said == officer.ASK_ADDRESS
     said = talk(scenario, attempt, call, "Улица Молостовых, дом 10, корпус 1.")
