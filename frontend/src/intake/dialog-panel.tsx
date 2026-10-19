@@ -1,8 +1,8 @@
 import { Check, Circle, Ear, Mic, Send, Volume2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { authFetch } from "@/api/client";
 import { useAskTopic, useSay, useUtterance, type DialogOut, type DialogTurnOut } from "@/api/intake";
-import { getAccessToken } from "@/api/token";
 import { NetworkError } from "@/api/training";
 import { formatTime } from "@/emulator/time";
 import { ArmButton } from "@/emulator/widgets";
@@ -281,7 +281,7 @@ export function DialogPanel({
     const el = audio.current;
     if (!el) return;
     try {
-      const res = await fetch(url, { headers: { Authorization: `Bearer ${getAccessToken() ?? ""}` } });
+      const res = await authFetch(url);
       if (!res.ok) return;
       const blob = await res.blob();
       if (el.src.startsWith("blob:")) URL.revokeObjectURL(el.src);

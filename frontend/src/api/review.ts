@@ -1,9 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { api } from "@/api/client";
+import { api, authFetch } from "@/api/client";
 import type { components } from "@/api/schema";
 import { reportKey } from "@/api/teacher";
-import { getAccessToken } from "@/api/token";
 import { attemptKey, unwrap } from "@/api/training";
 
 export type OverrideOut = components["schemas"]["OverrideOut"];
@@ -47,9 +46,7 @@ export type ExportFormat = "pdf" | "xlsx" | "csv";
 /** Downloads the report file: the endpoint needs the bearer token, which a plain link cannot
  * send, so the file is fetched and handed to the browser as a blob. */
 export async function downloadReport(sessionId: string, format: ExportFormat): Promise<void> {
-  const res = await fetch(`/api/sessions/${sessionId}/report.${format}`, {
-    headers: { Authorization: `Bearer ${getAccessToken() ?? ""}` },
-  });
+  const res = await authFetch(`/api/sessions/${sessionId}/report.${format}`);
   if (!res.ok) {
     let message = `Не удалось получить отчёт (${res.status}).`;
     try {

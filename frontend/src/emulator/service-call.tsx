@@ -1,7 +1,7 @@
 import { Circle, Loader2, Mic, MicOff, Phone, PhoneOff, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-import { getAccessToken } from "@/api/token";
+import { authFetch } from "@/api/client";
 import { newActionId } from "@/emulator/draft";
 import {
   END_REASON_TITLES,
@@ -242,9 +242,7 @@ export function ServiceCallPanel({
     if (!audio.current) audio.current = new Audio();
     const el = audio.current;
     try {
-      const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${getAccessToken() ?? ""}` },
-      });
+      const res = await authFetch(url);
       if (!res.ok) return;
       if (el.src.startsWith("blob:")) URL.revokeObjectURL(el.src);
       el.src = URL.createObjectURL(await res.blob());

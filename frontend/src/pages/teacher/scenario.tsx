@@ -39,7 +39,7 @@ import {
   type ReplyOut,
   type ScenarioOut,
 } from "@/api/scenarios";
-import { getAccessToken } from "@/api/token";
+import { authFetch } from "@/api/client";
 import { ErrorState, LoadingState } from "@/components/states";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -1332,11 +1332,7 @@ export function PlayButton({ url, label }: { url: string; label: string }) {
     }
     setState("loading");
     try {
-      const token = getAccessToken();
-      const response = await fetch(url, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        credentials: "include",
-      });
+      const response = await authFetch(url, { credentials: "include" });
       if (!response.ok) throw new Error("Аудиофайл недоступен");
       const blob = await response.blob();
       const audio = new Audio(URL.createObjectURL(blob));

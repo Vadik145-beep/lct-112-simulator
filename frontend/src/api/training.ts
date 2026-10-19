@@ -1,8 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef } from "react";
 
-import { api, errorMessage } from "@/api/client";
-import { getAccessToken } from "@/api/token";
+import { api, authFetch, errorMessage } from "@/api/client";
 import type { components } from "@/api/schema";
 
 export type AssignmentOut = components["schemas"]["AssignmentOut"];
@@ -268,11 +267,10 @@ export function useSpeakToOfficer(attemptId: string) {
       const form = new FormData();
       form.append("file", blob, blob.type.includes("ogg") ? "q.ogg" : "q.webm");
       form.append("action_id", actionId);
-      const res = await fetch(
+      const res = await authFetch(
         `/api/attempts/${attemptId}/service-call/${callId}/utterance`,
         {
           method: "POST",
-          headers: { Authorization: `Bearer ${getAccessToken() ?? ""}` },
           body: form,
         },
       );

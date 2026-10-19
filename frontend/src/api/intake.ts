@@ -1,9 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { api, errorMessage } from "@/api/client";
+import { api, authFetch, errorMessage } from "@/api/client";
 import type { components } from "@/api/schema";
 import { attemptKey, journalKey, unwrap } from "@/api/training";
-import { getAccessToken } from "@/api/token";
 
 export type DialogOut = components["schemas"]["DialogOut"];
 export type DialogTurnOut = components["schemas"]["DialogTurnOut"];
@@ -88,9 +87,8 @@ export function useUtterance(attemptId: string) {
     const form = new FormData();
     form.append("file", blob, blob.type.includes("ogg") ? "q.ogg" : "q.webm");
     form.append("action_id", action_id);
-    const res = await fetch(`/api/attempts/${attemptId}/utterance`, {
+    const res = await authFetch(`/api/attempts/${attemptId}/utterance`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${getAccessToken() ?? ""}` },
       body: form,
     });
     const json = (await res.json().catch(() => null)) as TurnResponse | { error?: unknown } | null;
@@ -105,10 +103,7 @@ export function useUtterance(attemptId: string) {
  * a local state, so the browser path still works.
  */
 async function callControl(attemptId: string, action: "answer" | "hangup" | "no-contact" | "call-dropped") {
-  const res = await fetch(`/api/attempts/${attemptId}/${action}`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${getAccessToken() ?? ""}` },
-  });
+  const res = await authFetch(`/api/attempts/${attemptId}/${action}`, { method: "POST" });
   if (res.status === 404) return { supported: false as const, dialog: null };
   const json = (await res.json().catch(() => null)) as { dialog?: DialogOut; error?: unknown } | null;
   if (!res.ok || !json?.dialog) throw new Error(errorMessage(json));
