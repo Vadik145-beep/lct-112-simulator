@@ -24,6 +24,7 @@ speaks.
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 
 from rapidfuzz import fuzz
@@ -64,10 +65,11 @@ CHIEF_FACTS_SHARE = 0.3
 CHIEF_MISHEARD_SHARE = 0.15
 CHIEF_ORDER_SHARE = 0.15
 CHIEF_NORM_SHARE = 0.15
-# The dispatcher sends the squad: «выезжайте», «направляйте бригаду», «высылайте наряд».
+# The dispatcher sends the squad: «выезжайте», «направляйте бригаду», «высылайте наряд»; or
+# asks it to come, as people do on the phone: «вы приедете?» (stand, 19.10.2026).
 _ORDER = re.compile(
-    r"\b(выезж\w*|выезд\w*|выехать|высыл\w*|вышлите|направ\w*|отправ\w*|выдвига\w*|"
-    r"езжайте|поезжайте)\b"
+    r"\b(выезж\w*|выезд\w*|выехать|выедете|высыл\w*|вышлите|направ\w*|отправ\w*|выдвига\w*|"
+    r"езжайте|поезжайте|приедете|приезжайте)\b"
 )
 FACT_TITLES = {f["code"]: f["title"] for f in SERVICE_CALL_FACTS}
 
@@ -100,7 +102,8 @@ def address_named(card: Card, text: str) -> bool:
     normalized = normalize_text(text)
     if not normalized:
         return False
-    street = street_core(card.address.street)
+    # The phrase loses the hyphen, so the name does too: «Рубцовско-Дворцовая».
+    street = normalize_text(street_core(card.address.street))
     house = normalize_house(card.address.house)
     if not street and not house:
         return False  # a card without a street and a house: nothing to name
@@ -183,10 +186,41 @@ def incident_named(card: Card, text: str) -> bool:
 ADDRESS_PHRASES = 3
 
 
-def address_in_phrases(card: Card, texts: list[str]) -> bool:
+# How close the street has to sound for the squad chief to go (19.10.2026: «не один в один»).
+STREET_HEARD_THRESHOLD = 75.0
+STREET_HEARD_STEM = 5  # a shorter stem must be said exactly: too many words begin alike
+
+
+def _street_word_heard(part: str, words: list[str]) -> bool:
+    """A word of the street's name is in the phrase, its stem perhaps bent by recognition:
+    «Малостовского» for «Молостовых»."""
+    core = _street_stem(part)
+    if len(core) < STREET_HEARD_STEM:
+        return any(w.startswith(core) for w in words)
+    return any(fuzz.ratio(core, w[: len(core)]) >= STREET_HEARD_THRESHOLD for w in words)
+
+
+def address_heard(card: Card, text: str) -> bool:
+    """Enough of the address for the squad chief to go: the address as the evaluation reads
+    it, or the card's street, even bent by speech recognition, with some house. Which house
+    is the evaluation's business, not his: a wrong or misheard one costs the dispatcher
+    points, it does not keep the squad in (decision of 17.10.2026)."""
+    if address_named(card, text):
+        return True
+    street = normalize_text(street_core(card.address.street))
+    normalized = normalize_text(text)
+    if not street or not has_number(normalized):
+        return False
+    words = normalized.split()
+    return all(_street_word_heard(part, words) for part in street.split())
+
+
+def address_in_phrases(
+    card: Card, texts: list[str], named: Callable[[Card, str], bool] = address_named
+) -> bool:
     """The address named across a few phrases said in a row, not only within one."""
     return any(
-        address_named(card, " ".join(texts[start : start + size]))
+        named(card, " ".join(texts[start : start + size]))
         for size in range(1, ADDRESS_PHRASES + 1)
         for start in range(len(texts) - size + 1)
     )
@@ -203,7 +237,10 @@ def missing_to_go(scenario: CardResponseScenario, texts: list[str]) -> list[str]
     incident."""
     truth = true_card(scenario)
     missing: list[str] = []
-    if not (address_in_phrases(truth, texts) or address_in_phrases(scenario.card, texts)):
+    if not (
+        address_in_phrases(truth, texts, address_heard)
+        or address_in_phrases(scenario.card, texts, address_heard)
+    ):
         missing.append("address")
     if not any(incident_named(truth, text) for text in texts):
         missing.append("incident_type")

@@ -106,3 +106,27 @@ def test_the_address_said_with_a_pause_is_still_the_address() -> None:
     talk(scenario, attempt, call, "Нет отопления, улица Молостовых.")
     said = talk(scenario, attempt, call, "Дом 10, корпус 1.")
     assert said == f"Принял, выезжаем. Наряд {squad(scenario)}."
+
+
+def test_the_chief_goes_on_an_address_recognition_bent() -> None:
+    """Stand, 19.10.2026: the street and the house came out of recognition bent, the chief
+    said «Адрес принял», then «Принял.» to «Ну, вы приедете?» and went nowhere. Not word for
+    word: the street that sounds like the card's is enough for him to go."""
+    scenario = moek(1)
+    call = new_call("moek")
+    attempt = Attempt(service_calls=[call])
+    said = talk(scenario, attempt, call, "Нет отопления, улица Малостовского, дом десяти.")
+    assert said == f"Принял, выезжаем. Наряд {squad(scenario)}."
+
+
+def test_no_address_taken_while_none_was_heard() -> None:
+    """A recorded «Адрес принял» picked by the word «адрес» gives way to the question."""
+    scenario = moek(1)
+    call = new_call("moek")
+    attempt = Attempt(service_calls=[call])
+    taken = CallerReply(
+        text="Адрес принял. Подъезд, этаж известны?", topics=["address"], operator_topics=[]
+    )
+    said = talk(scenario, attempt, call, "Нет отопления, адрес сейчас уточню.", provider=taken)
+    assert said == officer.ASK_ADDRESS
+    assert talk(scenario, attempt, call, "Ну, вы приедете?") == officer.ASK_ADDRESS

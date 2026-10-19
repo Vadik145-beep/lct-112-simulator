@@ -7,7 +7,7 @@ from __future__ import annotations
 import pytest
 
 from app.domain.evaluation.schemas import Card
-from app.domain.evaluation.service_call import address_named, incident_named
+from app.domain.evaluation.service_call import address_heard, address_named, incident_named
 from app.domain.evaluation.text import (
     detect_service_facts,
     has_number,
@@ -42,6 +42,12 @@ def card() -> Card:
         ("подъезд первый этаж второй", "подъезд 1 этаж 2"),
         ("улица полевая", "улица полевая"),
         ("дом 81", "дом 81"),
+        # Other cases, as speech recognition hears them (stand, 19.10.2026).
+        ("дом десяти", "дом 10"),
+        ("у дома двадцати пяти", "у дома 25"),
+        ("дома ста восьмидесяти трех", "дома 183"),
+        ("дом третьего", "дом 3"),
+        ("забрали семью", "забрали семью"),
     ],
 )
 def test_numerals_in_words_become_digits(said: str, expected: str) -> None:
@@ -165,3 +171,24 @@ def test_the_incident_is_recognised_where_the_keyword_table_is_silent() -> None:
 )
 def test_the_casualty_count_is_recognised_as_it_is_spoken(said: str) -> None:
     assert "injured" in detect_service_facts(said)
+
+
+def test_a_hyphenated_street_is_named_the_way_recognition_writes_it() -> None:
+    """«Рубцовско-Дворцовая, 10» heard as «Рубцовского-Дворцовая, дом десяти» (stand,
+    19.10.2026): the phrase loses the hyphen, the house comes in another case."""
+    hyphen = card().model_copy(deep=True)
+    hyphen.address.street = "Рубцовско-Дворцовая улица"
+    hyphen.address.house = "10"
+    said = "Падение деталей кровли по адресу Рубцовского-Дворцовая улица, дом десяти."
+    assert address_named(hyphen, said)
+    assert not address_named(hyphen, "Рубцовского-Дворцовая улица, дом двенадцать")
+
+
+def test_the_squad_chief_hears_a_bent_street_but_not_another_one() -> None:
+    """Not word for word (19.10.2026): the street that sounds like the card's, with a house,
+    is where to go; another street or no house at all is not."""
+    polevaya = card()
+    assert address_heard(polevaya, "На Полевой, дом семь")
+    assert address_heard(polevaya, "Полевая улица, дом 12")  # wrong house: points, not the go
+    assert not address_heard(polevaya, "Улица Полярная, дом 7")
+    assert not address_heard(polevaya, "Улица Полевая")
