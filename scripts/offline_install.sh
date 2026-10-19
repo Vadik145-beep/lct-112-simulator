@@ -103,7 +103,7 @@ cat <<DONE
 Готово. Откройте в браузере: https://${HOST_ADDR}${PORT_SUFFIX}
   преподаватель:  teacher / ${SEED}
   обучающийся:    student / ${SEED}
-  администратор:  admin / ${SEED} (при первом входе попросит сменить пароль)
+  администратор:  admin / ${SEED}
 Браузер предупредит о сертификате, пока на рабочие места не установлен корневой сертификат:
   docker compose cp nginx:/etc/nginx/certs/ca.crt .   (INSTALL.md, раздел 2)
 DONE

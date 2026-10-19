@@ -76,6 +76,10 @@ if [ ! -f .env ]; then
   sed -i "s|^STT_MODEL=.*|STT_MODEL=faster-whisper-small|" .env
   sed -i "s|^TELEPHONY_ENABLED=.*|TELEPHONY_ENABLED=true|" .env
   sed -i "s|^TELEPHONY_EXTERNAL_IP=.*|TELEPHONY_EXTERNAL_IP=${HOST_ADDR}|" .env
+  # As on the stand (customer's recommendation 2): the login page shows the logins and the
+  # password by role and the «Войти» buttons. On a working server set both to false.
+  sed -i "s|^QUICK_LOGIN=.*|QUICK_LOGIN=true|" .env
+  sed -i "s|^SHOW_DEMO_CREDENTIALS=.*|SHOW_DEMO_CREDENTIALS=true|" .env
 fi
 
 echo "== сборка и запуск (10–30 минут при первом запуске)"
@@ -99,7 +103,9 @@ cat <<DONE
 Готово. Откройте в браузере: https://${HOST_ADDR}${PORT_SUFFIX}
   преподаватель:  teacher / ${SEED}
   обучающийся:    student / ${SEED}
-  администратор:  admin / ${SEED} (при первом входе попросит сменить пароль)
+  администратор:  admin / ${SEED}
+Логины и пароль показаны на странице входа; на рабочем сервере выключите это в .env
+(QUICK_LOGIN=false, SHOW_DEMO_CREDENTIALS=false) и смените пароли в разделе «Пользователи».
 Браузер предупредит о сертификате, пока на рабочие места не установлен корневой сертификат:
   docker compose cp nginx:/etc/nginx/certs/ca.crt .   (docs/INSTALL.md, раздел 2)
 Режим «с интернетом» (Vapi) включается своими ключами: docs/INSTALL.md.

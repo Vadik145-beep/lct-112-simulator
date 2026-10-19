@@ -1,6 +1,6 @@
-"""Seed on a clean install (DEMO_MODE=false): an administrator who must change the password
-and the stand's ``teacher`` and ``student``; no demo users, groups, sessions or history. Demo
-mode keeps creating everything."""
+"""Seed on a clean install (DEMO_MODE=false): the administrator and the stand's ``teacher``
+and ``student``, none of them has to change the password; no demo users, groups, sessions or
+history. Demo mode keeps creating everything."""
 
 import uuid
 
@@ -47,7 +47,9 @@ async def test_seed_users_creates_the_stand_accounts_on_clean_install(
                 for u in await session.scalars(select(User).where(User.login.like(f"%-{suffix}")))
             }
         assert set(users) == {f"admin-{suffix}", f"teacher-{suffix}", f"student-{suffix}"}
-        assert users[f"admin-{suffix}"].must_change_password is True
+        # No forced change at the first login (decision of 20.10.2026): the login page may show
+        # the password, and a shown password cannot be changed.
+        assert users[f"admin-{suffix}"].must_change_password is False
         assert users[f"teacher-{suffix}"].must_change_password is False
         assert users[f"student-{suffix}"].must_change_password is False
         # The 112 operator mode is hidden from the stand's teacher and trainee.
