@@ -12,10 +12,13 @@ import {
   type AttemptOut,
 } from "@/api/training";
 import { RINGBACK_MAX_MS, RINGBACK_MS, playRingback } from "@/emulator/phone-tones";
-import { CloudCall } from "@/softphone/cloud-call";
+import { CloudCall, MIC_ASK_HINT } from "@/softphone/cloud-call";
 import { useSoftphone } from "@/softphone/context";
 
 export type ServiceCall = AttemptOut["service_calls"][number];
+// The browser asks for the microphone this long before the phone points at its question.
+const ASK_HINT_MS = 1500;
+
 export type CloudState = "off" | "connecting" | "live" | "failed";
 
 /**
@@ -40,6 +43,14 @@ export function useCardCalls(attempt: AttemptOut) {
   const cloudCallId = useRef<string | null>(null);
   const [cloudState, setCloudState] = useState<CloudState>("off");
   const [cloudMuted, setCloudMuted] = useState(false);
+  // Why the cloud call did not start or dropped, in plain words; a hint while it is quiet.
+  const [cloudError, setCloudError] = useState<string | null>(null);
+  const [cloudWarning, setCloudWarning] = useState<string | null>(null);
+  const [cloudLevel, setCloudLevel] = useState(0);
+  const askTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (askTimer.current) clearTimeout(askTimer.current);
+  }, []);
   const finished = attempt.state === "finished" || attempt.state === "evaluated";
 
   const toggleCloudMute = () => {
@@ -60,6 +71,9 @@ export function useCardCalls(attempt: AttemptOut) {
       if (cloudCall.current) return;
       setCloudState("connecting");
       setCloudMuted(false);
+      setCloudError(null);
+      setCloudWarning(null);
+      setCloudLevel(0);
       let keys;
       try {
         keys = await cloudKeys.mutateAsync(callId);
@@ -73,13 +87,31 @@ export function useCardCalls(attempt: AttemptOut) {
       cloudCall.current = call;
       cloudCallId.current = callId;
       call
-        .on("started", () => setCloudState("live"))
-        .on("failed", () => {
+        .on("started", () => {
+          setCloudState("live");
+          // The microphone is open now: the list of microphones has their names.
+          void softphone?.refreshDevices();
+        })
+        .on("level", (level) => {
+          setCloudLevel(level);
+          if (level >= 0.02) setCloudWarning(null);
+        })
+        .on("warning", (hint) => setCloudWarning(hint))
+        .on("asking", (asking) => {
+          // The browser's question is easy to miss: after a moment the phone says where it is.
+          if (askTimer.current) clearTimeout(askTimer.current);
+          askTimer.current = null;
+          if (asking) askTimer.current = setTimeout(() => setCloudWarning(MIC_ASK_HINT), ASK_HINT_MS);
+          else setCloudWarning((w) => (w === MIC_ASK_HINT ? null : w));
+        })
+        .on("failed", (reason) => {
           if (cloudCall.current !== call) return;
           void call.stop();
           cloudCall.current = null;
           cloudCallId.current = null;
           setCloudState("failed");
+          setCloudError(reason);
+          setCloudWarning(null);
           answerCall.mutate(callId);
         })
         .on("ended", () => {
@@ -89,12 +121,12 @@ export function useCardCalls(attempt: AttemptOut) {
           setCloudState("off");
         });
       try {
-        await call.start(keys);
+        await call.start(keys, softphone?.micDeviceId ?? null);
       } catch {
         /* о причине сообщит событие failed */
       }
     },
-    [cloudKeys, answerCall],
+    [cloudKeys, answerCall, softphone],
   );
 
   const [sttAvailable, setSttAvailable] = useState(false);
@@ -243,6 +275,9 @@ export function useCardCalls(attempt: AttemptOut) {
     cloudLesson,
     cloudState,
     cloudMuted,
+    cloudError,
+    cloudWarning,
+    cloudLevel,
     toggleCloudMute,
     sttAvailable,
     openCall,

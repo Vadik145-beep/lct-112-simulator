@@ -61,6 +61,9 @@ export function ServiceCallPanel({
   onAnswer,
   cloud,
   cloudOnly = false,
+  cloudError = null,
+  cloudWarning = null,
+  cloudLevel = 0,
   muted = false,
   onToggleMute,
   dialing = false,
@@ -102,6 +105,12 @@ export function ServiceCallPanel({
    * microphone list of the local path, even while the cloud connects.
    */
   cloudOnly?: boolean;
+  /** Why the cloud call did not start or dropped, in plain words (stand 19.10.2026). */
+  cloudError?: string | null;
+  /** The cloud call is live but no sound comes from the microphone: what to check. */
+  cloudWarning?: string | null;
+  /** The microphone level of the cloud call (0..1). */
+  cloudLevel?: number;
   /** The dispatcher's microphone is off in the cloud call. */
   muted?: boolean;
   /** Turns the microphone of the cloud call off and on (as in the 112 card). */
@@ -364,10 +373,55 @@ export function ServiceCallPanel({
           {cloud === "connecting" && "Соединяем с облачным голосом…"}
           {cloud === "live" && "Разговор голосом через облако: говорите в гарнитуру."}
           {cloud === "failed" &&
+            !cloudError &&
             (cloudOnly
               ? "Облачный голос недоступен. Завершите звонок и позвоните снова."
               : "Облако недоступно: отвечает локальная модель, пишите или говорите в микрофон.")}
         </div>
+      )}
+      {open && cloud === "failed" && cloudError && (
+        <p
+          role="alert"
+          data-testid="service-cloud-error"
+          className="rounded-sm border border-[var(--arm-red)] bg-[#fdecec] px-2 py-1 text-xs text-[var(--arm-red)]"
+        >
+          {cloudError}
+          {cloudOnly && " Завершите этот звонок и наберите снова."}
+        </p>
+      )}
+      {open && (cloud === "live" || cloud === "connecting") && cloudWarning && (
+        <p role="status" data-testid="service-cloud-warning" className="text-xs text-[var(--arm-orange)]">
+          {cloudWarning}
+        </p>
+      )}
+      {open && cloud === "live" && (
+        <span className="flex items-center gap-2 text-[10px] text-[var(--arm-text-muted)]">
+          Микрофон
+          <span className="h-1.5 w-24 overflow-hidden rounded bg-[#cfd2d4]" aria-label="Уровень микрофона облачного звонка">
+            <span
+              className={cn("block h-full", cloudLevel > 0.02 ? "bg-[var(--arm-green)]" : "bg-[var(--arm-red)]")}
+              style={{ width: `${Math.min(100, Math.round(cloudLevel * 300))}%` }}
+            />
+          </span>
+        </span>
+      )}
+      {open && cloudOnly && cloud !== "off" && devices.length > 0 && (
+        <label className="flex items-center gap-1 text-[10px] text-[var(--arm-text-muted)]">
+          <Mic className="size-3" aria-hidden />
+          <select
+            aria-label="Микрофон облачного звонка"
+            value={micDeviceId ?? ""}
+            onChange={(e) => onMicDevice(e.target.value || null)}
+            className="max-w-[13rem] border-b border-[#a9adb2] bg-white px-1 text-[10px] focus:outline-none"
+          >
+            <option value="">Микрофон по умолчанию</option>
+            {devices.map((d, i) => (
+              <option key={d.deviceId || i} value={d.deviceId}>
+                {d.label || `Микрофон ${i + 1}`}
+              </option>
+            ))}
+          </select>
+        </label>
       )}
       {open && cloud === "live" && onToggleMute && (
         <button
