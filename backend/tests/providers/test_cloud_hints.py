@@ -148,12 +148,25 @@ def test_every_squad_number_is_said_digit_by_digit() -> None:
     spoken = officers.spoken_digits(order)
     assert spoken.count(", ") == len(order) - 1
     chief = officer.call_scenario(scenario, new_call("moek"), Attempt(service_calls=[]))
-    assert f"«{spoken}»" in chief.caller.facts["твой наряд"]
     report = next(r for r in scenario.reference.reports if r.status == "arrived")
     leader = officers.report_scenario(scenario, report, "МОЭК")
-    assert f"«{spoken}»" in leader.caller.facts["наряд"]
     for built in (chief, leader):
+        assert f"«{spoken}»" in vapi.role_prompt(built)
         assert "по одной цифре через запятую" in " ".join(vapi.role_prompt(built).split())
+
+
+def test_a_local_model_gets_the_bare_squad_number() -> None:
+    """Stand 19.10.2026, free generation without internet: «Понял, направляю наряд 1438 — вслух
+    словами по одной цифре, не торопясь: «один, четыре, три, восемь»»."""
+    scenario = card_scenario(NAME).model_copy(update={"difficulty": 3})
+    order = officer.squad_order(scenario)
+    chief = officer.call_scenario(scenario, new_call("moek"), Attempt(service_calls=[]))
+    report = next(r for r in scenario.reference.reports if r.status == "arrived")
+    leader = officers.report_scenario(scenario, report, "МОЭК")
+    assert chief.caller.facts["твой наряд"] == order
+    assert leader.caller.facts["наряд"] == order
+    for built in (chief, leader):
+        assert "вслух" not in " ".join(str(v) for v in built.caller.facts.values())
     for prompt in (vapi.OFFICER_PROMPT, vapi.OFFICER_REPEAT_PROMPT, vapi.STAFF_PROMPT):
         assert "по одной цифре через запятую" in " ".join(prompt.split())
 

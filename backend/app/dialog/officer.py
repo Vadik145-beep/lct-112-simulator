@@ -377,8 +377,7 @@ def call_scenario(
         if role == staff.ROLE_SQUAD_SPECIALIST and squad_out(attempt, scenario):
             # He rides with the squad: he knows its number (stand 18.10.2026: asked for it, he
             # sent the dispatcher to the head of the organization).
-            order = officers.said_order(squad_order(scenario))
-            facts = {**person.caller.facts, "наряд бригады": order}
+            facts = {**person.caller.facts, "наряд бригады": squad_order(scenario)}
             caller = person.caller.model_copy(update={"facts": facts})
             person = person.model_copy(update={"caller": caller})
         if role == staff.ROLE_HEAD and no_vehicles.held(calls_of(attempt)):

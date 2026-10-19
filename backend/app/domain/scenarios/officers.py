@@ -315,6 +315,12 @@ def spoken_digits(number: str, sep: str = ", ") -> str:
     return sep.join(DIGIT_WORDS[int(d)] for d in number if d.isdigit()) or number
 
 
+# The facts that hold a squad number. They keep the bare number: a local model reads a fact
+# out as it is (stand 19.10.2026: «Наряд 1438 — вслух словами по одной цифре, не торопясь …»),
+# only the cloud's prompt gets how to say it (``said_order``, ``vapi.role_prompt``).
+ORDER_FACT_KEYS = ("твой наряд", "наряд", "наряд бригады")
+
+
 def said_order(number: str) -> str:
     """The squad number as the cloud must say it: the digits and how to say them."""
     spoken = spoken_digits(number)
@@ -480,7 +486,7 @@ def officer_scenario(
     chief of its emergency squad (#263)."""
     facts = {
         "служба": service_title,
-        "твой наряд": said_order(ref.order_number or order_number(scenario, ref.service)),
+        "твой наряд": ref.order_number or order_number(scenario, ref.service),
         "что знает": "о происшествии — только то, что сообщает диспетчер",
         "где бригада": PROGRESS_REPLIES[state],
     }
@@ -585,7 +591,7 @@ def report_scenario(
             opening=report.text,
             facts={
                 "служба": service_title,
-                "наряд": said_order(order_number(scenario, scenario.service)),
+                "наряд": order_number(scenario, scenario.service),
                 "доклад": report.text,
                 "статус": report.status,
             },
