@@ -476,6 +476,7 @@ async def build_monitor(session: AsyncSession, ts: TrainingSession) -> MonitorOu
                     (a.id for a in rows if a.result and a.submitted_at == last), None
                 ),
                 cards_total=totals_of[user.id],
+                ai_card_wait=await ai_cards.writing_wait(session, ts, user.id),
             )
         )
     return MonitorOut(

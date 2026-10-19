@@ -10,6 +10,7 @@ import {
   CircleHelp,
   Clipboard,
   Link2,
+  Loader2,
   LogOut,
   Monitor,
   Search,
@@ -17,7 +18,7 @@ import {
   TrendingUp,
   Zap,
 } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 
 import { journalKey, ringingKey, useJournal, useRinging, type JournalItem } from "@/api/training";
@@ -32,6 +33,8 @@ import { cn } from "@/lib/utils";
 const PAGE_SIZES = [10, 20, 50] as const;
 const ACTIVE_STATES = new Set(["issued", "received", "in_progress"]);
 const COLUMNS = 17;
+// How often the journal re-reads itself while the AI writes the trainee's next card.
+const WRITING_REFRESH_MS = 10_000;
 
 export function JournalPage() {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -56,6 +59,16 @@ function Journal({ sessionId }: { sessionId: string }) {
   }, [client, sessionId]);
   const ringing = useRinging(sessionId);
   const connection = useSessionEvents(sessionId, query.data?.last_seq, onEvent);
+  // While the next card is being written the journal waits for «ai_card.ready»; a re-read now
+  // and then keeps it right if that event is missed.
+  const waiting = query.data?.ai_card_wait ?? null;
+  useEffect(() => {
+    if (!waiting) return;
+    const timer = window.setInterval(() => {
+      void client.invalidateQueries({ queryKey: journalKey(sessionId) });
+    }, WRITING_REFRESH_MS);
+    return () => window.clearInterval(timer);
+  }, [waiting, client, sessionId]);
 
   const items = useMemo(() => {
     const list = query.data?.items ?? [];
@@ -282,7 +295,7 @@ function Journal({ sessionId }: { sessionId: string }) {
       </div>
 
       <JournalPhone calls={ringing.data ?? []} onGo={(call) => goAndAnswer(navigate, call)} />
-      <TrainerPanel connection={connection} collapsedByDefault>
+      <TrainerPanel connection={connection} collapsedByDefault expand={Boolean(waiting)}>
         <div>
           <div className="text-xs text-[var(--arm-text-muted)]">Занятие</div>
           <div className="font-medium leading-tight">{data.session.title}</div>
@@ -295,7 +308,19 @@ function Journal({ sessionId }: { sessionId: string }) {
           <dt className="text-[var(--arm-text-muted)]">В работе</dt>
           <dd>{activeCount} из {total}</dd>
         </dl>
-        {activeCount === 0 && total > 0 && data.session.status === "running" && (
+        {waiting && (
+          <div
+            className="flex items-start gap-2 rounded-sm border border-[var(--arm-blue)] bg-[#eaf3fd] p-2 text-xs"
+            role="status"
+            data-testid="ai-card-writing"
+          >
+            <Loader2 className="mt-0.5 size-3.5 shrink-0 animate-spin text-[var(--arm-blue)]" aria-hidden />
+            <span>
+              ИИ пишет для вас карточку — {waiting}. Журнал обновится сам, карточка появится в списке.
+            </span>
+          </div>
+        )}
+        {!waiting && activeCount === 0 && total > 0 && data.session.status === "running" && (
           <div className="flex flex-col gap-2 rounded-sm border border-[var(--arm-green)] bg-[#eef8f0] p-2 text-xs" role="status" data-testid="journal-all-done">
             <span>Все карточки отработаны. Занятие завершит преподаватель; разборы — в строках журнала.</span>
             <ArmButton variant="blue" className="normal-case" onClick={() => navigate("/student")}>
