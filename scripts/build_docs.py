@@ -441,7 +441,8 @@ def guide_html(title: str, body: str, headings, pages: dict[str, int], fonts: Pa
         )
     css = PDF_CSS.replace("{fonts}", fonts.as_uri()).replace("{running}", f"{PRODUCT}. {title}")
     today = date.today().strftime("%d.%m.%Y")
-    return f"""<!doctype html><html lang="ru"><head><meta charset="utf-8"><style>{css}</style></head>
+    return f"""<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<title>{html.escape(f"{PRODUCT}. {title}")}</title><style>{css}</style></head>
 <body>
 <div class="title">
   <div class="team">Команда «Ультратех», задача № 9</div>

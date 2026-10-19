@@ -172,8 +172,10 @@ def lesson(t: Page, base: str, password: str) -> None:
         t.wait_for_load_state("networkidle")
         t.fill("#title", LESSON_TITLE)
         t.locator("[data-testid=ai-cards]").check()
+        # With AI cards the lesson needs the DDS service; the incident groups appear after it.
+        t.get_by_label("Городское хозяйство (ЕДЦ ЖКХ)").check()
         t.get_by_label(re.compile("Разрешить звонок заявителю")).check()
-        shot(t, "teacher-session-form", clip="top", height=1470, settle=800)
+        shot(t, "teacher-session-form", clip="top", height=1850, settle=800)
         t.get_by_role("button", name="Создать занятие").click()
         t.wait_for_url(re.compile(r"/teacher/sessions/[0-9a-f-]+$"))
         session_url = t.url
