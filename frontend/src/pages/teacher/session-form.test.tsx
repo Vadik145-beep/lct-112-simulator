@@ -160,8 +160,11 @@ describe("«Задания формирует ИИ»", () => {
     fireEvent.change(screen.getByLabelText("Сложность"), { target: { value: "1" } });
     expect(screen.getByText("Каждый обучающийся получит одну свою карточку.")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Сложность"), { target: { value: "3" } });
-    // Written cards need no approved scenarios: the count of those is not shown.
+    // Written cards need no approved scenarios: the count of those is not shown, and the block
+    // does not say the cards come from them (night check of 19.10.2026).
     expect(screen.queryByTestId("queue-preview")).not.toBeInTheDocument();
+    expect(screen.getByText("Карточки пишет ИИ во время занятия — каждому обучающемуся свои.")).toBeInTheDocument();
+    expect(screen.queryByText(/Карточки собираются из утверждённых сценариев/)).not.toBeInTheDocument();
     // Whose ДДС the trainees are is required (decision of 17.10.2026).
     expect(screen.getByRole("button", { name: "Создать занятие" })).toBeDisabled();
     fireEvent.click(screen.getByLabelText("ЕДЦ ЖКХ"));
