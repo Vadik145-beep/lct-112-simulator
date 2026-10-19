@@ -397,7 +397,15 @@ function StudentTile({
     else if (targetId) navigate(`/teacher/attempts/${targetId}/review`);
   };
   const alert = summary.overdue || (current?.card_status === "not_notified") || (current?.card_status === "not_finished");
-  const statusText = finished ? (student.finished > 0 ? "занятие завершено" : "не участвовал") : (call ? CALL_TILE_STATUS : TILE_STATUS)[summary.status];
+  // «Задания формирует ИИ»: the trainee's next card is being written, he is not stuck.
+  const writing = !finished && summary.status === "idle" && student.ai_card_wait;
+  const statusText = finished
+    ? student.finished > 0
+      ? "занятие завершено"
+      : "не участвовал"
+    : writing
+      ? "ИИ пишет карточку"
+      : (call ? CALL_TILE_STATUS : TILE_STATUS)[summary.status];
   const stageText = !finished && stage && summary.status !== "idle" ? STAGE_TITLES[stage.stage] ?? stage.stage : null;
 
   return (

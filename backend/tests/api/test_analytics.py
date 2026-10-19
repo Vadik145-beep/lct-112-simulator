@@ -148,11 +148,12 @@ async def test_evaluation_moves_the_rating(client: AsyncClient) -> None:
 
 
 async def test_adaptive_session_serves_the_weakest_group_first(client: AsyncClient) -> None:
-    """student1: strong in gas (13), weak in fire (1). With adaptive selection the first
-    card is a fire card even though the easy gas card would otherwise come first."""
+    """student1: strong in fire (1), weak in gas (13). With adaptive selection the first
+    card is an easy gas card even though the fire cards of the lesson's difficulty would
+    otherwise come first."""
     teacher = await login(client, "teacher1")
-    await _set_rating("student1", "13", "card_response", 1650)
-    await _set_rating("student1", "1", "card_response", 1250)
+    await _set_rating("student1", "1", "card_response", 1650)
+    await _set_rating("student1", "13", "card_response", 1250)
     profile = ["territorial_oiv", "mosgaz"]
     plain = await create_session(client, teacher, difficulty=2, service_profile=profile)
     adaptive = await create_session(
@@ -164,8 +165,8 @@ async def test_adaptive_session_serves_the_weakest_group_first(client: AsyncClie
     student = await login(client, "student1")
     first_plain = (await journal(client, student, plain["id"]))["items"][0]
     first_adaptive = (await journal(client, student, adaptive["id"]))["items"][0]
-    assert "газ" in first_plain["incident_title"].lower()
-    assert "газ" not in first_adaptive["incident_title"].lower()
+    assert "газ" not in first_plain["incident_title"].lower()
+    assert "газ" in first_adaptive["incident_title"].lower()
 
     # Like every other setting, the flag is fixed once the session runs.
     r = await client.patch(

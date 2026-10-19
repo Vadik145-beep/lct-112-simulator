@@ -312,8 +312,10 @@ async def pick_scenarios(session: AsyncSession, ts: TrainingSession) -> list[Sce
     """Queue of a session without an explicit one: approved scenarios of the mode filtered by
     service profile and incident groups, not harder than the session difficulty (when none
     match, harder ones are taken rather than nothing; call intake ignores the difficulty),
-    shuffled inside each difficulty so easier cards come first (the duplicate card follows its
-    original). Random for now; the adaptive selection by ratings reorders it per trainee in
+    shuffled inside each difficulty. A card response lesson starts with cards of its own
+    difficulty, then the nearest easier ones (the stand 19.10.2026: difficulty 3 gave three cards
+    of difficulty 1, without ЧС and operator mistakes); call intake starts with easy calls.
+    Random for now; the adaptive selection by ratings reorders it per trainee in
     ``service.issue_cards``."""
     if ts.scenario_ids:
         return await training.scenario_queue(session, ts)
@@ -342,7 +344,10 @@ async def pick_scenarios(session: AsyncSession, ts: TrainingSession) -> list[Sce
         easy = [s for s in rows if s.difficulty <= ts.difficulty]
         rows = easy or rows
     random.shuffle(rows)
-    rows.sort(key=lambda s: s.difficulty)
+    if ts.mode == MODE_CALL_INTAKE:
+        rows.sort(key=lambda s: s.difficulty)
+    else:
+        rows.sort(key=lambda s: abs(s.difficulty - ts.difficulty))
     return rows
 
 

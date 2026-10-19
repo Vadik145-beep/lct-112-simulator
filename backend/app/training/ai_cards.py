@@ -23,11 +23,12 @@ import dataclasses
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.analytics import ratings
+from app.config import get_settings
 from app.db import SessionLocal
 from app.domain.scenarios.ai_plan import (
     CARDS_PER_TRAINEE,
@@ -44,8 +45,10 @@ from app.models import (
     AI_CARD_GENERATING,
     AI_CARD_READY,
     ATTEMPT_EVALUATED,
+    ATTEMPT_FINISHED,
     MODE_CARD_RESPONSE,
     SCENARIO_APPROVED,
+    SESSION_RUNNING,
     AiCard,
     Attempt,
     GroupMember,
@@ -66,9 +69,16 @@ CARD_SOURCE_AI = "ai"  # training_sessions.card_source of such a lesson
 SCENARIO_SOURCE_AI = "ai"  # scenarios.source of a card written for one trainee
 EVENT_READY = "ai_card.ready"
 # The model gets this long per card; then the template writes it (the trainee must not wait).
-MODEL_SECONDS = 30.0
+# A cloud model answers in seconds; the local one on a CPU needs about a minute (stand
+# 20.10.2026: 53–65 s with Qwen2.5-3B, so every card was the template's). The cards are
+# written ahead of the trainee, so the local model can be given that minute.
+CLOUD_MODEL_SECONDS = 30.0
+LOCAL_MODEL_SECONDS = 120.0
 # A card «being written» for longer was lost (the server restarted): the template rewrites it.
-STALE_SECONDS = 90.0
+STALE_SECONDS = LOCAL_MODEL_SECONDS + 60.0
+# How long the trainee waits for a card being written, as the «Тренажёр» panel says it.
+WAIT_CLOUD = "несколько секунд"
+WAIT_LOCAL = "до двух минут"
 # In a stream (difficulty 3) the cards come on a timer, so they are written this many ahead of
 # the trainee: the first two as the lesson starts, card k+2 as card k reaches him.
 STREAM_AHEAD = 2
@@ -332,14 +342,48 @@ async def _generate(request, ctx, *, template_only: bool) -> GenerationResult:
     template = TemplateGeneration()
     if template_only:
         return await template.generate(request, ctx)
+    seconds = model_seconds()
     try:
-        return await asyncio.wait_for(
-            get_generation_provider().generate(request, ctx), MODEL_SECONDS
-        )
+        return await asyncio.wait_for(get_generation_provider().generate(request, ctx), seconds)
     except TimeoutError:
         result = await template.generate(request, ctx)
-        result.note = f"Модель не ответила за {round(MODEL_SECONDS)} с; использован шаблон."
+        result.note = f"Модель не ответила за {round(seconds)} с; использован шаблон."
         return result
+
+
+def cloud_model() -> bool:
+    """The cards are written by a cloud model (its key and model are set), not the local one."""
+    settings = get_settings()
+    return bool(settings.llm_gen_api_key and settings.llm_gen_api_model)
+
+
+def model_seconds() -> float:
+    return CLOUD_MODEL_SECONDS if cloud_model() else LOCAL_MODEL_SECONDS
+
+
+async def writing_wait(
+    session: AsyncSession, ts: TrainingSession, student_id: uuid.UUID
+) -> str | None:
+    """How long the trainee waits for the card being written for him now, or ``None``: he has
+    a card to work on, or nothing is being written (stand 20.10.2026: an empty journal looked
+    broken while the local model wrote the card for a minute)."""
+    if not is_ai(ts) or ts.status != SESSION_RUNNING:
+        return None
+    rows = await _cards(session, ts, student_id)
+    if not any(r.status == AI_CARD_GENERATING for r in rows):
+        return None
+    open_cards = await session.scalar(
+        select(func.count())
+        .select_from(Attempt)
+        .where(
+            Attempt.session_id == ts.id,
+            Attempt.student_id == student_id,
+            Attempt.state.not_in((ATTEMPT_FINISHED, ATTEMPT_EVALUATED)),
+        )
+    )
+    if open_cards:
+        return None
+    return WAIT_CLOUD if cloud_model() else WAIT_LOCAL
 
 
 def _with_marks(body: dict, difficulty: int) -> dict:

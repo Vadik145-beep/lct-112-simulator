@@ -8,8 +8,7 @@ import {
   type ReactNode,
 } from "react";
 
-import { errorMessage } from "@/api/client";
-import { getAccessToken } from "@/api/token";
+import { authFetch, errorMessage } from "@/api/client";
 import { RequestError } from "@/api/training";
 import {
   telephonyApi,
@@ -124,9 +123,7 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
     if (!audioUrl) return;
     if (!replyAudio.current) replyAudio.current = new Audio();
     const el = replyAudio.current;
-    void fetch(audioUrl, {
-      headers: { Authorization: `Bearer ${getAccessToken() ?? ""}` },
-    })
+    void authFetch(audioUrl)
       .then((res) => (res.ok ? res.blob() : null))
       .then((blob) => {
         if (!blob) return;

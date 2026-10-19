@@ -157,6 +157,9 @@ class JournalOut(BaseModel):
     per_page: int
     total: int
     last_seq: int
+    # «Задания формирует ИИ»: the trainee's next card is being written and he has none to work
+    # on — how long he waits («несколько секунд» / «до двух минут»); otherwise null.
+    ai_card_wait: str | None = None
 
 
 class StatusLogEntryOut(BaseModel):

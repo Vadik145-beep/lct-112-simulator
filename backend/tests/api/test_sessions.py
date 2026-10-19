@@ -228,8 +228,9 @@ async def test_create_shows_queue_preview_and_own_sessions(client: AsyncClient) 
     assert created["status"] == "draft"
     assert created["group_title"] == GROUP_1
     assert len(created["members"]) == 6
-    # Difficulty 3 with the управа profile: three seed scenarios, easy ones first.
-    assert [s["difficulty"] for s in created["queue"]] == [2, 2, 3]
+    # Difficulty 3 with the управа profile: three seed scenarios, the lesson's own difficulty
+    # first, then the easier ones.
+    assert [s["difficulty"] for s in created["queue"]] == [3, 2, 2]
     assert all(s["service_code"] == "territorial_oiv" for s in created["queue"])
     assert created["scenario_ids"] == []
 

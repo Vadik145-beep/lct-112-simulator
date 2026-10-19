@@ -197,6 +197,7 @@ async def journal(
         per_page=per_page,
         total=total,
         last_seq=await present.last_seq(session, ts.id),
+        ai_card_wait=await ai_cards.writing_wait(session, ts, student.id),
     )
 
 
