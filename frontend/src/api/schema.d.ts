@@ -64,7 +64,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Demo */
+        /**
+         * Demo
+         * @description «Войти как …»: the role's account, or ``login`` among the quick ones (the second trainee).
+         */
         post: operations["demo_api_auth_demo__role__post"];
         delete?: never;
         options?: never;
@@ -5782,7 +5785,9 @@ export interface operations {
     };
     demo_api_auth_demo__role__post: {
         parameters: {
-            query?: never;
+            query?: {
+                login?: string | null;
+            };
             header?: never;
             path: {
                 role: components["schemas"]["Role"];

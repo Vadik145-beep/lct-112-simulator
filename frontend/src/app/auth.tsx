@@ -55,8 +55,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const demoLogin = useCallback(
-    async (role: Role) => {
-      const { data, error } = await api.POST("/api/auth/demo/{role}", { params: { path: { role } } });
+    async (role: Role, login?: string) => {
+      const params = login ? { path: { role }, query: { login } } : { path: { role } };
+      const { data, error } = await api.POST("/api/auth/demo/{role}", { params });
       if (!data) throw new Error(errorMessage(error));
       accept(data);
     },

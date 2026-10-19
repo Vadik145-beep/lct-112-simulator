@@ -76,7 +76,7 @@ async def public_config() -> PublicConfig:
         quick_login_roles=list(passwordless_logins()),
         demo_credentials=[
             DemoCredential(role=role, login=login, password=s.seed_password)
-            for role, login in shown_credentials().items()
+            for role, login in shown_credentials()
         ],
         external_ai=s.allow_external_ai,
         app_env=s.app_env,

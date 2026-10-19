@@ -27,7 +27,8 @@ export function LoginPage() {
   const [loginValue, setLoginValue] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState<"form" | Role | null>(null);
+  // «form», a role (the quick buttons) or a login (a row of the credentials table).
+  const [busy, setBusy] = useState<string | null>(null);
 
   const config = usePublicConfig();
   // DEMO_MODE or QUICK_LOGIN (showing the stand): one-click entry, the server names the roles.
@@ -47,7 +48,7 @@ export function LoginPage() {
     return <Navigate to={from && from.startsWith(home) ? from : home} replace />;
   }
 
-  async function run(action: () => Promise<void>, kind: "form" | Role) {
+  async function run(action: () => Promise<void>, kind: string) {
     setBusy(kind);
     setError(null);
     try {
@@ -66,6 +67,8 @@ export function LoginPage() {
   }
 
   const quickLogin = (role: Role) => void run(() => demoLogin(role), role);
+  // A row of the table enters its own account: the stand has two trainees (20.10.2026).
+  const rowLogin = (role: Role, account: string) => void run(() => demoLogin(role, account), account);
 
   return (
     <div className="relative min-h-dvh overflow-hidden bg-gradient-to-b from-[#6aa9d6] to-[#a8d1ec] text-white">
@@ -142,21 +145,27 @@ export function LoginPage() {
                 <tbody>
                   {credentials.map((c) => {
                     const button = quickButtons.find((b) => b.role === c.role);
+                    // The second account of a role is numbered: «Обучающийся 2».
+                    const nth = credentials.filter((x) => x.role === c.role).indexOf(c);
+                    const suffix = nth > 0 ? ` ${nth + 1}` : "";
                     return (
-                      <tr key={c.role} className="border-t border-white/20">
-                        <td className="py-1.5 pr-3">{ROLE_TITLES[c.role]}</td>
+                      <tr key={c.login} className="border-t border-white/20">
+                        <td className="py-1.5 pr-3">
+                          {ROLE_TITLES[c.role]}
+                          {suffix}
+                        </td>
                         <td className="py-1.5 pr-3 font-mono">{c.login}</td>
                         <td className="py-1.5 pr-3 font-mono">{c.password}</td>
                         <td className="py-1.5 text-right">
                           {button && (
                             <button
                               type="button"
-                              aria-label={button.label}
+                              aria-label={`${button.label}${suffix}`}
                               className="rounded bg-white/90 px-3 py-1 text-sm font-medium text-[#24557d] hover:bg-white disabled:opacity-70"
                               disabled={busy !== null}
-                              onClick={() => quickLogin(c.role)}
+                              onClick={() => rowLogin(c.role, c.login)}
                             >
-                              {busy === c.role ? "Входим…" : "Войти"}
+                              {busy === c.login ? "Входим…" : "Войти"}
                             </button>
                           )}
                         </td>

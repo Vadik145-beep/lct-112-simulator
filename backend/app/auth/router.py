@@ -58,9 +58,14 @@ async def login(
 
 @router.post("/demo/{role}", response_model=TokenResponse)
 async def demo(
-    role: Role, request: Request, response: Response, session: DbSession
+    role: Role,
+    request: Request,
+    response: Response,
+    session: DbSession,
+    login: str | None = None,
 ) -> TokenResponse:
-    user = await service.demo_login(session, role, client_ip(request))
+    """«Войти как …»: the role's account, or ``login`` among the quick ones (the second trainee)."""
+    user = await service.demo_login(session, role, client_ip(request), login)
     return _token_response(response, user)
 
 

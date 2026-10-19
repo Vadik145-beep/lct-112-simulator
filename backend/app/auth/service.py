@@ -23,6 +23,9 @@ STAND_LOGINS: dict[Role, str] = {
     Role.student: "student",
     Role.admin: "admin",
 }
+# The second trainee of the stand: the video «преподаватель + 2 обучаемых» (recommendation 9),
+# shown and entered like the others (20.10.2026).
+STAND_EXTRA_LOGINS: tuple[tuple[Role, str], ...] = ((Role.student, "student2"),)
 # QUICK_LOGIN without SHOW_DEMO_CREDENTIALS: the administrator gets no button — his password
 # is not public then.
 QUICK_LOGINS: dict[Role, str] = {
@@ -41,13 +44,25 @@ def passwordless_logins() -> dict[Role, str]:
     return {}
 
 
-def shown_credentials() -> dict[Role, str]:
+def shown_credentials() -> list[tuple[Role, str]]:
     """Accounts whose login and password the login page shows (SHOW_DEMO_CREDENTIALS); their
     password is SEED_PASSWORD."""
     settings = get_settings()
     if not settings.show_demo_credentials:
-        return {}
-    return DEMO_LOGINS if settings.demo_mode else STAND_LOGINS
+        return []
+    if settings.demo_mode:
+        return list(DEMO_LOGINS.items())
+    return [*STAND_LOGINS.items(), *STAND_EXTRA_LOGINS]
+
+
+def quick_accounts() -> list[tuple[Role, str]]:
+    """Every account a «Войти» button of the login page enters: one per role, and on the stand
+    showing its credentials the second trainee too."""
+    accounts = list(passwordless_logins().items())
+    settings = get_settings()
+    if accounts and settings.show_demo_credentials and not settings.demo_mode:
+        accounts += list(STAND_EXTRA_LOGINS)
+    return accounts
 
 
 def _now() -> datetime:
@@ -125,11 +140,15 @@ async def authenticate(session: AsyncSession, login: str, password: str, ip: str
     return user
 
 
-async def demo_login(session: AsyncSession, role: Role, ip: str | None) -> User:
-    logins = passwordless_logins()
-    if role not in logins:
+async def demo_login(
+    session: AsyncSession, role: Role, ip: str | None, login: str | None = None
+) -> User:
+    """One-click entry: the role's account, or ``login`` when it is one of the quick ones (the
+    second trainee of the stand)."""
+    target = login or passwordless_logins().get(role)
+    if target is None or (role, target) not in quick_accounts():
         raise ApiError(404, "not_found", "Вход без пароля для этой роли выключен.")
-    user = await session.scalar(select(User).where(User.login == logins[role]))
+    user = await session.scalar(select(User).where(User.login == target))
     if user is None or user.is_blocked:
         raise ApiError(
             503, "demo_user_missing", "Демо-пользователь не создан. Выполните python -m app.seed."
@@ -145,7 +164,7 @@ async def demo_login(session: AsyncSession, role: Role, ip: str | None) -> User:
 async def change_password(
     session: AsyncSession, user: User, old_password: str, new_password: str, ip: str | None
 ) -> User:
-    if user.login in shown_credentials().values():
+    if user.login in {login for _, login in shown_credentials()}:
         raise ApiError(
             409,
             "shown_password",

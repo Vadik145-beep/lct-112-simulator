@@ -118,6 +118,13 @@ def clean_install_users() -> list[dict]:
             "role": Role.student,
             "service_code": "gkh",  # as on the stand
         },
+        # The second trainee: the lesson «преподаватель + 2 обучаемых» (recommendation 9).
+        {
+            "login": "student2",
+            "full_name": "Обучающийся 2",
+            "role": Role.student,
+            "service_code": "gkh",
+        },
     ]
 
 
