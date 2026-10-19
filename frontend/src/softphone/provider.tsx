@@ -223,7 +223,7 @@ export function SoftphoneProvider({ children }: { children: ReactNode }) {
           void client.invalidateQueries({ queryKey: ["dialog", attemptId] });
         });
       try {
-        await call.start(keys);
+        await call.start(keys, storedMicDevice());
       } catch {
         /* reported through "failed" */
       }

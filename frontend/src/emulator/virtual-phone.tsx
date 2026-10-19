@@ -187,6 +187,9 @@ export function VirtualPhone({
                     onAnswer={calls.answer}
                     cloud={calls.cloudLesson ? calls.cloudState : "off"}
                     cloudOnly={calls.cloudLesson && !shownCall.telephony}
+                    cloudError={calls.cloudError}
+                    cloudWarning={calls.cloudWarning}
+                    cloudLevel={calls.cloudLevel}
                     muted={calls.cloudMuted}
                     onToggleMute={calls.toggleCloudMute}
                     dialing={calls.dialing}
