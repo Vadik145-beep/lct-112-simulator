@@ -141,9 +141,12 @@ BUILTIN_REPLY_ID_BASE = 1000
 # Generic replies of any duty officer; {service} is the short title of the service. Within a
 # topic the confirmation comes first: without a model the first unused reply of the topic is
 # chosen, and the dispatcher usually states the fact rather than being asked for it.
+# The duty officer's acknowledgement of the address; the squad chief does not say it before he
+# knows what happened (``dialog.officer.chief_reply``).
+ADDRESS_AND_FLOOR = "Адрес принял. Подъезд, этаж известны?"
 GENERIC_REPLIES: list[tuple[str, str]] = [
     ("greeting", "Дежурный {service}, слушаю."),
-    ("address", "Адрес принял. Подъезд, этаж известны?"),
+    ("address", ADDRESS_AND_FLOOR),
     ("address", "Назовите адрес: улица, дом, корпус."),
     ("incident_type", "Понял, происшествие принял."),
     ("incident_type", "Что именно произошло? Какой тип происшествия по карточке?"),

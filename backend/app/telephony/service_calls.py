@@ -22,6 +22,7 @@ from app.auth.deps import ActiveUser, DbSession, client_ip
 from app.db import SessionLocal
 from app.dialog import officer
 from app.dialog import service as dialog
+from app.domain.evaluation import service_call as engine
 from app.domain.evaluation.schemas import CardResponseScenario
 from app.domain.scenarios import caller_back, staff
 from app.errors import ApiError
@@ -318,6 +319,32 @@ async def say_to_officer(
     )
 
 
+# What a dispatcher says on the phone to a service, for the recognizer next to the card's words
+# (stand 19.10.2026: «Провал грунта» was heard as «Поровал о Гуронтон»).
+DISPATCHER_TERMS = ("аварийная бригада", "наряд", "выезжайте", "доклад", "пострадавших нет")
+
+
+def dispatcher_hints(scenario: CardResponseScenario, call: dict) -> list[str]:
+    """The street and the district as the card and the caller give them, what happened (the
+    signs of the card), the services, the words of the trade. No house numbers: a wrong house
+    must be heard as said."""
+    truth = engine.true_card(scenario)
+    terms = [
+        scenario.card.address.street,
+        truth.address.street,
+        truth.address.district,
+        *(s for s in truth.signs if not any(ch.isdigit() for ch in s)),
+        call.get("service_title"),
+        *(
+            officer.SAID_SERVICE_NAMES[s]
+            for s in (scenario.service, *(n.service for n in scenario.card.notified))
+            if s in officer.SAID_SERVICE_NAMES
+        ),
+        *DISPATCHER_TERMS,
+    ]
+    return list(dict.fromkeys(t.strip() for t in terms if t and t.strip()))
+
+
 @router.post(
     "/attempts/{attempt_id}/service-call/{call_id}/utterance", response_model=ServiceCallResponse
 )
@@ -341,9 +368,9 @@ async def speak_to_officer(
         raise ApiError(422, "empty_audio", "Пустая запись: скажите фразу ещё раз.")
     if len(audio) > MAX_UTTERANCE_BYTES:
         raise ApiError(413, "audio_too_large", "Запись больше 10 МБ.")
-    address = scenario.card.address
-    hints = [h for h in (address.street, address.district, record.get("service_title")) if h]
-    transcript = await get_stt_provider().transcribe(audio, file.filename or "audio.wav", hints)
+    transcript = await get_stt_provider().transcribe(
+        audio, file.filename or "audio.wav", dispatcher_hints(scenario, record)
+    )
     if not transcript.available:
         raise ApiError(
             503,

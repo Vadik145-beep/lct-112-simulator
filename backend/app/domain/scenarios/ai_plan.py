@@ -214,8 +214,17 @@ def _rows_for(spec: PlanInput, desk: str | None, *, serves: bool) -> list[Mappin
     def in_groups(row: Mapping) -> bool:
         return str(row.get("group_code")) in groups
 
+    def own_main(row: Mapping) -> bool:
+        # The service is the one the classifier puts first for the type: a Мосгаз card is
+        # about gas, not a roof fallen onto a car (stand 19.10.2026).
+        return desk is not None and serves and row.get("main_service") == desk
+
     usable = [r for r in spec.type_rows if r.get("final_title")]
+    mains: tuple[tuple, ...] = ((in_groups, own_main, services_fit), (in_groups, own_main))
+    if not spec.allowed_groups:  # the teacher chose no groups: the service's own types first
+        mains = (*mains, (own_main, services_fit), (own_main,))
     chains = (
+        *mains,
         (in_groups, own_service_fits, services_fit),
         (in_groups, own_service_fits),
         (own_service_fits, services_fit),

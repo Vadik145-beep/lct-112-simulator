@@ -53,6 +53,7 @@ from app.domain.scenarios import (
     misheard,
     no_vehicles,
     officers,
+    questions,
     rush,
     staff,
 )
@@ -903,8 +904,15 @@ async def say(
     now = training.utcnow()
     officer = call_scenario(scenario, call, attempt)
     special = special_reply(scenario, attempt, call, text)
+    asked = question_reply(scenario, attempt, call, text, now)
+    if ts.dialog_mode not in PICKED and (
+        asked is None or questions.intent_of(text) != questions.INTENT_THANKS
+    ):
+        asked = None  # free generation answers itself, only «спасибо» is closed for it
     if special is not None:
         reply, extra = special
+    elif asked is not None:
+        reply, extra = asked, {}
     else:
         reply = await dialog.provider_for(ts).reply(_context(attempt, call, officer), text)
         extra = {}
@@ -980,6 +988,47 @@ def special_reply(
     )
 
 
+# Modes whose replies are picked from a set (the model chooses a number): the everyday questions
+# are answered by meaning there (``questions``). Free generation answers them itself.
+PICKED = frozenset({"select", "hybrid", "buttons"})
+
+
+def question_reply(
+    scenario: CardResponseScenario, attempt: Attempt, call: dict, text: str, now: datetime
+) -> CallerReply | None:
+    """«Нужна помощь?», «как обстановка?», «когда закончите?» and the like, answered by where the
+    squad is (stand 19.10.2026: the model picked «Это не ко мне» and «работаем дальше»). Only
+    the squad chief of the own service once the squad is sent, and the squad on a report; a
+    complication not resolved yet keeps its own way."""
+    intent = questions.intent_of(text)
+    if intent is None:
+        return None
+    calls = calls_of(attempt)
+    if complication.happened(calls) and not complication.help_here(scenario, calls, now):
+        if intent in (questions.INTENT_HELP, questions.INTENT_SITUATION):
+            return None
+    if is_report(call):
+        status = call.get("report_status") or ""
+        if status in (complication.STATUS, complication.REMINDER_STATUS):
+            return None
+        line = questions.report_answer(
+            intent, status, officers.PROGRESS_REPLIES.get(status, questions.BY_PLAN)
+        )
+    elif (call.get("kind") or KIND_OUTGOING) == KIND_OUTGOING and call.get(
+        "service"
+    ) == scenario.service:
+        if not squad_sent(chief_calls(attempt, scenario)):
+            return None
+        state = squad_state(attempt)
+        line = questions.chief_answer(intent, state, officers.PROGRESS_REPLIES.get(state, ""))
+    else:
+        return None
+    if not line:
+        return None
+    topic = "confirm" if intent == questions.INTENT_THANKS else "progress"
+    return CallerReply(text=line, topics=[topic], operator_topics=[], method="question")
+
+
 def head_reply(
     scenario: CardResponseScenario, attempt: Attempt, call: dict, text: str
 ) -> tuple[CallerReply, dict] | None:
@@ -1029,6 +1078,8 @@ def wrong_contact_reply(call: dict, text: str) -> tuple[CallerReply, dict] | Non
 # given the order to go (decision of 17.10.2026: «номер наряда и выезд — только после
 # распоряжения»).
 _DISPATCHING = re.compile(r"наряд|выезж|выезд|направля|на месте")
+# The squad sent once more in so many words, after it has gone.
+_SENDS_AGAIN = re.compile(r"направля\w* наряд|выезжаем[.,]? наряд|бригада выезжает")
 TOPIC_ORDER_TAKEN = "order_taken"
 ASK_ADDRESS = "Адрес какой? Куда выезжать?"
 ASK_INCIDENT = "Что случилось? С чем выезжать?"
@@ -1261,6 +1312,8 @@ def chief_reply(
         return reply
     if misheard.TOPIC_MISHEARD in reply.topics or rush.TOPIC_RUSH in reply.topics:
         return reply
+    if reply.method == "question":  # answered by meaning (``question_reply``)
+        return reply
     calls = chief_calls(attempt, scenario)
     said = [*_said_by_dispatcher(calls), text]
     missing = engine.missing_to_go(scenario, said)
@@ -1297,12 +1350,19 @@ def chief_reply(
         if engine.gives_order(text):
             ask = ASK_ADDRESS if "address" in missing else ASK_INCIDENT
             return answer(ask, [missing[0]], "order")
-        if "address" in missing and "address" in reply.topics:
+        if "address" in missing and (
+            "address" in reply.topics or reply.text.startswith("Адрес принял")
+        ):
             # A recorded «Адрес принял» picked by the word «адрес» while no address was heard
             # (stand, 19.10.2026): he asks for it instead.
             return answer(ASK_ADDRESS, ["address"], "order")
-        if _dispatching(reply):
-            return answer(TAKEN, ["confirm"], "order")
+        greeted = questions.is_greeting(text) and len(missing) == len(engine.TO_GO)
+        if _dispatching(reply) or reply.text == officers.ADDRESS_AND_FLOOR or greeted:
+            # Not a bare «Принял.» that leads nowhere, nor the entrance and the floor of a
+            # place he does not know yet (stand 19.10.2026): he asks what he lacks to go.
+            if "incident_type" in missing:
+                return answer(ASK_INCIDENT, ["incident_type"], "order")
+            return answer(ASK_ADDRESS, ["address"], "order")
         return reply
     if no_cars:
         if not no_vehicles.announced(everything):
@@ -1314,12 +1374,23 @@ def chief_reply(
             return answer(no_vehicles.STILL_NONE, [no_vehicles.TOPIC_NO_VEHICLES], "no_vehicles")
         if no_vehicles.blocked(everything):
             return reply
-    if not taken or engine.gives_order(text):
+    # «Сколько машин выезжает?» asks, it does not send the squad again (stand 19.10.2026).
+    if not taken or (engine.gives_order(text) and not text.rstrip().endswith("?")):
         order = reference_for(scenario, scenario.service).order_number or officers.order_number(
             scenario, scenario.service
         )
         line = f"Выезжаем, наряд {order}." if fixed else f"Принял, выезжаем. Наряд {order}."
         return answer(line, ["confirm", "order_number", TOPIC_ORDER_TAKEN], "order")
+    if reply.text.rstrip().endswith("?"):
+        # The squad is out: no more questions about the card («Подъезд, этаж известны?» after
+        # «выезжаем», stand 19.10.2026) — where the squad is instead.
+        state = squad_state(attempt)
+        return answer(officers.PROGRESS_REPLIES.get(state, TAKEN), ["progress"], "order")
+    if _SENDS_AGAIN.search(reply.text.lower()) and "order_number" not in reply.topics:
+        # «Принял, выезжаем. Наряд …» again on «Спасибо, жду доклада»: once is enough; the
+        # number asked for («Наряд 7194, он и выезжает») and «будем через 20 минут, выезжаем»
+        # are said.
+        return answer(TAKEN, ["confirm"], "order")
     return reply
 
 
