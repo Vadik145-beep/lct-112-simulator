@@ -32,7 +32,7 @@ describe("cloud call microphone", () => {
     expect(failed).toHaveBeenCalledWith(MIC_DENIED);
     // The chosen microphone was asked for; refused, the default one is not tried.
     expect(getUserMedia).toHaveBeenCalledTimes(1);
-    expect(getUserMedia.mock.calls[0][0]).toEqual({ audio: { deviceId: { exact: "headset" } } });
+    expect(getUserMedia).toHaveBeenNthCalledWith(1, { audio: { deviceId: { exact: "headset" } } });
   });
 
   it("falls back to the default microphone when the chosen one is gone", async () => {
@@ -43,7 +43,7 @@ describe("cloud call microphone", () => {
     vi.stubGlobal("navigator", { mediaDevices: { getUserMedia } });
     const failed = vi.fn();
     await expect(new CloudCall().on("failed", failed).start(keys as never, "old")).rejects.toThrow();
-    expect(getUserMedia.mock.calls[1][0]).toEqual({ audio: true });
+    expect(getUserMedia).toHaveBeenNthCalledWith(2, { audio: true });
     expect(failed).toHaveBeenCalledWith(MIC_BUSY);
   });
 
@@ -66,7 +66,7 @@ describe("cloud call microphone", () => {
     // A joined call: the microphone opened at the start and the SDK in place.
     Object.assign(call, { vapi, live: true, microphone: await getUserMedia() });
     await call.switchMicrophone("headset");
-    expect(getUserMedia.mock.calls[1][0]).toEqual({ audio: { deviceId: { exact: "headset" } } });
+    expect(getUserMedia).toHaveBeenNthCalledWith(2, { audio: { deviceId: { exact: "headset" } } });
     expect(setInputDevicesAsync).toHaveBeenCalledWith({ audioSource: second });
     expect(first.stop).toHaveBeenCalled();
     expect(second.stop).not.toHaveBeenCalled();
