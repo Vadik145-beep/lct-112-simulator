@@ -674,26 +674,39 @@ def caller_prompt(scenario: CallIntakeScenario) -> str:
 
 # The chief of the response department shares the other services' voice: slower and drier, an
 # office manner, so he does not sound like the duty officer of the police (18.10.2026).
+# One voice for the head, the chief of the response department and the other services: the
+# head speaks as he is, the office slower and drier, the duty officers quicker and livelier; the
+# specialist on site quick and loose (19.10.2026).
 ROLE_MANNER: dict[str, dict[str, float]] = {
     "response_chief": {"speed": 0.95, "stability": 0.6, "style": 0.15},
+    "other_officer": {"speed": 1.1, "stability": 0.35, "style": 0.45},
+    "squad_specialist": {"speed": 1.08, "stability": 0.35, "style": 0.4},
 }
 
 
 def role_voice_id(scenario: CallIntakeScenario, s: Settings) -> str | None:
-    """The voice of a person of a ДДС card by his role: the specialist, the head, the chief of
-    the response department, a duty officer of another service. ``None`` — the squad chief, his
-    reports and the callers keep the voices they had."""
+    """The voice of a person of a ДДС card by his role (``role_of``). ``None`` — the squad
+    chief, his reports and the callers keep the voices they had."""
+    return {
+        "other_officer": s.cloud_voice_voice_id_other_officer,
+        "squad_specialist": s.cloud_voice_voice_id_specialist,
+        "organization_head": s.cloud_voice_voice_id_org_head,
+        "response_chief": s.cloud_voice_voice_id_response_chief,
+    }.get(role_of(scenario) or "")
+
+
+def role_of(scenario: CallIntakeScenario) -> str | None:
+    """The person of a ДДС card on the line: the duty officer of another service, the
+    specialist, the head, the chief of the response department; ``None`` — the squad chief, his
+    reports, the callers."""
     from app.domain.scenarios.officers import OFFICER_PERSONA, SQUAD_CHIEF_TITLE
 
     persona = scenario.caller.persona
     if persona == OFFICER_PERSONA:
-        chief = scenario.title.startswith(SQUAD_CHIEF_TITLE)
-        return None if chief else s.cloud_voice_voice_id_other_officer
-    return {
-        "squad_specialist": s.cloud_voice_voice_id_specialist,
-        "organization_head": s.cloud_voice_voice_id_org_head,
-        "response_chief": s.cloud_voice_voice_id_response_chief,
-    }.get(persona or "")
+        return None if scenario.title.startswith(SQUAD_CHIEF_TITLE) else "other_officer"
+    if persona in ("squad_specialist", "organization_head", "response_chief"):
+        return persona
+    return None
 
 
 def voice_config(scenario: CallIntakeScenario, settings: Settings | None = None) -> dict[str, Any]:
@@ -718,7 +731,7 @@ def voice_config(scenario: CallIntakeScenario, settings: Settings | None = None)
         settings_ = dict(VOICE_SETTINGS[state])
         if kind in ("elder_male", "elder_female"):
             settings_["speed"] = round(settings_["speed"] - 0.08, 2)
-        settings_.update(ROLE_MANNER.get(scenario.caller.persona or "", {}))
+        settings_.update(ROLE_MANNER.get(role_of(scenario) or "", {}))
         voice.update(settings_)
         if s.cloud_voice_voice_model == "eleven_flash_v2_5":
             # The only model with language enforcement: no accent drift on short phrases.
