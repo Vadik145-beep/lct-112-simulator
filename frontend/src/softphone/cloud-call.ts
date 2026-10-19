@@ -42,7 +42,7 @@ export const MIC_SILENT =
 export const MIC_ASK_HINT =
   "Браузер спрашивает доступ к микрофону — нажмите «Разрешить» в окошке вверху страницы.";
 export const MIC_QUIET_HINT =
-  "Вас не слышно: с микрофона не идёт звук. Скажите что-нибудь или выберите другой микрофон ниже.";
+  "Вас не слышно: с микрофона не идёт звук. Скажите что-нибудь или выберите другой микрофон ниже — он включится сразу.";
 
 // A level under this is silence (the SDK reports 0..1).
 const SILENT_LEVEL = 0.02;
@@ -180,6 +180,40 @@ export class CloudCall {
 
   get isLive(): boolean {
     return this.live;
+  }
+
+  /** Puts another microphone into the call on the go (stand 19.10.2026: the browser took a
+   * microphone that was not even plugged in). The silence watch starts over for it. */
+  async switchMicrophone(deviceId: string | null): Promise<void> {
+    const vapi = this.vapi;
+    const daily = vapi?.getDailyCallObject();
+    if (!vapi || !daily || this.stopped) return;
+    let next: MediaStream;
+    try {
+      next = await openMicrophone(deviceId);
+    } catch (error) {
+      this.emit("warning", micProblem(error));
+      return;
+    }
+    const track = next.getAudioTracks()[0];
+    if (!track || this.stopped) {
+      next.getTracks().forEach((t) => t.stop());
+      return;
+    }
+    try {
+      await daily.setInputDevicesAsync({ audioSource: track });
+    } catch (error) {
+      next.getTracks().forEach((t) => t.stop());
+      this.emit("warning", micProblem(error));
+      return;
+    }
+    this.release();
+    this.microphone = next;
+    this.loudest = 0;
+    this.clearQuiet();
+    this.quietTimer = setTimeout(() => {
+      if (this.live && this.loudest < SILENT_LEVEL) this.emit("warning", MIC_QUIET_HINT);
+    }, QUIET_WARNING_MS);
   }
 
   setMuted(muted: boolean): void {

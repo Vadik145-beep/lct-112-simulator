@@ -46,4 +46,30 @@ describe("cloud call microphone", () => {
     expect(getUserMedia.mock.calls[1][0]).toEqual({ audio: true });
     expect(failed).toHaveBeenCalledWith(MIC_BUSY);
   });
+
+  it("puts another microphone into a live call without calling again", async () => {
+    const track = (id: string) => ({ id, stop: vi.fn() });
+    const first = track("default");
+    const second = track("headset");
+    const getUserMedia = vi
+      .fn()
+      .mockResolvedValueOnce({ getAudioTracks: () => [first], getTracks: () => [first] })
+      .mockResolvedValueOnce({ getAudioTracks: () => [second], getTracks: () => [second] });
+    vi.stubGlobal("navigator", { mediaDevices: { getUserMedia } });
+    const setInputDevicesAsync = vi.fn().mockResolvedValue({});
+    const vapi = {
+      getDailyCallObject: () => ({ setInputDevicesAsync }),
+      stop: vi.fn(),
+      removeAllListeners: vi.fn(),
+    };
+    const call = new CloudCall();
+    // A joined call: the microphone opened at the start and the SDK in place.
+    Object.assign(call, { vapi, live: true, microphone: await getUserMedia() });
+    await call.switchMicrophone("headset");
+    expect(getUserMedia.mock.calls[1][0]).toEqual({ audio: { deviceId: { exact: "headset" } } });
+    expect(setInputDevicesAsync).toHaveBeenCalledWith({ audioSource: second });
+    expect(first.stop).toHaveBeenCalled();
+    expect(second.stop).not.toHaveBeenCalled();
+    await call.stop();
+  });
 });

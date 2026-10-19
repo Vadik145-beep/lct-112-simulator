@@ -48,6 +48,18 @@ export function useCardCalls(attempt: AttemptOut) {
   const [cloudWarning, setCloudWarning] = useState<string | null>(null);
   const [cloudLevel, setCloudLevel] = useState(0);
   const askTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Another microphone chosen in the phone during a cloud call goes into it at once.
+  const micDeviceId = softphone?.micDeviceId ?? null;
+  const callMic = useRef(micDeviceId);
+  useEffect(() => {
+    if (callMic.current === micDeviceId) return;
+    callMic.current = micDeviceId;
+    const call = cloudCall.current;
+    if (call?.isLive) {
+      setCloudWarning(null);
+      void call.switchMicrophone(micDeviceId);
+    }
+  }, [micDeviceId]);
   useEffect(() => () => {
     if (askTimer.current) clearTimeout(askTimer.current);
   }, []);
