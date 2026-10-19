@@ -242,6 +242,8 @@ class MonitorStudent(BaseModel):
     last_attempt_id: uuid.UUID | None
     # Cards this trainee gets in the lesson (his stream schedule differs from the others').
     cards_total: int | None = None
+    # «Задания формирует ИИ»: his next card is being written (``ai_cards.writing_wait``).
+    ai_card_wait: str | None = None
 
 
 class MonitorOut(BaseModel):

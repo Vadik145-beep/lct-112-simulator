@@ -253,6 +253,42 @@ async def test_a_card_lost_in_writing_is_written_by_the_template(client: AsyncCl
     assert not body.get("injected_errors")  # difficulty 1
 
 
+async def test_the_journal_says_the_card_is_being_written(client: AsyncClient) -> None:
+    """Stand 20.10.2026: the local model writes a card for about a minute, and the empty
+    journal looked broken. While the trainee's card is being written and he has none to work
+    on, the journal and the teacher's monitor say how long he waits; the local model gets two
+    minutes before the template takes over."""
+    assert not ai_cards.cloud_model()  # no cloud key in the test environment
+    assert ai_cards.model_seconds() == ai_cards.LOCAL_MODEL_SECONDS == 120
+    assert ai_cards.STALE_SECONDS > ai_cards.LOCAL_MODEL_SECONDS
+    teacher = await login(client, "teacher1")
+    lesson = await ai_lesson(client, teacher, difficulty=1)
+    async with SessionLocal() as session:
+        me = await session.scalar(select(User).where(User.login == "student6"))
+        await session.execute(
+            update(AiCard)
+            .where(AiCard.session_id == uuid.UUID(lesson), AiCard.student_id == me.id)
+            .values(status=AI_CARD_GENERATING)
+        )
+        await session.commit()
+    student = await login(client, "student6")
+    data = await journal(client, student, lesson)
+    assert data["items"] == [] and data["ai_card_wait"] == ai_cards.WAIT_LOCAL == "до двух минут"
+    r = await client.get(f"/api/sessions/{lesson}/monitor", headers=bearer(teacher))
+    tile = next(s for s in r.json()["students"] if s["login"] == "student6")
+    assert tile["ai_card_wait"] == ai_cards.WAIT_LOCAL
+
+    async with SessionLocal() as session:
+        await session.execute(
+            update(AiCard)
+            .where(AiCard.session_id == uuid.UUID(lesson), AiCard.student_id == me.id)
+            .values(status=AI_CARD_READY)
+        )
+        await session.commit()
+    data = await journal(client, student, lesson)
+    assert len(data["items"]) == 1 and data["ai_card_wait"] is None
+
+
 async def test_the_lesson_chooses_whose_dds_the_trainees_are(client: AsyncClient) -> None:
     """Decision of 17.10.2026: the teacher picks the service in the lesson form; two services
     go round the group, whatever service the admin gave the trainees; the journal's header

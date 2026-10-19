@@ -3596,6 +3596,8 @@ export interface components {
             total: number;
             /** Last Seq */
             last_seq: number;
+            /** Ai Card Wait */
+            ai_card_wait?: string | null;
         };
         /** LoggingSettings */
         LoggingSettings: {
@@ -3768,6 +3770,8 @@ export interface components {
             last_attempt_id: string | null;
             /** Cards Total */
             cards_total?: number | null;
+            /** Ai Card Wait */
+            ai_card_wait?: string | null;
         };
         /** NoiseOut */
         NoiseOut: {
