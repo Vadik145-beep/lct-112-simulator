@@ -71,6 +71,10 @@ if [ ! -f .env ]; then
   sed -i "s|^LLM_GEN_URL=.*|LLM_GEN_URL=http://llm-dialog:8080|" .env
   sed -i "s|^LLM_DIALOG_CTX=.*|LLM_DIALOG_CTX=16384|" .env
   sed -i "s|^STT_MODEL=.*|STT_MODEL=faster-whisper-small|" .env
+  # As on the stand (customer's recommendation 2): the login page shows the logins and the
+  # password by role and the «Войти» buttons. On a working server set both to false.
+  sed -i "s|^QUICK_LOGIN=.*|QUICK_LOGIN=true|" .env
+  sed -i "s|^SHOW_DEMO_CREDENTIALS=.*|SHOW_DEMO_CREDENTIALS=true|" .env
   if [[ " ${PROFILES[*]} " == *" telephony "* ]]; then
     sed -i "s|^TELEPHONY_ENABLED=.*|TELEPHONY_ENABLED=true|" .env
     sed -i "s|^TELEPHONY_EXTERNAL_IP=.*|TELEPHONY_EXTERNAL_IP=${HOST_ADDR}|" .env
@@ -103,7 +107,7 @@ cat <<DONE
 Готово. Откройте в браузере: https://${HOST_ADDR}${PORT_SUFFIX}
   преподаватель:  teacher / ${SEED}
   обучающийся:    student / ${SEED}
-  администратор:  admin / ${SEED} (при первом входе попросит сменить пароль)
+  администратор:  admin / ${SEED}
 Браузер предупредит о сертификате, пока на рабочие места не установлен корневой сертификат:
   docker compose cp nginx:/etc/nginx/certs/ca.crt .   (INSTALL.md, раздел 2)
 DONE

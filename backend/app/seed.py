@@ -4,7 +4,7 @@ scenarios get a new version only when their file changed, the demo session keeps
 ``DEMO_MODE=true`` (the jury stand, development): demo users, groups, two running sessions
 and a month of history (PRD section 15). ``DEMO_MODE=false`` (a clean install at the
 customer's, the default of the delivery): the scenarios from the organizers' tickets, an
-``admin`` who must change the password at the first login and the two accounts of the stand,
+``admin`` and the two accounts of the stand,
 ``teacher`` and ``student`` (SEED_PASSWORD); groups and lessons are created by hand.
 
 Run: python -m app.seed
@@ -123,7 +123,9 @@ def clean_install_users() -> list[dict]:
 
 async def seed_users(session: AsyncSession) -> int:
     """All demo users in demo mode; the administrator and the stand's ``teacher`` and
-    ``student`` on a clean install. Only the administrator must change the password."""
+    ``student`` on a clean install. No one has to change the password at the first login
+    (decision of 20.10.2026): the login page may show it (SHOW_DEMO_CREDENTIALS), and a shown
+    password cannot be changed — the administrator would be held on the change form."""
     settings = get_settings()
     password_hash = hash_password(settings.seed_password)
     existing = set(await session.scalars(select(User.login)))
@@ -132,11 +134,10 @@ async def seed_users(session: AsyncSession) -> int:
     for spec in specs:
         if spec["login"] in existing:
             continue
-        must_change = not settings.demo_mode and spec["role"] == Role.admin
         session.add(
             User(
                 password_hash=password_hash,
-                must_change_password=must_change,
+                must_change_password=False,
                 # On a clean install the 112 operator mode is hidden from the teacher and
                 # the trainee; the demo set keeps every mode.
                 call_intake_access=settings.demo_mode or spec["role"] == Role.admin,
