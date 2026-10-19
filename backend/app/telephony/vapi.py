@@ -679,8 +679,9 @@ def caller_prompt(scenario: CallIntakeScenario) -> str:
 # specialist on site quick and loose (19.10.2026).
 ROLE_MANNER: dict[str, dict[str, float]] = {
     "response_chief": {"speed": 0.95, "stability": 0.6, "style": 0.15},
-    # The head: exactly the voice the duty officers had before (calm, not slowed as «elderly»).
-    "organization_head": dict(VOICE_SETTINGS["calm"]),
+    # The head: the calm voice the duty officers had before, but slower — he is the boss and in
+    # no hurry (19.10.2026: «слишком быстро говорит»).
+    "organization_head": {**VOICE_SETTINGS["calm"], "speed": 0.9},
     "other_officer": {"speed": 1.1, "stability": 0.35, "style": 0.45},
     "squad_specialist": {"speed": 1.08, "stability": 0.35, "style": 0.4},
 }

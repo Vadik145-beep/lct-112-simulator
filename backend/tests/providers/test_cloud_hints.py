@@ -259,7 +259,8 @@ def test_every_person_of_a_card_has_his_own_voice() -> None:
         s,
     )
     duty = vapi.voice_config(officer.call_scenario(scenario, new_call("101"), attempt), s)
-    # The head sounds as the duty officers did before 19.10: the calm settings, not slowed.
-    assert {k: head[k] for k in vapi.VOICE_SETTINGS["calm"]} == vapi.VOICE_SETTINGS["calm"]
-    assert head["speed"] < duty["speed"]
+    # The head: the calm settings the duty officers had before 19.10, only slower.
+    calm = vapi.VOICE_SETTINGS["calm"]
+    assert head["stability"] == calm["stability"] and head["style"] == calm["style"]
+    assert head["speed"] < calm["speed"] < duty["speed"]
     assert office["stability"] > head["stability"] > duty["stability"]
