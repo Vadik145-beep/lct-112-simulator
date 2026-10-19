@@ -33,7 +33,9 @@ from app.domain.scenarios.template import ServiceInfo, choose_card_service
 from app.domain.services import resolve_services
 from app.providers.generation import GenerationRequest
 
-CARDS_PER_TRAINEE = 5  # решение пользователя 17.10.2026: пять карточек на обучающегося
+# Cards a trainee gets one at a time by the difficulty (decision of 19.10.2026); at difficulty 3
+# the lesson is a stream and the stream decides.
+CARDS_PER_TRAINEE: dict[int, int] = {1: 1, 2: 2}
 KIND = "card_response"
 
 # Incident groups of the classifier by what they are like (numbers of the groups).

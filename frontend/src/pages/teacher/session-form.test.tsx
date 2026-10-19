@@ -156,15 +156,18 @@ describe("«Задания формирует ИИ»", () => {
       ),
     ).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Сложность"), { target: { value: "2" } });
-    expect(screen.getByText("Каждый обучающийся получит 5 своих карточек по одной.")).toBeInTheDocument();
+    expect(screen.getByText("Каждый обучающийся получит 2 своих карточки по очереди.")).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Сложность"), { target: { value: "1" } });
+    expect(screen.getByText("Каждый обучающийся получит одну свою карточку.")).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Сложность"), { target: { value: "3" } });
-    expect(screen.getByText(/готовые сценарии не нужны/)).toBeInTheDocument();
+    // Written cards need no approved scenarios: the count of those is not shown.
+    expect(screen.queryByTestId("queue-preview")).not.toBeInTheDocument();
     // Whose ДДС the trainees are is required (decision of 17.10.2026).
     expect(screen.getByRole("button", { name: "Создать занятие" })).toBeDisabled();
     fireEvent.click(screen.getByLabelText("ЕДЦ ЖКХ"));
     fireEvent.click(screen.getByRole("button", { name: "Создать занятие" }));
     expect(mutation.mutate).toHaveBeenCalledWith(
-      expect.objectContaining({ card_source: "ai", cards_per_student: 5, difficulty: 3, service_profile: ["gkh"] }),
+      expect.objectContaining({ card_source: "ai", cards_per_student: 3, difficulty: 3, service_profile: ["gkh"] }),
       expect.anything(),
     );
   });
