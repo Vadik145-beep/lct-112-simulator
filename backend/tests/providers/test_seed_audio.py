@@ -193,6 +193,23 @@ def test_officer_names_his_service_the_way_people_say_it() -> None:
     assert officers.spoken_service("unknown_service", "Какая-то служба (с уточнением)") == (
         "Какая-то служба"
     )
+    # …and its quotes in pairs: no «ГБУ «Автомобильные дороги» with the closing one cut off.
+    assert officers.spoken_service("unknown_service", "ГБУ «Дороги»") == "ГБУ «Дороги»"
+    assert officers.spoken_service("unknown_service", "«Дороги»") == "Дороги"
+
+
+def test_every_service_of_the_classifier_is_named_in_the_genitive() -> None:
+    """The name follows «Дежурный», «Руководитель», «помощь» (19.10.2026): «Дежурный
+    Москоллектора», and every service has a spoken name — a complication names the service by
+    its code alone (``spoken_service(service, service)``)."""
+    from app.domain.scenarios import officers
+
+    classifier = json.loads(
+        (Path(__file__).resolve().parents[3] / "data/seed/classifier.json").read_text("utf-8")
+    )
+    codes = {row["code"] for row in classifier["services"]}
+    assert codes <= set(officers.SPOKEN_SERVICE_TITLES)
+    assert officers.greeting("moscollector", "Москоллектор") == "Дежурный Москоллектора, слушаю."
 
 
 def test_attach_audio_skips_other_kinds_and_missing_folders(tmp_path: Path) -> None:

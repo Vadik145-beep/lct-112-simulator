@@ -31,6 +31,19 @@ def test_own_tab_is_the_squad_chief_other_tabs_their_duty_officers() -> None:
     assert opening("moek") == "Дежурный МОЭК, слушаю."
 
 
+def greetings(service: str) -> list[tuple[int, str]]:
+    built = officer.officer_scenario(card_scenario(NAME), service, "Служба", Attempt())
+    return [(r.id, r.text) for r in built.replies if r.topic == "greeting"]
+
+
+def test_greeted_mid_call_each_answers_by_his_own_title() -> None:
+    """Greeted again, the chief does not turn into «Дежурный …» (19.10.2026); his line has its
+    own id, so a voice cached for the duty officer's words is never played for it."""
+    chief_id = officers.BUILTIN_REPLY_ID_BASE + officers.CHIEF_GREETING_REPLY_ID
+    assert greetings("gkh") == [(chief_id, "Начальник аварийной бригады ЕДЦ ЖКХ, слушаю.")]
+    assert greetings("moek") == [(officers.BUILTIN_REPLY_ID_BASE, "Дежурный МОЭК, слушаю.")]
+
+
 def test_old_wording_is_renamed() -> None:
     assert officers.renamed("Алло, диспетчер? Это старший группы реагирования. Выехали.") == (
         "Алло, диспетчер? Это начальник аварийной бригады. Выехали."

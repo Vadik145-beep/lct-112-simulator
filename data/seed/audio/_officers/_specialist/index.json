@@ -1,0 +1,450 @@
+{
+  "0f70ecc2": {
+    "sha256": "853ed17298cf067aa9b772cf0b6fbd5d866f3fb5",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Дополнительных служб пока не требуется, справляемся.",
+    "bytes": 56049
+  },
+  "18003880": {
+    "sha256": "3bd608be46c498f8f9c9e297d097c8b6cc4653ce",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Пострадавших нет, людей вывели.",
+    "bytes": 51034
+  },
+  "1e664552": {
+    "sha256": "643d08cd7711270e24593aef90d9eb82a1ea7088",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Повторяю: Алло, диспетчер? Специалист аварийной бригады, мы на месте. Залило электрощиток в подъезде, нужен электрик. Нужна помощь ЕДЦ ЖКХ, сообщите им.",
+    "bytes": 190632
+  },
+  "23463588": {
+    "sha256": "2b3f7a9e9db84ba6647875bd7949c3770c3a0160",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд пять, шесть, ноль, ноль, по нему и работаем.",
+    "bytes": 43510
+  },
+  "2803a8ad": {
+    "sha256": "add62347e56f5ded90010e95e6cd64bcfe6a0386",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Алло, диспетчер? Специалист аварийной бригады, мы на месте. Задымление, похоже, загорелся кабель. Нужна помощь пожарной охраны, сообщите им.",
+    "bytes": 162211
+  },
+  "2cd370ed": {
+    "sha256": "4dd8419691c44ef4e07cfdd021d0cb4577361429",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принято, работаем дальше.",
+    "bytes": 29300
+  },
+  "38056560": {
+    "sha256": "4d1997e4158fd5edb72d837ab415664443e1c4f7",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд восемь, семь, три, ноль, по нему и работаем.",
+    "bytes": 41838
+  },
+  "3d407fdf": {
+    "sha256": "e2eadd54c57abf23abad236c39bca756266e7d18",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "В подъезд попали, открыл консьерж.",
+    "bytes": 36823
+  },
+  "3d82b2dc": {
+    "sha256": "59c03124ac1895c8312f06bc8b3ec5eafafc818a",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Работаем вдвоём, людей хватает.",
+    "bytes": 43510
+  },
+  "3f6c5eaa": {
+    "sha256": "20b019fed8469bd15733208d104d61360afa0533",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд три, два, шесть, четыре, по нему и работаем.",
+    "bytes": 41838
+  },
+  "414103e9": {
+    "sha256": "90cd69e23d972ffa3a128c4c396969d5dd8ee61e",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[sighs]",
+    "text": "Повторяю: Диспетчер, это снова специалист бригады. Помощи пожарной охраны так и нет, работать не можем. Вы им сообщили?",
+    "bytes": 129192
+  },
+  "42ce68c8": {
+    "sha256": "b1a3b0589aa9944d4efac9aae8d51fb84ab50b72",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Алло, диспетчер? Специалист аварийной бригады, мы на месте. Запах газа в подвале, похоже, задели трубу. Нужна помощь Мосгаза, сообщите им.",
+    "bytes": 141731
+  },
+  "47576aff": {
+    "sha256": "be0af9a59aba3e683d5bdff2e31fc54ae2c33b3e",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[sighs]",
+    "text": "Диспетчер, это снова специалист бригады. Помощи Мосгаза так и нет, работать не можем. Вы им сообщили?",
+    "bytes": 111220
+  },
+  "53357699": {
+    "sha256": "4e328840a193220e009ff2470600ba7eb00cfbce",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Пока без изменений, продолжаем.",
+    "bytes": 34315
+  },
+  "53f4dc50": {
+    "sha256": "4832b75293a470c1d5b66fc9a99adac434377dfb",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принято, остаёмся на связи.",
+    "bytes": 31807
+  },
+  "5ed31ddf": {
+    "sha256": "beaaba1782330266a97e30ade3b7eb309248a846",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд один, восемь, ноль, семь, по нему и работаем.",
+    "bytes": 59811
+  },
+  "5f7bf3fa": {
+    "sha256": "af46d5e0f8d0eaf915c5855bd7b5da5fdcb51151",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[sighs]",
+    "text": "Повторяю: Диспетчер, это снова специалист бригады. Помощи управы так и нет, работать не можем. Вы им сообщили?",
+    "bytes": 131700
+  },
+  "609e32b3": {
+    "sha256": "203ce6b9033e46a5d10615a4483952f36bee7d60",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Повторяю: Алло, диспетчер? Специалист аварийной бригады, мы на месте. Запах газа в подвале, похоже, задели трубу. Нужна помощь Мосгаза, сообщите им.",
+    "bytes": 171406
+  },
+  "66217bae": {
+    "sha256": "0507e97bfa400fd408040e2f4301cf7cd2aaf2f6",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд пять, два, пять, девять, по нему и работаем.",
+    "bytes": 41838
+  },
+  "66c53390": {
+    "sha256": "75e139068a8a6194fbb8cf402d6b770ad93405fb",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Так точно, продолжаем.",
+    "bytes": 25538
+  },
+  "6b43ac12": {
+    "sha256": "29c5144c1f8128d908e49fbd8bc4aa6854c2078a",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[sighs]",
+    "text": "Диспетчер, это снова специалист бригады. Помощи пожарной охраны так и нет, работать не можем. Вы им сообщили?",
+    "bytes": 126684
+  },
+  "6dbe8ca8": {
+    "sha256": "ab47971aa290c66f436ee2b47f8202120f14afb6",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[sighs]",
+    "text": "Повторяю: Диспетчер, это снова специалист бригады. Помощи Мослифта так и нет, работать не можем. Вы им сообщили?",
+    "bytes": 122505
+  },
+  "713098aa": {
+    "sha256": "ee1e464e357250c0e8177180c00d385aaea1d89e",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Алло, диспетчер? Специалист аварийной бригады, мы на месте. В лифте застрял жилец, двери не открываются. Нужна помощь Мослифта, сообщите им.",
+    "bytes": 158449
+  },
+  "74833d08": {
+    "sha256": "03d328b47df3323ed0b560a769e63e8027ae10b4",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд пять, девять, три, два, по нему и работаем.",
+    "bytes": 51034
+  },
+  "79b486b9": {
+    "sha256": "e9697dba9e8fd60fb7e9d902bf94301be366f4e9",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Мы на адресе по карточке, всё верно.",
+    "bytes": 43510
+  },
+  "7cbf6945": {
+    "sha256": "919db07d0d38a14474dd3e79fbc8c092f7efc4cd",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[sighs]",
+    "text": "Диспетчер, это снова специалист бригады. Помощи управы так и нет, работать не можем. Вы им сообщили?",
+    "bytes": 125430
+  },
+  "7df1a312": {
+    "sha256": "13a2f6ce6447b612873d7ffb605f098dce285b2a",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[sighs]",
+    "text": "Диспетчер, это снова специалист бригады. Помощи Мосводоканала так и нет, работать не можем. Вы им сообщили?",
+    "bytes": 122505
+  },
+  "81425f29": {
+    "sha256": "32922b6223657ef03d5d0f921685e514539b8d89",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "По происшествию всё как в карточке, работаем.",
+    "bytes": 47272
+  },
+  "8887356c": {
+    "sha256": "5f2982ce63458e1f6803efb834e6b22e5aa34f8a",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд четыре, семь, четыре, семь, по нему и работаем.",
+    "bytes": 54795
+  },
+  "89994d2f": {
+    "sha256": "e429cbf726f530b8c92b1873c3d20559552b473b",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Повторяю: Алло, диспетчер? Специалист аварийной бригады, мы на месте. Задымление, похоже, загорелся кабель. Нужна помощь пожарной охраны, сообщите им.",
+    "bytes": 167644
+  },
+  "8ae08ea3": {
+    "sha256": "9801880ee6ccbc7cc0807da0f3752aa003f8af81",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[sighs]",
+    "text": "Диспетчер, это снова специалист бригады. Помощи Мослифта так и нет, работать не можем. Вы им сообщили?",
+    "bytes": 112474
+  },
+  "8f462a29": {
+    "sha256": "310c569c8d779188cb041acef62706378c7d7bb1",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Опасности для жильцов нет.",
+    "bytes": 31807
+  },
+  "936fa26f": {
+    "sha256": "2066e7f7b497e887a2a1aed08b90017ef5021947",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[sighs]",
+    "text": "Повторяю: Диспетчер, это снова специалист бригады. Помощи Мосгаза так и нет, работать не можем. Вы им сообщили?",
+    "bytes": 121251
+  },
+  "96d9ec4b": {
+    "sha256": "b1fb541a44bbdd767ad6afd6e1d69bf1fda40835",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Повторяю: Алло, диспетчер? Специалист аварийной бригады, мы на месте. Вода уходит в колодец, похоже, порыв водопровода. Нужна помощь Мосводоканала, сообщите им.",
+    "bytes": 194394
+  },
+  "9ef0800f": {
+    "sha256": "fa0d48115966a00edd147d697c204a1753f4bd33",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[sighs]",
+    "text": "Повторяю: Диспетчер, это снова специалист бригады. Помощи Мосводоканала так и нет, работать не можем. Вы им сообщили?",
+    "bytes": 130446
+  },
+  "9f07af22": {
+    "sha256": "573385e70f13da0ff150869b8e671aa560901e42",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд семь, три, три, шесть, по нему и работаем.",
+    "bytes": 49780
+  },
+  "a3f92e70": {
+    "sha256": "873efb82dadad24e6b9e52abb4de04a4d1d2ccfe",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[sighs]",
+    "text": "Повторяю: Диспетчер, это снова специалист бригады. Помощи ЕДЦ ЖКХ так и нет, работать не можем. Вы им сообщили?",
+    "bytes": 129192
+  },
+  "ad6e2e87": {
+    "sha256": "dfc369c0bf16712409d62e06c3cf9beb7c5aa7b6",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Алло, диспетчер? Специалист аварийной бригады, мы на месте. Вода уходит в колодец, похоже, порыв водопровода. Нужна помощь Мосводоканала, сообщите им.",
+    "bytes": 145910
+  },
+  "bd02748c": {
+    "sha256": "00616135449c00cdb1964c9297803398a1fd9e30",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Понял вас, диспетчер.",
+    "bytes": 26792
+  },
+  "c0af52da": {
+    "sha256": "4d4102c66c16f41cdb84c042d030db2b91572a1a",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Алло, диспетчер? Специалист аварийной бригады, мы на месте. Нужно перекрыть проезд, без этого работать нельзя. Нужна помощь управы, сообщите им.",
+    "bytes": 147164
+  },
+  "c2cbcc9d": {
+    "sha256": "b65249c0f478dc80bf07557d58fce795df781efd",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[sighs]",
+    "text": "Диспетчер, это снова специалист бригады. Помощи ЕДЦ ЖКХ так и нет, работать не можем. Вы им сообщили?",
+    "bytes": 113727
+  },
+  "c60637db": {
+    "sha256": "4503c41d4efd95dc36f8530f048b8d2e350b40cc",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд два, четыре, шесть, ноль, по нему и работаем.",
+    "bytes": 54795
+  },
+  "c77e69e6": {
+    "sha256": "d55d6e105eee721b0a9f06a645175b73f0c1ffee",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Алло, диспетчер? Специалист аварийной бригады, мы на месте. Залило электрощиток в подъезде, нужен электрик. Нужна помощь ЕДЦ ЖКХ, сообщите им.",
+    "bytes": 170152
+  },
+  "caa640e4": {
+    "sha256": "6c57580f6742b0a3641e94bb812586c04b6665c9",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд семь, семь, восемь, восемь, по нему и работаем.",
+    "bytes": 44764
+  },
+  "caf76181": {
+    "sha256": "7cc6c024704b6840bde05fb4964ebcf0a9753c15",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд два, четыре, три, три, по нему и работаем.",
+    "bytes": 41838
+  },
+  "cfe462f5": {
+    "sha256": "a226de1047b6135da13bee16d508726074ef4350",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Участок огородили, проезд ограничили.",
+    "bytes": 48526
+  },
+  "d201943d": {
+    "sha256": "bb3cdd1edfa0aaf7e9b69bcc9e6e4390793ff8e8",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд один, четыре, три, восемь, по нему и работаем.",
+    "bytes": 43510
+  },
+  "d20b5f0a": {
+    "sha256": "f7d590eadcef7f1545cf5e0d1a9a623eb1ca3290",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Ещё в работе, думаю час-полтора. Точнее скажу позже.",
+    "bytes": 77783
+  },
+  "d2a8fbe8": {
+    "sha256": "d483e75062df3c1d99348f7dcb12410ff5e7e7e2",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд девять, пять, два, шесть, по нему и работаем.",
+    "bytes": 47272
+  },
+  "e092cd91": {
+    "sha256": "f57ccaaa4d59ec91540eca20e7e06b39caf64d44",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Работаем, пока по плану. Как будет результат — доложу.",
+    "bytes": 61065
+  },
+  "e292f0c8": {
+    "sha256": "3a221bd96ffb35c073da1a77679b9c5268f8eec1",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "На месте бригада и дежурная машина, сил хватает.",
+    "bytes": 58557
+  },
+  "e7afdc7c": {
+    "sha256": "0dc25d11cfad7eb19df1edd83ee0e294c47d5d69",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Повторяю: Алло, диспетчер? Специалист аварийной бригады, мы на месте. Нужно перекрыть проезд, без этого работать нельзя. Нужна помощь управы, сообщите им.",
+    "bytes": 160957
+  },
+  "e8d1a242": {
+    "sha256": "3737a2aaf9d8cd05bf2fec7bbbce5b70caa41bf1",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Доступ есть, заявитель встретил.",
+    "bytes": 36823
+  },
+  "ed4fa072": {
+    "sha256": "4753f42eedaa23aec3f2e11c8c0f0f17a63176a2",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Диспетчер, это специалист бригады, нам нужна помощь другой службы.",
+    "bytes": 63990
+  },
+  "f8cf1f1d": {
+    "sha256": "42d9516596c3d9c4b73b463aef08a425f34274c4",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Медпомощь никому не требуется.",
+    "bytes": 41838
+  },
+  "fc4bd18d": {
+    "sha256": "72a58a293a7b72bfdf832251cf2391fee7049029",
+    "voice_id": "p8myw1hZSsIObdU6ReSl",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Повторяю: Алло, диспетчер? Специалист аварийной бригады, мы на месте. В лифте застрял жилец, двери не открываются. Нужна помощь Мослифта, сообщите им.",
+    "bytes": 175167
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "0580f860": {
+    "sha256": "b85f188b714327e73079f1195c92e9e816fc1ccb",
+    "voice_id": "aiOpHavNNYuUX915rg6E",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Руководитель ЕДЦ ЖКХ, слушаю.",
+    "bytes": 39331
+  },
+  "20412f9a": {
+    "sha256": "70cc3afd5ee0c5e91a3d5438a3ad5616400c764c",
+    "voice_id": "aiOpHavNNYuUX915rg6E",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Докладывайте по ходу работ.",
+    "bytes": 25538
+  },
+  "2143cdfa": {
+    "sha256": "036822ccc3b7fab538bdb663341762c02dbe3d0d",
+    "voice_id": "aiOpHavNNYuUX915rg6E",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Руководитель Гормоста, слушаю.",
+    "bytes": 25538
+  },
+  "3838b04f": {
+    "sha256": "fd764e59301f4e086386d6b44ec276985c7d717d",
+    "voice_id": "aiOpHavNNYuUX915rg6E",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Понял, принял. Держите на контроле.",
+    "bytes": 33061
+  },
+  "47e40a0c": {
+    "sha256": "dbd5654b82540841ab035b22f4e36b1256b818e5",
+    "voice_id": "aiOpHavNNYuUX915rg6E",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Руководитель МОЭК, слушаю.",
+    "bytes": 31807
+  },
+  "61606465": {
+    "sha256": "938b587691c9743179401ff60890c1f22e10a819",
+    "voice_id": "aiOpHavNNYuUX915rg6E",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Докладывайте коротко: что, где, что сделано.",
+    "bytes": 54795
+  },
+  "6bc70947": {
+    "sha256": "a10da0b01440160dddbaf76ae747576789331654",
+    "voice_id": "aiOpHavNNYuUX915rg6E",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Распоряжение на выезд — начальнику аварийной бригады, звоните ему.",
+    "bytes": 65244
+  },
+  "71069643": {
+    "sha256": "a3ddaa040ca1eece98dcb9cb42a5b28ce127cc06",
+    "voice_id": "aiOpHavNNYuUX915rg6E",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Руководитель управы, слушаю.",
+    "bytes": 24284
+  },
+  "b9d9b4a1": {
+    "sha256": "fee60379804f6bf64308277091247f5337e0e604",
+    "voice_id": "aiOpHavNNYuUX915rg6E",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Повторите, не расслышал.",
+    "bytes": 21358
+  },
+  "bed2d510": {
+    "sha256": "78bcc20d98e28550906521e27b8c98eb8d94c801",
+    "voice_id": "aiOpHavNNYuUX915rg6E",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Руководитель Мосгаза, слушаю.",
+    "bytes": 29300
+  },
+  "c75b6dfd": {
+    "sha256": "a647ff8adf244f9073b9110df9cebdd782896c61",
+    "voice_id": "aiOpHavNNYuUX915rg6E",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Руководитель скорой помощи, слушаю.",
+    "bytes": 29300
+  },
+  "d8b1932e": {
+    "sha256": "fe736641ad5341d7bdbd7c8c74636bbc9723becd",
+    "voice_id": "aiOpHavNNYuUX915rg6E",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "По какому адресу?",
+    "bytes": 21358
+  },
+  "e53b0507": {
+    "sha256": "5a40302e1b718352dd47cec9fadef8e4ed27579e",
+    "voice_id": "aiOpHavNNYuUX915rg6E",
+    "model": "eleven_v3",
+    "tag": "[exhales]",
+    "text": "Понял. Снимаю машину с планового выезда, бригада выедет через десять минут. Держите на контроле.",
+    "bytes": 86978
+  },
+  "fdfd25a7": {
+    "sha256": "fd8435846a8e051c49aaf74c927c2a9fd7887393",
+    "voice_id": "aiOpHavNNYuUX915rg6E",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Руководитель Мосводоканала, слушаю.",
+    "bytes": 35569
+  }
+}

@@ -1,11 +1,27 @@
 {
+  "00eada82": {
+    "sha256": "9de0e81612e7fe0bf26c5466faad22c77fa67664",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю. Карточку от вас уже принял. Бригаду собираем, выезжаем. Как выедем — доложу.",
+    "bytes": 114981
+  },
+  "03930f4f": {
+    "sha256": "835af8666602053695162e96b0afc1c68dc72e3e",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Информацию принял, направляю наряд три, два, шесть, четыре, бригада выезжает.",
+    "bytes": 66498
+  },
   "0859eda4": {
-    "sha256": "7361f70c31aea0103cabe9370e4f170c0ee488d6",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "3d494aa8738a930ac5f83d1e8d2ad221d5432a5f",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Отопление или горячая вода? Сколько домов без тепла?",
-    "bytes": 58558
+    "bytes": 56049
   },
   "0a2198fd": {
     "sha256": "6ff412f62dd635c378ac9194e41b79b8631f7bcd",
@@ -15,21 +31,45 @@
     "text": "Наряд записал.",
     "bytes": 18852
   },
+  "0d39c952": {
+    "sha256": "13abb8bd52d02562b701c8cd2e308accf592f358",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принял, направляю наряд девять, пять, два, шесть.",
+    "bytes": 40585
+  },
   "0f11c82d": {
-    "sha256": "8ddda7744c7dc16239a88e205a4ea1c545b3d212",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "5ca122be83d1a87e9cfb7bbbd14a0049547ad6c8",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Понял, происшествие принял.",
-    "bytes": 33062
+    "bytes": 31807
+  },
+  "13204978": {
+    "sha256": "abb5e20874730b72e891eec94734634edd40df7f",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Что случилось? С чем выезжать?",
+    "bytes": 34315
   },
   "14f3c6c9": {
-    "sha256": "cdd54b065011696048e111d6cdb84ef3f31fd46e",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "af24f99b9bb0ed8a3636af770b706f8f332702e7",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Бригада в пути, едем на адрес. По прибытии доложим.",
-    "bytes": 54796
+    "bytes": 51034
+  },
+  "193959e2": {
+    "sha256": "7adc5a4a46d5c758770e0597d0815dcc604e9f42",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю. Карточку от вас уже принял. Бригада на месте, осматриваемся. Как начнём работы — доложу.",
+    "bytes": 118743
   },
   "1d27906e": {
     "sha256": "e7ef87e90b6fd91c3db980ad51fa6e93cccc8f8a",
@@ -39,37 +79,93 @@
     "text": "Информацию принял, бригаду направляю.",
     "bytes": 39332
   },
+  "1d3c3d31": {
+    "sha256": "10088f14479c483d05cde954d33a1ab569b99c33",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю. Карточку от вас уже принял. Машин так и нет, все на выездах.",
+    "bytes": 95755
+  },
+  "226a9901": {
+    "sha256": "c93d77e6461afdbc496f50b1574ae2c9c506be89",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принял, выезжаем. Наряд девять, пять, два, шесть.",
+    "bytes": 40585
+  },
+  "2b14b245": {
+    "sha256": "6ff31ac4ef51253b29c729e7821fbf82deae49e6",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю. Карточку от вас уже принял. Бригада на месте, осматриваемся. Как начнём работы — доложу. Специалист до вас не дозвонился: залило электрощиток в подъезде, нужен электрик. Нужна помощь ЕДЦ ЖКХ, сообщите им.",
+    "bytes": 248310
+  },
   "2d44c18b": {
-    "sha256": "93b8d41eac39603375765617469b35690016f298",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "e0f2312b7a1ce2a9f35df55c8e627190b07c5d92",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Бригаду собираем, выезжаем. Как выедем — доложу.",
-    "bytes": 65245
+    "bytes": 53541
   },
   "2e30ed8e": {
-    "sha256": "150d657bc7e4e301c76c5ba99676cd8e8ee1e5fd",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "7f686e49169d5443c8633e8b5c22e20a1259d1cb",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Бригада на месте, осматриваемся. Как начнём работы — доложу.",
-    "bytes": 70261
+    "bytes": 61065
   },
   "2f51cba1": {
-    "sha256": "b524a235ac6a938876a12f1876f33b55342ee7c8",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "356ead4d6b0b2dc4237ca920f905d3bda6ca7bda",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Принято. Как будем на месте, доложу.",
-    "bytes": 40586
+    "bytes": 38077
+  },
+  "3226d7b2": {
+    "sha256": "a0cc1b3663fecf48c9f76d769795e74c51762724",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю. Карточку от вас уже принял. Я вам звонил, вы не взяли. Бригада на месте, осматриваемся. Как начнём работы — доложу. Специалист до вас не дозвонился: запах газа в подвале, похоже, задели трубу. Нужна помощь Мосгаза, сообщите им.",
+    "bytes": 265865
   },
   "34ca5ac3": {
-    "sha256": "ab59eaa27a774a09b3e4379a9fa27b66fc8a7f07",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "d2be918901acf3da8ddb9ccb9931cc2b2b3a1455",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Что именно произошло? Какой тип происшествия по карточке?",
-    "bytes": 67753
+    "bytes": 52287
+  },
+  "34e217f1": {
+    "sha256": "565f1d31565dec10047ea6461a7ae6a76897eb88",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принял, направляю наряд пять, шесть, ноль, ноль.",
+    "bytes": 35569
+  },
+  "3502b7bc": {
+    "sha256": "97eaeea4840c4c563cb051f7316beac8b6ee3330",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд три, два, шесть, четыре, он и выезжает.",
+    "bytes": 44764
+  },
+  "403bda66": {
+    "sha256": "b7dab3e0283d23f5f030e7451c1201ff061a6055",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю. Карточку от вас уже принял. Работы завершены, докладывал. Всё по карточке отражено.",
+    "bytes": 131700
   },
   "4ec6fbd4": {
     "sha256": "b4d41baf09fed89f2a9fa585516e3f4ffd14f8ee",
@@ -79,45 +175,109 @@
     "text": "Дежурный МОЭК, слушаю.",
     "bytes": 28047
   },
+  "502c011e": {
+    "sha256": "386d47a197ee0ac225af34edd8feff4342a48504",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принял, выезжаем. Наряд три, два, шесть, четыре.",
+    "bytes": 47272
+  },
+  "571f38cb": {
+    "sha256": "000b007c2de1f8e2703b287532146cb6cc99b799",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд пять, шесть, ноль, ноль, он и выезжает.",
+    "bytes": 39331
+  },
   "575f5e40": {
-    "sha256": "d2f1769f9c5f7db47c5394804b72dc87b2404f3b",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "18d25d6c02773027dd89a16ff37c1432ed508811",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Это не ко мне, давайте по происшествию.",
-    "bytes": 36824
+    "bytes": 31807
   },
   "5a8ac4a0": {
-    "sha256": "5b61f272dc68079191cd94a78748b498db9f8263",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "c487f7ade91892ebbf629d126f0d9fd4232c2ac3",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Принято, по пострадавшим понял.",
-    "bytes": 33062
+    "bytes": 31807
+  },
+  "659be228": {
+    "sha256": "2f96cafd4b664e1fde09da36d9731af147d24e55",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Информацию принял, направляю наряд пять, шесть, ноль, ноль, бригада выезжает.",
+    "bytes": 66498
+  },
+  "6a5c7c9f": {
+    "sha256": "d005ac1cb4bc486a1167f031c36364d63e442aea",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю.",
+    "bytes": 40585
   },
   "6dc5ac0d": {
-    "sha256": "f652eccbade7a76408cb4f353019523a7db4c044",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "f94bbb367d788d67dd52cd3f1b93a084a1a53b80",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Повторите, пожалуйста, плохо слышно.",
-    "bytes": 28047
+    "bytes": 31807
   },
   "7480c6b2": {
-    "sha256": "8a13a32c146f512503e86fb49cdeb375cd682492",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "4bae59ce9d94e32c844c8b861a35f7dc4900e8ef",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Адрес принял. Подъезд, этаж известны?",
-    "bytes": 46019
+    "bytes": 41838
+  },
+  "8ae2a331": {
+    "sha256": "b8ee60c69ce3428dfab5d212128861afe2c322c7",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю. Карточку от вас уже принял. Я вам звонил, вы не взяли. Бригада на месте, осматриваемся. Как начнём работы — доложу.",
+    "bytes": 154687
+  },
+  "8ccc2324": {
+    "sha256": "9db2627b40453745cbf00f93bc161894d12975d2",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принял. Только машин нет, все на выездах. Ближайшая освободится часа через полтора.",
+    "bytes": 76529
+  },
+  "9040230f": {
+    "sha256": "9ca3079200e25886a7169b75243bfaac2c2c02c0",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю. Только быстро — что у вас?",
+    "bytes": 65244
   },
   "95edcb1a": {
-    "sha256": "1d6deaddc220376608e7ca290120d6df43f1bf76",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "720ce48352f85f022a973d4e4dc6dd4e91d5d1ab",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Понял, доступ есть.",
-    "bytes": 21359
+    "bytes": 28046
+  },
+  "989e1d01": {
+    "sha256": "9473dc708d2242830d8ce3f9f2f1cd82ddd16fed",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю. Карточку от вас уже принял. Бригада на месте, осматриваемся. Как начнём работы — доложу. Специалист до вас не дозвонился: задымление, похоже, загорелся кабель. Нужна помощь пожарной охраны, сообщите им.",
+    "bytes": 234100
   },
   "9bd07d82": {
     "sha256": "03c5ea598f03c0bf2276352f1d113fa169b73962",
@@ -127,52 +287,204 @@
     "text": "Номер наряда назовите.",
     "bytes": 25539
   },
+  "9c695d08": {
+    "sha256": "d7f81fce7659dec619bdb18b6d0ca75efbbee0ad",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Информацию принял, направляю наряд девять, пять, два, шесть, бригада выезжает.",
+    "bytes": 63990
+  },
   "9d0fd099": {
-    "sha256": "94af9bb914e9423ba6ce11d6a7d24a220ec86fc6",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "712696408f0817d854649f874e0b5039d9e58505",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Пострадавшие есть?",
-    "bytes": 34316
+    "bytes": 21358
+  },
+  "9dec0ba9": {
+    "sha256": "1182a65e648f1468b81875e8272837b636b33c17",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю. Карточку от вас уже принял. Бригада в пути, едем на адрес. По прибытии доложим.",
+    "bytes": 111220
+  },
+  "a2f50fda": {
+    "sha256": "7e45a8ba4a1a011dc513de4c9d30981ca5119c09",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принял, выезжаем. Наряд пять, шесть, ноль, ноль.",
+    "bytes": 40585
+  },
+  "a378daf6": {
+    "sha256": "423268f3a3b6a2890fd4159f6401e5e640c24b51",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Так, стоп, давайте коротко: адрес и что случилось.",
+    "bytes": 43510
+  },
+  "a826c934": {
+    "sha256": "2382dbe06b2bcfc7542f413f396d48c103683647",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Это к руководителю, только он может снять машину.",
+    "bytes": 49780
   },
   "ac1951ae": {
-    "sha256": "a0e10bcba2b9f1c64c9c46c4c3e36464688297c5",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "b03cbcb2e35ca2ae1b81867cd13732e8c96e95ea",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Назовите адрес: улица, дом, корпус.",
-    "bytes": 53542
+    "bytes": 40585
   },
   "afb38556": {
-    "sha256": "f7475fb67fa0a7f733d7a3c0f94fa81b8e31b7a9",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "4aa12d974963ece1f47d5325dce66e4ef8249b27",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Принял, бригада тепловых сетей выезжает.",
-    "bytes": 36824
+    "bytes": 39331
+  },
+  "b1f593d4": {
+    "sha256": "def9d18b2c4d5397b13a42601185e213e735475f",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю. Карточку от вас уже принял. Я вам звонил, вы не взяли. Бригада на месте, осматриваемся. Как начнём работы — доложу. Специалист до вас не дозвонился: задымление, похоже, загорелся кабель. Нужна помощь пожарной охраны, сообщите им.",
+    "bytes": 263357
   },
   "b35d1419": {
-    "sha256": "7bec7c3c96acc5e450f7f6b34bbe8bf55ca4f047",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "428a9db3605090a90fbe59f9ea81a89e20f7676f",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Доступ на объект есть? Кто встретит бригаду?",
-    "bytes": 41839
+    "bytes": 44764
+  },
+  "c255fedd": {
+    "sha256": "7e24fa1e04de432049401d76437493a570d94dae",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Бригада на базе. Назовите адрес и что случилось — выедем.",
+    "bytes": 54795
   },
   "c418bb25": {
-    "sha256": "7b8bf217c26a7371ba69eca812c6bae4926bd230",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "3b9ebb05d80c6bc38fd671d32109c4258d1f7a81",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Работы ведутся, пока без замечаний. По окончании доложу.",
-    "bytes": 58558
+    "bytes": 54795
+  },
+  "c5952042": {
+    "sha256": "3cf46f14cd6232fd4e9ac4700c3996ff2bb157f3",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю. Карточку от вас уже принял. Бригада на базе. Назовите адрес и что случилось — выедем.",
+    "bytes": 121251
+  },
+  "cbcdad0b": {
+    "sha256": "69b0acb543c097dbcd76eed39ada1d4b9d8149ba",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю. Карточку от вас уже принял. Я вам звонил, вы не взяли. Бригада в пути, едем на адрес. По прибытии доложим.",
+    "bytes": 152180
+  },
+  "d7139fc8": {
+    "sha256": "ea84b477b398df7fece9a64ebdf65a7cf12c91b1",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принял.",
+    "bytes": 15089
   },
   "d8e0fc66": {
-    "sha256": "d23c2aa6562384bac51efd1b67baa9c0f6e55825",
-    "voice_id": "4R4ha50vLnNdjMQDY20a",
+    "sha256": "b2343217951a521c44675ba19a94eb77857fd7fc",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
     "model": "eleven_v3",
     "tag": "[calm]",
     "text": "Работы завершены, докладывал. Всё по карточке отражено.",
-    "bytes": 58558
+    "bytes": 62318
+  },
+  "da2402a1": {
+    "sha256": "fd7e10aab5be5a090f79f0fc6f526d652fcae325",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю. Карточку от вас уже принял. Работы ведутся, пока без замечаний. По окончании доложу.",
+    "bytes": 117489
+  },
+  "dc48d6ff": {
+    "sha256": "8720a8fafbd59da057ccbc414e5f97bac4ab4e7d",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю. Карточку от вас уже принял. Я вам звонил, вы не взяли. Бригада на месте, осматриваемся. Как начнём работы — доложу. Специалист до вас не дозвонился: залило электрощиток в подъезде, нужен электрик. Нужна помощь ЕДЦ ЖКХ, сообщите им.",
+    "bytes": 278821
+  },
+  "df06c17f": {
+    "sha256": "99d785155ec66ada5cc03b0384fef2afd2c55305",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю. Карточку от вас уже принял. Я вам звонил, вы не взяли. Работы завершены, докладывал. Всё по карточке отражено.",
+    "bytes": 137969
+  },
+  "e2c80443": {
+    "sha256": "a232f287a89550c0f87edfbde9fc5cfcbdba3eac",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Адрес какой? Куда выезжать?",
+    "bytes": 33061
+  },
+  "e329d3e2": {
+    "sha256": "48291eef93e534a16398d819757fa8986d82d68e",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю. Карточку от вас уже принял. Бригада на месте, осматриваемся. Как начнём работы — доложу. Специалист до вас не дозвонился: запах газа в подвале, похоже, задели трубу. Нужна помощь Мосгаза, сообщите им.",
+    "bytes": 246638
+  },
+  "e458a512": {
+    "sha256": "819789f0467362a112655e18f90cc9640cfaeb15",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Начальник аварийной бригады МОЭК, слушаю. Карточку от вас уже принял. Я вам звонил, вы не взяли. Работы ведутся, пока без замечаний. По окончании доложу.",
+    "bytes": 168898
+  },
+  "e8ad9ef4": {
+    "sha256": "b58c560fcd703e5fff09ca72dc038c54ecdaf779",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Принял, направляю наряд три, два, шесть, четыре.",
+    "bytes": 36823
+  },
+  "f01f2f8b": {
+    "sha256": "648e2ad362a9477e25ae97561f7f057e12d8dc5b",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[calm]",
+    "text": "Наряд девять, пять, два, шесть, он и выезжает.",
+    "bytes": 39331
+  },
+  "fbe09d1d": {
+    "sha256": "a2aa57dc1396c18498772fd36e7cf06c3eb0a1a4",
+    "voice_id": "3EuKHIEZbSzrHGNmdYsx",
+    "model": "eleven_v3",
+    "tag": "[sighs]",
+    "text": "Машин так и нет, все на выездах.",
+    "bytes": 33061
   }
 }
