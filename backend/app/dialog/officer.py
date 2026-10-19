@@ -1298,6 +1298,10 @@ def chief_reply(
         if engine.gives_order(text):
             ask = ASK_ADDRESS if "address" in missing else ASK_INCIDENT
             return answer(ask, [missing[0]], "order")
+        if "address" in missing and "address" in reply.topics:
+            # A recorded «Адрес принял» picked by the word «адрес» while no address was heard
+            # (stand, 19.10.2026): he asks for it instead.
+            return answer(ASK_ADDRESS, ["address"], "order")
         if _dispatching(reply):
             return answer(TAKEN, ["confirm"], "order")
         return reply

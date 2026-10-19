@@ -193,6 +193,74 @@ _HUNDREDS: dict[str, int] = {
     "восемьсот": 800,
     "девятьсот": 900,
 }
+
+
+def _ordinal_cases(word: str) -> list[str]:
+    """The other cases of an ordinal: «десятый» → «десятого», «десятом», «десятую»…"""
+    if word.endswith("ий"):  # «третий»
+        base = word[:-2] + "ь"
+        return [base + end for end in ("его", "ему", "ем", "ей", "им", "ю")]
+    if word.endswith(("ый", "ой")):
+        base = word[:-2]
+        return [base + end for end in ("ого", "ому", "ом", "ой", "ым", "ую")]
+    return []
+
+
+def _cardinal_cases(word: str) -> list[str]:
+    """«пять» → «пяти», «пятью»; «двадцать» → «двадцати»; «пятьдесят» → «пятидесяти»."""
+    if word.endswith("ьдесят"):
+        return [word[: -len("ьдесят")] + "идесяти"]
+    if word.endswith("ь"):
+        return [word[:-1] + "и", word[:-1] + "ью"]
+    return []
+
+
+def _with_cases(numerals: dict[str, int], irregular: dict[str, int]) -> dict[str, int]:
+    forms = {
+        form: value
+        for word, value in numerals.items()
+        for form in (*_ordinal_cases(word), *_cardinal_cases(word))
+    }
+    forms.pop("семью", None)  # the family far more often than the number seven
+    return {**forms, **irregular, **numerals}
+
+
+# Numerals in the other cases: speech recognition hears «дом десяти», «у дома пяти» (stand,
+# 19.10.2026).
+_UNITS = _with_cases(
+    _UNITS,
+    {
+        "одного": 1,
+        "одному": 1,
+        "одном": 1,
+        "двух": 2,
+        "двум": 2,
+        "двумя": 2,
+        "трех": 3,
+        "трем": 3,
+        "тремя": 3,
+        "четырех": 4,
+        "четырем": 4,
+        "четырьмя": 4,
+        "восьми": 8,
+        "восемью": 8,
+    },
+)
+_TENS = _with_cases(_TENS, {"сорока": 40, "восьмидесяти": 80, "девяноста": 90})
+_HUNDREDS = _with_cases(
+    _HUNDREDS,
+    {
+        "ста": 100,
+        "двухсот": 200,
+        "трехсот": 300,
+        "четырехсот": 400,
+        "пятисот": 500,
+        "шестисот": 600,
+        "семисот": 700,
+        "восьмисот": 800,
+        "девятисот": 900,
+    },
+)
 _NUMERALS: dict[str, int] = {**_UNITS, **_TENS, **_HUNDREDS}
 
 
