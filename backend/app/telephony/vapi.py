@@ -674,13 +674,14 @@ def caller_prompt(scenario: CallIntakeScenario) -> str:
 
 # How a person of a ДДС card talks on top of his voice (19.10.2026): the head and the chief of
 # the response department share Vladimir — the head calm and unhurried, the office slower and
-# drier; the specialist on site quick and loose. The other services (Alex) talk as they are.
+# drier; the specialist on site quick and loose; the other services (Alex) unhurried.
 ROLE_MANNER: dict[str, dict[str, float]] = {
     "response_chief": {"speed": 0.95, "stability": 0.6, "style": 0.15},
     # The head: the calm voice the duty officers had before, but slower — he is the boss and in
     # no hurry (19.10.2026: «слишком быстро говорит»).
     "organization_head": {**VOICE_SETTINGS["calm"], "speed": 0.9},
     "squad_specialist": {"speed": 1.08, "stability": 0.35, "style": 0.4},
+    "other_officer": {**VOICE_SETTINGS["calm"], "speed": 0.9},  # Alex, «слишком быстрый»
 }
 
 
