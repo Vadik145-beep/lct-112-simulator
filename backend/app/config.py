@@ -144,8 +144,8 @@ class Settings(BaseSettings):
     cloud_voice_voice_id_young: str | None = None
     # The people of a ДДС card, each his own voice (decision of 18.10.2026: all of them spoke
     # with the default one). The squad chief and his reports keep the default (Nikolay).
-    cloud_voice_voice_id_specialist: str | None = "drOVtcvHhJKNEXv5h1l5"  # Vladislav
-    cloud_voice_voice_id_org_head: str | None = "9AjtU6o19uipv7QL8dLL"  # Alex
+    cloud_voice_voice_id_specialist: str | None = "RvcToHi9ENVDatbeYNJe"  # Mikhail (library)
+    cloud_voice_voice_id_org_head: str | None = "pM78bgjPVk0JXtaEnFoj"  # Nester Surovy (library)
     # Vladimir too: no fifth male voice in the account; the head and the chief of the response
     # department, both of the trainee's own phone book, keep different voices.
     cloud_voice_voice_id_response_chief: str | None = "4R4ha50vLnNdjMQDY20a"
