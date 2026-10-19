@@ -63,6 +63,7 @@ export function ServiceCallPanel({
   cloudOnly = false,
   muted = false,
   onToggleMute,
+  dialing = false,
   onEnd,
 }: {
   call: ServiceCallOut;
@@ -105,6 +106,8 @@ export function ServiceCallPanel({
   muted?: boolean;
   /** Turns the microphone of the cloud call off and on (as in the 112 card). */
   onToggleMute?: () => void;
+  /** The beeps of the call still sound (#270): the other side has not picked up yet. */
+  dialing?: boolean;
   onEnd: () => void;
 }) {
   const [text, setText] = useState("");
@@ -122,6 +125,7 @@ export function ServiceCallPanel({
   const log = useRef<HTMLOListElement>(null);
   const actionId = useRef<string | null>(null);
   const open = call.ended_at === null;
+  const talking = call.answered && !dialing;
   const canSpeak =
     sttAvailable && !telephony && typeof MediaRecorder !== "undefined";
   // The local path (text, push-to-talk): not in a cloud-only call, not while the cloud talks.
@@ -150,12 +154,12 @@ export function ServiceCallPanel({
   // The officer's newest reply plays once (browser mode only).
   useEffect(() => {
     const last = call.turns[call.turns.length - 1];
-    if (!last || last.role !== "caller") return;
+    if (dialing || !last || last.role !== "caller") return;
     if (last.index <= (played.current.get(call.id) ?? -1)) return;
     played.current.set(call.id, last.index);
     if (!last.audio_url || telephony) return;
     void play(last.audio_url);
-  }, [call.id, call.turns, telephony]);
+  }, [call.id, call.turns, telephony, dialing]);
 
   // Only the transcript scrolls: scrollIntoView moved the whole page as well and pushed the
   // services strip off the screen.
@@ -267,7 +271,7 @@ export function ServiceCallPanel({
       aria-label={callTitle(call)}
       data-testid="service-call-panel"
       data-kind={call.kind}
-      data-state={open ? (call.answered ? "talking" : "ringing") : "ended"}
+      data-state={open ? (talking ? "talking" : "ringing") : "ended"}
     >
       <div className="flex items-center justify-between gap-2">
         <span className="inline-flex items-center gap-1 font-semibold">
@@ -285,7 +289,7 @@ export function ServiceCallPanel({
         <span className="text-[var(--arm-text-muted)]">
           {!open
             ? `завершён${call.seconds != null ? `, ${formatSeconds(call.seconds)}` : ""}`
-            : call.answered
+            : talking
               ? telephony
                 ? "разговор по телефону"
                 : isReport(call)
@@ -301,7 +305,7 @@ export function ServiceCallPanel({
         className="flex min-h-16 grow basis-16 flex-col gap-1 overflow-y-auto"
         aria-label="Стенограмма звонка"
       >
-        {call.turns.map((t) => (
+        {!dialing && call.turns.map((t) => (
           <li
             key={t.index}
             data-role={t.role === "caller" ? "officer" : "dispatcher"}
@@ -330,7 +334,7 @@ export function ServiceCallPanel({
             {otherSide(call)} отвечает…
           </li>
         )}
-        {call.turns.length === 0 && (
+        {(dialing || call.turns.length === 0) && (
           <li className="text-[var(--arm-text-muted)]">
             {isReport(call)
               ? `Звонит ${otherSide(call)}: ответьте, чтобы выслушать доклад.`
@@ -384,7 +388,7 @@ export function ServiceCallPanel({
           {muted ? "Микрофон выключен" : "Микрофон включён"}
         </button>
       )}
-      {open && call.answered && localTalk && (
+      {open && talking && localTalk && (
         <form
           className="flex gap-1"
           onSubmit={(e) => {
@@ -414,7 +418,7 @@ export function ServiceCallPanel({
           </button>
         </form>
       )}
-      {open && call.answered && localTalk && canSpeak && devices.length > 0 && (
+      {open && talking && localTalk && canSpeak && devices.length > 0 && (
         <label className="flex items-center gap-1 text-[10px] text-[var(--arm-text-muted)]">
           <Mic className="size-3" aria-hidden />
           <select
@@ -432,7 +436,7 @@ export function ServiceCallPanel({
           </select>
         </label>
       )}
-      {open && call.answered && localTalk && canSpeak && (
+      {open && talking && localTalk && canSpeak && (
         <button
           type="button"
           aria-label={
@@ -504,7 +508,7 @@ export function ServiceCallPanel({
           {micNote}
         </span>
       )}
-      {open && call.answered && localTalk && !telephony && !sttAvailable && (
+      {open && talking && localTalk && !telephony && !sttAvailable && (
         <span className="text-[10px] text-[var(--arm-text-muted)]">
           Распознавание речи недоступно: пишите текстом ({otherSide(call)}).
         </span>

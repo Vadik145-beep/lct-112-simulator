@@ -1,4 +1,4 @@
-import { render, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 
 import { ServiceCallPanel } from "@/emulator/service-call";
 import type { ServiceCallOut } from "@/emulator/service-call-model";
@@ -48,9 +48,10 @@ function makeCall(
   };
 }
 
-function panel(call: ServiceCallOut) {
+function panel(call: ServiceCallOut, dialing = false) {
   return (
     <ServiceCallPanel
+      dialing={dialing}
       call={call}
       telephony={false}
       sttAvailable={false}
@@ -138,5 +139,19 @@ describe("ServiceCallPanel voice", () => {
     // Give a replay the chance to start before checking it did not.
     await new Promise((resolve) => setTimeout(resolve, 20));
     expect(fetched).toEqual(["/m0.mp3", "/p0.mp3"]);
+  });
+
+  it("keeps the answer back while the call beeps, then shows and plays it", async () => {
+    const call = makeCall("call-1", "mosgaz", "outgoing", ["/m0.mp3"]);
+    const { rerender } = render(panel(call, true));
+    expect(screen.getByTestId("service-call-panel")).toHaveAttribute("data-state", "ringing");
+    expect(screen.queryByText("реплика 0")).not.toBeInTheDocument();
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(fetched).toEqual([]);
+
+    rerender(panel(call));
+    expect(screen.getByTestId("service-call-panel")).toHaveAttribute("data-state", "talking");
+    expect(screen.getByText("реплика 0")).toBeInTheDocument();
+    await waitFor(() => expect(fetched).toEqual(["/m0.mp3"]));
   });
 });

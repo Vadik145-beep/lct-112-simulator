@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { usePhoneBook } from "@/api/phones";
 import { useRinging, type AttemptOut } from "@/api/training";
 import { goAndAnswer, type AnswerOnArrival } from "@/emulator/answer-on-arrival";
+import { useIncomingRing } from "@/emulator/phone-tones";
 import { OtherCardCalls } from "@/emulator/ring-elsewhere";
 import { ServiceCallPanel } from "@/emulator/service-call";
 import { callTitle, describeCall } from "@/emulator/service-call-model";
@@ -56,6 +57,10 @@ export function VirtualPhone({
   const ringingNow = useRinging(attempt.session.id);
   const elsewhere = (ringingNow.data ?? []).filter((r) => r.attempt_id !== attempt.id);
   const other = !ringing && elsewhere.length > 0;
+  useIncomingRing([
+    ...(ringing && openCall ? [openCall.id] : []),
+    ...elsewhere.map((c) => c.call_id),
+  ]);
   // Came here by «Перейти в карточку и ответить»: the call is picked up as soon as this card
   // shows it ringing, once; a call that stopped ringing meanwhile is left alone.
   const location = useLocation();
@@ -184,6 +189,7 @@ export function VirtualPhone({
                     cloudOnly={calls.cloudLesson && !shownCall.telephony}
                     muted={calls.cloudMuted}
                     onToggleMute={calls.toggleCloudMute}
+                    dialing={calls.dialing}
                     onEnd={calls.hangUp}
                   />
                 </div>

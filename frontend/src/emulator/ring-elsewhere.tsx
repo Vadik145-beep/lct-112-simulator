@@ -2,6 +2,7 @@ import { PhoneIncoming, X } from "lucide-react";
 import { useState } from "react";
 
 import type { RingingOut } from "@/api/training";
+import { useIncomingRing } from "@/emulator/phone-tones";
 import { cn } from "@/lib/utils";
 
 /**
@@ -56,6 +57,7 @@ export function JournalPhone({
   onGo: (call: RingingOut) => void;
 }) {
   const [open, setOpen] = useState(false);
+  useIncomingRing(calls.map((c) => c.call_id));
   if (calls.length === 0) return null;
   return (
     <>
