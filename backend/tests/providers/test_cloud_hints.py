@@ -239,9 +239,9 @@ def test_every_person_of_a_card_has_his_own_voice() -> None:
     assert staff_calls[staff.ROLE_HEAD] == s.cloud_voice_voice_id_org_head
     assert staff_calls[staff.ROLE_RESPONSE_CHIEF] == s.cloud_voice_voice_id_response_chief
     assert staff_calls[staff.ROLE_SQUAD_SPECIALIST] == s.cloud_voice_voice_id_specialist
-    # Only the account's voices (19.10.2026): Vladimir for the head, the office and the other
-    # services, each with a manner of his own.
-    assert len({chief, other, *staff_calls.values()}) == 3
+    # Only the account's voices (19.10.2026): Vladimir for the head and the office, each with a
+    # manner of his own; Alex for the other services.
+    assert len({chief, other, *staff_calls.values()}) == 4
     head = vapi.voice_config(
         officer.call_scenario(
             scenario,
@@ -262,5 +262,5 @@ def test_every_person_of_a_card_has_his_own_voice() -> None:
     # The head: the calm settings the duty officers had before 19.10, only slower.
     calm = vapi.VOICE_SETTINGS["calm"]
     assert head["stability"] == calm["stability"] and head["style"] == calm["style"]
-    assert head["speed"] < calm["speed"] < duty["speed"]
-    assert office["stability"] > head["stability"] > duty["stability"]
+    assert head["speed"] < calm["speed"] == duty["speed"]
+    assert office["stability"] > head["stability"]

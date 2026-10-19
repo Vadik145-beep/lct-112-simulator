@@ -149,7 +149,7 @@ class Settings(BaseSettings):
     cloud_voice_voice_id_specialist: str | None = "drOVtcvHhJKNEXv5h1l5"  # Vladislav
     cloud_voice_voice_id_org_head: str | None = "4R4ha50vLnNdjMQDY20a"  # Vladimir
     cloud_voice_voice_id_response_chief: str | None = "4R4ha50vLnNdjMQDY20a"  # Vladimir
-    cloud_voice_voice_id_other_officer: str | None = "4R4ha50vLnNdjMQDY20a"  # Vladimir
+    cloud_voice_voice_id_other_officer: str | None = "9AjtU6o19uipv7QL8dLL"  # Alex
     # eleven_flash_v2_5: the only ElevenLabs model that takes the language explicitly (no
     # accent drift on short phrases), also the fastest; eleven_multilingual_v2 guesses it.
     cloud_voice_voice_model: str = "eleven_flash_v2_5"
