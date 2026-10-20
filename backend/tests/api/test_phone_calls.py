@@ -96,7 +96,7 @@ async def test_phone_lessons_work_through_the_trunk_without_the_cloud(
     settings = get_settings()
     monkeypatch.setattr(settings, "telephony_enabled", True)
     monkeypatch.setattr(settings, "cloud_voice_enabled", False)
-    monkeypatch.setattr(settings, "telephony_trunk_user", "79292491096")
+    monkeypatch.setattr(settings, "telephony_trunk_user", "79220000099")
 
     models = await client.get("/api/models", headers=bearer(token))
     assert models.json()["phone"] is True
@@ -117,7 +117,7 @@ async def test_teacher_enters_the_number_of_the_live_call(
     body = await _lesson_body(client, token)
     settings = get_settings()
     monkeypatch.setattr(settings, "telephony_enabled", True)
-    monkeypatch.setattr(settings, "telephony_trunk_user", "79292491096")
+    monkeypatch.setattr(settings, "telephony_trunk_user", "79220000099")
 
     bad = await client.post("/api/sessions", headers=bearer(token), json={**body, "phone": "112"})
     assert bad.status_code == 422, bad.text
