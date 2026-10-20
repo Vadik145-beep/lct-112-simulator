@@ -11,10 +11,8 @@ import { useEffect } from "react";
 const BEEP_HZ = 425;
 const BEEP_ON_S = 1;
 const BEEP_PERIOD_S = 1.5;
-/** How long a call made from the phone rings before the other side answers. */
+/** How long a call made from the phone rings: two beeps, in a cloud call too (19.10.2026). */
 export const RINGBACK_MS = 2500;
-/** A cloud call rings until the voice connects, but not longer than this. */
-export const RINGBACK_MAX_MS = 15000;
 // The ring of an incoming call: two trills of two notes, 2 s in all, once per call.
 const RING_NOTES_HZ = [1320, 1050];
 const RING_NOTE_S = 0.06;
