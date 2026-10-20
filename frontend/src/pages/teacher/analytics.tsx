@@ -1,5 +1,5 @@
 import { BarChart3 } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
 import { useAuth } from "@/app/use-auth";
@@ -191,13 +191,30 @@ function Dynamics({ data }: { data: GroupAnalyticsOut }) {
       </CardHeader>
       <CardContent className="grid gap-6 lg:grid-cols-2">
         <div data-testid="dynamics-score">
+          <ChartCaption title="Средний балл за карточку">
+            Чем выше, тем лучше. Пунктир — порог зачёта, {THRESHOLD} баллов.
+          </ChartCaption>
           <Chart option={score} height={260} label="Средний балл по неделям" />
         </div>
         <div data-testid="dynamics-time">
+          <ChartCaption title="Скорость работы">
+            Время до «Принята» / «Не принята». Чем ниже, тем быстрее. Пунктир — норматив.
+          </ChartCaption>
           <Chart option={time} height={260} label="Время относительно норматива по неделям" />
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+// What a weekly chart shows and which way is better, above the chart itself.
+function ChartCaption({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    // The same height on both charts, so their axes stay level when a caption wraps.
+    <div className="mb-2 min-h-[3.25rem]">
+      <div className="text-sm font-medium">{title}</div>
+      <p className="text-xs text-muted-foreground">{children}</p>
+    </div>
   );
 }
 
