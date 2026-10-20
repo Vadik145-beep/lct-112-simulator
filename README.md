@@ -29,7 +29,7 @@
 **🎬 Видео: как работает тренажёр** —
 https://drive.google.com/drive/folders/1QmRZGd6KxJnyK1q0Ivu496xJ-opeMClM?usp=drive_link
 
-**📄 Документация:** https://docs.google.com/document/d/1jUSraFs4v05WsOllQZAZFcoP-sllYiqL0SQoTPuxCtQ/edit
+**📄 Документация (PDF):** https://drive.google.com/drive/folders/1QQobcU1nKz6SxSTyfI0okR7eEI9mnjyj?usp=drive_link
 
 **📊 Презентация:** https://docs.google.com/presentation/d/1KIT0vImiX4MTWcn07Gl4nErMMglOpNxSUuhBdFSZ3O0/edit
 
