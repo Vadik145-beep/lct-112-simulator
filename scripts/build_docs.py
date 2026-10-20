@@ -2,6 +2,7 @@
 
     python scripts/build_docs.py . docs/submission/Документация.docx       # общий комплект в DOCX
     python scripts/build_docs.py . docs/submission --pdf --only guides      # четыре PDF из docs/guides
+    python scripts/build_docs.py . docs/submission --pdf --only full        # общий комплект одним PDF
 
 PDF печатает Chromium из пакета playwright для Python, нужна версия 131 и новее (номера страниц
 в полях страницы). Путь к другому Chromium: --browser или переменная DOCS_CHROMIUM. Шрифты
@@ -241,6 +242,9 @@ GUIDES = [
     ("docs/guides/STUDENT_GUIDE.md", "4_Руководство_обучаемого.pdf", "Руководство обучаемого (диспетчер ДДС)"),
 ]
 PDF_PREFIX = "Ультратех_задача9_"
+# The whole set of FILES as one PDF in the style of the guides; every part starts a new page.
+FULL_PDF = ("Документация.pdf", "Сопроводительная документация")
+FULL_CSS = "h2 { break-before: page; } h2.first { break-before: auto; }"
 PRODUCT = "Тренажёр диспетчера ДДС"
 # Page margin boxes (the page number in the footer) appeared in Chromium 131.
 MIN_CHROMIUM = 131
@@ -280,6 +284,7 @@ h2 { font-size: 16pt; margin: 9mm 0 3mm; color: #111; break-after: avoid; }
 h2.first { margin-top: 0; }
 h3 { font-size: 13pt; margin: 6mm 0 2mm; break-after: avoid; }
 h4 { font-size: 11.5pt; margin: 4mm 0 1.5mm; break-after: avoid; }
+h5 { font-size: 10.5pt; margin: 3mm 0 1mm; break-after: avoid; }
 p { margin: 0 0 2.6mm; }
 p:has(+ ul), p:has(+ ol), p:has(+ table), p:has(+ pre) { break-after: avoid; }
 ul, ol { margin: 0 0 2.6mm; padding-left: 7mm; }
@@ -290,6 +295,8 @@ figure img { max-width: 100%; max-height: 200mm; border: 1px solid #cfd4da; }
 figcaption { font-size: 9.5pt; font-style: italic; color: #555; margin-top: 1.5mm; }
 table { border-collapse: collapse; width: 100%; margin: 2mm 0 4mm; font-size: 9.5pt; }
 th, td { border: 1px solid #c9ced4; padding: 1.4mm 2mm; text-align: left; vertical-align: top; }
+/* Long file paths in a cell break anywhere, words stay whole: the table keeps to the page. */
+td code { overflow-wrap: anywhere; }
 th { background: #eef1f4; }
 tr { break-inside: avoid; }
 code { font-family: "PT Mono", monospace; font-size: 9.5pt; background: #f1f3f5; padding: 0 1mm; }
@@ -302,7 +309,7 @@ a { color: #1d4ed8; }
 
 LIST_ITEM = re.compile(r"^(\s*)([-*]|\d+\.)\s+(.*)$")
 IMAGE = re.compile(r"^!\[([^\]]*)\]\(([^)]+)\)\s*$")
-HEADING = re.compile(r"^(#{2,4})\s+(.*)$")
+HEADING = re.compile(r"^(#{2,5})\s+(.*)$")
 QUOTE_SPEAKER = re.compile(r"^[А-ЯЁA-Z][\w ]{0,30}:")
 
 
@@ -430,7 +437,7 @@ def md_to_html(md: str, base: Path) -> tuple[str, list[tuple[int, str, str]]]:
     return "\n".join(out), headings
 
 
-def guide_html(title: str, body: str, headings, pages: dict[str, int], fonts: Path) -> str:
+def guide_html(title: str, body: str, headings, pages: dict[str, int], fonts: Path, extra_css: str = "") -> str:
     toc = []
     for level, hid, text in headings:
         if level > 3:
@@ -439,9 +446,10 @@ def guide_html(title: str, body: str, headings, pages: dict[str, int], fonts: Pa
             f'<a class="l{level}" href="#{hid}"><span class="t">{html.escape(text)}</span>'
             f'<span class="dots"></span><span>{pages.get(hid, PAGE_PLACEHOLDER)}</span></a>'
         )
-    css = PDF_CSS.replace("{fonts}", fonts.as_uri()).replace("{running}", f"{PRODUCT}. {title}")
+    css = PDF_CSS.replace("{fonts}", fonts.as_uri()).replace("{running}", f"{PRODUCT}. {title}") + extra_css
     today = date.today().strftime("%d.%m.%Y")
-    return f"""<!doctype html><html lang="ru"><head><meta charset="utf-8"><style>{css}</style></head>
+    return f"""<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<title>{html.escape(f"{PRODUCT}. {title}")}</title><style>{css}</style></head>
 <body>
 <div class="title">
   <div class="team">Команда «Ультратех», задача № 9</div>
@@ -499,11 +507,39 @@ def outline_pages(pdf: Path) -> list[int]:
     return pages
 
 
-def build_guides_pdf(root: Path, out_dir: Path, browser_path: str | None) -> None:
+def full_markdown(root: Path) -> str:
+    """FILES as one Markdown text: every file becomes the part «N. title», its own headings go one
+    level down (code blocks are left as they are: «#» there is a shell comment)."""
+    parts = ["# " + FULL_PDF[1]]
+    for n, (title, rel) in enumerate(FILES, 1):
+        lines, fence = [f"## {n}. {title}"], False
+        text = re.sub(r"^#\s+.*$", "", (root / rel).read_text(encoding="utf-8"), count=1, flags=re.MULTILINE)
+        for line in text.splitlines():
+            if line.lstrip().startswith("```"):
+                fence = not fence
+            elif not fence and re.match(r"^#{2,4}\s", line):
+                line = "#" + line
+            lines.append(line)
+        parts.append("\n".join(lines))
+    return "\n\n".join(parts)
+
+
+def build_guides_pdf(root: Path, out_dir: Path, browser_path: str | None, only: str = "guides") -> None:
     from playwright.sync_api import sync_playwright
 
     fonts = (root / "docs" / "fonts").resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
+    # (source name, file name, title, Markdown, folder of its pictures, extra CSS)
+    jobs = []
+    if only in ("guides", "all"):
+        for rel, name, title in GUIDES:
+            src = root / rel
+            if not src.exists():
+                print("  пропущен, нет файла:", rel)
+                continue
+            jobs.append((rel, name, title, src.read_text(encoding="utf-8"), src.parent, ""))
+    if only in ("full", "all"):
+        jobs.append(("FILES", *FULL_PDF, full_markdown(root), root / "docs", FULL_CSS))
     with sync_playwright() as p, tempfile.TemporaryDirectory() as tmp:
         browser = p.chromium.launch(executable_path=browser_path or find_chromium())
         if int(browser.version.split(".")[0]) < MIN_CHROMIUM:
@@ -513,18 +549,14 @@ def build_guides_pdf(root: Path, out_dir: Path, browser_path: str | None) -> Non
             )
         page = browser.new_page()
         tmp_html = Path(tmp) / "guide.html"
-        for rel, name, title in GUIDES:
-            src = root / rel
-            if not src.exists():
-                print("  пропущен, нет файла:", rel)
-                continue
-            body, headings = md_to_html(src.read_text(encoding="utf-8"), src.parent)
+        for rel, name, title, md, base, extra_css in jobs:
+            body, headings = md_to_html(md, base)
             target = out_dir / f"{PDF_PREFIX}{name}"
             pages: dict[str, int] = {}
             # Two passes: the first finds the page of every heading from the PDF bookmarks,
             # the second prints the table of contents with those numbers.
             for _ in range(2):
-                tmp_html.write_text(guide_html(title, body, headings, pages, fonts), encoding="utf-8")
+                tmp_html.write_text(guide_html(title, body, headings, pages, fonts, extra_css), encoding="utf-8")
                 page.goto(tmp_html.as_uri())
                 page.wait_for_load_state("networkidle")
                 page.evaluate("document.fonts.ready")
@@ -543,11 +575,12 @@ def main() -> None:
     parser.add_argument("root", type=Path, help="корень репозитория")
     parser.add_argument("out", type=Path, help="файл DOCX или папка для PDF")
     parser.add_argument("--pdf", action="store_true", help="собрать PDF вместо DOCX")
-    parser.add_argument("--only", choices=["guides"], default="guides", help="комплект PDF")
+    parser.add_argument("--only", choices=["guides", "full", "all"], default="guides",
+                        help="комплект PDF: четыре руководства, общий комплект или всё")
     parser.add_argument("--browser", help="путь к Chromium 131+")
     args = parser.parse_args()
     if args.pdf:
-        build_guides_pdf(args.root.resolve(), args.out, args.browser)
+        build_guides_pdf(args.root.resolve(), args.out, args.browser, args.only)
     else:
         build_docx(args.root, args.out)
 
