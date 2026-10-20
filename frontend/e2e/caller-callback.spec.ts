@@ -6,6 +6,8 @@ import { expect, test, type APIRequestContext, type Page } from "@playwright/tes
 
 const SHOTS = "../docs/screenshots/caller-callback";
 const PASSWORD = process.env.SEED_PASSWORD ?? "Demo12345";
+// The demo lesson is a stream (difficulty 3): its first card comes with a tick of the sweeper.
+const FIRST_CARD_MS = 15_000;
 
 test.describe.configure({ mode: "serial" });
 
@@ -54,7 +56,11 @@ test.describe("Обратный звонок заявителю", () => {
     });
 
     await loginAsStudent(page);
-    await page.getByRole("link", { name: /Открыть журнал АРМ-112/ }).click();
+    // The trainee may have several lessons running (other suites, a teacher's own checks): the
+    // journal of this one, by its address.
+    await page.goto(`/student/sessions/${sessionId}/journal`);
+    // The first card of the stream comes with the next tick of the sweeper (every 5 s).
+    await expect(page.locator("tr[data-attempt]").first()).toBeVisible({ timeout: FIRST_CARD_MS });
     await expect(page).toHaveURL(new RegExp(`/student/sessions/${sessionId}/journal$`));
 
     await page.getByRole("link", { name: /Открыть карточку/ }).first().click();
@@ -109,9 +115,13 @@ test.describe("Обратный звонок заявителю", () => {
 
   test("без номера в карточке трубка не звонит", async ({ page, request }) => {
     test.setTimeout(120_000);
-    await resetDemoSession(request);
+    const sessionId = await resetDemoSession(request);
     await loginAsStudent(page);
-    await page.getByRole("link", { name: /Открыть журнал АРМ-112/ }).click();
+    // The trainee may have several lessons running (other suites, a teacher's own checks): the
+    // journal of this one, by its address.
+    await page.goto(`/student/sessions/${sessionId}/journal`);
+    // The first card of the stream comes with the next tick of the sweeper (every 5 s).
+    await expect(page.locator("tr[data-attempt]").first()).toBeVisible({ timeout: FIRST_CARD_MS });
     await page.getByRole("link", { name: /Открыть карточку/ }).first().click();
 
     // «Телефон на месте» в сид-карточках пустой — по нему звонить некуда.

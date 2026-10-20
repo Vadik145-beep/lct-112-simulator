@@ -12,8 +12,11 @@ import {
 const SHOTS = "../docs/screenshots/wave-03";
 const PASSWORD = process.env.SEED_PASSWORD ?? "Demo12345";
 const NORM_SECONDS = 30;
-// The three cards of a stream: at 0 s, 40–50 s and 80–100 s, plus a tick of the sweeper (5 s).
-const STREAM_THREE_MS = 110_000;
+// The demo lesson is a stream (difficulty 3): its cards come at 0 s, 40–50 s and 80–100 s, plus
+// a tick of the sweeper (5 s); the repeated call 38260340 comes 1–2 minutes after its original.
+const STREAM_CARD_MS = 110_000;
+const FIRST_CARD_MS = 15_000;
+const REPEAT_CARD_MS = 130_000;
 
 test.describe.configure({ mode: "serial" });
 
@@ -99,7 +102,7 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
     page,
     request,
   }) => {
-    test.setTimeout(300_000);
+    test.setTimeout(420_000);
     const sessionId = await resetDemoSession(request);
     const { problems, foreign } = watchNetwork(page);
 
@@ -108,15 +111,17 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
       path: `${SHOTS}/01-assignments.png`,
       fullPage: true,
     });
-    await page.getByRole("link", { name: /Открыть журнал АРМ-112/ }).click();
+    // The trainee may have several lessons running (other suites, a teacher's own checks): the
+    // journal of this one, by its address.
+    await page.goto(`/student/sessions/${sessionId}/journal`);
     await expect(page).toHaveURL(
       new RegExp(`/student/sessions/${sessionId}/journal$`),
     );
 
-    // Difficulty 3 is a stream: the first card at once, then one every 40–50 s; all three are
-    // there in under two minutes, all «Добавлена» / «Зарегистрирована».
-    const rows = page.locator("tr[data-attempt]");
-    await expect(rows).toHaveCount(3, { timeout: STREAM_THREE_MS });
+    // Difficulty 3 is a stream: the cards come one by one and each is taken as it comes (the
+    // norm of 30 s runs from its arrival), «Добавлена» / «Зарегистрирована».
+    const original = page.getByRole("link", { name: /Открыть карточку 38260311/ });
+    await expect(original).toBeVisible({ timeout: STREAM_CARD_MS });
     await expect(page.getByText("Список происшествий")).toBeVisible();
     await expect(
       page.getByText("задымление: мусоропровод").first(),
@@ -127,7 +132,7 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
     await page.screenshot({ path: `${SHOTS}/02-journal.png`, fullPage: true });
 
     // Card 38260311: full chain within the norm.
-    await page.getByRole("link", { name: /Открыть карточку 38260311/ }).click();
+    await original.click();
     await expect(page.getByText("Происшествие 38260311")).toBeVisible();
     await expect(page.getByTestId("own-service-panel")).toContainText(
       "Получена службой",
@@ -206,8 +211,11 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
     await page.screenshot({ path: `${SHOTS}/06-review.png`, fullPage: true });
 
     // Second card (the duplicate): «Не принята» with a reason and a comment.
-    await page.getByRole("link", { name: "Следующая карточка" }).click();
-    await page.getByRole("link", { name: /Открыть карточку 38260340/ }).click();
+    // The review leads back to the journal (#263: «В журнал» instead of «Следующая карточка»).
+    await page.getByRole("link", { name: "В журнал" }).click();
+    const repeat = page.getByRole("link", { name: /Открыть карточку 38260340/ });
+    await expect(repeat).toBeVisible({ timeout: REPEAT_CARD_MS });
+    await repeat.click();
     await expect(page.getByText("Происшествие 38260340")).toBeVisible();
     await page.getByRole("button", { name: "Проставить статус" }).click();
     const form = page.getByRole("form", { name: "Проставление статуса" });
@@ -286,9 +294,13 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
     request,
   }) => {
     test.setTimeout(120_000);
-    await resetDemoSession(request);
+    const sessionId = await resetDemoSession(request);
     await loginAsStudent(page);
-    await page.getByRole("link", { name: /Открыть журнал АРМ-112/ }).click();
+    // The trainee may have several lessons running (other suites, a teacher's own checks): the
+    // journal of this one, by its address.
+    await page.goto(`/student/sessions/${sessionId}/journal`);
+    // The first card of the stream comes with the next tick of the sweeper (every 5 s).
+    await expect(page.locator("tr[data-attempt]").first()).toBeVisible({ timeout: FIRST_CARD_MS });
     const row = page.locator("tr[data-attempt]", { hasText: "38260311" });
     await expect(row.locator("[data-phase]")).toHaveAttribute(
       "data-phase",
@@ -341,9 +353,13 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
     context,
   }) => {
     test.setTimeout(120_000);
-    await resetDemoSession(request);
+    const sessionId = await resetDemoSession(request);
     await loginAsStudent(page);
-    await page.getByRole("link", { name: /Открыть журнал АРМ-112/ }).click();
+    // The trainee may have several lessons running (other suites, a teacher's own checks): the
+    // journal of this one, by its address.
+    await page.goto(`/student/sessions/${sessionId}/journal`);
+    // The first card of the stream comes with the next tick of the sweeper (every 5 s).
+    await expect(page.locator("tr[data-attempt]").first()).toBeVisible({ timeout: FIRST_CARD_MS });
     await page.getByRole("link", { name: /Открыть карточку 38260311/ }).click();
     await expect(page.getByTestId("own-service-panel")).toContainText(
       "Получена службой",
@@ -400,9 +416,13 @@ test.describe("Волна 3: журнал ДДС и карточка", () => {
     page,
     request,
   }) => {
-    await resetDemoSession(request);
+    const sessionId = await resetDemoSession(request);
     await loginAsStudent(page);
-    await page.getByRole("link", { name: /Открыть журнал АРМ-112/ }).click();
+    // The trainee may have several lessons running (other suites, a teacher's own checks): the
+    // journal of this one, by its address.
+    await page.goto(`/student/sessions/${sessionId}/journal`);
+    // The first card of the stream comes with the next tick of the sweeper (every 5 s).
+    await expect(page.locator("tr[data-attempt]").first()).toBeVisible({ timeout: FIRST_CARD_MS });
     await page.locator("tr[data-attempt]", { hasText: "38260311" }).focus();
     await page.keyboard.press("Enter");
     await expect(page.getByText("Происшествие 38260311")).toBeVisible();
