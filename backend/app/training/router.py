@@ -30,6 +30,7 @@ from app.models import (
     TrainingSession,
     User,
 )
+from app.providers.generation import TemplateGeneration
 from app.training import ai_cards, present, review
 from app.training import service as training
 from app.training.schemas import (
@@ -209,6 +210,7 @@ async def _attempt_out(session: DbSession, attempt: Attempt, ts: TrainingSession
     if attempt.state in training.CLOSED_STATES:
         row = await session.get(Evaluation, attempt.id)
         if row is not None:
+            generation = card.body.get(GENERATION_KEY) or {}
             evaluation = {
                 "total": row.total,
                 "passed": row.passed,
@@ -223,7 +225,12 @@ async def _attempt_out(session: DbSession, attempt: Attempt, ts: TrainingSession
                 "advice": advice.card_advice(
                     {"components": row.components, "errors": row.errors, "passed": row.passed}
                 ),
-                "reasons": list((card.body.get(GENERATION_KEY) or {}).get("reasons") or []),
+                "reasons": list(generation.get("reasons") or []),
+                # A card for the trainee that the template wrote (the model was too slow or its
+                # card failed the checks): the review says so (closed contour, 20.10.2026: the
+                # local model never made it in 120 s, and nothing on the screen told).
+                "by_template": bool(generation.get("reasons"))
+                and generation.get("method") == TemplateGeneration.method,
             }
     override, comments = await review.review_extras(session, attempt)
     out = present.attempt_out(
