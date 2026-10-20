@@ -119,8 +119,12 @@ def explain(name: str, value: float, favourable: bool) -> str:
             else "типичных ошибок почти нет"
         )
     if name == "min_rating":
-        return f"рейтинг самой слабой группы происшествий {value:.0f}" + (
-            "" if favourable else " — есть провал по одной из групп"
+        # No rating number for the teacher either (as in «Мой прогресс», #312): it means nothing
+        # to a reader (20.10.2026).
+        return (
+            "по всем группам происшествий ровно"
+            if favourable
+            else "есть провал по одной из групп происшествий"
         )
     if name == "attempts":
         n = int(value)

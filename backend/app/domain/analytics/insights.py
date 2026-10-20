@@ -155,11 +155,10 @@ def group_summary(
 
 
 def weakest_group_tip(
-    ratings: RatingState, group_titles: Mapping[str, str], with_rating: bool = True
+    ratings: RatingState, group_titles: Mapping[str, str], with_rating: bool = False
 ) -> str | None:
-    """The advice about the lowest-rated incident group; None without ratings. The trainee's
-    «Мой прогресс» shows it without the number (``with_rating=False``): to him the rating
-    means nothing, the teacher's analytics keep it."""
+    """The advice about the lowest-rated incident group; None without ratings. Without the
+    number by default — to the trainee (#312) and to the teacher (20.10.2026) it means nothing."""
     weakest = sorted(ratings.ratings.items(), key=lambda kv: kv[1])
     if not weakest:
         return None
