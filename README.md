@@ -31,7 +31,7 @@ https://drive.google.com/drive/folders/1QmRZGd6KxJnyK1q0Ivu496xJ-opeMClM?usp=dri
 
 **📄 Документация (PDF):** https://drive.google.com/drive/folders/1QQobcU1nKz6SxSTyfI0okR7eEI9mnjyj?usp=drive_link
 
-**📊 Презентация:** https://docs.google.com/presentation/d/1KIT0vImiX4MTWcn07Gl4nErMMglOpNxSUuhBdFSZ3O0/edit
+**📊 Презентация:** https://docs.google.com/presentation/d/1pufI3VLZJpzmV_AEwI3k85936cQKny6A/edit?usp=sharing
 
 ## Установка у себя
 
