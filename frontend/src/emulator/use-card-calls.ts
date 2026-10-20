@@ -11,7 +11,7 @@ import {
   useStartServiceCall,
   type AttemptOut,
 } from "@/api/training";
-import { RINGBACK_MAX_MS, RINGBACK_MS, playRingback } from "@/emulator/phone-tones";
+import { RINGBACK_MS, playRingback } from "@/emulator/phone-tones";
 import { CloudCall, MIC_ASK_HINT } from "@/softphone/cloud-call";
 import { useSoftphone } from "@/softphone/context";
 
@@ -144,7 +144,8 @@ export function useCardCalls(attempt: AttemptOut) {
   const [sttAvailable, setSttAvailable] = useState(false);
   const openCall = attempt.service_calls.find((c) => c.ended_at === null) ?? null;
   // A call made from the browser beeps before the other side answers (#270): the answer the
-  // server already wrote shows when the beeps end; a cloud call beeps until its voice is on.
+  // server already wrote shows when the beeps end; a cloud call beeps twice as well and stops
+  // beeping as soon as its voice is on (a slower one connects in silence).
   // A call over the softphone has the beeps of the telephone line.
   const [dialingId, setDialingId] = useState<string | null>(null);
   const stopBeeps = useRef<(() => void) | null>(null);
@@ -156,7 +157,7 @@ export function useCardCalls(attempt: AttemptOut) {
   const beep = (callId: string) => {
     endBeeps();
     setDialingId(callId);
-    stopBeeps.current = playRingback(cloudLesson ? RINGBACK_MAX_MS : RINGBACK_MS);
+    stopBeeps.current = playRingback(RINGBACK_MS);
   };
   useEffect(() => {
     if (!dialingId || cloudLesson) return;
