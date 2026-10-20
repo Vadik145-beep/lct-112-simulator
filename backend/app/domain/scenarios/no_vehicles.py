@@ -66,13 +66,13 @@ def applies(difficulty: int) -> bool:
     return difficulty >= MIN_DIFFICULTY
 
 
-def plan_after(plans: Iterable[str]) -> str:
-    """The turn of the next card after the turns already given in the lesson: «машин нет» while
-    it is not ahead of the complications, so the cards alternate whatever order they are
-    worked in."""
+def plan_after(plans: Iterable[str], first: str = PLAN_NO_VEHICLES) -> str:
+    """The turn of the next card after the turns already given in the lesson: ``first`` while
+    it is not ahead of the other turn, so the cards alternate whatever order they are worked
+    in (``SQUAD_FIRST_PLAN``: «машин нет» first by default)."""
     rows = list(plans)
-    ahead = rows.count(PLAN_NO_VEHICLES) > rows.count(PLAN_COMPLICATION)
-    return PLAN_COMPLICATION if ahead else PLAN_NO_VEHICLES
+    second = PLAN_COMPLICATION if first == PLAN_NO_VEHICLES else PLAN_NO_VEHICLES
+    return second if rows.count(first) > rows.count(second) else first
 
 
 def plan_of(calls: Iterable[Mapping]) -> str | None:

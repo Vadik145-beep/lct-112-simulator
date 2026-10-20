@@ -37,6 +37,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.attributes import flag_modified
 
+from app.config import get_settings
 from app.dialog import service as dialog
 from app.domain.evaluation import service_call as engine
 from app.domain.evaluation.schemas import (
@@ -564,7 +565,7 @@ async def _squad_plan(
         )
     )
     plans = [p for calls in others if (p := no_vehicles.plan_of(calls or []))]
-    return no_vehicles.plan_after(plans)
+    return no_vehicles.plan_after(plans, get_settings().squad_first_plan)
 
 
 def _new_call(
