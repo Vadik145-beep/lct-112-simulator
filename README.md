@@ -27,8 +27,7 @@
 > Когда браузер спросит доступ к микрофону, нажмите «Разрешить».
 
 **🎬 Видео: как работает тренажёр** —
-https://drive.google.com/file/d/1EqRIDEoB-Ikpvw0qfixzoyYD6TQkFXjt/view
-([папка с видео](https://drive.google.com/drive/folders/1QmRZGd6KxJnyK1q0Ivu496xJ-opeMClM)).
+https://drive.google.com/drive/folders/1QmRZGd6KxJnyK1q0Ivu496xJ-opeMClM?usp=drive_link
 
 **📄 Документация:** https://docs.google.com/document/d/1jUSraFs4v05WsOllQZAZFcoP-sllYiqL0SQoTPuxCtQ/edit
 
