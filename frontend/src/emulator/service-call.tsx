@@ -13,6 +13,7 @@ import {
   type ServiceCallOut,
 } from "@/emulator/service-call-model";
 import { formatSeconds } from "@/emulator/time";
+import { ASKING_AFTER_MS, PTT_ASKING, PTT_READY, pttProblem } from "@/lib/mic";
 import { cn } from "@/lib/utils";
 import { watchLevel } from "@/softphone/sip-phone";
 
@@ -122,7 +123,10 @@ export function ServiceCallPanel({
   const [text, setText] = useState("");
   const [recording, setRecording] = useState(false);
   const [recordedFor, setRecordedFor] = useState(0);
-  const [micNote, setMicNote] = useState<string | null>(null);
+  const [micNote, setMicNote] = useState<{ text: string; error: boolean } | null>(null);
+  // The button is held down now: released while the browser asked for the microphone, it
+  // starts no recording (stand 20.10.2026: that gave «Слишком короткая запись» at once).
+  const held = useRef(false);
   const [micLevel, setMicLevel] = useState(0);
   const stopLevel = useRef<(() => void) | null>(null);
   const audio = useRef<HTMLAudioElement | null>(null);
@@ -193,10 +197,18 @@ export function ServiceCallPanel({
   // to send. A click without holding records nothing.
   async function startRecording() {
     if (recorder.current || pending || !open) return;
+    held.current = true;
     setMicNote(null);
+    const asking = setTimeout(() => setMicNote({ text: PTT_ASKING, error: false }), ASKING_AFTER_MS);
     try {
-      const stream = await openMicrophone(micDeviceId);
+      const stream = await openMicrophone(micDeviceId).finally(() => clearTimeout(asking));
       onMicOpened();
+      if (!held.current) {
+        stream.getTracks().forEach((t) => t.stop());
+        setMicNote({ text: PTT_READY, error: false });
+        return;
+      }
+      setMicNote(null);
       stopLevel.current = watchLevel(stream, setMicLevel);
       const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
         ? "audio/webm;codecs=opus"
@@ -221,9 +233,10 @@ export function ServiceCallPanel({
         chunks.current = [];
         const seconds = (Date.now() - startedAt) / 1000;
         if (seconds < MIN_RECORDING_SECONDS) {
-          setMicNote(
-            "Слишком короткая запись: удерживайте кнопку, пока говорите, и отпустите.",
-          );
+          setMicNote({
+            text: "Слишком короткая запись: удерживайте кнопку, пока говорите, и отпустите.",
+            error: true,
+          });
           return;
         }
         if (blob.size > 0 && open) {
@@ -234,15 +247,14 @@ export function ServiceCallPanel({
       recorder.current = rec;
       rec.start();
       setRecording(true);
-    } catch {
+    } catch (error) {
       setRecording(false);
-      setMicNote(
-        "Микрофон недоступен: разрешите доступ в браузере или выберите другое устройство.",
-      );
+      setMicNote({ text: pttProblem(error), error: true });
     }
   }
 
   function stopRecording() {
+    held.current = false;
     const rec = recorder.current;
     if (rec && rec.state !== "inactive") rec.stop();
   }
@@ -556,8 +568,14 @@ export function ServiceCallPanel({
         </span>
       )}
       {micNote && !recording && (
-        <span className="text-[10px] text-[var(--arm-red)]" role="alert">
-          {micNote}
+        <span
+          className={cn(
+            "text-[10px]",
+            micNote.error ? "text-[var(--arm-red)]" : "text-[var(--arm-text)]",
+          )}
+          role={micNote.error ? "alert" : "status"}
+        >
+          {micNote.text}
         </span>
       )}
       {open && talking && localTalk && !telephony && !sttAvailable && (
