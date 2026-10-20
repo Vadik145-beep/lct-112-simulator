@@ -142,6 +142,7 @@ async def test_next_card_is_written_after_the_scored_one_by_its_mistakes(
     evaluation = r.json()["attempt"]["evaluation"]
     assert 1 <= len(evaluation["advice"]) <= 5
     assert evaluation["reasons"]
+    assert evaluation["by_template"] is (first_body["generation"]["method"] == "template")
     await ai_cards.wait_all()  # written while the trainee reads the result
 
     items = (await journal(client, student, lesson))["items"]

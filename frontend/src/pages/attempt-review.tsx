@@ -56,6 +56,8 @@ interface Evaluation {
   // Issue #265: what to work on next; why a card written for the trainee was chosen.
   advice?: string[];
   reasons?: string[];
+  // The card for the trainee was written by the template, not by the model.
+  by_template?: boolean;
 }
 interface ReferenceStep {
   status: string;
@@ -436,7 +438,15 @@ function ReviewView({
         <Card data-testid="review-advice">
           <CardContent className="grid gap-4 pt-6 sm:grid-cols-2">
             <AdviceList title="Советы для дальнейшего обучения" points={evaluation.advice ?? []} />
-            <AdviceList title="Почему ИИ выдал эту карточку" points={evaluation.reasons ?? []} />
+            <AdviceList
+              title={evaluation.by_template ? "Почему выдана эта карточка" : "Почему ИИ выдал эту карточку"}
+              points={evaluation.reasons ?? []}
+            />
+            {evaluation.by_template && (
+              <p className="text-xs text-muted-foreground sm:col-span-2" data-testid="review-by-template">
+                Модель не успела написать эту карточку — её собрал шаблон по тому же заданию.
+              </p>
+            )}
           </CardContent>
         </Card>
       )}
