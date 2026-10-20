@@ -7,6 +7,7 @@ import { NetworkError } from "@/api/training";
 import { formatTime } from "@/emulator/time";
 import { ArmButton } from "@/emulator/widgets";
 import { newId } from "@/intake/draft";
+import { ASKING_AFTER_MS, PRESS_AGAIN, PTT_ASKING, pttProblem } from "@/lib/mic";
 import { cn } from "@/lib/utils";
 
 const DIALOG_MODE_TITLES: Record<string, string> = {
@@ -52,6 +53,7 @@ export function DialogPanel({
   const [text, setText] = useState("");
   const [speaking, setSpeaking] = useState(false);
   const [recording, setRecording] = useState(false);
+  const [micNote, setMicNote] = useState<{ text: string; error: boolean } | null>(null);
   const recorder = useRef<MediaRecorder | null>(null);
   const chunks = useRef<Blob[]>([]);
   const audio = useRef<HTMLAudioElement | null>(null);
@@ -106,8 +108,13 @@ export function DialogPanel({
       recorder.current?.stop();
       return;
     }
+    setMicNote(null);
+    const asking = setTimeout(() => setMicNote({ text: PTT_ASKING, error: false }), ASKING_AFTER_MS);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .finally(() => clearTimeout(asking));
+      setMicNote(null);
       const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? "audio/webm;codecs=opus" : "";
       const rec = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
       chunks.current = [];
@@ -121,8 +128,9 @@ export function DialogPanel({
       recorder.current = rec;
       rec.start();
       setRecording(true);
-    } catch {
+    } catch (e) {
       setRecording(false);
+      setMicNote({ text: pttProblem(e, PRESS_AGAIN), error: true });
     }
   };
 
@@ -244,6 +252,14 @@ export function DialogPanel({
                 </ArmButton>
               )}
             </div>
+          )}
+          {micNote && !recording && (
+            <p
+              className={cn("text-[11px]", micNote.error ? "text-[var(--arm-red)]" : "text-[var(--arm-text)]")}
+              role={micNote.error ? "alert" : "status"}
+            >
+              {micNote.text}
+            </p>
           )}
           {error && (
             <p className="text-[11px] text-[var(--arm-red)]" role="alert">
