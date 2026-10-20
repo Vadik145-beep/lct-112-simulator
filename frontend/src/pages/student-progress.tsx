@@ -9,6 +9,7 @@ import { StreamSummaryView } from "@/components/stream-summary";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDateTime } from "@/emulator/time";
+import { memoLink } from "@/lib/memo";
 import { cn } from "@/lib/utils";
 import { MODE_TITLES, SESSION_STATUS_TITLES, formatDeviation, formatDuration, formatScore, plural } from "@/teacher/labels";
 
@@ -128,7 +129,7 @@ export function StudentProgressPage() {
                     <div>
                       <div className="font-medium">{e.title}</div>
                       {e.memo_ref && (
-                        <Link to={`/student/reference?q=${encodeURIComponent(e.title)}`} className="inline-flex items-center gap-1 text-xs text-primary underline-offset-2 hover:underline">
+                        <Link to={memoLink("/student/reference", e.memo_ref)} className="inline-flex items-center gap-1 text-xs text-primary underline-offset-2 hover:underline">
                           <BookOpen className="size-3" aria-hidden /> Памятка, {e.memo_ref}
                         </Link>
                       )}

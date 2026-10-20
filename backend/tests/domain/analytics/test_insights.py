@@ -126,14 +126,23 @@ def test_forecast_features_survive_an_abandoned_attempt() -> None:
     assert compute_features(records).values["time_ratio"] <= MAX_TIME_RATIO
 
 
-def test_weakest_group_tip_keeps_the_rating_for_the_teacher_only() -> None:
+def test_weakest_group_tip_names_no_rating_number() -> None:
+    """20.10.2026: the number means nothing to the teacher either."""
     state = RatingState()
     state.ratings[("1", "card_response")] = 1360.0
     titles = {"1": "Пожары и задымления"}
     teacher = insights.weakest_group_tip(state, titles)
     trainee = insights.weakest_group_tip(state, titles, with_rating=False)
-    assert teacher is not None and "рейтинг 1360" in teacher
+    assert teacher == trainee
     assert trainee == (
         "Слабое место — «Пожары и задымления» (карточки): "
         "возьмите карточки этой группы на следующем занятии."
     )
+
+
+def test_readiness_reason_names_no_rating_number() -> None:
+    from app.domain.analytics import features
+
+    for value, favourable in ((1409.0, False), (1600.0, True)):
+        text = features.explain("min_rating", value, favourable)
+        assert not any(ch.isdigit() for ch in text), text

@@ -1,5 +1,5 @@
 import { BookOpen, FileText, Search } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, Navigate, useLocation, useParams, useSearchParams } from "react-router-dom";
 
 import { useMaterial, useMaterials, useReferenceSearch } from "@/api/training";
@@ -172,6 +172,12 @@ export function StudentMaterialPage() {
 
 function MaterialReader({ name, base }: { name: string; base: string }) {
   const query = useMaterial(name);
+  const { hash } = useLocation();
+  const loaded = query.isSuccess;
+  // «#page-31» from a memo reference of a review: the page comes into view.
+  useEffect(() => {
+    if (loaded && hash) document.getElementById(hash.slice(1))?.scrollIntoView({ block: "start" });
+  }, [loaded, hash]);
   if (query.isPending) return <LoadingState text="Открываем материал…" />;
   if (query.isError || !query.data) {
     return <ErrorState message={query.error?.message ?? "Материал не найден."} onRetry={() => void query.refetch()} />;
@@ -196,7 +202,12 @@ function MaterialReader({ name, base }: { name: string; base: string }) {
           return (
             <div key={i}>
               {pageBreak && (
-                <div className="mt-6 mb-2 border-b text-xs font-medium text-muted-foreground">Страница {p.page}</div>
+                <div
+                  id={`page-${p.page}`}
+                  className="mt-6 mb-2 scroll-mt-20 border-b text-xs font-medium text-muted-foreground"
+                >
+                  Страница {p.page}
+                </div>
               )}
               <p>{p.text}</p>
             </div>
