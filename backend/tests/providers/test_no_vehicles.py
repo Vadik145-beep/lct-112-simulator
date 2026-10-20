@@ -81,6 +81,13 @@ def test_turns_alternate_in_the_order_cards_are_worked() -> None:
     assert no_vehicles.plan_after(["complication", "no_vehicles"]) == "no_vehicles"
 
 
+def test_the_first_turn_can_be_the_complication() -> None:
+    first = no_vehicles.PLAN_COMPLICATION
+    assert no_vehicles.plan_after([], first) == "complication"
+    assert no_vehicles.plan_after(["complication"], first) == "no_vehicles"
+    assert no_vehicles.plan_after(["complication", "no_vehicles"], first) == "complication"
+
+
 def test_no_vehicles_after_the_house_is_settled_then_the_head_finds_one() -> None:
     scenario = hard()
     call = chief_call()

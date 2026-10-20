@@ -65,6 +65,9 @@ class Settings(BaseSettings):
     # How the caller answers (PRD 9.3): select | hybrid | generate | buttons | live.
     # Without a reachable dialog model every mode degrades to `buttons`.
     dialog_mode: Literal["select", "hybrid", "generate", "buttons", "live"] = "select"
+    # Difficulty 3: which turn the trainee's first card takes, «машин нет» (no_vehicles) or a
+    # complication on site; the cards alternate after it.
+    squad_first_plan: Literal["no_vehicles", "complication"] = "no_vehicles"
     # Folder with downloaded models (scripts/fetch_models.sh): tts/ (Silero, Piper), stt/, llm/.
     models_dir: str | None = None
     # The caller's voice engine: auto = Silero when models/tts/silero_v4_ru.pt is there, else
